@@ -3,7 +3,7 @@ Kerbal Konstructs
 
 What is it?
 -----------
-Kerbal Konstructs is a reimplementation of the popular [KerbTown](http://forum.kerbalspaceprogram.com/threads/40374-WIP-KerbTown-v0-13-Beta-Place-static-buildings-cities-launch-sites-more!) mod by Razchek. The goal is to remain completely compatible with KerbTown asset packs while also providing optimizations that are not present in the original mod.
+Kerbal Konstructs is a reimplementation of the popular KerbTown mod by Razchek. medsouz's original goal was to remain completely compatible with KerbTown asset packs while also providing optimizations that are not present in the original mod. The goal of this fork is to provide new features as well as optimisations without concern for KerbTown compatibility. This fork abandons KerbTown but I acknowledge and credit the contributions.
 
 FAQ
 ---
