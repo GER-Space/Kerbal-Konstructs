@@ -50,7 +50,7 @@ namespace KerbalKonstructs.UI
 
 			#region GUI Windows
 			// GUI Windows
-			Rect toolRect = new Rect(300, 35, 310, 520);
+			Rect toolRect = new Rect(300, 35, 310, 570);
 			Rect editorRect = new Rect(10, 25, 520, 520);
 			Rect siteEditorRect = new Rect(400, 45, 340, 480);
 			Rect StaticInfoRect = new Rect(300, 50, 250, 400);
@@ -79,6 +79,7 @@ namespace KerbalKonstructs.UI
 			static LaunchSite lTargetSite = null;
 
 			public static String xPos, yPos, zPos, altitude, rotation = "";
+			public static String xOri, yOri, zOri = "";
 			public static String facType = "None";
 			public static String sGroup = "Ungrouped";
 			String customgroup = "";
@@ -498,7 +499,6 @@ namespace KerbalKonstructs.UI
 				GUILayout.EndHorizontal();
 			}
 
-			// Set locals to group function
 			if (showLocal)
 			{
 				GUILayout.BeginHorizontal();
@@ -554,7 +554,6 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		// Set locals to group function
 		void setLocalsGroup(string sGroup, float fRange)
 		{
 			if (sGroup == "")
@@ -574,8 +573,7 @@ namespace KerbalKonstructs.UI
 		}
 		#endregion
 
-			#region Instance Editor
-		// Instance Editor handlers
+		#region Instance Editor
 		string savedxpos = "";
 		string savedypos = "";
 		string savedzpos = "";
@@ -675,6 +673,7 @@ namespace KerbalKonstructs.UI
 			}
 			else
 			{
+				// THIS SHIT DO NOT WORK
 				//ScreenMessages.PostScreenMessage("Snapping with rotation.", 60, smsStyle);
 				// Stick the origins on each other
 				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
@@ -682,31 +681,18 @@ namespace KerbalKonstructs.UI
 				updateSelection(selectedObject);
 
 				// Get the offset of the source and move by that
-				// selectedSnapPoint.transform.Rotate(+selectedObject.pqsCity.reorientFinalAngle, 0, 0);
-				// vbsnapangle1 = selectedSnapPoint.transform.position - selectedObject.gameObject.transform.position;
-				//ScreenMessages.PostScreenMessage("" + vbsnapangle1.ToString(), 60, smsStyle);
 				Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
 				snapPointRelation = selectedObject.gameObject.transform.position -
 					selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
-					//- RotatePointAroundPivot(selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition), 
-					//selectedObject.gameObject.transform.position, vAngles);
-				// selectedSnapPoint.transform.Rotate(-selectedObject.pqsCity.reorientFinalAngle, 0, 0);
-				// vbsnapangle1 = selectedSnapPoint.transform.position - selectedObject.gameObject.transform.position;
 				ScreenMessages.PostScreenMessage("" + snapPointRelation.ToString(), 60, smsStyle);
 				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
 				selectedObject.setSetting("RadialPosition", vFinalPos);
 				updateSelection(selectedObject);
 
 				// Get the offset of the target and move by that
-				//selectedSnapPoint2.transform.Rotate(+snapTargetInstance.pqsCity.reorientFinalAngle, 0, 0);
-				//vbsnapangle2 = selectedSnapPoint2.transform.position - snapTargetInstance.gameObject.transform.position;
-				//ScreenMessages.PostScreenMessage("" + vbsnapangle2.ToString(), 60, smsStyle);
 				vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
 				snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
 					selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
-					//+ RotatePointAroundPivot(selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition),
-					//snapTargetInstance.gameObject.transform.position, vAngles);
-				//vbsnapangle2 = selectedSnapPoint2.transform.position - snapTargetInstance.gameObject.transform.position;
 				ScreenMessages.PostScreenMessage("" + snapPoint2Relation.ToString(), 60, smsStyle);
 				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
 			}
@@ -728,6 +714,7 @@ namespace KerbalKonstructs.UI
 			string smessage = "";
 			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 			Vector3 position = Vector3.zero;
+			Vector3 orientation = Vector3.zero;
 			float alt = 0;
 			float newRot = 0;
 			float vis = 0;
@@ -737,7 +724,7 @@ namespace KerbalKonstructs.UI
 			double objLat = 0;
 			double objLon = 0;
 
-			GUILayout.BeginArea(new Rect(5, 25, 295, 500));
+			GUILayout.BeginArea(new Rect(5, 25, 295, 550));
 
 			GUILayout.Box((string)selectedObject.model.getSetting("title"));
 
@@ -973,56 +960,59 @@ namespace KerbalKonstructs.UI
 					}
 				}
 				GUILayout.EndHorizontal();
-
-				//GUILayout.BeginHorizontal();
-				/* GUILayout.Box("TargetInst pqsPos "
-					+ snapTargetInstance.pqsCity.repositionRadial.x.ToString() + ","
-					+ snapTargetInstance.pqsCity.repositionRadial.y.ToString() + ","
-					+ snapTargetInstance.pqsCity.repositionRadial.z.ToString());
-				GUILayout.Box("TargetInst pqsRot " + snapTargetInstance.pqsCity.reorientFinalAngle.ToString());
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal();
-				GUILayout.Box("TargetInst WorldPos "
-					+ snapTargetInstance.gameObject.transform.position.x.ToString() + ","
-					+ snapTargetInstance.gameObject.transform.position.y.ToString() + ","
-					+ snapTargetInstance.gameObject.transform.position.z.ToString());
-				GUILayout.Box("TargetSnap WorldPos "
-					+ selectedSnapPoint2.transform.position.x.ToString() + ","
-					+ selectedSnapPoint2.transform.position.y.ToString() + ","
-					+ selectedSnapPoint2.transform.position.z.ToString()); */
-
-				// var sntoordist = Vector3.Distance(snapTargetInstance.gameObject.transform.position, selectedSnapPoint2.transform.position);
-
-				// GUILayout.Box("Target Snap to Origin Dist " + sntoordist + " m");
-				//GUILayout.EndHorizontal();
-
-				//GUILayout.BeginHorizontal();
-				/*GUILayout.Box("SelectedInst WorldPos "
-					+ selectedObject.gameObject.transform.position.x.ToString() + ","
-					+ selectedObject.gameObject.transform.position.y.ToString() + ","
-					+ selectedObject.gameObject.transform.position.z.ToString());
-				GUILayout.Box("SelectedSnap WorldPos "
-					+ selectedSnapPoint.transform.position.x.ToString() + ","
-					+ selectedSnapPoint.transform.position.y.ToString() + ","
-					+ selectedSnapPoint.transform.position.z.ToString()); */
-
-				// var sntoordist2 = Vector3.Distance(selectedObject.gameObject.transform.position, selectedSnapPoint.transform.position);
-
-				// GUILayout.Box("Source Snap to Origin Dist " + sntoordist2 + " m");
-				//GUILayout.EndHorizontal();
-
-				/* GUILayout.BeginHorizontal();
-				var ortoordist = Vector3.Distance(snapTargetInstance.gameObject.transform.position, selectedObject.gameObject.transform.position);
-				
-				GUILayout.Box("Origin to Origin Dist " + ortoordist + " m");
-				var sntosndist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
-				
-				GUILayout.Box("Snap to Snap Dist " + sntosndist + " m");
-				GUILayout.EndHorizontal(); */
 			}
 
 			GUILayout.Space(10);
+			GUILayout.BeginHorizontal();
+			GUILayout.Label(".");
+			GUILayout.FlexibleSpace();
+			GUILayout.Label("Orientation (-1 to +1)");
+			GUILayout.FlexibleSpace();
+			GUILayout.Label(".");
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Label(" X");
+				if (GUILayout.Button(" - ", GUILayout.Height(21)))
+				{
+					orientation.x -= 0.1f;
+					shouldUpdateSelection = true;
+				}
+				xOri = GUILayout.TextField(xOri, 25, GUILayout.Width(31));
+				if (GUILayout.Button(" + ", GUILayout.Height(21)))
+				{
+					orientation.x += 0.1f;
+					shouldUpdateSelection = true;
+				}
+				GUILayout.Label(" Y");
+				if (GUILayout.Button(" - ", GUILayout.Height(21)))
+				{
+					orientation.y -= 0.1f;
+					shouldUpdateSelection = true;
+				}
+				yOri = GUILayout.TextField(yOri, 25, GUILayout.Width(31));
+				if (GUILayout.Button(" + ", GUILayout.Height(21)))
+				{
+					orientation.y += 0.1f;
+					shouldUpdateSelection = true;
+				}
+				GUILayout.Label(" Z");
+				if (GUILayout.Button(" - ", GUILayout.Height(21)))
+				{
+					orientation.z -= 0.1f;
+					shouldUpdateSelection = true;
+				}
+				zOri = GUILayout.TextField(zOri, 25, GUILayout.Width(31));
+				if (GUILayout.Button(" + ", GUILayout.Height(21)))
+				{
+					orientation.z += 0.1f;
+					shouldUpdateSelection = true;
+				}
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.Space(5);
 
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Rot.");
@@ -1073,7 +1063,7 @@ namespace KerbalKonstructs.UI
 				}
 				if (GUILayout.Button("Max", GUILayout.Width(30), GUILayout.Height(23)))
 				{
-					vis += 100000f;
+					vis += 150000f;
 					shouldUpdateSelection = true;
 				}
 			}
@@ -1216,8 +1206,17 @@ namespace KerbalKonstructs.UI
 				position.x = float.Parse(xPos);
 				position.y = float.Parse(yPos);
 				position.z = float.Parse(zPos);
+
+				while (float.Parse(xOri) > 1 || float.Parse(xOri) < -1) xOri = "0";
+				while (float.Parse(yOri) > 1 || float.Parse(yOri) < -1) yOri = "0";
+				while (float.Parse(zOri) > 1 || float.Parse(zOri) < -1) zOri = "0";
+				orientation.x = float.Parse(xOri);
+				orientation.y = float.Parse(yOri);
+				orientation.z = float.Parse(zOri);
+
 				vis = float.Parse(visrange);
 				alt = float.Parse(altitude);
+				
 				float rot = float.Parse(rotation);
 				while (rot > 360 || rot < 0)
 				{
@@ -1232,6 +1231,7 @@ namespace KerbalKonstructs.UI
 				}
 				newRot = rot;
 				rotation = rot.ToString();
+
 				shouldUpdateSelection = true;
 			}
 
@@ -1240,9 +1240,14 @@ namespace KerbalKonstructs.UI
 				if (!manuallySet)
 				{
 					position += (Vector3)selectedObject.getSetting("RadialPosition");
+					orientation += (Vector3)selectedObject.getSetting("Orientation");
 					alt += (float)selectedObject.getSetting("RadiusOffset");
 					newRot += (float)selectedObject.getSetting("RotationAngle");
 					vis += (float)selectedObject.getSetting("VisibilityRange");
+
+					while (orientation.x > 1 || orientation.x < -1) orientation.x = 0;
+					while (orientation.y > 1 || orientation.y < -1) orientation.y = 0;
+					while (orientation.z > 1 || orientation.z < -1) orientation.z = 0;
 
 					while (newRot > 360 || newRot < 0)
 					{
@@ -1256,11 +1261,11 @@ namespace KerbalKonstructs.UI
 						}
 					}
 
-					while (vis > 100000 || vis < 1000)
+					while (vis > 150000 || vis < 1000)
 					{
-						if (vis > 100000)
+						if (vis > 150000)
 						{
-							vis = 100000;
+							vis = 150000;
 						}
 						else if (vis < 1000)
 						{
@@ -1270,6 +1275,7 @@ namespace KerbalKonstructs.UI
 				}
 
 				selectedObject.setSetting("RadialPosition", position);
+				selectedObject.setSetting("Orientation", orientation);
 				selectedObject.setSetting("RadiusOffset", alt);
 				selectedObject.setSetting("RotationAngle", newRot);
 				selectedObject.setSetting("VisibilityRange", vis);
@@ -1503,6 +1509,9 @@ namespace KerbalKonstructs.UI
 			xPos = ((Vector3)obj.getSetting("RadialPosition")).x.ToString();
 			yPos = ((Vector3)obj.getSetting("RadialPosition")).y.ToString();
 			zPos = ((Vector3)obj.getSetting("RadialPosition")).z.ToString();
+			xOri = ((Vector3)obj.getSetting("Orientation")).x.ToString();
+			yOri = ((Vector3)obj.getSetting("Orientation")).y.ToString();
+			zOri = ((Vector3)obj.getSetting("Orientation")).z.ToString();
 			altitude = ((float)obj.getSetting("RadiusOffset")).ToString();
 			rotation = ((float)obj.getSetting("RotationAngle")).ToString();
 			visrange = ((float)obj.getSetting("VisibilityRange")).ToString();
