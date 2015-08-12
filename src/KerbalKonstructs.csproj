@@ -71,6 +71,12 @@
     <Compile Include="UI\CameraController.cs" />
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />
+    <Compile Include="UI\BaseManager.cs" />
+    <Compile Include="UI\DownlinkGUI.cs" />
+    <Compile Include="UI\FuelTanksGUI.cs" />
+    <Compile Include="UI\TrackingStationGUI.cs" />
+    <Compile Include="UI\StaffGUI.cs" />
+    <Compile Include="UI\SharedInterfaces.cs" />
     <Compile Include="UI\KSCManager.cs" />
     <Compile Include="UI\NavGuidanceSystem.cs" />
     <Compile Include="UI\FacilityManager.cs" />

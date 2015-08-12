@@ -1,0 +1,22 @@
+Executing: MiniAVC - 1.0.3.0
+Assembly: d:\Steam\SteamApps\common\Kerbal Space Program\GameData\ContractConfigurator\MiniAVC.dll
+
+[Log 14:28:11.8166354]: Starter was created.
+[Log 14:28:13.2667531]: Identical remote version found: Using remote version information only.
+[Log 14:28:13.2667531]: https://raw.githubusercontent.com/jrossignol/ContractConfigurator/master/GameData/ContractConfigurator/ContractConfigurator.version
+	NAME: Contract Configurator
+	URL: https://raw.githubusercontent.com/jrossignol/ContractConfigurator/master/GameData/ContractConfigurator/ContractConfigurator.version
+	DOWNLOAD: https://github.com/jrossignol/ContractConfigurator/releases
+	GITHUB: jrossignol/ContractConfigurator
+		LatestRelease: 1.5.4
+		AllowPreRelease: False
+	VERSION: 1.5.4
+	KSP_VERSION: 1.0.4
+	KSP_VERSION_MIN: 1.0.2
+	KSP_VERSION_MAX: 1.0.4
+	CompatibleKspVersion: True
+	CompatibleKspVersionMin: True
+	CompatibleKspVersionMax: True
+	CompatibleGitHubVersion: True
+
+[Log 14:28:13.3407590]: Starter was destroyed.

@@ -13,7 +13,9 @@ namespace KerbalKonstructs.UI
 {
 	public class AirRacing
 	{
-		Rect racingRect = new Rect(40, 80, 300, 150);
+		Rect racingRect = new Rect(40, 80, 300, 160);
+
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep3", false);
 
 		public static Boolean runningRace = false;
 		public Boolean racing = false;
@@ -36,6 +38,9 @@ namespace KerbalKonstructs.UI
 		public StaticObject FinishLine = null;
 
 		GUIStyle raceStyle = new GUIStyle();
+		GUIStyle BoxNoBorder;
+		GUIStyle DeadButton;
+		GUIStyle DeadButtonRed;
 
 		public void drawRacing()
 		{
@@ -47,6 +52,59 @@ namespace KerbalKonstructs.UI
 
 		public void drawRacingWindow(int windowID)
 		{
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+			BoxNoBorder.normal.textColor = Color.white;
+
+			DeadButton = new GUIStyle(GUI.skin.button);
+			DeadButton.normal.background = null;
+			DeadButton.hover.background = null;
+			DeadButton.active.background = null;
+			DeadButton.focused.background = null;
+			DeadButton.normal.textColor = Color.white;
+			DeadButton.hover.textColor = Color.white;
+			DeadButton.active.textColor = Color.white;
+			DeadButton.focused.textColor = Color.white;
+			DeadButton.fontSize = 14;
+			DeadButton.fontStyle = FontStyle.Bold;
+
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
+
+			GUILayout.BeginHorizontal();
+			{
+				GUI.enabled = false;
+				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
+
+				GUILayout.FlexibleSpace();
+
+				GUILayout.Button("Air-Racing", DeadButton, GUILayout.Height(16));
+
+				GUILayout.FlexibleSpace();
+
+				GUI.enabled = true;
+
+				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
+				{
+					ResetRace();
+					KerbalKonstructs.instance.showRacingApp = false;
+					runningRace = false;
+				}
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
 			if (!racing)
 			{
 				GUILayout.Box("Cross a start line to begin a race.");
@@ -164,10 +222,12 @@ namespace KerbalKonstructs.UI
 			if (GUILayout.Button("I'm done racing!", GUILayout.Height(22)))
 			{
 				ResetRace();
-				KerbalKonstructs.instance.showRacing = false;
+				KerbalKonstructs.instance.showRacingApp = false;
 				runningRace = false;
 			}
-			GUILayout.Space(5);
+			GUILayout.FlexibleSpace();
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+			GUILayout.Space(3);
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}

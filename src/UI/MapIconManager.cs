@@ -15,6 +15,26 @@ namespace KerbalKonstructs.UI
 		public Texture ANYIcon = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/ANYMapIcon", false);
 		public Texture TrackingStationIcon = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/TrackingMapIcon", false);
 
+		public Texture2D tNormalButton = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapButtonNormal", false);
+		public Texture2D tHoverButton = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapButtonHover", false);
+
+		public Texture tOpenBasesOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapOpenBasesOn", false);
+		public Texture tOpenBasesOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapOpenBasesOff", false);
+		public Texture tClosedBasesOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapClosedBasesOn", false);
+		public Texture tClosedBasesOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapClosedBasesOff", false);
+		public Texture tHelipadsOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapHelipadsOn", false);
+		public Texture tHelipadsOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapHelipadsOff", false);
+		public Texture tRunwaysOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapRunwaysOn", false);
+		public Texture tRunwaysOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapRunwaysOff", false);
+		public Texture tTrackingOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapTrackingOn", false);
+		public Texture tTrackingOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapTrackingOff", false);
+		public Texture tLaunchpadsOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapLaunchpadsOn", false);
+		public Texture tLaunchpadsOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapLaunchpadsOff", false);
+		public Texture tOtherOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapOtherOn", false);
+		public Texture tOtherOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/mapOtherOff", false);
+
+		Rect mapManagerRect = new Rect(250, 40, 320, 70);
+
 		private Boolean displayingTooltip = false;
 		
 		static LaunchSite selectedSite = null;
@@ -29,13 +49,33 @@ namespace KerbalKonstructs.UI
 		public Boolean isOpen2 = false;
 		public Boolean bChangeTargetType = false;
 		public Boolean bChangeTarget = false;
+		public Boolean showBaseManager = false;
 
 		public Vector2 sitesScrollPosition;
 		public Vector2 descriptionScrollPosition;
 
 		Vector3 ObjectPos = new Vector3(0, 0, 0);
 
-		public static LaunchSite getSelectedTarget()
+		bool loadedPersistence = false;
+
+		GUIStyle Yellowtext;
+		GUIStyle TextAreaNoBorder;
+		GUIStyle BoxNoBorder;
+		GUIStyle ButtonKK;
+		GUIStyle ButtonRed;
+
+		GUIStyle navStyle = new GUIStyle();
+
+		public MapIconManager()
+		{
+			navStyle.padding.left = 0;
+			navStyle.padding.right = 0;
+			navStyle.padding.top = 1;
+			navStyle.padding.bottom = 3;
+			navStyle.normal.background = null;
+		}
+
+		public static LaunchSite getSelectedSite()
 		{
 			LaunchSite thisSite = selectedSite;
 			return thisSite;
@@ -45,6 +85,162 @@ namespace KerbalKonstructs.UI
 		{
 			displayingTooltip = true;
 			GUI.Label(new Rect((float)(pos.x) + 16, (float)(Screen.height - pos.y) - 8, 200, 20), sitename);
+		}
+
+		public void drawManager()
+		{
+			mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", navStyle);
+		}
+
+		void drawMapManagerWindow(int windowID)
+		{
+			ButtonRed = new GUIStyle(GUI.skin.button);
+			ButtonRed.normal.textColor = Color.red;
+			ButtonRed.active.textColor = Color.red;
+			ButtonRed.focused.textColor = Color.red;
+			ButtonRed.hover.textColor = Color.red;
+
+			ButtonKK = new GUIStyle(GUI.skin.button);
+			ButtonKK.padding.left = 0;
+			ButtonKK.padding.right = 0;
+			ButtonKK.normal.background = tNormalButton;
+			ButtonKK.hover.background = tHoverButton;
+
+			Yellowtext = new GUIStyle(GUI.skin.box);
+			Yellowtext.normal.textColor = Color.yellow;
+			Yellowtext.normal.background = null;
+
+			TextAreaNoBorder = new GUIStyle(GUI.skin.textArea);
+			TextAreaNoBorder.normal.background = null;
+
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+
+			if (!loadedPersistence && MiscUtils.isCareerGame())
+			{
+				PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
+				foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+				{
+					if ((string)obj.getSetting("FacilityType") == "TrackingStation")
+						PersistenceUtils.loadStaticPersistence(obj);
+				}
+
+				loadedPersistence = true;
+			}
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
+			
+			GUI.enabled = (MiscUtils.isCareerGame());
+			if (!MiscUtils.isCareerGame())
+			{
+				GUILayout.Button(tOpenBasesOff, GUILayout.Width(32), GUILayout.Height(32));
+				GUILayout.Button(tClosedBasesOff, GUILayout.Width(32), GUILayout.Height(32));
+				GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
+				GUILayout.Button(tTrackingOff, GUILayout.Width(32), GUILayout.Height(32));
+			}
+			else
+			{
+				if (KerbalKonstructs.instance.mapShowOpen)
+				{
+					if (GUILayout.Button(new GUIContent(tOpenBasesOn, "Opened"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowOpen = false;
+				}
+				else
+				{
+					if (GUILayout.Button(new GUIContent(tOpenBasesOff, "Opened"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowOpen = true;
+				}
+
+				if (KerbalKonstructs.instance.mapShowClosed)
+				{
+					if (GUILayout.Button(new GUIContent(tClosedBasesOn, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowClosed = false;
+				}
+				else
+				{
+					if (GUILayout.Button(new GUIContent(tClosedBasesOff, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowClosed = true;
+				}
+
+				GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
+				if (KerbalKonstructs.instance.mapShowOpenT)
+				{
+					if (GUILayout.Button(new GUIContent(tTrackingOn, "Tracking Stations"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowOpenT = false;
+				}
+				else
+				{
+
+					if (GUILayout.Button(new GUIContent(tTrackingOff, "Tracking Stations"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowOpenT = true;
+				}
+			}
+			GUI.enabled = true;
+
+			GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
+
+			if (KerbalKonstructs.instance.mapShowRocketbases)
+			{
+				if (GUILayout.Button(new GUIContent(tLaunchpadsOn, "Rocketpads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowRocketbases = false;
+			}
+			else
+			{
+				if (GUILayout.Button(new GUIContent(tLaunchpadsOff, "Rocketpads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowRocketbases = true;
+			}
+
+			if (KerbalKonstructs.instance.mapShowHelipads)
+			{
+				if (GUILayout.Button(new GUIContent(tHelipadsOn, "Helipads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowHelipads = false;
+			}
+			else
+			{
+				if (GUILayout.Button(new GUIContent(tHelipadsOff, "Helipads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowHelipads = true;
+			}
+
+			if (KerbalKonstructs.instance.mapShowRunways)
+			{
+				if (GUILayout.Button(new GUIContent(tRunwaysOn, "Runways"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowRunways = false;
+			}
+			else
+			{
+				if (GUILayout.Button(new GUIContent(tRunwaysOff, "Runways"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowRunways = true;
+			}
+
+			if (KerbalKonstructs.instance.mapShowOther)
+			{
+				if (GUILayout.Button(new GUIContent(tOtherOn, "Other"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowOther = false;
+			}
+			else
+			{
+				if (GUILayout.Button(new GUIContent(tOtherOff, "Other"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+					KerbalKonstructs.instance.mapShowOther = true;
+			}
+
+			GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
+
+			if (GUILayout.Button("X", ButtonRed, GUILayout.Height(20), GUILayout.Width(20)))
+			{
+				loadedPersistence = false;
+				KerbalKonstructs.instance.showMapIconManager = false;
+			}
+
+			GUILayout.EndHorizontal();
+
+			if (GUI.tooltip != "")
+			{
+				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
+				GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 2, labelSize.y + 2), GUI.tooltip, BoxNoBorder);
+			}
+			
+			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
 		public void drawIcons()
@@ -64,6 +260,7 @@ namespace KerbalKonstructs.UI
 						{
 							if (MiscUtils.isCareerGame())
 							{
+								//PersistenceUtils.loadStaticPersistence(obj);
 								string openclosed2 = (string)obj.getSetting("OpenCloseState");
 								// To do manage open and close state of tracking stations
 								if (KerbalKonstructs.instance.mapShowOpenT) // && openclosed == "Open")
@@ -85,8 +282,9 @@ namespace KerbalKonstructs.UI
 
 								if (screenRect2.Contains(Event.current.mousePosition) && !displayingTooltip)
 								{
+									CelestialBody cPlanetoid = (CelestialBody)obj.getSetting("CelestialBody");
 
-									var objectpos2 = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(obj.gameObject.transform.position);
+									var objectpos2 = cPlanetoid.transform.InverseTransformPoint(obj.gameObject.transform.position);
 									var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
 									var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
 									var disObjectLat2 = dObjectLat2 * 180 / Math.PI;
@@ -101,11 +299,23 @@ namespace KerbalKonstructs.UI
 									if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
 									{
 										//ScreenMessages.PostScreenMessage("Selected base is " + sToolTip + ".", 5f, ScreenMessageStyle.LOWER_CENTER);
+										Debug.Log("KK: Selected station in map");
+										float sTrackAngle = (float)obj.getSetting("TrackingAngle");
+										Debug.Log("KK: Before save load " + sTrackAngle.ToString());
+										float sTrackRange = (float)obj.getSetting("TrackingShort");
+										Debug.Log("KK: Before save load " + sTrackRange.ToString());
+										
+										//PersistenceUtils.saveStaticPersistence(obj);
 										PersistenceUtils.loadStaticPersistence(obj);
-										selectedSite = null;
-										FacilityManager.setSelectedSite(null);
+
+										float sTrackAngle2 = (float)obj.getSetting("TrackingAngle");
+										Debug.Log("KK: After save load " + sTrackAngle2.ToString());
+										float sTrackRange2 = (float)obj.getSetting("TrackingShort");
+										Debug.Log("KK: After save load " + sTrackRange2.ToString());
+										
 										selectedFacility = obj;
 										FacilityManager.setSelectedFacility(obj);
+										KerbalKonstructs.instance.showFacilityManager = true;
 										//EditorGUI.setTargetSite(selectedSite);
 									}
 								}
@@ -200,11 +410,10 @@ namespace KerbalKonstructs.UI
 											if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
 											{
 												ScreenMessages.PostScreenMessage("Selected base is " + sToolTip + ".", 5f, ScreenMessageStyle.LOWER_CENTER);
-												selectedFacility = null;
-												FacilityManager.setSelectedSite(site);
+												BaseManager.setSelectedSite(site);
 												selectedSite = site;
-												FacilityManager.setSelectedFacility(null);
 												NavGuidanceSystem.setTargetSite(selectedSite);
+												KerbalKonstructs.instance.showBaseManager = true;
 											}
 										}
 									}

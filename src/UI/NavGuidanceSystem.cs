@@ -13,7 +13,9 @@ namespace KerbalKonstructs.UI
 {
 	class NavGuidanceSystem
 	{
-		Rect NGSRect = new Rect(250, 50, 400, 130);
+		Rect NGSRect = new Rect(250, 50, 395, 110);
+
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep2", false);
 
 		public bool bClosing = false;
 		public int iCorrection = 3;
@@ -47,6 +49,8 @@ namespace KerbalKonstructs.UI
 		public Texture tTextureMiddle = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteclosed", false);
 
 		GUIStyle navStyle = new GUIStyle();
+		GUIStyle BoxNoBorder;
+		GUIStyle DeadButtonRed;
 
 		public NavGuidanceSystem()
 		{
@@ -161,6 +165,22 @@ namespace KerbalKonstructs.UI
 
 		void drawNGSWindow(int windowID)
 		{
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+			BoxNoBorder.normal.textColor = Color.white;
+
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
+
 			GUILayout.BeginHorizontal();
 			{
 				string sTargetSiteAlias = "";
@@ -168,55 +188,67 @@ namespace KerbalKonstructs.UI
 				if (sTargetSiteName == "Runway") sTargetSiteAlias = "KSC Runway";
 				if (sTargetSiteName == "LaunchPad") sTargetSiteAlias = "KSC LaunchPad";
 
-				GUILayout.Box(sTargetSiteAlias, GUILayout.Height(18));
-				
-				if (GUILayout.Button("x", GUILayout.Width(20), GUILayout.Height(14)))
+				GUILayout.Box("-KK-", BoxNoBorder, GUILayout.Width(32), GUILayout.Height(16));
+				GUILayout.Space(2);
+				GUILayout.Box("NGS: " + sTargetSiteAlias, GUILayout.Height(16));
+				GUILayout.Space(2);
+				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Width(32), GUILayout.Height(16)))
 				{
 					KerbalKonstructs.instance.enableNGS = false;
 					KerbalKonstructs.instance.showNGS = false;
 				}
+				GUILayout.Space(2);
 			}
 			GUILayout.EndHorizontal();
 
-			GUILayout.Box(fRangeToTarget + " m", GUILayout.Height(17));
+			if (fRangeToTarget < 10000)
+				GUILayout.Box(fRangeToTarget.ToString("#0.0") + " m", GUILayout.Height(17));
+			else
+				GUILayout.Box((fRangeToTarget / 1000).ToString("#0.0") + " km", GUILayout.Height(17));
 
 			GUILayout.BeginHorizontal();
 			{
-				GUILayout.Box(tTextureLeft, GUILayout.Height(25), GUILayout.Width(180));
-				GUILayout.Box(tTextureMiddle, GUILayout.Height(25), GUILayout.Width(25));
-				GUILayout.Box(tTextureRight, GUILayout.Height(25), GUILayout.Width(180));
+				GUILayout.Box(tTextureLeft, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(165));
+				GUILayout.FlexibleSpace();
+				GUILayout.Box(tTextureMiddle, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(25));
+				GUILayout.FlexibleSpace();
+				GUILayout.Box(tTextureRight, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(165));
 			}
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.Box("CRFT", GUILayout.Width(60), GUILayout.Height(18));
-				GUILayout.Box("Lat.", GUILayout.Height(20));
+				GUILayout.Box("Lat.", GUILayout.Height(18));
 				GUILayout.Box(disLat.ToString("#0.00"), GUILayout.Width(60), GUILayout.Height(18));
-				GUILayout.Box("Lon.", GUILayout.Height(20));
+				GUILayout.Box("Lon.", GUILayout.Height(18));
 				
 				if (disLon < 0) disLon = disLon + 360;
 				
 				GUILayout.Box(disLon.ToString("#0.00"), GUILayout.Width(60), GUILayout.Height(18));
-				GUILayout.Box("Head", GUILayout.Height(20));
+				GUILayout.Box("Head", GUILayout.Height(18));
 				GUILayout.Box(dshipheading.ToString("#0"), GUILayout.Width(35), GUILayout.Height(18));
 			}
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
 			{
-				GUILayout.Box("BASE", GUILayout.Width(60), GUILayout.Height(20));
-				GUILayout.Box("Lat.", GUILayout.Height(20));
+				GUILayout.Box("BASE", GUILayout.Width(60), GUILayout.Height(18));
+				GUILayout.Box("Lat.", GUILayout.Height(18));
 				GUILayout.Box(disBaseLat.ToString("#0.00"), GUILayout.Width(60), GUILayout.Height(18));
-				GUILayout.Box("Lon.", GUILayout.Height(20));
+				GUILayout.Box("Lon.", GUILayout.Height(18));
 				
 				if (disBaseLon < 0) disBaseLon = disBaseLon + 360;
 				
 				GUILayout.Box(disBaseLon.ToString("#0.00"), GUILayout.Width(60), GUILayout.Height(18));
-				GUILayout.Box("Head", GUILayout.Height(20));
+				GUILayout.Box("Head", GUILayout.Height(18));
 				GUILayout.Box(dreqheading.ToString("#0"), GUILayout.Width(35), GUILayout.Height(18));
 			}
 			GUILayout.EndHorizontal();
+
+			GUILayout.FlexibleSpace();
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+			GUILayout.Space(1);
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 

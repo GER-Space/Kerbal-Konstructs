@@ -54,35 +54,44 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region GUI Windows
-		private EditorGUI editor = new EditorGUI();
-		private NavGuidanceSystem eNGS = new NavGuidanceSystem();
-		private BaseBossFlight manager = new BaseBossFlight();
-		private EditorGUI facilitymanager = new EditorGUI();
-		private LaunchSiteSelectorGUI selector = new LaunchSiteSelectorGUI();
-		private MapIconManager mapIconManager = new MapIconManager();
-		private FacilityManager GUIFacilityManager = new FacilityManager();
-		private KSCManager KSCFacilityManager = new KSCManager();
-		private AirRacing airracing = new AirRacing();
+		private EditorGUI GUI_Editor = new EditorGUI();
+		private NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
+		private DownlinkGUI GUI_Downlink = new DownlinkGUI();
+		private BaseBossFlight GUI_FlightManager = new BaseBossFlight();
+		private FacilityManager GUI_FacilityManager = new FacilityManager();
+		private LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
+		private MapIconManager GUI_MapIconManager = new MapIconManager();
+		private KSCManager GUI_KSCManager = new KSCManager();
+		private AirRacing GUI_AirRacingApp = new AirRacing();
+		private BaseManager GUI_BaseManager = new BaseManager();
 		#endregion
 
 		#region Show Toggles
-		private Boolean showEditor = false;
-		private Boolean showSelector = false;
+		public Boolean showEditor = false;
+		public Boolean showSiteSelector = false;
 		public Boolean showBaseManager = false;
-		private Boolean showMapManager = false;
-		private Boolean showKSCmanager = false;
+		public Boolean showFlightManager = false;
+		public Boolean showMapIconManager = false;
+		public Boolean showKSCmanager = false;
 		public Boolean showNGS = false;
-		public Boolean showRacing = false;
+		public Boolean showRacingApp = false;
+		public Boolean showFacilityManager = false;
+		public Boolean showDownlink = false;
+		public Boolean showATC = false;
 		#endregion
 
 		#region App Buttons
 		private ApplicationLauncherButton siteSelector;
-		private ApplicationLauncherButton baseManager;
+		private ApplicationLauncherButton flightManager;
 		private ApplicationLauncherButton mapManager;
 		private ApplicationLauncherButton KSCmanager;
 		#endregion
 
 		#region Configurable Variables
+		[KSPField]
+		public String defaultVABlaunchsite = "LaunchPad";
+		[KSPField]
+		public String defaultSPHlaunchsite = "Runway";
 		[KSPField]
 		public Boolean launchFromAnySite = false;
 		[KSPField]
@@ -92,6 +101,8 @@ namespace KerbalKonstructs
 		[KSPField]
 		public Boolean enableNGS = true;
 		[KSPField]
+		public Boolean enableDownlink = true;
+		[KSPField]
 		public Double facilityUseRange = 100;
 		[KSPField]
 		public Boolean mapShowOpen = true;
@@ -99,8 +110,6 @@ namespace KerbalKonstructs
 		public Boolean mapShowClosed = false;
 		[KSPField]
 		public Boolean mapShowOpenT = true;
-		[KSPField]
-		public Boolean mapShowClosedT = false;
 		[KSPField]
 		public Boolean mapShowHelipads = true;
 		[KSPField]
@@ -113,6 +122,8 @@ namespace KerbalKonstructs
 		public Double defaultRecoveryFactor = 50;
 		[KSPField]
 		public Double defaultEffectiveRange = 100000;
+		[KSPField]
+		public Double maxEditorVisRange = 100000;
 		[KSPField]
 		public Boolean DevMode = false;
 		#endregion
@@ -175,6 +186,8 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("Orientation", new ConfigVector3());
 			KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
 			KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
+
+			// Calculated References - do not set, it will not work
 			KKAPI.addInstanceSetting("RefLatitude", new ConfigFloat());
 			KKAPI.addInstanceSetting("RefLongitude", new ConfigFloat());
 
@@ -212,12 +225,14 @@ namespace KerbalKonstructs
 			ConfigGenericString opencloseState = new ConfigGenericString();
 			opencloseState.setDefaultValue("Closed");
 			KKAPI.addInstanceSetting("OpenCloseState", opencloseState);
+			ConfigGenericString favouriteSite = new ConfigGenericString();
+			favouriteSite.setDefaultValue("No");
+			KKAPI.addInstanceSetting("FavouriteSite", favouriteSite);
 
-			// Career Mode Strategy Models
+			// facility Types
 			ConfigGenericString facilityrole = new ConfigGenericString();
 			facilityrole.setDefaultValue("None");
 			KKAPI.addModelSetting("DefaultFacilityType", facilityrole);
-
 			ConfigGenericString instfacilityrole = new ConfigGenericString();
 			instfacilityrole.setDefaultValue("None");
 			KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
@@ -235,9 +250,13 @@ namespace KerbalKonstructs
 			// Facility Ratings
 
 			// Tracking station max short range in m
-			ConfigFloat ftrackingshort = new ConfigFloat();
-			ftrackingshort.setDefaultValue(85000f);
-			KKAPI.addInstanceSetting("TrackingShort", ftrackingshort);
+			//ConfigFloat ftrackingshort = new ConfigFloat();
+			//ftrackingshort.setDefaultValue(85000f);
+			KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
+			// Max tracking angle
+			//ConfigFloat ftrackingangle = new ConfigFloat();
+			//ftrackingangle.setDefaultValue(65f);
+			KKAPI.addInstanceSetting("TrackingAngle", new ConfigFloat());
 
 			// Target Type and ID
 			KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
@@ -247,7 +266,8 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("FacilityXP", new ConfigFloat());
 
 			// Staff
-			KKAPI.addModelSetting("StaffMax", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultStaffMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("StaffMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("StaffCurrent", new ConfigFloat());
 
 			// Fueling
@@ -259,11 +279,14 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
 
 			// Science Rep Funds generation
-			KKAPI.addModelSetting("ScienceOMax", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultScienceOMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("ScienceOMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("ScienceOCurrent", new ConfigFloat());
-			KKAPI.addModelSetting("RepOMax", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultRepOMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("RepOMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("RepOCurrent", new ConfigFloat());
-			KKAPI.addModelSetting("FundsOMax", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultFundsOMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("FundsOMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("FundsOCurrent", new ConfigFloat());
 				
 			// Launch and Recovery
@@ -276,7 +299,8 @@ namespace KerbalKonstructs
 			ConfigFloat frecoveryrange = new ConfigFloat();
 			frecoveryrange.setDefaultValue((float)defaultEffectiveRange);
 			KKAPI.addInstanceSetting("RecoveryRange", frecoveryrange);
-				
+			
+			// Activity logging
 			KKAPI.addInstanceSetting("LastCheck", new ConfigFloat());
 
 			#endregion
@@ -359,9 +383,15 @@ namespace KerbalKonstructs
 				camControl.active = false;
 			}
 
+			if (!data.Equals(GameScenes.FLIGHT))
+			{
+				DownlinkGUI.DisAudio.Stop();
+			}
+
 			if (data.Equals(GameScenes.FLIGHT))
 			{
 				InputLockManager.RemoveControlLock("KKEditorLock");
+				InputLockManager.RemoveControlLock("KKEditorLock2");
 				InvokeRepeating("updateCache", 0, 1);
 				bNullBody = false;
 			}
@@ -399,13 +429,13 @@ namespace KerbalKonstructs
 			if (data.Equals(GameScenes.EDITOR))
 			{
 				// Prevent abuse if selector left open when switching to from VAB and SPH
-				selector.Close();
+				GUI_LaunchSiteSelector.Close();
 
 				// Default selected launchsite when switching between save games
 				switch (EditorDriver.editorFacility)
 				{
 					case EditorFacility.SPH:
-						selector.setEditorType(SiteType.SPH);
+						GUI_LaunchSiteSelector.setEditorType(SiteType.SPH);
 						if (atMainMenu)
 						{
 							LaunchSiteManager.setLaunchSite(LaunchSiteManager.runway);
@@ -413,7 +443,7 @@ namespace KerbalKonstructs
 						}
 						break;
 					case EditorFacility.VAB:
-						selector.setEditorType(SiteType.VAB);
+						GUI_LaunchSiteSelector.setEditorType(SiteType.VAB);
 						if (atMainMenu)
 						{
 							LaunchSiteManager.setLaunchSite(LaunchSiteManager.launchpad);
@@ -421,7 +451,7 @@ namespace KerbalKonstructs
 						}
 						break;
 					default:
-						selector.setEditorType(SiteType.Any);
+						GUI_LaunchSiteSelector.setEditorType(SiteType.Any);
 						break;
 				}
 			}
@@ -437,33 +467,18 @@ namespace KerbalKonstructs
 
 		void OnKSCFacilityUpgraded(Upgradeables.UpgradeableFacility Facility, int iLevel)
 		{
-			// Debug.Log("KK: FacilityUpgraded " + Facility + " " + iLevel);
 		}
 
 		void OnKSCFacilityUpgrading(Upgradeables.UpgradeableFacility Facility, int iLevel)
 		{
-			// Debug.Log("KK: FacilityUpgrading " + Facility + " " + iLevel);
 		}
 
 		void OnUpgradeableObjLevelChange(Upgradeables.UpgradeableObject uObject, int iLevel)
 		{
-			// Debug.Log("KK: UpgradeableObjLevelChange " + uObject + " " + iLevel);
 		}
 
 		void OnDoshChanged(double amount, TransactionReasons reason)
 		{
-			// Debug.Log("KK: Funds changed - " + amount + " because " + reason);
-			/* if (CareerStrategyEnabled(HighLogic.CurrentGame))
-			{
-				if (reason == (TransactionReasons)16)
-				{
-					string smessage = "Vessel launched for "+ amount.ToString();
-					ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
-					ScreenMessages.PostScreenMessage(smessage, 60, smsStyle);
-					VesselCost = amount;
-					VesselLaunched = true;
-				}
-			} */
 		}
 
 		void OnProcessRecovery(ProtoVessel vessel, MissionRecoveryDialog dialog, float fFloat)
@@ -613,9 +628,7 @@ namespace KerbalKonstructs
 
 					// Debug.Log("KK: loadCareerObjects");
 					loadCareerObjects();
-
 					InitialisedFacilities = true;
-					// Debug.Log("KK: InitialisedFacilities check complete");
 				}
 			}
 
@@ -634,74 +647,73 @@ namespace KerbalKonstructs
 				{
 					if (Input.GetKey(KeyCode.W))
 					{
-						pos.y += editor.getIncrement();
+						pos.y += GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.S))
 					{
-						pos.y -= editor.getIncrement();
+						pos.y -= GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.D))
 					{
-						pos.x += editor.getIncrement();
+						pos.x += GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.A))
 					{
-						pos.x -= editor.getIncrement();
+						pos.x -= GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.E))
 					{
-						pos.z += editor.getIncrement();
+						pos.z += GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.Q))
 					{
-						pos.z -= editor.getIncrement();
+						pos.z -= GUI_Editor.getIncrement();
 						changed = true;
 					}
 
-					// ASH 08112014 Fix clashing with camera zooming
 					if (Input.GetKey(KeyCode.Equals) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
 					{
-						alt += (editor.getIncrement()) / 10;
+						alt += (GUI_Editor.getIncrement()) / 10;
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.KeypadPlus))
 					{
-						alt += (editor.getIncrement()) / 10;
+						alt += (GUI_Editor.getIncrement()) / 10;
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.PageUp))
 					{
-						alt += editor.getIncrement();
+						alt += GUI_Editor.getIncrement();
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.Minus) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
 					{
-						alt -= (editor.getIncrement()) / 10;
+						alt -= (GUI_Editor.getIncrement()) / 10;
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.KeypadMinus))
 					{
-						alt -= (editor.getIncrement()) / 10;
+						alt -= (GUI_Editor.getIncrement()) / 10;
 						changed = true;
 					}
 					if (Input.GetKey(KeyCode.PageDown))
 					{
-						alt -= editor.getIncrement();
+						alt -= GUI_Editor.getIncrement();
 						changed = true;
 					}
-					// Added increment keys
+
 					if (Input.GetKey(KeyCode.KeypadMultiply))
 					{
-						editor.setIncrement(true, editor.getIncrement());
+						GUI_Editor.setIncrement(true, GUI_Editor.getIncrement());
 					}
 					if (Input.GetKey(KeyCode.KeypadDivide))
 					{
-						editor.setIncrement(false, (editor.getIncrement() / 2));
+						GUI_Editor.setIncrement(false, (GUI_Editor.getIncrement() / 2));
 					}
 				}
 
@@ -741,16 +753,28 @@ namespace KerbalKonstructs
 				bool vis;
 				
 				if (siteSelector == null || !ApplicationLauncher.Instance.Contains(siteSelector, out vis))				
-					siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff, onSiteSelectorOnHover, doNothing, doNothing, doNothing, ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB, GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/SiteToolbarIcon", false));
+					siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff, 
+						onSiteSelectorOnHover, doNothing, doNothing, doNothing, 
+						ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB, 
+						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/SiteToolbarIcon", false));
 
-				if (baseManager == null || !ApplicationLauncher.Instance.Contains(baseManager, out vis))				
-					baseManager = ApplicationLauncher.Instance.AddModApplication(onBaseManagerOn, onBaseManagerOff, doNothing, doNothing, doNothing, doNothing, ApplicationLauncher.AppScenes.FLIGHT, GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+				if (flightManager == null || !ApplicationLauncher.Instance.Contains(flightManager, out vis))				
+					flightManager = ApplicationLauncher.Instance.AddModApplication(onFlightManagerOn, onFlightManagerOff, 
+						doNothing, doNothing, doNothing, doNothing, 
+						ApplicationLauncher.AppScenes.FLIGHT, 
+						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
 
 				if (mapManager == null || !ApplicationLauncher.Instance.Contains(mapManager, out vis))
-					mapManager = ApplicationLauncher.Instance.AddModApplication(onMapManagerOn, onMapManagerOff, doNothing, doNothing, doNothing, doNothing, ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW, GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+					mapManager = ApplicationLauncher.Instance.AddModApplication(onMapManagerOn, onMapManagerOff, 
+						doNothing, doNothing, doNothing, doNothing, 
+						ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW, 
+						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
 
 				if (KSCmanager == null || !ApplicationLauncher.Instance.Contains(KSCmanager, out vis))
-					KSCmanager = ApplicationLauncher.Instance.AddModApplication(onKSCmanagerOn, onKSCmanagerOff, doNothing, doNothing, doNothing, doNothing, ApplicationLauncher.AppScenes.SPACECENTER, GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+					KSCmanager = ApplicationLauncher.Instance.AddModApplication(onKSCmanagerOn, onKSCmanagerOff, 
+						doNothing, doNothing, doNothing, doNothing, 
+						ApplicationLauncher.AppScenes.SPACECENTER, 
+						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
 			}
 		}
 
@@ -758,15 +782,21 @@ namespace KerbalKonstructs
 		{
 			GUI.skin = HighLogic.Skin;
 
-			if (showSelector && (HighLogic.LoadedScene.Equals(GameScenes.EDITOR)))//Disable selector when not in the editor
-				selector.drawSelector();
+			if (HighLogic.LoadedScene == GameScenes.EDITOR)
+			{
+				if (showSiteSelector)
+				{
+					GUI_LaunchSiteSelector.drawSelector();
+
+					if (showBaseManager)
+						GUI_BaseManager.drawBaseManager();
+				}
+			}
 
 			if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
 			{
 				if (showKSCmanager)
-				{
-					KSCFacilityManager.drawKSCManager();
-				}
+					GUI_KSCManager.drawKSCManager();
 			}
 
 			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
@@ -775,24 +805,49 @@ namespace KerbalKonstructs
 				{
 					if (showEditor)
 					{
-						editor.drawEditor(selectedObject);
+						GUI_Editor.drawEditor(selectedObject);
 					}
 
-					if (showBaseManager)
+					if (showFacilityManager)
 					{
-						manager.drawManager(selectedObject);
+						GUI_FacilityManager.drawFacilityManager(selectedObject);
+					}
+
+					if (showFlightManager)
+					{
+						GUI_FlightManager.drawManager(selectedObject);
+					}
+
+					if (showRacingApp)
+					{
+						GUI_AirRacingApp.drawRacing();
+					}
+
+					if (showDownlink)
+					{
+						GUI_Downlink.drawDownlink();
+						//if (DownlinkGUI.Dis != null)
+							//DownlinkGUI.Dis.SetActive(true);
+					}
+					else
+					{
+						if (DownlinkGUI.DisAudio != null)
+							DownlinkGUI.DisAudio.Stop();
 					}
 				}
 
 				if (showNGS)
 				{
-					eNGS.drawNGS();
+					GUI_NGS.drawNGS();
 				}
+			}
+			else
+			{
+				if (DownlinkGUI.DisAudio != null)
+					DownlinkGUI.DisAudio.Stop();
 
-				if (showRacing)
-				{
-					airracing.drawRacing();
-				}
+				if (DownlinkGUI.Dis != null)
+					DownlinkGUI.Dis.SetActive(false);
 			}
 
 			if (MapView.MapIsEnabled)
@@ -801,10 +856,18 @@ namespace KerbalKonstructs
 				if (HighLogic.LoadedScene == GameScenes.SPACECENTER) return;
 				if (HighLogic.LoadedScene == GameScenes.MAINMENU) return;
 
-				if (showMapManager)
-					GUIFacilityManager.drawManager();
+				if (showMapIconManager)
+				{
+					GUI_MapIconManager.drawManager();
 
-				mapIconManager.drawIcons();
+					if (showFacilityManager)
+						GUI_FacilityManager.drawFacilityManager(selectedObject);
+
+					if (showBaseManager)
+						GUI_BaseManager.drawBaseManager();
+				}
+
+				GUI_MapIconManager.drawIcons();
 			}
 		}
 
@@ -1117,7 +1180,7 @@ namespace KerbalKonstructs
 		}
 		#endregion
 
-		#region GUI Toggles
+		#region App Button Toggles
 		void onKSCmanagerOn()
 		{
 			showKSCmanager = true;
@@ -1126,19 +1189,19 @@ namespace KerbalKonstructs
 		void onSiteSelectorOn()
 		{
 			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showSelector = true;
+			showSiteSelector = true;
 		}
 
-		void onBaseManagerOn()
+		void onFlightManagerOn()
 		{
 			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showBaseManager = true;
+			showFlightManager = true;
 		}
 
 		void onMapManagerOn()
 		{
 			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showMapManager = true;
+			showMapIconManager = true;
 		}
 
 		void onKSCmanagerOff()
@@ -1148,21 +1211,21 @@ namespace KerbalKonstructs
 
 		void onSiteSelectorOff()
 		{
-			showSelector = false;
+			showSiteSelector = false;
 			InputLockManager.RemoveControlLock("KKEditorLock");
 			PersistenceFile<LaunchSite>.SaveList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 		}
 
-		void onBaseManagerOff()
+		void onFlightManagerOff()
 		{
-			showBaseManager = false;
+			showFlightManager = false;
 			if (selectedObject != null)
 				deselectObject();
 		}
 
 		void onMapManagerOff()
 		{
-			showMapManager = false;
+			showMapIconManager = false;
 		}
 		#endregion
 
@@ -1181,7 +1244,9 @@ namespace KerbalKonstructs
 		#region Config Methods
 		public bool loadConfig()
 		{
-			ConfigNode cfg = ConfigNode.Load(installDir + @"\KerbalKonstructs.cfg".Replace('/', '\\'));
+			string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
+			//ConfigNode cfg = ConfigNode.Load((installDir + @"\KerbalKonstructs.cfg").Replace('/', '\\'));
+			ConfigNode cfg = ConfigNode.Load(saveConfigPath);
 			if (cfg != null)
 			{
 				foreach (FieldInfo f in GetType().GetFields())
@@ -1217,7 +1282,8 @@ namespace KerbalKonstructs
 			}
 
 			Directory.CreateDirectory(installDir);
-			cfg.Save(installDir + "/KerbalKonstructs.cfg", "Kerbal Konstructs");
+			string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
+			cfg.Save(saveConfigPath, "Kerbal Konstructs Settings");
 		}
 		#endregion
 

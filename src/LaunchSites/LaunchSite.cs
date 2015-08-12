@@ -22,6 +22,9 @@ namespace KerbalKonstructs.LaunchSites
 		[PersistentField]
 		public string openclosestate;
 
+		[PersistentField]
+		public string favouritesite;
+
 		public float reflon;
 		public float reflat;
 		public float refalt;
@@ -37,7 +40,7 @@ namespace KerbalKonstructs.LaunchSites
 		public LaunchSite(string sName, string sAuthor, SiteType sType, Texture sLogo, Texture sIcon,
 			string sDescription, string sDevice, float fOpenCost, float fCloseValue, string sOpenCloseState, float fRefLon, 
 			float fRefLat, float fRefAlt, float fLength, float fWidth, float fRefund, float fRecoveryFactor, float fRecoveryRange,
-			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null)
+			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null, string sFavourite = "No")
 		{
 			name = sName;
 			author = sAuthor;
@@ -59,6 +62,7 @@ namespace KerbalKonstructs.LaunchSites
 			launchrefund = fRefund;
 			recoveryfactor = fRecoveryFactor;
 			recoveryrange = fRecoveryRange;
+			favouritesite = sFavourite;
 		}
 	}
 
