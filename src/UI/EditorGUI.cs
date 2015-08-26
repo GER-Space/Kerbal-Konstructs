@@ -21,18 +21,18 @@ namespace KerbalKonstructs.UI
 
 			#region Texture Definitions
 			// Texture definitions
-			public Texture tBilleted = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/billeted", false);
-			public Texture tCopyPos = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/copypos", false);
-			public Texture tPastePos = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/pastepos", false);
-			public Texture tIconClosed = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteclosed", false);
-			public Texture tIconOpen = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteopen", false);
-			public Texture tSearch = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/search", false);
-			public Texture tCancelSearch = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/cancelsearch", false);
-			public Texture tVAB = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/VABMapIcon", false);
-			public Texture tSPH = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/SPHMapIcon", false);
-			public Texture tANY = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/ANYMapIcon", false);
-			public Texture tFocus = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/focuson", false);
-			public Texture tSnap = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/snapto", false);
+			public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+			public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
+			public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
+			public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+			public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+			public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
+			public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
+			public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
+			public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+			public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
+			public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
+			public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
 
 			#endregion
 
@@ -91,6 +91,7 @@ namespace KerbalKonstructs.UI
 			String sCategoryHolder = "";
 			String groupfilter = "";
 			String groupfilterset = "";
+			String sPackName = "";
 			public static String visrange = "";
 			String increment = "1";
 			String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
@@ -469,8 +470,10 @@ namespace KerbalKonstructs.UI
 			if (!showLocal && !creatingInstance)
 			{
 				GUILayout.BeginHorizontal();
-					GUILayout.Label("Filter by Group:");
-					groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(120));
+				{
+					GUILayout.Label("Filter by Group:", GUILayout.Width(140));
+					//GUILayout.FlexibleSpace();
+					groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
 					if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
 					{
 						groupfilterset = groupfilter;
@@ -480,18 +483,54 @@ namespace KerbalKonstructs.UI
 						groupfilter = "";
 						groupfilterset = "";
 					}
-					GUILayout.FlexibleSpace();
-					if (GUILayout.Button("Export Custom"))
+				}
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				{
+					GUILayout.Label("Pack Name: ", GUILayout.Width(140));
+					//GUILayout.FlexibleSpace();
+					sPackName = GUILayout.TextField(sPackName, 30, GUILayout.Width(140));
+					//GUILayout.FlexibleSpace();
+
+					GUI.enabled = (sPackName != "" && groupfilter != "");
+					if (GUILayout.Button("Export Group"))
 					{
-							KerbalKonstructs.instance.exportCustomInstances();
-							smessage = "Exported custom instances to GameData/medsouz/KerbalKonstructs/ExportedInstances";
+						//Validate the groupfilter to see if it is a Group name
+						bool bValidGroupName = false;
+
+						foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+						{
+							if ((string)obj.getSetting("Group") == groupfilter)
+							{
+								bValidGroupName = true;
+								break;
+							}
+						}
+
+						if (bValidGroupName)
+						{
+							KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
+							smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
 							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-					}
-					GUI.enabled = false;
-					if (GUILayout.Button("Import Custom"))
-					{
+						}
+						else
+						{
+							smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
+							ScreenMessages.PostScreenMessage(smessage, 20, smsStyle);
+						}
 					}
 					GUI.enabled = true;
+
+					GUI.enabled = (sPackName != "");
+					if (GUILayout.Button("Export All"))
+					{
+						KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
+						smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
+						ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					}
+					GUI.enabled = true;
+				}
 				GUILayout.EndHorizontal();
 			}
 
@@ -1372,6 +1411,9 @@ namespace KerbalKonstructs.UI
 			obj.setSetting("Orientation", Vector3.up);
 			obj.setSetting("VisibilityRange", 25000f);
 
+			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
+			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
+
 			if (!KerbalKonstructs.instance.DevMode)
 			{
 				obj.setSetting("CustomInstance", "True");
@@ -1396,6 +1438,9 @@ namespace KerbalKonstructs.UI
 			obj.setSetting("RotationAngle", fAngle);
 			obj.setSetting("Orientation", Vector3.up);
 			obj.setSetting("VisibilityRange", 25000f);
+
+			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
+			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
 
 			if (!KerbalKonstructs.instance.DevMode)
 			{
@@ -1427,6 +1472,11 @@ namespace KerbalKonstructs.UI
 			GUILayout.BeginHorizontal();
 				GUILayout.Label("Site Name: ", GUILayout.Width(120));
 				siteName = GUILayout.TextField(siteName);
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Transform: ", GUILayout.Width(120));
+			GUILayout.Box("" + siteTrans);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();

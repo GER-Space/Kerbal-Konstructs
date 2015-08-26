@@ -16,7 +16,7 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			if (settings.ContainsKey(setting))
 				return settings[setting];
-			Debug.Log("Setting " + setting + " not found in model " + config);
+			Debug.Log("KK: Setting " + setting + " not found in model " + config + ". This is harmless. Not a bug.");
 			object defaultValue = KKAPI.getModelSettings()[setting].getDefaultValue();
 
 			if (defaultValue != null)
@@ -26,7 +26,7 @@ namespace KerbalKonstructs.StaticObjects
 			}
 			else
 			{
-				Debug.Log("KK: Setting " + setting + " not found in model API. BUG BUG BUG.");
+				Debug.Log("KK: Setting " + setting + " not found in model API. It may be on purpose. Not a bug.");
 				return null;
 			}
 		}

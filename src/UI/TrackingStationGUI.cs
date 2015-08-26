@@ -443,6 +443,12 @@ namespace KerbalKonstructs.UI
 
 		public static float StationHasLOS(StaticObject soFacility, Vessel vVessel)
 		{
+			if (vVessel == null || soFacility == null)
+			{
+				Debug.Log("KK: StationHasLOS borked");
+				return 0f;
+			}
+
 			float fHasLOS = 0f;
 			Vector3d FacPos = soFacility.gameObject.transform.position;
 			Vector3d VesselPos = vVessel.gameObject.transform.position;

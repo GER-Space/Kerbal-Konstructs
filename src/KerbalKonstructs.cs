@@ -51,6 +51,7 @@ namespace KerbalKonstructs
 		private Boolean atMainMenu = false;
 		public Boolean InitialisedFacilities = false;
 		public Boolean VesselLaunched = false;
+		public Boolean bImportedCustom = false;
 		#endregion
 
 		#region GUI Windows
@@ -125,6 +126,8 @@ namespace KerbalKonstructs
 		[KSPField]
 		public Double maxEditorVisRange = 100000;
 		[KSPField]
+		public Boolean DebugMode = false;
+		[KSPField]
 		public Boolean DevMode = false;
 		#endregion
 
@@ -177,6 +180,8 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("description", new ConfigGenericString());
 			KKAPI.addModelSetting("DefaultLaunchSiteLength", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
+			KKAPI.addModelSetting("pointername", new ConfigGenericString());
+			//KKAPI.addModelSetting("name", new ConfigGenericString());
 			#endregion
 
 			#region Instance API
@@ -312,6 +317,7 @@ namespace KerbalKonstructs
 			
 			DontDestroyOnLoad(this);
 			loadObjects();
+			importCustomInstances();
 		}
 
 		#region Game Events
@@ -330,6 +336,31 @@ namespace KerbalKonstructs
 		{
 			if (vVessel == null) return;
 
+			// updateCache();
+
+			if (EditorLogic.fetch.launchSiteName != null)
+			{
+				StaticObject soTemp = null;
+
+				foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+				{
+					if (soThis.getSetting("LaunchSiteName") == null)
+						continue;
+					else
+						if ((string)soThis.getSetting("LaunchSiteName") == (string)EditorLogic.fetch.launchSiteName)
+						{
+							soTemp = soThis;
+							break;
+						}
+				}
+
+				if (soTemp != null)
+				{
+					Debug.Log("KK: Got launchsite gameobject" + (string)EditorLogic.fetch.launchSiteName);
+					soTemp.SetActiveRecursively(soTemp.gameObject, true);
+					//soTemp.setLayerRecursively(soTemp.gameObject, 15);
+				}
+			}
 
 			if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 			{
@@ -375,7 +406,9 @@ namespace KerbalKonstructs
 
 		void onLevelWasLoaded(GameScenes data)
 		{
-			bool bNullBody = true;
+			bool bTreatBodyAsNullForStatics = true;
+
+			staticDB.ToggleActiveAllStatics(false);
 
 			if (selectedObject != null)
 			{
@@ -390,10 +423,26 @@ namespace KerbalKonstructs
 
 			if (data.Equals(GameScenes.FLIGHT))
 			{
+				bTreatBodyAsNullForStatics = false;
+
 				InputLockManager.RemoveControlLock("KKEditorLock");
 				InputLockManager.RemoveControlLock("KKEditorLock2");
+
+				if (FlightGlobals.ActiveVessel != null)
+				{
+					staticDB.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
+					currentBody = FlightGlobals.ActiveVessel.mainBody;
+					staticDB.onBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+				}
+				else
+				{
+					if (DebugMode) Debug.Log("KK: Flight scene load. No activevessel. Activating all statics.");
+
+					staticDB.ToggleActiveAllStatics(true);
+				}
+
+				//updateCache();
 				InvokeRepeating("updateCache", 0, 1);
-				bNullBody = false;
 			}
 			else
 			{
@@ -403,25 +452,36 @@ namespace KerbalKonstructs
 			if (data.Equals(GameScenes.SPACECENTER))
 			{
 				InputLockManager.RemoveControlLock("KKEditorLock");
+
+				// Tighter control over what statics are active
+				bTreatBodyAsNullForStatics = false;
 				currentBody = KKAPI.getCelestialBody("Kerbin");
-				staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
-				updateCache();
+				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
+				//staticDB.onBodyChanged(null);
+				staticDB.ToggleActiveStaticsInGroup("KSCUpgrades", true);
+				staticDB.ToggleActiveStaticsInGroup("KSCRace", true);
+				// *********
 
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
 					Debug.Log("KK: Load launchsite openclose states for career game");
 					PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 				}
-
-				bNullBody = false;
 			}
 
 			if (data.Equals(GameScenes.MAINMENU))
 			{
+				if (!bImportedCustom)
+				{
+					bImportedCustom = true;
+				}
 				// Close all the launchsite objects
 				LaunchSiteManager.setAllLaunchsitesClosed();
 				atMainMenu = true;
-				bNullBody = false;
+				// CHANGED 19082015
+				bTreatBodyAsNullForStatics = false;
+				//currentBody = KKAPI.getCelestialBody("Kerbin");
+				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				iMenuCount = iMenuCount + 1;
 				InitialisedFacilities = false;
 			}
@@ -456,13 +516,15 @@ namespace KerbalKonstructs
 				}
 			}
 
-			if (bNullBody) staticDB.onBodyChanged(null);
+			if (bTreatBodyAsNullForStatics) staticDB.onBodyChanged(null);
 		}
 
 		void onDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
 		{
+			staticDB.ToggleActiveStaticsOnPlanet(data.to, true, true);
 			currentBody = data.to;
 			staticDB.onBodyChanged(data.to);
+			updateCache();
 		}
 
 		void OnKSCFacilityUpgraded(Upgradeables.UpgradeableFacility Facility, int iLevel)
@@ -756,25 +818,25 @@ namespace KerbalKonstructs
 					siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff, 
 						onSiteSelectorOnHover, doNothing, doNothing, doNothing, 
 						ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB, 
-						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/SiteToolbarIcon", false));
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
 
 				if (flightManager == null || !ApplicationLauncher.Instance.Contains(flightManager, out vis))				
 					flightManager = ApplicationLauncher.Instance.AddModApplication(onFlightManagerOn, onFlightManagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
 						ApplicationLauncher.AppScenes.FLIGHT, 
-						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
 
 				if (mapManager == null || !ApplicationLauncher.Instance.Contains(mapManager, out vis))
 					mapManager = ApplicationLauncher.Instance.AddModApplication(onMapManagerOn, onMapManagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
 						ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW, 
-						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
 
 				if (KSCmanager == null || !ApplicationLauncher.Instance.Contains(KSCmanager, out vis))
 					KSCmanager = ApplicationLauncher.Instance.AddModApplication(onKSCmanagerOn, onKSCmanagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
 						ApplicationLauncher.AppScenes.SPACECENTER, 
-						GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/BaseManagerIcon", false));
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
 			}
 		}
 
@@ -876,9 +938,11 @@ namespace KerbalKonstructs
 			string hovermessage = "Selected launchsite is " + EditorLogic.fetch.launchSiteName;
 			ScreenMessages.PostScreenMessage(hovermessage, 10, 0);
 		}
+
 		#endregion
 
 		#region Object Methods
+
 		public void updateCache()
 		{
 			if (HighLogic.LoadedSceneIsGame)
@@ -887,14 +951,23 @@ namespace KerbalKonstructs
 				if (selectedObject != null)
 				{
 					playerPos = selectedObject.gameObject.transform.position;
+
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: updateCache using selectedObject as playerPos");
 				}
 				else if (FlightGlobals.ActiveVessel != null)
 				{
 					playerPos = FlightGlobals.ActiveVessel.transform.position;
+
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
 				}
 				else if (Camera.main != null)
 				{
 					playerPos = Camera.main.transform.position;
+
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: updateCache using Camera.main as playerPos");
 				}
 				else
 				{
@@ -905,25 +978,94 @@ namespace KerbalKonstructs
 			}
 		}
 
-		public void loadInstances(ConfigNode confconfig, StaticModel model)
+		public void loadInstances(ConfigNode confconfig, StaticModel model, bool bSecondPass = false)
 		{
+			if (model == null)
+			{
+				Debug.Log("KK: Attempting to loadInstances for a null model. Check your model and config.");
+				return;
+			}
+
+			if (confconfig == null)
+			{
+				Debug.Log("KK: Attempting to loadInstances for a null ConfigNode. Check your model and config.");
+				return;
+			}
+
 			foreach (ConfigNode ins in confconfig.GetNodes("Instances"))
 			{
 				StaticObject obj = new StaticObject();
 				obj.model = model;
+				
 				obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
 
 				if (obj.gameObject == null)
 				{
-					Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the mod forget to include it or did you actually install it?");
+					Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
 					continue;
 				}
 
 				obj.settings = KKAPI.loadConfig(ins, KKAPI.getInstanceSettings());
 
+				if (obj.settings == null)
+				{
+					Debug.Log("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
+					continue;
+				}
+
+				if (bSecondPass)
+				{
+					Vector3 secondInstanceKey = (Vector3)obj.getSetting("RadialPosition");
+					bool bSpaceOccupied = false;
+
+					foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+					{
+						Vector3 firstInstanceKey = (Vector3)soThis.getSetting("RadialPosition");
+
+						if (firstInstanceKey == secondInstanceKey)
+						{
+							string sThisMesh = (string)soThis.model.getSetting("mesh");
+							string sThatMesh = (string)obj.model.getSetting("mesh");
+
+							Debug.Log("KK: Custom instance has a RadialPosition that already has an instance."
+								+ sThisMesh + ":"
+								+ (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
+								+ sThatMesh + ":"
+								+ (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
+
+							if (sThisMesh == sThatMesh)
+							{
+								float fThisOffset = (float)soThis.getSetting("RadiusOffset");
+								float fThatOffset = (float)obj.getSetting("RadiusOffset");
+								float fThisRotation = (float)soThis.getSetting("RotationAngle");
+								float fThatRotation = (float)obj.getSetting("RotationAngle");
+
+								if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
+								{
+									bSpaceOccupied = true;
+									break;
+								}
+								else
+								{
+									Debug.Log("KK: Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
+								}
+							}
+							else
+							{
+								Debug.Log("KK: Different models. Allowing. Could be a terrain foundation or integrator.");
+							}
+						}
+					}
+
+					if (bSpaceOccupied)
+					{
+						Debug.Log("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
+						continue;
+					}
+				}
+
 				if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
 				{
-
 					if (model.settings.Keys.Contains("DefaultLaunchPadTransform"))
 					{
 						obj.settings.Add("LaunchPadTransform", model.getSetting("DefaultLaunchPadTransform"));
@@ -956,10 +1098,9 @@ namespace KerbalKonstructs
 
 				staticDB.addStatic(obj);
 				obj.spawnObject(false);
-				if (obj.settings.ContainsKey("LaunchSiteName"))
-				{
+
+				if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
 					LaunchSiteManager.createLaunchSite(obj);
-				}
 			}
 		}
 
@@ -980,17 +1121,42 @@ namespace KerbalKonstructs
 				savedObjectPath = string.Format("{0}saves/{1}/{2}", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder, sConfigName);
 
 				if (!File.Exists(savedObjectPath))
-				{
-					//  Debug.Log("KK: No " + savedObjectPath);
 					continue;
-				}
-
-				// Debug.Log("KK: Career has object instances in " + savedObjectPath);
 
 				ConfigNode CareerConfig = ConfigNode.Load(savedObjectPath);
 				ConfigNode CareerConfigRoot = CareerConfig.GetNode("STATIC");
 
-				loadInstances(CareerConfigRoot, model);
+				loadInstances(CareerConfigRoot, model, true);
+			}
+		}
+
+		public void importCustomInstances()
+		{
+			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
+
+			foreach (UrlDir.UrlConfig conf in configs)
+			{
+				StaticModel model = new StaticModel();
+				model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
+				model.config = conf.url;
+				model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
+				model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+
+				if (!model.settings.ContainsKey("pointername"))
+					continue;
+
+				string sPointerName = (string)model.getSetting("pointername");
+
+				foreach (StaticModel model2 in staticDB.getModels())
+				{
+					ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model2.config);
+
+					if ((string)modelConfig.GetValue("name") == sPointerName)
+					{
+						loadInstances(conf.config, model2, true);
+						break;
+					}
+				}
 			}
 		}
 
@@ -1009,15 +1175,19 @@ namespace KerbalKonstructs
 				if (model.settings.ContainsKey("LocalToSave"))
 				{
 					if ((string)model.getSetting("LocalToSave") == "True")
-					{
-						// Debug.Log("KK: Static Config is local to save. Skipping model and its instances.");
 						continue;
-					}
+					// Ignore it for second pass
+				}
+
+				if (model.settings.ContainsKey("pointername"))
+				{
+					if ((string)model.getSetting("pointername") != "None")
+						continue;
+					// Ignore it for second pass
 				}
 
 				foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
 				{
-					// Debug.Log("KK: Found module: "+ins.name+" in "+conf.name);
 					StaticModule module = new StaticModule();
 					foreach (ConfigNode.Value value in ins.values)
 					{
@@ -1035,7 +1205,6 @@ namespace KerbalKonstructs
 						}
 					}
 					model.modules.Add(module);
-					// Debug.Log("KK: Adding module");
 				}
 
 				loadInstances(conf.config, model);
@@ -1050,8 +1219,6 @@ namespace KerbalKonstructs
 			{
 				ConfigNode staticNode = new ConfigNode("STATIC");
 				ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
-
-				// Debug.Log("KK: model.config " + model.config);
 							
 				modelConfig.RemoveNodes("Instances");
 
@@ -1060,7 +1227,6 @@ namespace KerbalKonstructs
 					ConfigNode inst = new ConfigNode("Instances");
 					foreach (KeyValuePair<string, object> setting in obj.settings)
 					{
-						// Debug.Log("KK: setting.Key " + setting.Key);
 						inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
 					}
 					modelConfig.nodes.Add(inst);
@@ -1071,9 +1237,14 @@ namespace KerbalKonstructs
 			}
 		}
 
-		public void exportCustomInstances()
+		public void exportCustomInstances(string sPackName = "MyStaticPack", string sBaseName = "All", string sGroup = "", Boolean bLocal = false)
 		{
-			bool HasCustom;
+			bool HasCustom = false;
+			string sBase = "";
+
+			if (sGroup != "") sBase = sGroup;
+			else
+				sBase = sBaseName;
 
 			foreach (StaticModel model in staticDB.getModels())
 			{
@@ -1086,6 +1257,22 @@ namespace KerbalKonstructs
 				foreach (StaticObject obj in staticDB.getObjectsFromModel(model))
 				{
 					string sCustom = (string)obj.getSetting("CustomInstance");
+					string sInstGroup = (string)obj.getSetting("Group");
+
+					if (sGroup != "")
+					{
+						if (sInstGroup != sGroup)
+						{
+							sInstGroup = "";
+							continue;
+						}
+					}
+
+					if (KerbalKonstructs.instance.DevMode)
+					{
+						sCustom = "True";
+						obj.setSetting("CustomInstance", "True");
+					}
 
 					if (sCustom == "True")
 					{
@@ -1101,9 +1288,18 @@ namespace KerbalKonstructs
 
 				if (HasCustom)
 				{
+					string sModelName = modelConfig.GetValue("name");
+					modelConfig.AddValue("pointername", sModelName);
+
+					//if (sInstGroup != "" && sGroup == "") sBase = sInstGroup;
+
+					modelConfig.RemoveValue("name");
+					modelConfig.AddValue("name", sPackName + "_" + sBase + "_" + sModelName);
+					
 					staticNode.AddNode(modelConfig);
-					Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/medsouz/KerbalKonstructs/ExportedInstances/" + model.path);
-					staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/medsouz/KerbalKonstructs/ExportedInstances/" + model.configPath + ".exp", "Exported custom instances by Kerbal Konstructs");
+
+					Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.path);
+					staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.configPath, "Exported custom instances by Kerbal Konstructs");
 				}
 			}
 		}
@@ -1111,11 +1307,10 @@ namespace KerbalKonstructs
 		public void deleteObject(StaticObject obj)
 		{
 			if (selectedObject == obj)
-			{
 				deselectObject();
-			}
 
-			if (snapTargetInstance == obj) snapTargetInstance = null;
+			if (snapTargetInstance == obj)
+				snapTargetInstance = null;
 
 			staticDB.deleteObject(obj);
 		}
@@ -1156,14 +1351,6 @@ namespace KerbalKonstructs
 				selectedObject.editing = false;
 				selectedObject.ToggleAllColliders(true);
 
-				/*Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
-				List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.collider != null select t.gameObject).ToList();
-			
-				foreach (GameObject collider in colliderList)
-				{
-					collider.collider.enabled = true;
-				}*/
-
 				Color highlightColor = new Color(0, 0, 0, 0);
 				selectedObject.HighlightObject(highlightColor);
 
@@ -1178,6 +1365,7 @@ namespace KerbalKonstructs
 			if (disableCam)
 				camControl.disable();
 		}
+
 		#endregion
 
 		#region App Button Toggles
@@ -1258,7 +1446,7 @@ namespace KerbalKonstructs
 					}
 					else
 					{
-						Debug.Log("KK: Attribute not defined!");
+						//Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");
 						continue;
 					}
 				}

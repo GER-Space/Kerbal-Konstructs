@@ -12,20 +12,20 @@ namespace KerbalKonstructs.UI
 	{
 		public static Rect BaseManagerRect = new Rect(250, 60, 165, 680);
 
-		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/titlebaricon", false);
-		public Texture tSmallClose = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/littleclose", false);
-		public Texture tStatusLaunchsite = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/setaslaunchsite", false);
-		public Texture tSetLaunchsite = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/setaslaunchsite", false);
-		public Texture tOpenedLaunchsite = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/openedlaunchsite", false);
-		public Texture tClosedLaunchsite = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/closedlaunchsite", false);
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep", false);
-		public Texture tMakeFavourite = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/makefavourite", false);
-		public Texture tVerticalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/verticalsep", false);
-		public Texture tFaveTemp = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/makefavourite", false);
-		public Texture tIsFave = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/isFavourite", false);
-		public Texture tFoldOut = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/foldin", false);
-		public Texture tFoldIn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/foldout", false);
-		public Texture tFolded = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/foldout", false);
+		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
+		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);
+		public Texture tStatusLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/setaslaunchsite", false);
+		public Texture tSetLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/setaslaunchsite", false);
+		public Texture tOpenedLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/openedlaunchsite", false);
+		public Texture tClosedLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/closedlaunchsite", false);
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep", false);
+		public Texture tMakeFavourite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/makefavourite", false);
+		public Texture tVerticalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/verticalsep", false);
+		public Texture tFaveTemp = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/makefavourite", false);
+		public Texture tIsFave = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/isFavourite", false);
+		public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
+		public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+		public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 		
 		public static LaunchSite selectedSite = null;
 

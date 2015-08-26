@@ -15,7 +15,7 @@ namespace KerbalKonstructs.UI
 	{
 		Rect racingRect = new Rect(40, 80, 300, 160);
 
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep3", false);
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
 		public static Boolean runningRace = false;
 		public Boolean racing = false;

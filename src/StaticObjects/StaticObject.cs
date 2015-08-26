@@ -89,9 +89,9 @@ namespace KerbalKonstructs.StaticObjects
 			
 			List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.collider != null select t.gameObject).ToList();
 
-			foreach (GameObject collider in colliderList)
+			foreach (GameObject gocollider in colliderList)
 			{
-				collider.collider.enabled = enable;
+				gocollider.collider.enabled = enable;
 			}
 		}
 
@@ -105,7 +105,8 @@ namespace KerbalKonstructs.StaticObjects
 		public void spawnObject(Boolean editing)
 		{
 			// Objects spawned at runtime should be active
-			gameObject.SetActive(editing);
+			SetActiveRecursively(gameObject, editing);
+			
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.renderer != null select t.gameObject).ToList();
 
@@ -167,9 +168,9 @@ namespace KerbalKonstructs.StaticObjects
 				}
 			}
 
-			foreach (GameObject renderer in rendererList)
+			foreach (GameObject gorenderer in rendererList)
 			{
-				renderer.renderer.enabled = true;
+				gorenderer.renderer.enabled = true;
 			}
 		}
 
@@ -183,6 +184,16 @@ namespace KerbalKonstructs.StaticObjects
 			foreach (Transform child in sGameObject.transform)
 			{
 				setLayerRecursively(child.gameObject, newLayerNumber);
+			}
+		}
+
+		public void SetActiveRecursively(GameObject rootObject, bool active)
+		{
+			rootObject.SetActive(active);
+
+			foreach (Transform childTransform in rootObject.transform)
+			{
+				SetActiveRecursively(childTransform.gameObject, active);
 			}
 		}
 	}

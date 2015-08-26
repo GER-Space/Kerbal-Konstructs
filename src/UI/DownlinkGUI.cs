@@ -16,59 +16,70 @@ namespace KerbalKonstructs.UI
 		Rect targetSelectorRect = new Rect(640, 120, 190, 400);
 		Rect DownlinkRect = new Rect(300, 30, 175, 720);
 
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep", false);
-		public Texture tSpeaker = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/speaker", false);
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep", false);
+		public Texture tSpeaker = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speaker", false);
 
-		public Texture tSpeaker2 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/speaker2", false);
-		public Texture tSpeaker3 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/speaker3", false);
+		public Texture tSpeaker2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speaker2", false);
+		public Texture tSpeaker3 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speaker3", false);
 
-		public AudioClip aStatic = GameDatabase.Instance.GetAudioClip("medsouz/KerbalKonstructs/Sounds/radiostatic");
-		public AudioClip aBeep1 = GameDatabase.Instance.GetAudioClip("medsouz/KerbalKonstructs/Sounds/beep1");
-		public AudioClip aBeep2 = GameDatabase.Instance.GetAudioClip("medsouz/KerbalKonstructs/Sounds/beep2");
+		public AudioClip aStatic = GameDatabase.Instance.GetAudioClip("KerbalKonstructs/Sounds/radiostatic");
+		public AudioClip aBeep1 = GameDatabase.Instance.GetAudioClip("KerbalKonstructs/Sounds/beep1");
+		public AudioClip aBeep2 = GameDatabase.Instance.GetAudioClip("KerbalKonstructs/Sounds/beep2");
 
 
 		public static GameObject Dis;
 		public static AudioSource DisAudio;
 
-		public Texture tStatic = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/static", false);
-		public Texture tStatic2 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/static2", false);
-		public Texture tKerbal = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam1", false);
-		public Texture tKerbal1 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam1", false);
-		public Texture tKerbal2 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam2", false);
-		public Texture tKerbal3 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam3", false);
-		public Texture tKerbal4 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam4", false);
-		public Texture tKerbal5 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam5", false);
-		public Texture tKerbal6 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam6", false);
-		public Texture tKerbal7 = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kerbcam7", false);
+		public Texture tStatic = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/static", false);
+		public Texture tStatic2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/static2", false);
+		public Texture tKerbal = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam1", false);
+		public Texture tKerbal1 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam1", false);
+		public Texture tKerbal2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam2", false);
+		public Texture tKerbal3 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam3", false);
+		public Texture tKerbal4 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam4", false);
+		public Texture tKerbal5 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam5", false);
+		public Texture tKerbal6 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam6", false);
+		public Texture tKerbal7 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kerbcam7", false);
 
-		public Texture2D tIndicatorRed = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/indicatorred", false);
-		public Texture2D tIndicatorGreen = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/indicatorgreen", false);
+		public Texture2D tIndicatorRed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/indicatorred", false);
+		public Texture2D tIndicatorGreen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/indicatorgreen", false);
+		public Texture2D tGreyButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/indicatorgrey", false);
 
-		public Texture2D tIndicatorBad = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/indicatorbad", false);
-		public Texture2D tIndicatorGood = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/indicatorgood", false);
 
-		public Texture2D tBigOlButton = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/bigolbutton", false);
+		public Texture2D tIndicatorBad = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/indicatorbad", false);
+		public Texture2D tIndicatorGood = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/indicatorgood", false);
 
-		public Texture2D tSpeed = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/speed", false);
-		public Texture2D tStrength = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/strength", false);
+		public Texture2D tBigOlButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/bigolbutton", false);
 
-		public Texture2D tButtonRed = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/buttonred", false);
-		public Texture2D tButtonGreen = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/buttongreen", false);
-		public Texture2D tButtonBlue = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/buttonblue", false);
+		public Texture2D tSpeed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speed", false);
+		public Texture2D tStrength = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/strength", false);
 
-		public string sAntennaInterval = "0";
-		public string sAntennaPacket = "0";
-		public string sAntennaResourceCost = "0";
+		public Texture2D tButtonRed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/buttonred", false);
+		public Texture2D tButtonGreen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/buttongreen", false);
+		public Texture2D tButtonBlue = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/buttonblue", false);
+		public Texture2D tTitleBox = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebox", false);
+
+
+		public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
+		public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+		public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+
+		public static string sAntennaInterval = "0";
+		public static string sAntennaPacket = "0";
+		public static string sAntennaResourceCost = "0";
 
 		public double dUpdater = 0;
 		public double dUpdater2 = 0;
+		public double dUpdater3 = 0;
+		public double dUpdater4 = 0;
+		public double dUpdater5 = 0;
 
-		public string sWarning1 = "None";
-		public string sWarning2 = "None";
+		public static string sWarning1 = "None";
+		public static string sWarning2 = "None";
 
 		public string sConversation = "None";
 		public string sConversation2 = "";
-		public string sConversation3 = "";
+		public static string sConversation3 = "";
 		public string sConversation4 = "";
 		public static string sConversation5 = "";
 		public static string sConversation6 = "";
@@ -86,7 +97,7 @@ namespace KerbalKonstructs.UI
 		public static float fMaxAngle = 0f;
 		public static float StationLOS = 0f;
 
-		public Vessel vTargetVessel = null;
+		public static Vessel vTargetVessel = null;
 		public Vessel vRelayVessel = null;
 
 		public Vessel vSelectedVessel = null;
@@ -101,21 +112,32 @@ namespace KerbalKonstructs.UI
 		GUIStyle ButtonRed;
 		GUIStyle ButtonBlue;
 		GUIStyle ButtonBig;
+		GUIStyle ButtonGrey;
 		GUIStyle IndicatorGreen;
 		GUIStyle IndicatorRed;
 		GUIStyle BoxInfo;
+		GUIStyle BoxTitle;
 
-		public Boolean bVideo = false;
-		public Boolean bAudio = false;
+		public static Boolean bVideo = false;
+		public static Boolean bAudio = false;
 		public Boolean bTextlink = false;
-		public Boolean bDatalink = false;
+		public static Boolean bDatalink = false;
 		public Boolean bAutoMode = false;
 		public Boolean bDiagMode = false;
+		public static Boolean bBoost = false;
+		public Boolean bClean = false;
+		public Boolean bPowered = true;
+		public static Boolean bScanning = false;
 
 		public static Boolean bCheckedRegistry = true;
 		public static Boolean bUnregistered = false;
 
 		public static Boolean bChangeTarget = false;
+
+		public Boolean bShowDevicePanel = true;
+		public Boolean bShowTargetPanel = true;
+		public Boolean bShowSignalPanel = true;
+		public Boolean bShowPowerPanel = true;
 
 		public double dRefresh = 15;
 
@@ -126,6 +148,9 @@ namespace KerbalKonstructs.UI
 
 		public float fSignalDelay = 0f;
 		public float fSignalStrength = 0f;
+
+		public float fPowerDraw = 0f;
+		public double dAvailableEC = 0;
 
 		public static Part pAntenna = null;
 
@@ -212,6 +237,8 @@ namespace KerbalKonstructs.UI
 			bDatalink = false;
 			bAutoMode = false;
 			bDiagMode = false;
+			bBoost = false;
+			bClean = false;
 			sTarget = "None";
 			sTargetType = "None";
 			vTargetVessel = null;
@@ -220,6 +247,10 @@ namespace KerbalKonstructs.UI
 			fSignalStrength = 0f;
 			bChangeTarget = false;
 			dUpdater = 0;
+			dUpdater3 = 0;
+			dUpdater4 = 0;
+			dUpdater5 = 0;
+			bScanning = false;
 		}
 
 		void drawDownlinkWindow(int windowID)
@@ -264,6 +295,18 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
+			ButtonGrey = new GUIStyle(GUI.skin.button);
+			ButtonGrey.fontSize = 12;
+			ButtonGrey.fontStyle = FontStyle.Normal;
+			ButtonGrey.normal.background = tGreyButton;
+			ButtonGrey.hover.background = tGreyButton;
+			ButtonGrey.active.background = tGreyButton;
+			ButtonGrey.focused.background = tGreyButton;
+			ButtonGrey.normal.textColor = Color.white;
+			ButtonGrey.hover.textColor = Color.white;
+			ButtonGrey.active.textColor = Color.white;
+			ButtonGrey.focused.textColor = Color.white;
+
 			ButtonRed = new GUIStyle(GUI.skin.button);
 			ButtonRed.normal.background = tButtonRed;
 			ButtonRed.hover.background = tButtonRed;
@@ -304,6 +347,17 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder.normal.background = null;
 			BoxNoBorder.normal.textColor = Color.white;
 			BoxNoBorder.fontSize = 13;
+
+			BoxTitle = new GUIStyle(GUI.skin.button);
+			BoxTitle.normal.background = tTitleBox;
+			BoxTitle.hover.background = tTitleBox;
+			BoxTitle.active.background = tTitleBox;
+			BoxTitle.focused.background = tTitleBox;
+			BoxTitle.normal.textColor = Color.white;
+			BoxTitle.hover.textColor = Color.white;
+			BoxTitle.active.textColor = Color.white;
+			BoxTitle.focused.textColor = Color.white;
+			BoxTitle.fontSize = 13;
 
 			BoxInfo = new GUIStyle(GUI.skin.box);
 			BoxInfo.normal.background = null;
@@ -366,115 +420,237 @@ namespace KerbalKonstructs.UI
 			GUILayout.Space(1);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Box("Comms Devices", BoxNoBorder);
-			scrollPos2 = GUILayout.BeginScrollView(scrollPos2);
+			GUILayout.BeginHorizontal();
+			if (bShowDevicePanel)
 			{
-				foreach (Part pPart in FlightGlobals.ActiveVessel.Parts)
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
 				{
-					foreach (PartModule pModule in pPart.Modules)
+					bShowDevicePanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowDevicePanel = true;
+				}
+			}
+
+			if (GUILayout.Button("Comms Devices", BoxTitle, GUILayout.Height(20)))
+			{
+				if (bShowDevicePanel)
+					bShowDevicePanel = false;
+				else
+					bShowDevicePanel = true;
+			}
+
+			if (bShowDevicePanel)
+			{
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowDevicePanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowDevicePanel = true;
+				}
+			}
+
+			GUILayout.EndHorizontal();
+
+			if (bShowDevicePanel)
+			{
+				scrollPos2 = GUILayout.BeginScrollView(scrollPos2);
+				{
+					foreach (Part pPart in FlightGlobals.ActiveVessel.Parts)
 					{
-						if (pModule.moduleName == "ModuleDataTransmitter")
+						foreach (PartModule pModule in pPart.Modules)
 						{
-							GUI.enabled = !(pAntenna == pPart);
-							if (GUILayout.Button(pPart.partInfo.title, ButtonBig, GUILayout.Height(20)))
+							if (pModule.moduleName == "ModuleDataTransmitter")
 							{
-								InitialiseBoard();
-								vRelayVessel = null;
-								sRelayName = "None";
-								sIsRelay = "No";
-
-								pAntenna = pPart;
-
-								LoadCommsPersistence(pPart);
-
-								ConfigNode node = pAntenna.partInfo.partConfig;
-
-								if (node != null)
+								GUI.enabled = !(pAntenna == pPart);
+								if (GUILayout.Button(pPart.partInfo.title, ButtonBig, GUILayout.Height(20)))
 								{
-									var moduleNodes = from nodes in node.GetNodes("MODULE")
-													  where nodes.GetValue("name") == "ModuleDataTransmitter"
-													  select nodes;
+									InitialiseBoard();
+									vRelayVessel = null;
+									sRelayName = "None";
+									sIsRelay = "No";
 
-									foreach (ConfigNode moduleNode in moduleNodes)
+									pAntenna = pPart;
+
+									LoadCommsPersistence(pPart);
+
+									ConfigNode node = pAntenna.partInfo.partConfig;
+
+									if (node != null)
 									{
-										if (moduleNode == null)
-											continue;
+										var moduleNodes = from nodes in node.GetNodes("MODULE")
+														  where nodes.GetValue("name") == "ModuleDataTransmitter"
+														  select nodes;
 
-										if (moduleNode.HasValue("packetInterval"))
+										foreach (ConfigNode moduleNode in moduleNodes)
 										{
-											sAntennaInterval = (string)moduleNode.GetValue("packetInterval");
+											if (moduleNode == null)
+												continue;
+
+											if (moduleNode.HasValue("packetInterval"))
+											{
+												sAntennaInterval = (string)moduleNode.GetValue("packetInterval");
+											}
+											if (moduleNode.HasValue("packetSize"))
+											{
+												sAntennaPacket = (string)moduleNode.GetValue("packetSize");
+											}
+											if (moduleNode.HasValue("packetResourceCost"))
+											{
+												sAntennaResourceCost = (string)moduleNode.GetValue("packetResourceCost");
+											}
 										}
-										if (moduleNode.HasValue("packetSize"))
-										{
-											sAntennaPacket = (string)moduleNode.GetValue("packetSize");
-										}
-										if (moduleNode.HasValue("packetResourceCost"))
-										{
-											sAntennaResourceCost = (string)moduleNode.GetValue("packetResourceCost");
-										}
+
 									}
 
 								}
-
+								GUI.enabled = true;
 							}
-							GUI.enabled = true;
 						}
 					}
 				}
+				GUILayout.EndScrollView();
+
+				GUILayout.FlexibleSpace();
 			}
-			GUILayout.EndScrollView();
 
-			GUILayout.FlexibleSpace();
+			GUILayout.BeginHorizontal();
+			if (bShowTargetPanel)
+			{
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowTargetPanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowTargetPanel = true;
+				}
+			}
 
-			GUILayout.Box("Target", BoxNoBorder);
+			if (GUILayout.Button("Target", BoxTitle, GUILayout.Height(20)))
+			{
+				if (bShowTargetPanel)
+					bShowTargetPanel = false;
+				else
+					bShowTargetPanel = true;
+			}
+
+			if (bShowTargetPanel)
+			{
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowTargetPanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowTargetPanel = true;
+				}
+			}
+
+			GUILayout.EndHorizontal();
 
 			bool bRelay = false;
 			if (sIsRelay == "Yes") bRelay = true;
 
-			GUILayout.BeginHorizontal();
+			if (bShowTargetPanel)
 			{
-				GUI.enabled = (pAntenna != null);
-				if (GUILayout.Button("Vessel", ButtonBlue, GUILayout.Height(20)))
+				GUILayout.BeginHorizontal();
 				{
-					InitialiseBoard();
-					sTargetType = "Craft";
-					PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
-						sTargetType, sTarget, bRelay, sRelayName, sStationRadial);
-					bChangeTarget = true;
-					bCheckedRegistry = false;
-				}
-				GUI.enabled = true;
+					if (!bScanning)
+						GUI.enabled = (pAntenna != null);
+					else
+						GUI.enabled = false;
 
-				GUI.enabled = (pAntenna != null);
-				if (GUILayout.Button("Station", ButtonBlue, GUILayout.Height(20)))
-				{
-					InitialiseBoard();
-					sTargetType = "Station";
-					PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
-						sTargetType, sTarget, bRelay, sRelayName, sStationRadial);
-
-					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+					if (GUILayout.Button("Vessel", ButtonBlue, GUILayout.Height(20)))
 					{
-						if ((string)obj.getSetting("FacilityType") == "TrackingStation")
-							PersistenceUtils.loadStaticPersistence(obj);
+						InitialiseBoard();
+						sTargetType = "Craft";
+						PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
+							sTargetType, sTarget, bRelay, sRelayName, sStationRadial);
+						bChangeTarget = true;
+						bCheckedRegistry = false;
 					}
+					GUI.enabled = true;
 
-					bChangeTarget = true;
+					if (!bScanning)
+						GUI.enabled = (pAntenna != null);
+					else
+						GUI.enabled = false;
+
+					if (GUILayout.Button("Station", ButtonBlue, GUILayout.Height(20)))
+					{
+						InitialiseBoard();
+						sTargetType = "Station";
+						PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
+							sTargetType, sTarget, bRelay, sRelayName, sStationRadial);
+
+						foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+						{
+							if ((string)obj.getSetting("FacilityType") == "TrackingStation")
+								PersistenceUtils.loadStaticPersistence(obj);
+						}
+
+						bChangeTarget = true;
+					}
+					GUI.enabled = true;
 				}
-				GUI.enabled = true;
-			}
-			GUILayout.EndHorizontal();
+				GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
+				if (pAntenna == null)
+					GUI.enabled = false;
+				else
+					if (!bScanning)
+						GUI.enabled = (bPowered);
+					else
+						GUI.enabled = false;
+
+				GUILayout.BeginHorizontal();
+				{
+					if (GUILayout.Button("SCAN", ButtonBlue, GUILayout.Height(20)))
+					{
+						InitialiseBoard();
+						dUpdater5 = Planetarium.GetUniversalTime();
+						bScanning = true;
+						sTargetType = "Craft";
+						ScanForVessels();
+					}
+					if (GUILayout.Button("SCAN", ButtonBlue, GUILayout.Height(20)))
+					{
+						InitialiseBoard();
+						dUpdater5 = Planetarium.GetUniversalTime();
+						bScanning = true;
+						sTargetType = "Station";
+						ScanForStations();
+					}
+				}
+				GUILayout.EndHorizontal();
+			}
+
+			GUI.enabled = true;
+
+			if (bScanning)
 			{
-				if (GUILayout.Button("SCAN", ButtonBlue, GUILayout.Height(20)))
+				double dTicker5 = Planetarium.GetUniversalTime();
+				if ((dTicker5 - dUpdater5) > 9)
 				{
-				}
-				if (GUILayout.Button("SCAN", ButtonBlue, GUILayout.Height(20)))
-				{
+					bScanning = false;
 				}
 			}
-			GUILayout.EndHorizontal();
 
 			string sDisplayTarget = "None";
 			vTargetVessel = null;
@@ -492,7 +668,8 @@ namespace KerbalKonstructs.UI
 				else
 					sDisplayTarget = "None";
 
-				GUILayout.Box(sDisplayTarget, BoxInfo);
+				if (bShowTargetPanel)
+					GUILayout.Box(sDisplayTarget, BoxInfo, GUILayout.Height(20));
 			}
 			else
 				if (sTargetType == "Station" && soTargetStation != null)
@@ -512,52 +689,175 @@ namespace KerbalKonstructs.UI
 					sDisplayTarget = cPlanetoid.name + " Station\nAltitude: " + fAlt.ToString("#0") + "m\nLat. "
 						+ disObjectLat.ToString("#0.000") + " Lon. " + disObjectLon.ToString("#0.000");
 
-					GUILayout.Box(sDisplayTarget, BoxInfo, GUILayout.Height(60));
-				}
-
-			GUI.enabled = (sDisplayTarget != "None");
-			if (GUILayout.Button("CUT CONNECTION", ButtonBig, GUILayout.Height(20)))
-			{
-				sTarget = "None";
-				sTargetType = "None";
-				soTargetStation = null;
-				vTargetVessel = null;
-				bChangeTarget = false;
-				PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
-					"None", "None", bRelay, sRelayName, "None");
-			}
-			GUI.enabled = true;
-
-			string sRelayButton = "Set as Relay";
-
-			if (sIsRelay == "No")
-			{
-				sRelayButton = "SET AS RELAY";
-				GUI.enabled = (sTarget != "None" && sTargetType != "Station");
-			}
-			else
-			{
-				sRelayButton = "DISCONNECT RELAY";
-				GUI.enabled = true;
-			}
-
-			if (GUILayout.Button(sRelayButton, ButtonBig, GUILayout.Height(20)))
-			{
-				if (sIsRelay == "Yes")
-				{
-					sIsRelay = "No";
-					vRelayVessel = null;
-					sRelayName = "None";
-					PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
-						sTargetType, sTarget, false, "None", sStationRadial);
+					if (bShowTargetPanel)
+						GUILayout.Box(sDisplayTarget, BoxInfo, GUILayout.Height(60));
 				}
 				else
 				{
-					sIsRelay = "Yes";
-					vRelayVessel = vTargetVessel;
-					sRelayName = vTargetVessel.name + "_" + vTargetVessel.id.ToString();
+					if (bShowTargetPanel)
+						GUILayout.Box(sDisplayTarget, BoxInfo, GUILayout.Height(20));
+				}
+
+			if (bShowTargetPanel)
+			{
+				if (bScanning)
+				{
+					GUILayout.BeginHorizontal();
+
+					double dTicker4 = Planetarium.GetUniversalTime();
+
+					if ((dTicker4 - dUpdater4) > 4)
+					{
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						dUpdater4 = Planetarium.GetUniversalTime();
+					}
+					else
+						if ((dTicker4 - dUpdater4) > 3.5)
+						{
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+							GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						}
+						else
+							if ((dTicker4 - dUpdater4) > 3)
+							{
+								GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+								GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+								GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+								GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+								GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+								GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+							}
+							else
+								if ((dTicker4 - dUpdater4) > 2.5)
+								{
+									GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+									GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+									GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+									GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+									GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+									GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+								}
+								else
+									if ((dTicker4 - dUpdater4) > 2)
+									{
+										GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+										GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+										GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+										GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+										GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+										GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+									}
+									else
+										if ((dTicker4 - dUpdater4) > 1.5)
+										{
+											GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+											GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+											GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+											GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+											GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+											GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+										}
+										else
+											if ((dTicker4 - dUpdater4) > 1)
+											{
+												GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+											}
+											else
+											{
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+												GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+											}
+
+					GUILayout.EndHorizontal();
+				}
+				else
+				{
+					if (sDisplayTarget == "None" || fSignalStrength <= 0f)
+					{
+						GUILayout.BeginHorizontal();
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorRed, GUILayout.Height(5));
+						GUILayout.EndHorizontal();
+					}
+					else
+					{
+						GUILayout.BeginHorizontal();
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.Box(" ", IndicatorGreen, GUILayout.Height(5));
+						GUILayout.EndHorizontal();
+					}
+				}
+
+				GUI.enabled = (sDisplayTarget != "None");
+				if (GUILayout.Button("CUT CONNECTION", ButtonBig, GUILayout.Height(20)))
+				{
+					sTarget = "None";
+					sTargetType = "None";
+					soTargetStation = null;
+					vTargetVessel = null;
+					bChangeTarget = false;
 					PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
-						sTargetType, sTarget, true, sRelayName, sStationRadial);
+						"None", "None", bRelay, sRelayName, "None");
+				}
+				GUI.enabled = true;
+
+				string sRelayButton = "Set as Relay";
+
+				if (sIsRelay == "No")
+				{
+					sRelayButton = "SET AS RELAY";
+					GUI.enabled = (sTarget != "None" && sTargetType != "Station");
+				}
+				else
+				{
+					sRelayButton = "DISCONNECT RELAY";
+					GUI.enabled = true;
+				}
+
+				if (GUILayout.Button(sRelayButton, ButtonBig, GUILayout.Height(20)))
+				{
+					if (sIsRelay == "Yes")
+					{
+						sIsRelay = "No";
+						vRelayVessel = null;
+						sRelayName = "None";
+						PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
+							sTargetType, sTarget, false, "None", sStationRadial);
+					}
+					else
+					{
+						sIsRelay = "Yes";
+						vRelayVessel = vTargetVessel;
+						sRelayName = vTargetVessel.name + "_" + vTargetVessel.id.ToString();
+						PersistenceUtils.saveCommsPersistence(FlightGlobals.ActiveVessel, pAntenna,
+							sTargetType, sTarget, true, sRelayName, sStationRadial);
+					}
 				}
 			}
 
@@ -581,7 +881,8 @@ namespace KerbalKonstructs.UI
 				}
 			}
 
-			GUILayout.Box(sDisplayRelay, BoxInfo);
+			if (bShowTargetPanel)
+				GUILayout.Box(sDisplayRelay, BoxInfo);
 
 			GUILayout.FlexibleSpace();
 
@@ -590,6 +891,44 @@ namespace KerbalKonstructs.UI
 			
 			GUI.enabled = true;
 
+			GUILayout.FlexibleSpace();
+			GUILayout.BeginHorizontal();
+			{
+				if (!bBoost)
+				{
+					if (GUILayout.Button("BOOST", ButtonRed, GUILayout.Height(20)))
+					{
+						bBoost = true;
+					}
+				}
+				else
+				{
+					if (GUILayout.Button("BOOST", ButtonGreen, GUILayout.Height(20)))
+					{
+						bBoost = false;
+					}
+
+					if (!bPowered) bBoost = false;
+				}
+
+				if (!bClean)
+				{
+					if (GUILayout.Button("CLEAN", ButtonRed, GUILayout.Height(20)))
+					{
+						bClean = true;
+					}
+				}
+				else
+				{
+					if (GUILayout.Button("CLEAN", ButtonGreen, GUILayout.Height(20)))
+					{
+						bClean = false;
+					}
+
+					if (!bPowered) bClean = false;
+				}
+			}
+			GUILayout.EndHorizontal();
 			GUILayout.FlexibleSpace();
 
 			GUILayout.BeginHorizontal();
@@ -681,6 +1020,8 @@ namespace KerbalKonstructs.UI
 					}
 
 					if (VesselIsUncrewed(FlightGlobals.ActiveVessel)) bVideo = false;
+
+					if (!bPowered) bVideo = false;
 				}
 				else
 				{
@@ -704,6 +1045,12 @@ namespace KerbalKonstructs.UI
 						bAudio = false;
 						DisAudio.Stop();
 						//Dis.gameObject.SetActive(false);
+					}
+
+					if (!bPowered)
+					{
+						bAudio = false;
+						DisAudio.Stop();
 					}
 				}
 				else
@@ -827,6 +1174,9 @@ namespace KerbalKonstructs.UI
 				if (pAntenna == null)
 					GUILayout.Box("No device", BoxNoBorder, GUILayout.Height(20));
 
+				if (!bPowered)
+					GUILayout.Box("No power", BoxNoBorder, GUILayout.Height(20));
+
 				if (!bDatalink)
 					GUILayout.Box("No datalink", BoxNoBorder, GUILayout.Height(20));
 
@@ -886,7 +1236,7 @@ namespace KerbalKonstructs.UI
 				}
 
 				GUI.enabled = false;
-				GUILayout.Button("" + dRefresh.ToString() + "s", ButtonSmallText, GUILayout.Height(20));
+				GUILayout.Button("" + dRefresh.ToString() + "s", ButtonGrey, GUILayout.Height(20));
 				GUI.enabled = true;
 
 				if (GUILayout.Button("◄", ButtonBlue, GUILayout.Height(20), GUILayout.Width(25)))
@@ -903,85 +1253,240 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.FlexibleSpace();
 
-			GUILayout.Box("Signal", BoxNoBorder);
+			GUILayout.BeginHorizontal();
+
+			if (bShowSignalPanel)
+			{
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowSignalPanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowSignalPanel = true;
+				}
+			}
+
+			if (GUILayout.Button("Signal", BoxTitle, GUILayout.Height(20)))
+			{
+				if (bShowSignalPanel)
+					bShowSignalPanel = false;
+				else
+					bShowSignalPanel = true;
+			}
+
+			if (bShowSignalPanel)
+			{
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowSignalPanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowSignalPanel = true;
+				}
+			}
+
+			GUILayout.EndHorizontal();
 
 			fSignalDelay = DetermineSignalDelay(FlightGlobals.ActiveVessel, pAntenna, vTargetVessel,
 				soTargetStation, vRelayVessel);
 			fSignalStrength = DetermineSignalStrength(FlightGlobals.ActiveVessel, pAntenna, vTargetVessel,
 				soTargetStation, vRelayVessel);
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Box(tStrength, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(20));
+			if (!bPowered) fSignalDelay = 0f;
+			if (!bPowered) fSignalStrength = 0f;
 
-			GUILayout.Space(5);
+			if (bShowSignalPanel)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Box(tStrength, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(20));
 
-			if (fSignalStrength > 5f) fSignalStrength = 5f;
+				GUILayout.Space(5);
+
+				if (fSignalStrength > 5f) fSignalStrength = 5f;
+				else
+					if (fSignalStrength < 0f) fSignalStrength = 0f;
+
+				int fStrengthGoodCount = (int)fSignalStrength * 2;
+				int fStrengthBadCount = 10 - fStrengthGoodCount;
+
+				if (fSignalStrength > 5f)
+				{
+					fStrengthGoodCount = 10;
+					fStrengthBadCount = 0;
+				}
+
+				if (fSignalStrength == 0f)
+				{
+					fStrengthGoodCount = 0;
+					fStrengthBadCount = 10;
+				}
+
+				while (fStrengthGoodCount > 0)
+				{
+					GUILayout.Box(tIndicatorGood, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
+					fStrengthGoodCount = fStrengthGoodCount - 1;
+				}
+				while (fStrengthBadCount > 0)
+				{
+					GUILayout.Box(tIndicatorBad, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
+					fStrengthBadCount = fStrengthBadCount - 1;
+				}
+
+				GUILayout.EndHorizontal();
+
+				GUILayout.Space(2);
+
+				GUILayout.BeginHorizontal();
+				GUILayout.Box(tSpeed, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(20));
+
+				GUILayout.Space(5);
+
+				if (fSignalDelay > 5f) fSignalDelay = 5f;
+				else
+					if (fSignalDelay < 0f) fSignalDelay = 0f;
+
+				int fDelayBadCount = (int)fSignalDelay * 2;
+				int fDelayGoodCount = 10 - fDelayBadCount;
+
+				if (fSignalDelay == 0f)
+				{
+					fDelayGoodCount = 0;
+					fDelayBadCount = 10;
+				}
+
+				while (fDelayBadCount > 0)
+				{
+					GUILayout.Box(tIndicatorBad, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
+					fDelayBadCount = fDelayBadCount - 1;
+				}
+
+				while (fDelayGoodCount > 0)
+				{
+					GUILayout.Box(tIndicatorGood, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
+					fDelayGoodCount = fDelayGoodCount - 1;
+				}
+
+				GUILayout.EndHorizontal();
+			}
+
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+			GUILayout.FlexibleSpace();
+
+			fPowerDraw = 0f;
+
+			if (sDisplayTarget != "None" || sRelayName != "None")
+			{
+				if (fSignalStrength > 0)
+				{
+					fPowerDraw = float.Parse(sAntennaResourceCost) / 2f;
+
+					if (sDisplayTarget != "None" && sRelayName == "None")
+						fPowerDraw = fPowerDraw / 2f;
+
+					if (sDisplayTarget == "None" && sRelayName != "None")
+						fPowerDraw = fPowerDraw / 2f;
+
+					if (bVideo) fPowerDraw = fPowerDraw * 1.2f;
+					if (bBoost) fPowerDraw = fPowerDraw * 1.35f;
+					if (bClean) fPowerDraw = fPowerDraw * 1.5f;
+				}
+			}
+
+			dAvailableEC = 0;
+			foreach (Part fBatt in FlightGlobals.ActiveVessel.parts)
+			{
+				foreach (PartResource rResource in fBatt.Resources)
+				{
+					if (rResource.resourceName == "ElectricCharge")
+					{
+						dAvailableEC = dAvailableEC + rResource.amount;
+					}
+					else continue;
+				}
+			}
+
+			if (dAvailableEC <= 0) bPowered = false;
 			else
-				if (fSignalStrength < 0f) fSignalStrength = 0f;
+				bPowered = true;
 
-			int fStrengthGoodCount = (int)fSignalStrength * 2;
-			int fStrengthBadCount = 10 - fStrengthGoodCount;
-
-			if (fSignalStrength > 5f)
+			if (bPowered)
 			{
-				fStrengthGoodCount = 10;
-				fStrengthBadCount = 0;
+				if (fPowerDraw > dAvailableEC) bPowered = false;
 			}
 
-			if (fSignalStrength == 0f)
+			GUILayout.BeginHorizontal();
+
+			if (bShowPowerPanel)
 			{
-				fStrengthGoodCount = 0;
-				fStrengthBadCount = 10;
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowPowerPanel = false;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowPowerPanel = true;
+				}
+			}
+			
+			if (GUILayout.Button("Power Draw", BoxTitle, GUILayout.Height(20)))
+			{
+				if (bShowPowerPanel)
+					bShowPowerPanel = false;
+				else
+					bShowPowerPanel = true;
 			}
 
-			while (fStrengthGoodCount > 0)
+			if (bShowPowerPanel)
 			{
-				GUILayout.Box(tIndicatorGood, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
-				fStrengthGoodCount = fStrengthGoodCount - 1;
+				if (GUILayout.Button(tFoldIn, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowPowerPanel = false;
+				}
 			}
-			while (fStrengthBadCount > 0)
+			else
 			{
-				GUILayout.Box(tIndicatorBad, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
-				fStrengthBadCount = fStrengthBadCount - 1;
+				if (GUILayout.Button(tFoldOut, BoxTitle, GUILayout.Height(20), GUILayout.Width(20)))
+				{
+					bShowPowerPanel = true;
+				}
 			}
 
 			GUILayout.EndHorizontal();
 
-			GUILayout.Space(2);
-
-			GUILayout.BeginHorizontal();
-			GUILayout.Box(tSpeed, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(20));
-
-			GUILayout.Space(5);
-
-			if (fSignalDelay > 5f) fSignalDelay = 5f;
-			else
-				if (fSignalDelay < 0f) fSignalDelay = 0f;
-
-			int fDelayBadCount = (int)fSignalDelay * 2;
-			int fDelayGoodCount = 10 - fDelayBadCount;
-
-			if (fSignalDelay == 0f)
+			if (bShowPowerPanel)
 			{
-				fDelayGoodCount = 0;
-				fDelayBadCount = 10;
+				GUI.enabled = false;
+				GUILayout.Button("" + fPowerDraw.ToString("#0.0") + " EC/s of " + dAvailableEC.ToString("#0.0") + " EC", ButtonGrey, GUILayout.Height(20));
+				GUI.enabled = true;
 			}
 
-			while (fDelayBadCount > 0)
+			if (fPowerDraw > 0.0f && bPowered)
 			{
-				GUILayout.Box(tIndicatorBad, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
-				fDelayBadCount = fDelayBadCount - 1;
+				double dTicker3 = Planetarium.GetUniversalTime();
+				if ((dTicker3 - dUpdater3) > 1)
+				{
+					pAntenna.RequestResource("ElectricCharge", fPowerDraw);
+					dUpdater3 = Planetarium.GetUniversalTime();
+				}
 			}
 
-			while (fDelayGoodCount > 0)
-			{
-				GUILayout.Box(tIndicatorGood, BoxNoBorder, GUILayout.Height(20), GUILayout.Width(8));
-				fDelayGoodCount = fDelayGoodCount - 1;
-			}
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.EndHorizontal();
-
-			GUILayout.Space(5);
+			GUILayout.FlexibleSpace();
 
 			if (FlightGlobals.ActiveVessel.GetCrewCount() < 1)
 			{
@@ -1023,7 +1528,9 @@ namespace KerbalKonstructs.UI
 						if (fSignalDelay > 4.4f || fSignalDelay == 0f)
 							bDiagMode = true;
 						else
-							bDiagMode = false;
+							if (!bPowered) bDiagMode = true;
+							else
+								bDiagMode = false;
 
 			if (!bDiagMode)
 			{
@@ -1056,7 +1563,108 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		float DetermineSignalStrength(Vessel vVessel, Part pPart, Vessel tTargetVessel, StaticObject tTargetStation, Vessel tRelayVessel)
+		public static void ScanForVessels()
+		{
+			Vessel vBest = null;
+			float fBestSignal = 0f;
+			float fSignal = 0f;
+
+			foreach (Vessel vVessel in FlightGlobals.Vessels)
+			{
+				if (vVessel.vesselType == VesselType.SpaceObject) continue;
+				if (vVessel.vesselType == VesselType.Debris) continue;
+				if (vVessel.vesselType == VesselType.EVA) continue;
+				if (vVessel.vesselType == VesselType.Flag) continue;
+				if (vVessel.vesselType == VesselType.Unknown) continue;
+				if (vVessel == FlightGlobals.ActiveVessel) continue;
+
+				fSignal = DetermineSignalStrength(FlightGlobals.ActiveVessel, pAntenna, vVessel, null, null, true);
+
+				if (fSignal > fBestSignal)
+				{
+					fBestSignal = fSignal;
+					vBest = vVessel;
+					Debug.Log("KK: Scan found a better signal to a vessel");
+				}
+			}
+
+			if (vBest != null)
+			{
+				vTargetVessel = vBest;
+				sTarget = vBest.name + "_" + vBest.id.ToString();
+				SaveCommsState();
+				Debug.Log("KK: Best signal is " + sTarget);
+			}
+			else
+			{
+				sTarget = "None";
+				vTargetVessel = null;
+				Debug.Log("KK: Scan found no signal to any other vessel");
+			}
+
+			// bScanning = false;
+		}
+
+		public static void ScanForStations()
+		{
+			StaticObject soBest = null;
+			float fBestSignal = 0f;
+			float fSignal = 0f;
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				if ((string)obj.getSetting("FacilityType") == "TrackingStation")
+				{
+					//Debug.Log("KK: Found a station");
+					PersistenceUtils.loadStaticPersistence(obj);
+					if ((string)obj.getSetting("OpenCloseState") == "Closed")
+					{
+						//Debug.Log("KK: Station is closed");
+						continue;
+					}
+
+					//Debug.Log("KK: Checking signal to an open station");
+
+					if (FlightGlobals.ActiveVessel == null || pAntenna == null || obj == null)
+					{
+						//Debug.Log("KK: WTF?");
+						bScanning = false;
+						return;
+					}
+
+					fSignal = DetermineSignalStrength(FlightGlobals.ActiveVessel, pAntenna, null, obj, null, true);
+
+					//Debug.Log("KK: fSignal is " + fSignal.ToString());
+
+					if (fSignal > fBestSignal)
+					{
+						//Debug.Log("KK: Better signal " + fSignal.ToString());
+						soBest = obj;
+						fBestSignal = fSignal;
+					}
+				}
+				else continue;
+			}
+
+			if (soBest != null)
+			{
+				soTargetStation = soBest;
+				var FacilityKey = soBest.getSetting("RadialPosition");
+				sStationRadial = FacilityKey.ToString();
+				SaveCommsState();
+				//Debug.Log("KK: Scan found best signal to station " + sStationRadial);
+			}
+			else
+			{
+				sTarget = "None";
+				soTargetStation = null;
+				//Debug.Log("KK: Scan found no signal to any station");
+			}
+
+			// bScanning = false;
+		}
+
+		public static float DetermineSignalStrength(Vessel vVessel, Part pPart, Vessel tTargetVessel, StaticObject tTargetStation, Vessel tRelayVessel, bool bScanner = false)
 		{
 			bool bRelayUsed = false;
 
@@ -1064,9 +1672,12 @@ namespace KerbalKonstructs.UI
 
 			if (pAntenna == null) return 0f;
 
-			if (tTargetStation == null)
+			if (!bScanner)
 			{
-				if (sTarget == "None" && sRelayName == "None") return 0f;
+				if (tTargetStation == null)
+				{
+					if (sTarget == "None" && sRelayName == "None") return 0f;
+				}
 			}
 
 			// Channels
@@ -1221,12 +1832,21 @@ namespace KerbalKonstructs.UI
 
 			if (fReturnStrength < 0.6f) fReturnStrength = 0.5f;
 
-			// Random signal noise
 			System.Random rnd = new System.Random();
 			int irand = rnd.Next(960);
 
-			if (irand < 21)
-				fReturnStrength = fReturnStrength - (float)irand / 40f;
+			if (!bScanner)
+			{
+				// Random signal noise
+				if (irand < 21)
+					fReturnStrength = fReturnStrength - (float)irand / 40f;
+			}
+
+			if (bBoost)
+			{
+				irand = rnd.Next(11);
+				fReturnStrength = fReturnStrength + (float)irand / 5f;
+			}
 
 			return fReturnStrength;
 		}
@@ -1390,6 +2010,9 @@ namespace KerbalKonstructs.UI
 			if (irand < 21)
 				fReturnDelay = fReturnDelay + (float)irand / 40f;
 
+			if (bClean)
+				fReturnDelay = fReturnDelay / 2f;
+
 			return fReturnDelay;
 		}
 
@@ -1471,9 +2094,9 @@ namespace KerbalKonstructs.UI
 			fPlanetRange = Vector3.Distance(TargetPos, PlanetPos);
 			fVesselRange = Vector3.Distance(TargetPos, VesselPos);
 
-			StationLOS = TrackingStationGUI.StationHasLOS(soTargetStation, vVesselSource);
+			StationLOS = TrackingStationGUI.StationHasLOS(soStationTarget, vVesselSource);
 
-			fMaxAngle = (float)soTargetStation.getSetting("TrackingAngle");
+			fMaxAngle = (float)soStationTarget.getSetting("TrackingAngle");
 
 			if (StationLOS > fMaxAngle) return true;
 

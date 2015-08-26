@@ -16,10 +16,10 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle LabelInfo;
 		public static GUIStyle BoxInfo;
 
-		public static Texture tKerbal = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/billeted", false);
-		public static Texture tNoKerbal = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/unbilleted", false);
-		public static Texture tXPGained = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/xpgained", false);
-		public static Texture tXPUngained = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/xpungained", false);
+		public static Texture tKerbal = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+		public static Texture tNoKerbal = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/unbilleted", false);
+		public static Texture tXPGained = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/xpgained", false);
+		public static Texture tXPUngained = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/xpungained", false);
 
 		public static void StaffingInterface(StaticObject selectedFacility)
 		{

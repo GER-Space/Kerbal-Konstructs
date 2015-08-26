@@ -16,18 +16,18 @@ namespace KerbalKonstructs.LaunchSites
 	public class LaunchSiteManager
 	{
 		private static List<LaunchSite> launchSites = new List<LaunchSite>();
-		public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/DefaultSiteLogo", false);
+		public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
 		public static float RangeNearestOpenBase = 0f;
 		public static string NearestOpenBase = "";
 		public static float RangeNearestBase = 0f;
 		public static string NearestBase = "";
 
 		public static LaunchSite runway = new LaunchSite("Runway", "Squad", SiteType.SPH, 
-			GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/KSCRunway", false), null, 
+			GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false), null, 
 			"The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.", 
 			"Runway", 0, 0, "Open", 285.37f, -0.09f, 69, 2500f, 75f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
 		public static LaunchSite launchpad = new LaunchSite("LaunchPad", "Squad", SiteType.VAB, 
-			GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/KSCLaunchpad", false), null, 
+			GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false), null, 
 			"The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...", 
 			"RocketPad", 0, 0, "Open", 285.37f, -0.09f, 72, 20f, 20f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
 
@@ -241,6 +241,20 @@ namespace KerbalKonstructs.LaunchSites
 			}
 
 			fRefund = 0;
+		}
+
+		public static GameObject getSiteGameObject(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					return site.GameObject;
+				}
+			}
+
+			return null;
 		}
 
 		public static void setAllLaunchsitesClosed()

@@ -13,7 +13,7 @@ namespace KerbalKonstructs.UI
 		Rect targetSelectorRect = new Rect(640, 120, 200, 400);
 		public static Rect facilityManagerRect = new Rect(150, 75, 300, 500);
 
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep3", false);
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
 		public Vector2 descriptionScrollPosition;
 		

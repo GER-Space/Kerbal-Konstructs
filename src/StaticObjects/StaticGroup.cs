@@ -7,19 +7,22 @@ namespace KerbalKonstructs.StaticObjects
 {
 	class StaticGroup
 	{
-		private String groupName;
-		private String bodyName;
+		public String groupName;
+		public String bodyName;
 
-		private List<StaticObject> childObjects = new List<StaticObject>();
-		private Vector3 centerPoint = Vector3.zero;
-		private float visiblityRange = 0;
+		public List<StaticObject> childObjects = new List<StaticObject>();
+		public Vector3 centerPoint = Vector3.zero;
+		public float visibilityRange = 0;
 		public Boolean alwaysActive = false;
 		public Boolean active = false;
+		public Boolean bLiveUpdate = false;
 
 		public StaticGroup(String name, String body)
 		{
 			groupName = name;
 			bodyName = body;
+			centerPoint = Vector3.zero;
+			visibilityRange = 0f; 
 		}
 
 		public void addStatic(StaticObject obj)
@@ -38,25 +41,43 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			float highestVisibility = 0;
 			float furthestDist = 0;
-			Vector3 center = Vector3.zero;
+
+			centerPoint = Vector3.zero;
+
 			foreach (StaticObject obj in childObjects)
 			{
-				if ((float) obj.getSetting("VisibilityRange") > highestVisibility)
-					highestVisibility = (float) obj.getSetting("VisibilityRange");
 
-				center += obj.gameObject.transform.position;
+
+				//if (centerPoint == obj.gameObject.transform.position || centerPoint == Vector3.zero)
+				//{
+				// FIRST ONE IS THE CENTER
+					centerPoint = obj.gameObject.transform.position;
+
+					//if (centerPoint == Vector3.zero)
+					//{
+						//Debug.Log("KK: This group has a center of v3zero???????");
+					//}
+
+					break;
+				//}
+				//else
+				//{
+					//centerPoint = Vector3.Lerp(centerPoint, obj.gameObject.transform.position, 0.5f);
+				//}
 			}
-			center /= childObjects.Count;
 
 			foreach (StaticObject obj in childObjects)
 			{
-				float dist = Vector3.Distance(center, obj.gameObject.transform.position);
+				if ((float)obj.getSetting("VisibilityRange") > highestVisibility)
+					highestVisibility = (float)obj.getSetting("VisibilityRange");
+
+				float dist = Vector3.Distance(centerPoint, obj.gameObject.transform.position);
+				
 				if (dist > furthestDist)
 					furthestDist = dist;
 			}
 
-			visiblityRange = highestVisibility + furthestDist;
-			centerPoint = center;
+			visibilityRange = highestVisibility + (furthestDist * 2);
 		}
 
 		public static void SetActiveRecursively(GameObject rootObject, bool active)
@@ -73,8 +94,6 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			foreach (StaticObject obj in childObjects)
 			{
-				// obj.gameObject.SetActive(false);
-
 				SetActiveRecursively(obj.gameObject, false);
 			}
 		}
@@ -85,27 +104,23 @@ namespace KerbalKonstructs.StaticObjects
 			{
 				float dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
 				bool visible = (dist < (float) obj.getSetting("VisibilityRange"));
-				if (visible != obj.gameObject.activeSelf)
-				{
-					// Debug.Log("KK: Setting " + obj.gameObject.name + " to visible =" + visible);
-					// obj.gameObject.SetActive(visible);
-					SetActiveRecursively(obj.gameObject, visible);
 
-					// ASH 06112014
-					// What if SetActive isn't actually properly activating children?
-					// Transform[] gameObjectList = obj.gameObject.GetComponentsInChildren<Transform>(true);
-					// List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.renderer != null select t.gameObject).ToList();
-					
-					/* foreach (GameObject renderer in rendererList)
+				string sFacType = (string)obj.getSetting("FacilityType");
+
+				if (sFacType == "CityLights")
+				{
+					if (dist < 60000f)
+						SetActiveRecursively(obj.gameObject, false);
+					else
 					{
-						// Debug.Log("KK: Child activeself is " + renderer.activeSelf);
-						bool childVisible = renderer.activeSelf;
-						if (childVisible != true)
-						{
-							// Debug.Log("KK: Setting child active!");
-							renderer.SetActive(true);
-						}
-					} */
+						if (visible)
+							SetActiveRecursively(obj.gameObject, true);
+					}
+				}
+				else
+				{				
+					if (visible)
+						SetActiveRecursively(obj.gameObject, true);
 				}
 			}
 		}
@@ -117,7 +132,7 @@ namespace KerbalKonstructs.StaticObjects
 
 		public float getVisibilityRange()
 		{
-			return visiblityRange;
+			return visibilityRange;
 		}
 
 		public String getGroupName()

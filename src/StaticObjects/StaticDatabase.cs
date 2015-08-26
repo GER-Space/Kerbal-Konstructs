@@ -34,56 +34,107 @@ namespace KerbalKonstructs.StaticObjects
 
 			if (!groupList[bodyName].ContainsKey(groupName))
 			{
-				StaticGroup group = new StaticGroup(bodyName, groupName);
+				//StaticGroup group = new StaticGroup(bodyName, groupName);
+				StaticGroup group = new StaticGroup(groupName, bodyName);
 				//Ungrouped objects get individually cached. New acts the same as Ungrouped but stores unsaved statics instead.
 				if (groupName == "Ungrouped")
 				{
 					group.alwaysActive = true;
-					group.active = true;
+					//group.active = true;
 				}
+				
+				group.active = true;
+				
 				groupList[bodyName].Add(groupName, group);
 			}
 
 			groupList[bodyName][groupName].addStatic(obj);
 		}
 
+		public void ToggleActiveAllStatics(bool bActive = true)
+		{
+			if (KerbalKonstructs.instance.DebugMode)
+				Debug.Log("KK: StaticDatabase.ToggleActiveAllStatics");
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				obj.SetActiveRecursively(obj.gameObject, bActive);
+			}
+		}
+
+		public void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
+		{
+			if (KerbalKonstructs.instance.DebugMode)
+				Debug.Log("KK: StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
+					obj.SetActiveRecursively(obj.gameObject, bActive);
+				else
+					if (bOpposite)
+						obj.SetActiveRecursively(obj.gameObject, !bActive);
+			}
+		}
+
+		public void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
+		{
+			if (KerbalKonstructs.instance.DebugMode)
+				Debug.Log("KK: StaticDatabase.ToggleActiveStaticsInGroup");
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				if ((string)obj.getSetting("Group") == sGroup)
+					obj.SetActiveRecursively(obj.gameObject, bActive);
+				else
+					if (bOpposite)
+						obj.SetActiveRecursively(obj.gameObject, !bActive);
+			}
+		}
+
 		public void cacheAll()
 		{
-			// ASH 01112014 Need to handle this.
-			// Debug.Log("KK: StaticDatabase cacheAll() activeBodyname is " + activeBodyName);
 			if (activeBodyName == "")
+			{
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.cacheAll() skipped. No activeBodyName.");
+				
 				return;
-
-			var body = KerbalKonstructs.instance.getCurrentBody();
-			// Debug.Log("KK: getCurrentBody()" + (body == null ? " = NULL" : (".bodyName = " + body.bodyName)));
+			}
 
 			if (groupList.ContainsKey(activeBodyName))
 			{
-				// ASH 01112014 This is wrong.
-				//foreach (StaticGroup group in groupList[KerbalKonstructs.instance.getCurrentBody().bodyName].Values)
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.cacheAll(): groupList containsKey " + activeBodyName);
 
-				// ASH 01112014 This is right.
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-					group.cacheAll();
-					// Debug.Log("KK: cacheAll for " + activeBodyName + " " + group.getGroupName());
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
+					
+					if (group.active)
+						group.cacheAll();
+
 					if (!group.alwaysActive)
 					{
 						group.active = false;
-						// Debug.Log("KK: group alwaysActive is FALSE. Group is deactivated.");
-					}
-					else
-					{
-						// Debug.Log("KK: group alwaysActive is TRUE. Group stays active.");
+
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.cacheAll(): group is not always active. group.active is set false for " + group.groupName);
 					}
 				}
+			}
+			else
+			{
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.cacheAll(): groupList DOES NOT containsKey " + activeBodyName);
 			}
 		}
 
 		public void loadObjectsForBody(String bodyName)
 		{
 			activeBodyName = bodyName;
-			// Debug.Log("KK: loadObjectsForBody() bodyName is " + bodyName);
+
 			if (groupList.ContainsKey(bodyName))
 			{
 				foreach (KeyValuePair<String, StaticGroup> bodyGroups in groupList[bodyName])
@@ -91,34 +142,33 @@ namespace KerbalKonstructs.StaticObjects
 					bodyGroups.Value.active = true;
 				}
 			}
-			else
-			{
-				// Debug.Log("KK: No statics exist for " + bodyName);
-			}
 		}
 
 		public void onBodyChanged(CelestialBody body)
 		{
 			if (body != null)
 			{
-				// Debug.Log("KK: StaticDatabase onBodyChanged() body.bodyName is " + body.bodyName);
-				// Debug.Log("KK: Staticdatabase onBodyChanged() activebodyName is " + activeBodyName);
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.onBodyChanged(): body is not null.");
+
 				if (body.bodyName != activeBodyName)
 				{
-					// Debug.Log("KK: Staticdatabase onBodyChanged() calls cacheAll() then loadObjectsForBody()");
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: StaticDatabase.onBodyChanged(): bodyName is not activeBodyName. cacheAll(). Load objects for body. Set activeBodyName to body.");
+
+					if (KerbalKonstructs.instance.DebugMode)
+						Debug.Log("KK: " + "bodyName " + body.bodyName + " activeBodyName " + activeBodyName);
+
 					cacheAll();
 					loadObjectsForBody(body.bodyName);
 					activeBodyName = body.bodyName;
 				}
-				// else
-				// {
-					// Debug.Log("KK: Staticdatabase body.bodyname IS activebodyname so onBodyChanged() calls loadObjectsForBody()");
-					// loadObjectsForBody(body.bodyName);
-				// }
 			}
 			else
 			{
-				// Debug.Log("KK: Staticdatabase onBodyChanged() body is null");
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
+				
 				cacheAll();
 				activeBodyName = "";
 			}
@@ -126,28 +176,104 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void updateCache(Vector3 playerPos)
 		{
-			// Debug.Log("KK: StaticDatabase.updateCache() - " + activeBodyName);
+			if (KerbalKonstructs.instance.DebugMode)
+				Debug.Log("KK: StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
+
+			Vector3 vPlayerPos = Vector3.zero;
+
+			if (FlightGlobals.ActiveVessel != null)
+			{
+				vPlayerPos = FlightGlobals.ActiveVessel.GetTransform().position;
+
+				if (KerbalKonstructs.instance.DebugMode)
+					Debug.Log("KK: StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
+			}
+			else
+				vPlayerPos = playerPos;
+
+			if (KerbalKonstructs.instance.DebugMode)
+			{
+				if (vPlayerPos == Vector3.zero)
+					Debug.Log("KK: StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+			}
+			
 			if (groupList.ContainsKey(activeBodyName))
 			{
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
+					if (!group.bLiveUpdate)
+					{
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
+						
+						group.updateCacheSettings();
+						group.bLiveUpdate = true;
+					}
+
 					if (!group.alwaysActive)
 					{
-						float dist = Vector3.Distance(group.getCenter(), playerPos);
-						Boolean active = dist < group.getVisibilityRange();
-						if (active != group.active && active == false)
+						var center = group.centerPoint;
+						var dist = Vector3.Distance(center, vPlayerPos);
+
+						List<StaticObject> groupchildObjects = group.childObjects;
+
+						foreach (StaticObject obj in groupchildObjects)
 						{
-							// Debug.Log("KK: Staticdatabase Caching group " + group.getGroupName());
+							dist = Vector3.Distance(vPlayerPos, obj.gameObject.transform.position);
+							
+							if (KerbalKonstructs.instance.DebugMode)
+								Debug.Log("KK: StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
+
+							break;
+						}
+
+						if (center == Vector3.zero)
+						{
+							if (KerbalKonstructs.instance.DebugMode)
+								Debug.Log("KK: StaticDatabase.updateCache(): center of group is still v3.zero " + group.groupName);
+						}
+						
+						//if (KerbalKonstructs.instance.DebugMode)
+						//	Debug.Log("KK: StaticDatabase.updateCache(): dist is " + dist.ToString() + " to " + group.groupName);
+						
+						Boolean bGroupIsClose = dist < group.visibilityRange;
+
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.groupName);
+						
+						if (!bGroupIsClose)
+						{
+							if (KerbalKonstructs.instance.DebugMode)
+								Debug.Log("KK: StaticDatabase.updateCache(): Group is not close. cacheAll()  " + group.groupName);
+							
 							group.cacheAll();
 						}
-						group.active = active;
+						
+						group.active = bGroupIsClose;
 					}
+					else
+					{
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.updateCache(): Group is always active. Check if updateCache goes off. " + group.groupName);
+
+						group.active = true;
+					}
+
 					if (group.active)
 					{
-						group.updateCache(playerPos);
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.updateCache(): Group is active. group.updateCache() " + group.groupName);
+
+						group.updateCache(vPlayerPos);
+					}
+					else
+					{
+						if (KerbalKonstructs.instance.DebugMode)
+							Debug.Log("KK: StaticDatabase.updateCache(): Group is not active " + group.groupName);
 					}
 				}
 			}
+
 		}
 
 		public void deleteObject(StaticObject obj)
@@ -161,14 +287,6 @@ namespace KerbalKonstructs.StaticObjects
 				{
 					groupList[bodyName][groupName].deleteObject(obj);
 				}
-				else
-				{
-					// Debug.Log("KK: Group not found! " + groupName);
-				}
-			}
-			else
-			{
-				// Debug.Log("KK: Body not found! " + bodyName);
 			}
 		}
 
@@ -206,12 +324,15 @@ namespace KerbalKonstructs.StaticObjects
 		public StaticObject getStaticFromGameObject(GameObject gameObject)
 		{
 			List<StaticObject> objList = (from obj in getAllStatics() where obj.gameObject == gameObject select obj).ToList();
+			
 			if (objList.Count >= 1)
 			{
 				if (objList.Count > 1)
 					Debug.Log("KK: WARNING: More than one StaticObject references to GameObject " + gameObject.name);
+				
 				return objList[0];
 			}
+
 			Debug.Log("KK: WARNING: StaticObject doesn't exist for " + gameObject.name);
 			return null;
 		}

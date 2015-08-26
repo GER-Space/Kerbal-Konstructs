@@ -16,17 +16,17 @@ namespace KerbalKonstructs.UI
 	{
 		Rect KSCmanagerRect = new Rect(150, 50, 640, 680);
 
-		public Texture tTexture = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscadmin", false);
+		public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadmin", false);
 
-		public Texture tAdmin = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscadmin", false);
-		public Texture tTracking = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/ksctracking", false);
-		public Texture tRND = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscrnd", false);
-		public Texture tLaunch = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/ksclaunch", false);
-		public Texture tRunway = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscrun", false);
-		public Texture tFacVAB = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscvab", false);
-		public Texture tFacSPH = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscsph", false);
-		public Texture tAstro = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/kscastro", false);
-		public Texture tControl = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/ksccommand", false);
+		public Texture tAdmin = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadmin", false);
+		public Texture tTracking = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksctracking", false);
+		public Texture tRND = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscrnd", false);
+		public Texture tLaunch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksclaunch", false);
+		public Texture tRunway = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscrun", false);
+		public Texture tFacVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscvab", false);
+		public Texture tFacSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscsph", false);
+		public Texture tAstro = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscastro", false);
+		public Texture tControl = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksccommand", false);
 
 		public String sSelectedfacility = "";
 		public String strLaunchpad = "";

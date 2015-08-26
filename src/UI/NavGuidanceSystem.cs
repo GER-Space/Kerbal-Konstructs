@@ -15,7 +15,7 @@ namespace KerbalKonstructs.UI
 	{
 		Rect NGSRect = new Rect(250, 50, 395, 110);
 
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/horizontalsep2", false);
+		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
 		public bool bClosing = false;
 		public int iCorrection = 3;
@@ -38,15 +38,15 @@ namespace KerbalKonstructs.UI
 
 		static LaunchSite lTargetSite = null;
 
-		public Texture tIconClosed = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteclosed", false);
-		public Texture tIconOpen = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteopen", false);
-		public Texture tLeftOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/lefton", false);
-		public Texture tLeftOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/leftoff", false);
-		public Texture tRightOn = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/righton", false);
-		public Texture tRightOff = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/rightoff", false);
-		public Texture tTextureLeft = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/leftoff", false);
-		public Texture tTextureRight = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/rightoff", false);
-		public Texture tTextureMiddle = GameDatabase.Instance.GetTexture("medsouz/KerbalKonstructs/Assets/siteclosed", false);
+		public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+		public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+		public Texture tLeftOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lefton", false);
+		public Texture tLeftOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
+		public Texture tRightOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/righton", false);
+		public Texture tRightOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
+		public Texture tTextureLeft = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
+		public Texture tTextureRight = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
+		public Texture tTextureMiddle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
 
 		GUIStyle navStyle = new GUIStyle();
 		GUIStyle BoxNoBorder;
