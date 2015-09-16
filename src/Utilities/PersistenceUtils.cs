@@ -102,6 +102,28 @@ namespace KerbalKonstructs.Utilities
 			rootNode.Save(saveConfigPath);
 		}
 
+		public static List<string> pAttributes = new List<string>{
+			"FacilityType", "RadialPosition", "InStorage", "FacilityLengthUsed", "FacilityWidthUsed", "FacilityHeightUsed",
+			"FacilityMassUsed", "TrackingShort", "TrackingAngle", "TargetType", "TargetID", "FacilityXP",
+			"StaffMax", "StaffCurrent", "LqFCurrent", "OxFCurrent", "MoFCurrent",
+			"ECCurrent", "OreCurrent", "PrOreCurrent", "ScienceOMax", "ScienceOCurrent",
+			"RepOMax", "RepOCurrent", "FundsOMax", "FundsOCurrent", "LastCheck",
+			"ProductionRateMax", "ProductionRateCurrent", "Producing", "OpenCloseState"};
+
+		public static List<string> pDefaultAttributes = new List<string>{
+			"FacilityType", "StaffMax", "ScienceOMax", "RepOMax", "FundsOMax", "ProductionRateMax"};
+
+		public static List<string> pStringAttributes = new List<string>{
+			"FacilityType", "InStorage", "TargetType", "TargetID", "Producing", "OpenCloseState"};
+
+		public static List<string> pFloatAttributes = new List<string>{
+			"FacilityLengthUsed", "FacilityWidthUsed", "FacilityHeightUsed", "FacilityMassUsed",
+			"TrackingShort", "TrackingAngle", "FacilityXP",
+			"StaffMax", "StaffCurrent", "LqFCurrent", "OxFCurrent", "MoFCurrent",
+			"ECCurrent", "OreCurrent", "PrOreCurrent", "ScienceOMax", "ScienceOCurrent",
+			"RepOMax", "RepOCurrent", "FundsOMax", "FundsOCurrent", "LastCheck",
+			"ProductionRateMax", "ProductionRateCurrent"};
+
 		public static void saveStaticPersistence(StaticObject obj)
 		{
 			Boolean bFoundStatic = false;
@@ -134,48 +156,24 @@ namespace KerbalKonstructs.Utilities
 				{
 					// Debug.Log("KK: Found a KKStatic");
 					string sRadPos = insins.GetValue("RadialPosition");
+
 					if (sRadPos == null)
 					{
 						Debug.Log("KK: Got a KKStatic but it has no key! WTF?????");
 						continue;
 					}
+
 					if (sRadPos == FacilityKey.ToString())
 					{
 						// Debug.Log("KK: Got a KKStatic key match - editing the node");
+						foreach (string sAtt in pAttributes)
+						{
+							if (insins.HasValue(sAtt))
+								insins.RemoveValue(sAtt);
 
-						if (insins.HasValue("LqFCurrent"))
-							insins.RemoveValue("LqFCurrent");
-						if (insins.HasValue("OxFCurrent"))
-							insins.RemoveValue("OxFCurrent");
-						if (insins.HasValue("MoFCurrent"))
-							insins.RemoveValue("MoFCurrent");
-
-						if (insins.HasValue("StaffCurrent"))
-							insins.RemoveValue("StaffCurrent");
-						if (insins.HasValue("TrackingShort"))
-							insins.RemoveValue("TrackingShort");
-						if (insins.HasValue("TrackingAngle"))
-							insins.RemoveValue("TrackingAngle");
-						if (insins.HasValue("FacilityXP"))
-							insins.RemoveValue("FacilityXP");
-						if (insins.HasValue("TargetType"))
-							insins.RemoveValue("TargetType");
-						if (insins.HasValue("TargetID"))
-							insins.RemoveValue("TargetID");
-						if (insins.HasValue("OpenCloseState"))
-							insins.RemoveValue("OpenCloseState");
-
-						insins.AddValue("LqFCurrent", obj.getSetting("LqFCurrent").ToString());
-						insins.AddValue("OxFCurrent", obj.getSetting("OxFCurrent").ToString());
-						insins.AddValue("MoFCurrent", obj.getSetting("MoFCurrent").ToString());
-
-						insins.AddValue("StaffCurrent", obj.getSetting("StaffCurrent").ToString());
-						insins.AddValue("TrackingShort", obj.getSetting("TrackingShort").ToString());
-						insins.AddValue("TrackingAngle", obj.getSetting("TrackingAngle").ToString());
-						insins.AddValue("FacilityXP", obj.getSetting("FacilityXP").ToString());
-						insins.AddValue("OpenCloseState", obj.getSetting("OpenCloseState"));
-						insins.AddValue("TargetType", obj.getSetting("TargetType"));
-						insins.AddValue("TargetID", obj.getSetting("TargetID"));
+							if (obj.getSetting(sAtt) != null)
+								insins.AddValue(sAtt, obj.getSetting(sAtt).ToString());
+						}
 
 						bFoundStatic = true;
 						break;
@@ -186,26 +184,37 @@ namespace KerbalKonstructs.Utilities
 			if (!bFoundStatic)
 			{
 				// Debug.Log("KK: No KKStatic found. Creating a new node.");
-
 				ConfigNode newStatic = new ConfigNode("KKStatic");
-				newStatic.AddValue("RadialPosition", obj.getSetting("RadialPosition").ToString());
-				newStatic.AddValue("LqFCurrent", obj.getSetting("LqFCurrent").ToString());
-				newStatic.AddValue("OxFCurrent", obj.getSetting("OxFCurrent").ToString());
-				newStatic.AddValue("MoFCurrent", obj.getSetting("MoFCurrent").ToString());
 
-				newStatic.AddValue("StaffCurrent", obj.getSetting("StaffCurrent").ToString());
-				newStatic.AddValue("TrackingShort", obj.getSetting("TrackingShort").ToString());
-				newStatic.AddValue("TrackingAngle", obj.getSetting("TrackingAngle").ToString());
-				newStatic.AddValue("FacilityXP", obj.getSetting("FacilityXP").ToString());
-				newStatic.AddValue("TargetType", obj.getSetting("TargetType"));
-				newStatic.AddValue("TargetID", obj.getSetting("TargetID"));
-				newStatic.AddValue("OpenCloseState", obj.getSetting("OpenCloseState"));
+				foreach (string sAtt in pAttributes)
+				{
+					if (obj.getSetting(sAtt) != null)
+						newStatic.AddValue(sAtt, obj.getSetting(sAtt).ToString());
+				}
 
 				cnHolder.AddNode(newStatic);
 			}
 
 			// Debug.Log("KK: rootNode.save");
 			rootNode.Save(saveConfigPath);
+		}
+
+		public static void savePersistenceBackup()
+		{
+			string saveConfigPath = string.Format("{0}saves/{1}/KKFacilities.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			string backupConfigPath = string.Format("{0}saves/{1}/KKFacilitiesBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+
+			if (File.Exists(saveConfigPath))
+				File.Copy(saveConfigPath, backupConfigPath, true);
+		}
+
+		public static void loadPersistenceBackup()
+		{
+			string saveConfigPath = string.Format("{0}saves/{1}/KKFacilities.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			string backupConfigPath = string.Format("{0}saves/{1}/KKFacilitiesBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+
+			if (File.Exists(backupConfigPath))
+				File.Copy(backupConfigPath, saveConfigPath, true);
 		}
 
 		public static void loadStaticPersistence(StaticObject obj)
@@ -236,63 +245,61 @@ namespace KerbalKonstructs.Utilities
 				if (ins.GetValue("Name") == "KKStatics")
 				{
 					// Debug.Log("KK: Found SCENARIO named KKStatics");
-
 					foreach (ConfigNode insins in ins.GetNodes("KKStatic"))
 					{
 						// Debug.Log("KK: Found a KKStatic");
 						string sRadPos = insins.GetValue("RadialPosition");
 						if (sRadPos == FacilityKey.ToString())
 						{
+							foreach (string sAtt in pStringAttributes)
+							{
+								if (insins.GetValue(sAtt) != null)
+									obj.setSetting(sAtt, insins.GetValue(sAtt));
+							}
+							foreach (string sAtt2 in pFloatAttributes)
+							{
+								if (insins.GetValue(sAtt2) != null)
+									obj.setSetting(sAtt2, float.Parse(insins.GetValue(sAtt2)));
+							}
 							// Debug.Log("KK: Got a KKStatic key match");
-							obj.setSetting("LqFCurrent", float.Parse(insins.GetValue("LqFCurrent")));
-							obj.setSetting("OxFCurrent", float.Parse(insins.GetValue("OxFCurrent")));
-							obj.setSetting("MoFCurrent", float.Parse(insins.GetValue("MoFCurrent")));
-
-							obj.setSetting("StaffCurrent", float.Parse(insins.GetValue("StaffCurrent")));
-							obj.setSetting("FacilityXP", float.Parse(insins.GetValue("FacilityXP")));
-							
-							//if (insins.GetValue("TrackingShort") != null)
-								obj.setSetting("TrackingShort", float.Parse(insins.GetValue("TrackingShort")));
-							//else
-								//obj.setSetting("TrackingShort", (float)85000f);
-
-							//if (insins.GetValue("TrackingAngle") != null)
-								obj.setSetting("TrackingAngle", float.Parse(insins.GetValue("TrackingAngle")));
-							//else
-								//obj.setSetting("TrackingAngle", (float)65f);
-
-							obj.setSetting("TargetType", insins.GetValue("TargetType"));
-							obj.setSetting("OpenCloseState", insins.GetValue("OpenCloseState"));
-							obj.setSetting("TargetID", insins.GetValue("TargetID"));
 							bMatch = true;
 							break;
 						}
-						// else
-						// Debug.Log("KK: No KKStatic key match");
 					}
 					break;
 				}
+
 			}
 
 			if (!bMatch)
 			{
 				// Debug.Log("KK: KKStatic not yet persistent for this save. Initialising KKStatic");
-				obj.setSetting("LqFCurrent", 0.00f);
-				obj.setSetting("OxFCurrent", 0.00f);
-				obj.setSetting("MoFCurrent", 0.00f);
+				// Model defaults initialisation
+				foreach (string sAtt5 in pDefaultAttributes)
+				{
+					string sDefault = "Default" + sAtt5;
 
+					if (obj.model.getSetting(sDefault) == null) continue;
+
+					obj.setSetting(sAtt5, obj.model.getSetting(sDefault));
+				}
+
+				foreach (string sAtt3 in pStringAttributes)
+				{
+					if (obj.getSetting(sAtt3) == null)
+						obj.setSetting(sAtt3, "None");
+				}
+				foreach (string sAtt4 in pFloatAttributes)
+				{
+					if (obj.getSetting(sAtt4) == null)
+						obj.setSetting(sAtt4, 0f);
+				}
+
+				// Fixed intialisation
 				obj.setSetting("StaffCurrent", 1f);
-				obj.setSetting("FacilityXP", 0f);
-
-				if  (obj.getSetting("TrackingShort") == null)
-					obj.setSetting("TrackingShort", 0f);
-
-				if (obj.getSetting("TrackingAngle") == null)
-					obj.setSetting("TrackingAngle", 0f);
-
-				obj.setSetting("TargetType", "None");
-				obj.setSetting("TargetID", "No Target");
+				obj.setSetting("TargetID", "None");
 				obj.setSetting("OpenCloseState", "Closed");
+				
 				saveStaticPersistence(obj);
 			}
 		}

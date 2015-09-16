@@ -285,6 +285,7 @@ namespace KerbalKonstructs.StaticObjects
 			{
 				if (groupList[bodyName].ContainsKey(groupName))
 				{
+					Debug.Log("KK: StaticDatabase deleteObject");
 					groupList[bodyName][groupName].deleteObject(obj);
 				}
 			}

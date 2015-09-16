@@ -1,11 +1,18 @@
 ﻿using System;
 using UnityEngine;
+using KerbalKonstructs.LaunchSites;
+using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.API;
+using KerbalKonstructs.Utilities;
+using System.Collections.Generic;
+using LibNoise.Unity.Operator;
+using System.Linq;
+using System.IO;
 
 namespace KerbalKonstructs.UI
 {
 	public class CameraController
 	{
-
 		public FlightCamera cam;
 		public Transform oldTarget;
 		public Boolean active = false;
@@ -26,14 +33,17 @@ namespace KerbalKonstructs.UI
 			}
 			else
 			{
-				Debug.LogError("FlightCamera doesn't exist!");
+				Debug.LogError("KK: FlightCamera doesn't exist!");
 			}
 		}
 
 		public void disable()
 		{
 			cam.ActivateUpdate();
-			cam.transform.parent = oldTarget;
+
+			if (oldTarget != null)
+				cam.transform.parent = oldTarget;
+			
 			active = false;
 		}
 
@@ -49,7 +59,7 @@ namespace KerbalKonstructs.UI
 			if (Input.GetAxis("Mouse ScrollWheel") != 0)
 			{
 				// ASH 08112014 Make zoom faster
-				zoom = Mathf.Clamp(zoom - Input.GetAxis("Mouse ScrollWheel") * 200.0f, cam.minDistance, cam.maxDistance);
+				zoom = Mathf.Clamp(zoom - Input.GetAxis("Mouse ScrollWheel") * 100.0f, cam.minDistance, cam.maxDistance);
 			}
 
 			cam.transform.localRotation = Quaternion.Euler(y, x, 0);

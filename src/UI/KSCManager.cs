@@ -14,7 +14,7 @@ namespace KerbalKonstructs.UI
 {
 	class KSCManager
 	{
-		Rect KSCmanagerRect = new Rect(150, 50, 640, 680);
+		Rect KSCmanagerRect = new Rect(150, 50, 640, 380);
 
 		public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadmin", false);
 
@@ -27,6 +27,8 @@ namespace KerbalKonstructs.UI
 		public Texture tFacSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscsph", false);
 		public Texture tAstro = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscastro", false);
 		public Texture tControl = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksccommand", false);
+		public Texture tTick = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingstick", false);
+		public Texture tCross = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingscross", false);
 
 		public String sSelectedfacility = "";
 		public String strLaunchpad = "";
@@ -38,13 +40,50 @@ namespace KerbalKonstructs.UI
 		public String strControl = "";
 		public String strRND = "";
 		public String strAdmin = "";
+
+		public String sFacilityUseRange = "";
+
+		public bool bDetermined = false;
+
 		string sString = "";
+
 		float fFacLvl = 0f;
 		float fmaxLvl = 0f;
+
+		public double dUpdater = 0;
 
 		public void drawKSCManager()
 		{
 			KSCmanagerRect = GUI.Window(0xC00B1E2, KSCmanagerRect, drawKSCmanagerWindow, "Base Boss : KSC Manager");
+		}
+
+		public void DetermineFacilityLevels()
+		{
+			foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
+			{
+				fFacLvl = 1 + (facility.FacilityLevel);
+				fmaxLvl = 1 + (facility.MaxLevel);
+				sString = "Lvl " + fFacLvl + "/" + fmaxLvl;
+
+				if (facility.name == "LaunchPad")
+					strLaunchpad = sString;
+				if (facility.name == "Runway")
+					strRunway = sString;
+				if (facility.name == "VehicleAssemblyBuilding")
+					strVAB = sString;
+				if (facility.name == "SpaceplaneHangar")
+					strSPH = sString;
+				if (facility.name == "TrackingStation")
+					strTracking = sString;
+				if (facility.name == "AstronautComplex")
+					strAstro = sString;
+				if (facility.name == "MissionControl")
+					strControl = sString;
+				if (facility.name == "ResearchAndDevelopment")
+					strRND = sString;
+				if (facility.name == "Administration")
+					strAdmin = sString;
+			}
 		}
 
 		public void drawKSCmanagerWindow(int WindowID)
@@ -106,30 +145,17 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.BeginHorizontal();
 			{
-				foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
+				if (!bDetermined)
 				{
-					fFacLvl = 1 + (facility.FacilityLevel);
-					fmaxLvl = 1 + (facility.MaxLevel);
-					sString = "Lvl " + fFacLvl + "/" + fmaxLvl;
+					DetermineFacilityLevels();
+					bDetermined = true;
+				}
 
-					if (facility.name == "LaunchPad")
-						strLaunchpad = sString;
-					if (facility.name == "Runway")
-						strRunway = sString;
-					if (facility.name == "VehicleAssemblyBuilding")
-						strVAB = sString;
-					if (facility.name == "SpaceplaneHangar")
-						strSPH = sString;
-					if (facility.name == "TrackingStation")
-						strTracking = sString;
-					if (facility.name == "AstronautComplex")
-						strAstro = sString;
-					if (facility.name == "MissionControl")
-						strControl = sString;
-					if (facility.name == "ResearchAndDevelopment")
-						strRND = sString;
-					if (facility.name == "Administration")
-						strAdmin = sString;
+				double dTicker = Planetarium.GetUniversalTime();
+				if ((dTicker - dUpdater) > 10)
+				{
+					dUpdater = Planetarium.GetUniversalTime();
+					bDetermined = false;
 				}
 
 				GUILayout.Box(strLaunchpad, GUILayout.Width(66));
@@ -143,6 +169,16 @@ namespace KerbalKonstructs.UI
 				GUILayout.Box(strAdmin, GUILayout.Width(66));
 			}
 			GUILayout.EndHorizontal();
+
+			GUILayout.FlexibleSpace();
+
+			if (GUILayout.Button("KERBAL KONSTRUCTS SETTINGS"))
+			{
+				if (!KerbalKonstructs.instance.showSettings)
+					KerbalKonstructs.instance.showSettings = true;
+				else
+					KerbalKonstructs.instance.showSettings = false;
+			}
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}

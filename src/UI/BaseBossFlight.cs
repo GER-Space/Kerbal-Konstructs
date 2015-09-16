@@ -25,9 +25,14 @@ namespace KerbalKonstructs.UI
 		Rect facilityRect = new Rect(150, 75, 400, 620);
 		Rect targetSelectorRect = new Rect(450, 150, 250, 550);
 		Rect downlickRect = new Rect(300, 50, 140, 350);
+
+		public float iFundsOpen2 = 0f;
 		
 		public Boolean managingFacility = false;
 		public Boolean foundingBase = false;
+		public Boolean bIsOpen = false;
+
+		public Boolean bShowFacilities = false;
 		
 		public static Boolean bChangeTarget = false;
 		
@@ -116,6 +121,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
+					bShowFacilities = false;
 					KerbalKonstructs.instance.showFlightManager = false;
 				}
 			}
@@ -317,9 +323,33 @@ namespace KerbalKonstructs.UI
 
 			if (FlightGlobals.ActiveVessel.Landed)
 			{
-				GUILayout.Box("Nearby Facilities", BoxNoBorder);
+				if (GUILayout.Button("Nearby Facilities", GUILayout.Height(23)))
+				{
+					if (bShowFacilities)
+						bShowFacilities = false;
+					else
+					{
+						foreach (StaticObject soStaticobj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+						{
+							if ((string)soStaticobj.model.getSetting("DefaultFacilityType") == "None") continue;
+
+							if (soStaticobj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+							{
+								var dist2 = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, soStaticobj.gameObject.transform.position);
+								if (dist2 > 5000f) continue;
+							}
+							else
+								continue;
+
+							PersistenceUtils.loadStaticPersistence(soStaticobj);
+						}
+
+						bShowFacilities = true;
+					}
+				}
 
 				scrollPos = GUILayout.BeginScrollView(scrollPos);
+				if (bShowFacilities)
 				{
 					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 					{
@@ -327,31 +357,74 @@ namespace KerbalKonstructs.UI
 						if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 						{
 							var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-							isLocal = dist < 2000f;
+							isLocal = dist < 5000f;
 						}
 						else
 							isLocal = false;
 
 						if ((string)obj.model.getSetting("DefaultFacilityType") == "None")
 						{
-
+							isLocal = false;
 						}
 
 						if (isLocal)
 						{
-							if (GUILayout.Button((string)obj.model.getSetting("title"), GUILayout.Height(23)))
+							GUILayout.BeginHorizontal();
 							{
-								selectedObject = obj;
-								KerbalKonstructs.instance.selectObject(obj, false);
-								PersistenceUtils.loadStaticPersistence(obj);
-								FacilityManager.setSelectedFacility(obj);
-								KerbalKonstructs.instance.showFacilityManager = true;
+								bIsOpen = ((string)obj.getSetting("OpenCloseState") == "Open");
+
+								if (!bIsOpen)
+								{
+									iFundsOpen2 = (float)obj.model.getSetting("cost");
+									if (iFundsOpen2 == 0) bIsOpen = true;
+								}
+
+								if (GUILayout.Button((string)obj.model.getSetting("title"), GUILayout.Height(23)))
+								{
+									selectedObject = obj;
+									KerbalKonstructs.instance.selectObject(obj, false, true, false);
+									PersistenceUtils.loadStaticPersistence(obj);
+									FacilityManager.setSelectedFacility(obj);
+									KerbalKonstructs.instance.showFacilityManager = true;
+								}
+
+								if (bIsOpen)
+									GUILayout.Label(tIconOpen, GUILayout.Height(23), GUILayout.Width(23));
+
+								if (!bIsOpen)
+									GUILayout.Label(tIconClosed, GUILayout.Height(23), GUILayout.Width(23));
 							}
+							GUILayout.EndHorizontal();
 						}
 					}
 				}
-				GUILayout.EndScrollView();
+				else
+				{
+					GUILayout.Label("Click the button above to display a list of nearby operational facilities.", LabelInfo);
+
+					if (KerbalKonstructs.instance.DebugMode)
+					{
+						GUILayout.Box("Debug Mode ActiveVessel Report");
+						GUILayout.Label("Name " + FlightGlobals.ActiveVessel.vesselName);
+						GUILayout.Label("Acceleration " + FlightGlobals.ActiveVessel.acceleration.ToString());
+						GUILayout.Label("Angular Momentum " + FlightGlobals.ActiveVessel.angularMomentum.ToString("#0.000"));
+						GUILayout.Label("Angular Velocity " + FlightGlobals.ActiveVessel.angularVelocity.ToString("#0.000"));
+						GUILayout.Label("Centrifugal Acc " + FlightGlobals.ActiveVessel.CentrifugalAcc.ToString());
+						GUILayout.Label("Horiz Srf Speed " + FlightGlobals.ActiveVessel.horizontalSrfSpeed.ToString("#0.00"));
+						GUILayout.Label("Indicated Air Speed " + FlightGlobals.ActiveVessel.indicatedAirSpeed.ToString("#0.00"));
+						GUILayout.Label("Mach " + FlightGlobals.ActiveVessel.mach.ToString("#0.00"));
+						GUILayout.Label("Orbit Speed " + FlightGlobals.ActiveVessel.obt_speed.ToString("#0.00"));
+						GUILayout.Label("Orbit Velocity " + FlightGlobals.ActiveVessel.obt_velocity.ToString());
+						GUILayout.Label("Perturbation " + FlightGlobals.ActiveVessel.perturbation.ToString());
+						GUILayout.Label("rb_velocity " + FlightGlobals.ActiveVessel.rb_velocity.ToString("#0.000"));
+						GUILayout.Label("Specific Acc " + FlightGlobals.ActiveVessel.specificAcceleration.ToString("#0.00"));
+						GUILayout.Label("speed " + FlightGlobals.ActiveVessel.speed.ToString("#0.00"));
+						GUILayout.Label("srf_velocity " + FlightGlobals.ActiveVessel.srf_velocity.ToString());
+						GUILayout.Label("srfspeed " + FlightGlobals.ActiveVessel.srfSpeed.ToString("#0.00"));
+					}
+				}
 			}
+			GUILayout.EndScrollView();
 
 			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));

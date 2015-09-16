@@ -152,15 +152,18 @@ namespace KerbalKonstructs.UI
 						KerbalKonstructs.instance.mapShowOpen = true;
 				}
 
-				if (KerbalKonstructs.instance.mapShowClosed)
+				if (!KerbalKonstructs.instance.disableDisplayClosed)
 				{
-					if (GUILayout.Button(new GUIContent(tClosedBasesOn, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-						KerbalKonstructs.instance.mapShowClosed = false;
-				}
-				else
-				{
-					if (GUILayout.Button(new GUIContent(tClosedBasesOff, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-						KerbalKonstructs.instance.mapShowClosed = true;
+					if (KerbalKonstructs.instance.mapShowClosed)
+					{
+						if (GUILayout.Button(new GUIContent(tClosedBasesOn, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+							KerbalKonstructs.instance.mapShowClosed = false;
+					}
+					else
+					{
+						if (GUILayout.Button(new GUIContent(tClosedBasesOff, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+							KerbalKonstructs.instance.mapShowClosed = true;
+					}
 				}
 
 				GUILayout.Box(" ", BoxNoBorder, GUILayout.Height(34));
@@ -371,6 +374,8 @@ namespace KerbalKonstructs.UI
 										if (!KerbalKonstructs.instance.mapShowOpen && openclosed == "Open")
 											display = false;
 										if (!KerbalKonstructs.instance.mapShowClosed && openclosed == "Closed")
+											display = false;
+										if (KerbalKonstructs.instance.disableDisplayClosed && openclosed == "Closed")
 											display = false;
 									}
 

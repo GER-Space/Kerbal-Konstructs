@@ -27,6 +27,7 @@ namespace KerbalKonstructs
 
 		#region Holders
 		public StaticObject selectedObject;
+		public StaticModel selectedModel;
 		public StaticObject snapTargetInstance;
 		public StaticDatabase staticDB = new StaticDatabase();
 		public CameraController camControl = new CameraController();
@@ -52,10 +53,13 @@ namespace KerbalKonstructs
 		public Boolean InitialisedFacilities = false;
 		public Boolean VesselLaunched = false;
 		public Boolean bImportedCustom = false;
+
+		public Boolean bDisablePositionEditing = false;
 		#endregion
 
 		#region GUI Windows
 		private EditorGUI GUI_Editor = new EditorGUI();
+		private StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
 		private NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
 		private DownlinkGUI GUI_Downlink = new DownlinkGUI();
 		private BaseBossFlight GUI_FlightManager = new BaseBossFlight();
@@ -65,6 +69,8 @@ namespace KerbalKonstructs
 		private KSCManager GUI_KSCManager = new KSCManager();
 		private AirRacing GUI_AirRacingApp = new AirRacing();
 		private BaseManager GUI_BaseManager = new BaseManager();
+		private KKSettingsGUI GUI_Settings = new KKSettingsGUI();
+		public ModelInfo GUI_ModelInfo = new ModelInfo();
 		#endregion
 
 		#region Show Toggles
@@ -79,6 +85,12 @@ namespace KerbalKonstructs
 		public Boolean showFacilityManager = false;
 		public Boolean showDownlink = false;
 		public Boolean showATC = false;
+		public Boolean showSettings = false;
+		public Boolean showModelInfo = false;
+
+		public GameObject go = null;
+
+		public Boolean bPreviewModel = false;
 		#endregion
 
 		#region App Buttons
@@ -98,6 +110,12 @@ namespace KerbalKonstructs
 		[KSPField]
 		public Boolean disableCareerStrategyLayer = false;
 		[KSPField]
+		public Boolean disableCustomLaunchsites = false;
+		[KSPField]
+		public Boolean disableRemoteBaseOpening = false;
+		[KSPField]
+		public Boolean disableAllInstanceEditing = true;
+		[KSPField]
 		public Boolean enableATC = true;
 		[KSPField]
 		public Boolean enableNGS = true;
@@ -105,6 +123,10 @@ namespace KerbalKonstructs
 		public Boolean enableDownlink = true;
 		[KSPField]
 		public Double facilityUseRange = 100;
+		[KSPField]
+		public Boolean disableDisplayClosed = false;
+		[KSPField]
+		public Boolean toggleIconsWithBB = false;
 		[KSPField]
 		public Boolean mapShowOpen = true;
 		[KSPField]
@@ -120,11 +142,15 @@ namespace KerbalKonstructs
 		[KSPField]
 		public Boolean mapShowOther = false;
 		[KSPField]
+		public Boolean disableRemoteRecovery = false;
+		[KSPField]
 		public Double defaultRecoveryFactor = 50;
 		[KSPField]
 		public Double defaultEffectiveRange = 100000;
 		[KSPField]
 		public Double maxEditorVisRange = 100000;
+		[KSPField]
+		public Boolean spawnPreviewModels = true;
 		[KSPField]
 		public Boolean DebugMode = false;
 		[KSPField]
@@ -181,7 +207,7 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("DefaultLaunchSiteLength", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
 			KKAPI.addModelSetting("pointername", new ConfigGenericString());
-			//KKAPI.addModelSetting("name", new ConfigGenericString());
+			KKAPI.addModelSetting("name", new ConfigGenericString());
 			#endregion
 
 			#region Instance API
@@ -234,15 +260,26 @@ namespace KerbalKonstructs
 			favouriteSite.setDefaultValue("No");
 			KKAPI.addInstanceSetting("FavouriteSite", favouriteSite);
 
-			// facility Types
+			// Facility Types
 			ConfigGenericString facilityrole = new ConfigGenericString();
 			facilityrole.setDefaultValue("None");
 			KKAPI.addModelSetting("DefaultFacilityType", facilityrole);
 			ConfigGenericString instfacilityrole = new ConfigGenericString();
 			instfacilityrole.setDefaultValue("None");
 			KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
+			KKAPI.addModelSetting("DefaultFacilityLength", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultFacilityWidth", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultFacilityHeight", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultFacilityMassCapacity", new ConfigFloat());
+			KKAPI.addModelSetting("DefaultFacilityCraftCapacity", new ConfigFloat());
+			KKAPI.addInstanceSetting("FacilityLengthUsed", new ConfigFloat());
+			KKAPI.addInstanceSetting("FacilityWidthUsed", new ConfigFloat());
+			KKAPI.addInstanceSetting("FacilityHeightUsed", new ConfigFloat());
+			KKAPI.addInstanceSetting("FacilityMassUsed", new ConfigFloat());
+			KKAPI.addInstanceSetting("InStorage", new ConfigGenericString());
 
 			// Local to a specific save - constructed in a specific save-game
+			// WIP for founding
 			ConfigGenericString LocalToSave = new ConfigGenericString();
 			LocalToSave.setDefaultValue("False");
 			KKAPI.addInstanceSetting("LocalToSave", LocalToSave);
@@ -255,12 +292,8 @@ namespace KerbalKonstructs
 			// Facility Ratings
 
 			// Tracking station max short range in m
-			//ConfigFloat ftrackingshort = new ConfigFloat();
-			//ftrackingshort.setDefaultValue(85000f);
 			KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
 			// Max tracking angle
-			//ConfigFloat ftrackingangle = new ConfigFloat();
-			//ftrackingangle.setDefaultValue(65f);
 			KKAPI.addInstanceSetting("TrackingAngle", new ConfigFloat());
 
 			// Target Type and ID
@@ -282,6 +315,21 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("OxFCurrent", new ConfigFloat());
 			KKAPI.addModelSetting("MoFMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
+
+			KKAPI.addModelSetting("ECMax", new ConfigFloat());
+			KKAPI.addModelSetting("ECRechargeRate", new ConfigFloat());
+			KKAPI.addInstanceSetting("ECCurrent", new ConfigFloat());
+
+			// Industry
+			KKAPI.addModelSetting("DefaultProductionRateMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("ProductionRateMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("ProductionRateCurrent", new ConfigFloat());
+			KKAPI.addInstanceSetting("Producing", new ConfigGenericString());
+
+			KKAPI.addModelSetting("OreMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("OreCurrent", new ConfigFloat());
+			KKAPI.addModelSetting("PrOreMax", new ConfigFloat());
+			KKAPI.addInstanceSetting("PrOreCurrent", new ConfigFloat());
 
 			// Science Rep Funds generation
 			KKAPI.addModelSetting("DefaultScienceOMax", new ConfigFloat());
@@ -324,19 +372,21 @@ namespace KerbalKonstructs
 
 		public void LoadState(ConfigNode configNode)
 		{
-			// Debug.Log("KK: LoadState");
+			if (DebugMode) Debug.Log("KK: LoadState");
+			PersistenceUtils.loadPersistenceBackup();
 		}
 
 		public void SaveState(ConfigNode configNode)
 		{
-			// Debug.Log("KK: SaveState");
+			PersistenceUtils.savePersistenceBackup();
+			if (DebugMode) Debug.Log("KK: SaveState");
 		}
 
 		void OnVesselLaunched(ShipConstruct vVessel)
 		{
 			if (vVessel == null) return;
 
-			// updateCache();
+			PersistenceUtils.savePersistenceBackup();
 
 			if (EditorLogic.fetch.launchSiteName != null)
 			{
@@ -354,11 +404,13 @@ namespace KerbalKonstructs
 						}
 				}
 
+				// Don't know why newly created launchsites don't appear without a restart of KSP still.
+				// This doesn't seem to help.
 				if (soTemp != null)
 				{
-					Debug.Log("KK: Got launchsite gameobject" + (string)EditorLogic.fetch.launchSiteName);
+					if (DebugMode) Debug.Log("KK: Got launchsite gameobject" + (string)EditorLogic.fetch.launchSiteName);
+					
 					soTemp.SetActiveRecursively(soTemp.gameObject, true);
-					//soTemp.setLayerRecursively(soTemp.gameObject, 15);
 				}
 			}
 
@@ -366,12 +418,12 @@ namespace KerbalKonstructs
 			{
 				if (EditorLogic.fetch.launchSiteName == null)
 				{
-					Debug.Log("KK: onVesselLaunched launchSiteName was null.");
+					if (DebugMode) Debug.Log("KK: onVesselLaunched launchSiteName was null.");
 					return;
 				}
 				if (EditorLogic.fetch.launchSiteName == "")
 				{
-					Debug.Log("KK: onVesselLaunched launchSiteName was empty.");
+					if (DebugMode) Debug.Log("KK: onVesselLaunched launchSiteName was empty.");
 					return;
 				}
 
@@ -407,12 +459,13 @@ namespace KerbalKonstructs
 		void onLevelWasLoaded(GameScenes data)
 		{
 			bool bTreatBodyAsNullForStatics = true;
+			DeletePreviewObject();
 
 			staticDB.ToggleActiveAllStatics(false);
 
 			if (selectedObject != null)
 			{
-				deselectObject(false);
+				deselectObject(false, true);
 				camControl.active = false;
 			}
 
@@ -428,11 +481,14 @@ namespace KerbalKonstructs
 				InputLockManager.RemoveControlLock("KKEditorLock");
 				InputLockManager.RemoveControlLock("KKEditorLock2");
 
+				PersistenceUtils.savePersistenceBackup();
+
 				if (FlightGlobals.ActiveVessel != null)
 				{
 					staticDB.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
 					currentBody = FlightGlobals.ActiveVessel.mainBody;
 					staticDB.onBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+					DoHangaredCraftCheck();
 				}
 				else
 				{
@@ -441,7 +497,6 @@ namespace KerbalKonstructs
 					staticDB.ToggleActiveAllStatics(true);
 				}
 
-				//updateCache();
 				InvokeRepeating("updateCache", 0, 1);
 			}
 			else
@@ -464,7 +519,7 @@ namespace KerbalKonstructs
 
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					Debug.Log("KK: Load launchsite openclose states for career game");
+					if (DebugMode) Debug.Log("KK: Load launchsite openclose states for career game");
 					PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 				}
 			}
@@ -541,96 +596,107 @@ namespace KerbalKonstructs
 
 		void OnDoshChanged(double amount, TransactionReasons reason)
 		{
+			//PersistenceUtils.savePersistenceBackup();
 		}
 
 		void OnProcessRecovery(ProtoVessel vessel, MissionRecoveryDialog dialog, float fFloat)
 		{
 			dRecoveryValue = dialog.fundsEarned;
+			PersistenceUtils.savePersistenceBackup();
 		}
 
 		void OnVesselRecoveryRequested(Vessel data)
 		{
-			if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+			if (!disableRemoteRecovery)
 			{
-				// Change the Space Centre to the nearest open base
-				fRecovFactor = 0;
-				float fDist = 0f;
-				float fRecovFact = 0f;
-				float fRecovRng = 0f;
-				string sBaseName = "";
+				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+				{
+					// Change the Space Centre to the nearest open base
+					fRecovFactor = 0;
+					float fDist = 0f;
+					float fRecovFact = 0f;
+					float fRecovRng = 0f;
+					string sBaseName = "";
 
-				SpaceCenter csc;
-				SpaceCenterManager.getClosestSpaceCenter(data.gameObject.transform.position, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
-				SpaceCenter.Instance = csc;
+					SpaceCenter csc;
+					SpaceCenterManager.getClosestSpaceCenter(data.gameObject.transform.position, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
+					SpaceCenter.Instance = csc;
 
-				lastRecoveryBase = sBaseName;
-				if (sBaseName == "Runway" || sBaseName == "LaunchPad") lastRecoveryBase = "KSC";
-				if (sBaseName == "KSC") lastRecoveryBase = "KSC";
-					
-				lastRecoveryDistance = fDist;
-				fRecovFactor = fRecovFact;
-				fRecovRange = fRecovRng;
+					lastRecoveryBase = sBaseName;
+					if (sBaseName == "Runway" || sBaseName == "LaunchPad") lastRecoveryBase = "KSC";
+					if (sBaseName == "KSC") lastRecoveryBase = "KSC";
+
+					lastRecoveryDistance = fDist;
+					fRecovFactor = fRecovFact;
+					fRecovRange = fRecovRng;
+				}
 			}
 		}
 
 		void OnVesselRecovered(ProtoVessel vessel)
 		{
-			if (vessel == null)
-				Debug.Log("KK: onVesselRecovered vessel was null but we don't care");
-
-			if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+			if (!disableRemoteRecovery)
 			{
-				// Put the KSC back as the Space Centre
-				// Debug.Log("KK: Resetting SpaceCenter to KSC");
-				SpaceCenter.Instance = SpaceCenterManager.KSC;
-
-				if (lastRecoveryBase != "")
+				if (vessel == null)
 				{
-					float fRecoveryDistance = lastRecoveryDistance / 1000;
-					float fBaseRecRange = fRecovRange;
-					
-					if (lastRecoveryBase == "KSC") fRecovFactor = 100;
-					
-					if (fRecovFactor > 0)
-					{
-						MessageSystemButton.MessageButtonColor color = MessageSystemButton.MessageButtonColor.GREEN;
+					if (DebugMode) Debug.Log("KK: onVesselRecovered vessel was null but we don't care");
+				}
 
-						if (fRecovRange >= lastRecoveryDistance) fRecovFactor = 100;
-						float fRefund = 0f;
-						LaunchSiteManager.getSiteLaunchRefund((string)lastRecoveryBase, out fRefund);
-						if (lastRecoveryDistance < 10000) fRecovFactor = 100 - fRefund;
-						
+				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+				{
+					// Put the KSC back as the Space Centre
+					if (DebugMode) Debug.Log("KK: Resetting SpaceCenter to KSC");
+
+					SpaceCenter.Instance = SpaceCenterManager.KSC;
+
+					if (lastRecoveryBase != "")
+					{
+						float fRecoveryDistance = lastRecoveryDistance / 1000;
+						float fBaseRecRange = fRecovRange;
+
 						if (lastRecoveryBase == "KSC") fRecovFactor = 100;
 
-						string sMessage = "";
-						if (fRecovFactor == 100)
+						if (fRecovFactor > 0)
 						{
-							sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is paid in full.";
-							dActualRecoveryValue = dRecoveryValue;
-						}
-						else
-						{
-							dActualRecoveryValue = (dRecoveryValue / 100) * fRecovFactor;
-							sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is reduced to " + dActualRecoveryValue.ToString("#0") + " funds.";
+							MessageSystemButton.MessageButtonColor color = MessageSystemButton.MessageButtonColor.GREEN;
 
-							double dDeduct = dRecoveryValue - dActualRecoveryValue;
-							Funding.Instance.AddFunds(-dDeduct, TransactionReasons.Cheating);
-						}
+							if (fRecovRange >= lastRecoveryDistance) fRecovFactor = 100;
+							float fRefund = 0f;
+							LaunchSiteManager.getSiteLaunchRefund((string)lastRecoveryBase, out fRefund);
+							if (lastRecoveryDistance < 10000) fRecovFactor = 100 - fRefund;
 
-						if (!vessel.vesselName.Contains(" Debris"))
-						{
-							MiscUtils.PostMessage("Recovery Complete", vessel.vesselName +
-								" was recovered by " + lastRecoveryBase + ".\n\nDistance to vessel was " +
-								fRecoveryDistance.ToString() + " km" +
-								"\n\nRecovery Factor of " + lastRecoveryBase + " at this distance is "
-								+ fRecovFactor + "%" + sMessage, color, MessageSystemButton.ButtonIcons.ALERT);
-						}
+							if (lastRecoveryBase == "KSC") fRecovFactor = 100;
 
-						lastRecoveryBase = "";
-						fRecovFactor = 0;
-						fRecovRange = 0;
-						dRecoveryValue = 0;
-						dActualRecoveryValue = 0;
+							string sMessage = "";
+							if (fRecovFactor == 100)
+							{
+								sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is paid in full.";
+								dActualRecoveryValue = dRecoveryValue;
+							}
+							else
+							{
+								dActualRecoveryValue = (dRecoveryValue / 100) * fRecovFactor;
+								sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is reduced to " + dActualRecoveryValue.ToString("#0") + " funds.";
+
+								double dDeduct = dRecoveryValue - dActualRecoveryValue;
+								Funding.Instance.AddFunds(-dDeduct, TransactionReasons.Cheating);
+							}
+
+							if (!vessel.vesselName.Contains(" Debris"))
+							{
+								MiscUtils.PostMessage("Recovery Complete", vessel.vesselName +
+									" was recovered by " + lastRecoveryBase + ".\n\nDistance to vessel was " +
+									fRecoveryDistance.ToString() + " km" +
+									"\n\nRecovery Factor of " + lastRecoveryBase + " at this distance is "
+									+ fRecovFactor + "%" + sMessage, color, MessageSystemButton.ButtonIcons.ALERT);
+							}
+
+							lastRecoveryBase = "";
+							fRecovFactor = 0;
+							fRecovRange = 0;
+							dRecoveryValue = 0;
+							dActualRecoveryValue = 0;
+						}
 					}
 				}
 			}
@@ -643,7 +709,8 @@ namespace KerbalKonstructs
 				string saveConfigPath = string.Format("{0}saves/{1}/persistent.sfs", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
 				if (File.Exists(saveConfigPath))
 				{
-					//Debug.Log("KK: Found persistent.sfs");
+					if (DebugMode) Debug.Log("KK: Found persistent.sfs");
+
 					ConfigNode rootNode = ConfigNode.Load(saveConfigPath);
 					ConfigNode rootrootNode = rootNode.GetNode("GAME");
 					foreach (ConfigNode ins in rootrootNode.GetNodes())
@@ -651,7 +718,7 @@ namespace KerbalKonstructs
 						// Debug.Log("KK: ConfigNode is " + ins);
 						if (ins.GetValue("name") == "ScenarioUpgradeableFacilities")
 						{
-							//Debug.Log("KK: Found ScenarioUpgradeableFacilities in persistent.sfs");
+							if (DebugMode) Debug.Log("KK: Found ScenarioUpgradeableFacilities in persistent.sfs");
 
 							foreach (var s in new List<string> { 
 							"SpaceCenter/LaunchPad", 
@@ -668,7 +735,8 @@ namespace KerbalKonstructs
 								ConfigNode n = ins.GetNode(s);
 								if (n == null)
 								{
-									Debug.Log("KK: Could not find " + s + " node. Creating node.");
+									if (DebugMode) Debug.Log("KK: Could not find " + s + " node. Creating node.");
+
 									n = ins.AddNode(s);
 									n.AddValue("lvl", 0);
 									rootNode.Save(saveConfigPath);
@@ -688,7 +756,8 @@ namespace KerbalKonstructs
 						}
 					}
 
-					// Debug.Log("KK: loadCareerObjects");
+					if (DebugMode) Debug.Log("KK: loadCareerObjects");
+
 					loadCareerObjects();
 					InitialisedFacilities = true;
 				}
@@ -791,34 +860,43 @@ namespace KerbalKonstructs
 
 			if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
 			{
-				if (selectedObject != null)
-					deselectObject();
-
-				showEditor = !showEditor;
-
-				if (snapTargetInstance != null)
-				{
-					Color highlightColor = new Color(0, 0, 0, 0);
-					snapTargetInstance.HighlightObject(highlightColor);
-					snapTargetInstance = null;
-				}
+				ToggleEditor();
 			}
 
+		}
+
+		public void ToggleEditor()
+		{
+			if (selectedObject != null)
+				deselectObject(true, true);
+
+			showEditor = !showEditor;
+
+			if (snapTargetInstance != null)
+			{
+				Color highlightColor = new Color(0, 0, 0, 0);
+				snapTargetInstance.HighlightObject(highlightColor);
+				snapTargetInstance = null;
+			}
 		}
 		#endregion
 
 		#region GUI Methods
+
 		void OnGUIAppLauncherReady()
 		{
 			if (ApplicationLauncher.Ready)
 			{
 				bool vis;
-				
-				if (siteSelector == null || !ApplicationLauncher.Instance.Contains(siteSelector, out vis))				
-					siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff, 
-						onSiteSelectorOnHover, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB, 
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
+
+				if (!disableCustomLaunchsites)
+				{
+					if (siteSelector == null || !ApplicationLauncher.Instance.Contains(siteSelector, out vis))
+						siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff,
+							onSiteSelectorOnHover, doNothing, doNothing, doNothing,
+							ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB,
+							GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
+				}
 
 				if (flightManager == null || !ApplicationLauncher.Instance.Contains(flightManager, out vis))				
 					flightManager = ApplicationLauncher.Instance.AddModApplication(onFlightManagerOn, onFlightManagerOff, 
@@ -846,19 +924,27 @@ namespace KerbalKonstructs
 
 			if (HighLogic.LoadedScene == GameScenes.EDITOR)
 			{
-				if (showSiteSelector)
+				if (!disableCustomLaunchsites)
 				{
-					GUI_LaunchSiteSelector.drawSelector();
+					if (showSiteSelector)
+					{
+						GUI_LaunchSiteSelector.drawSelector();
 
-					if (showBaseManager)
-						GUI_BaseManager.drawBaseManager();
+						if (showBaseManager)
+							GUI_BaseManager.drawBaseManager();
+					}
 				}
 			}
 
 			if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
 			{
 				if (showKSCmanager)
+				{
 					GUI_KSCManager.drawKSCManager();
+
+					if (showSettings)
+						GUI_Settings.drawKKSettingsGUI();
+				}
 			}
 
 			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
@@ -867,17 +953,32 @@ namespace KerbalKonstructs
 				{
 					if (showEditor)
 					{
-						GUI_Editor.drawEditor(selectedObject);
-					}
+						GUI_StaticsEditor.drawEditor();
 
-					if (showFacilityManager)
-					{
-						GUI_FacilityManager.drawFacilityManager(selectedObject);
+						if (selectedObject != null)
+						{
+							if (selectedObject.preview)
+							{ }
+							else
+								GUI_Editor.drawEditor(selectedObject);
+						}
+
+						if (showModelInfo)
+						{
+							GUI_ModelInfo.drawModelInfoGUI(selectedModel);
+						}
 					}
+					else
+						DeletePreviewObject();
 
 					if (showFlightManager)
 					{
 						GUI_FlightManager.drawManager(selectedObject);
+
+						if (showFacilityManager)
+						{
+							GUI_FacilityManager.drawFacilityManager(selectedObject);
+						}
 					}
 
 					if (showRacingApp)
@@ -888,8 +989,6 @@ namespace KerbalKonstructs
 					if (showDownlink)
 					{
 						GUI_Downlink.drawDownlink();
-						//if (DownlinkGUI.Dis != null)
-							//DownlinkGUI.Dis.SetActive(true);
 					}
 					else
 					{
@@ -927,9 +1026,13 @@ namespace KerbalKonstructs
 
 					if (showBaseManager)
 						GUI_BaseManager.drawBaseManager();
+
+					if (toggleIconsWithBB)
+						GUI_MapIconManager.drawIcons();
 				}
 
-				GUI_MapIconManager.drawIcons();
+				if (!toggleIconsWithBB)
+					GUI_MapIconManager.drawIcons();
 			}
 		}
 
@@ -943,6 +1046,176 @@ namespace KerbalKonstructs
 
 		#region Object Methods
 
+		public void DeletePreviewObject()
+		{
+			if (selectedModel != null)
+			{
+				if (ModelInfo.currPreview != null)
+				{
+					/*InputLockManager.RemoveControlLock("KKShipLock");
+					InputLockManager.RemoveControlLock("KKEVALock");
+					InputLockManager.RemoveControlLock("KKCamControls");
+					InputLockManager.RemoveControlLock("KKCamModes"); */
+
+					//camControl.disable();
+
+					ModelInfo.DestroyPreviewInstance(null);
+				}
+
+				//selectedModel = null;
+			}
+		}
+
+		public void DoHangaredCraftCheck()
+		{
+			foreach (StaticObject obj in getStaticDB().getAllStatics())
+			{
+				string sFacType = (string)obj.getSetting("FacilityType");
+
+				if (sFacType != "Hangar") continue;
+
+				if (sFacType == "Hangar")
+				{
+					PersistenceUtils.loadStaticPersistence(obj);
+					string sInStorage = (string)obj.getSetting("InStorage");
+					string sInStorage2 = (string)obj.getSetting("TargetID");
+					string sInStorage3 = (string)obj.getSetting("TargetType");
+
+					string bHangarHasStoredCraft1 = "None";
+					string bHangarHasStoredCraft2 = "None";
+					string bHangarHasStoredCraft3 = "None";
+
+					bool bCraftExists = false;
+
+					if (sInStorage != "None" && sInStorage != "")
+					{
+						foreach (Vessel vVesselStored in FlightGlobals.Vessels)
+						{
+							if (vVesselStored.id.ToString() == sInStorage)
+							{
+								bCraftExists = true;
+								break;
+							}
+						}
+
+						if (bCraftExists)
+							bHangarHasStoredCraft1 = "InStorage";
+						else
+						{
+							// Craft no longer exists. Clear this hangar space.
+							if (DebugMode) Debug.Log("KK: Craft InStorage no longer exists. Emptying this hangar space.");
+							
+							obj.setSetting("InStorage", "None");
+							PersistenceUtils.saveStaticPersistence(obj);
+						}
+					}
+
+					bCraftExists = false;
+
+					if (sInStorage2 != "None" && sInStorage2 != "")
+					{
+						foreach (Vessel vVesselStored in FlightGlobals.Vessels)
+						{
+							if (vVesselStored.id.ToString() == sInStorage2)
+							{
+								bCraftExists = true;
+								break;
+							}
+						}
+
+						if (bCraftExists)
+							bHangarHasStoredCraft2 = "TargetID";
+						else
+						{
+							// Craft no longer exists. Clear this hangar space.
+							if (DebugMode) Debug.Log("KK: Craft TargetID no longer exists. Emptying this hangar space.");
+							
+							obj.setSetting("TargetID", "None");
+							PersistenceUtils.saveStaticPersistence(obj);
+						}
+					}
+
+					bCraftExists = false;
+
+					if (sInStorage3 != "None" && sInStorage3 != "")
+					{
+						foreach (Vessel vVesselStored in FlightGlobals.Vessels)
+						{
+							if (vVesselStored.id.ToString() == sInStorage3)
+							{
+								bCraftExists = true;
+								break;
+							}
+						}
+
+						if (bCraftExists)
+							bHangarHasStoredCraft3 = "TargetType";
+						else
+						{
+							// Craft no longer exists. Clear this hangar space.
+							if (DebugMode) Debug.Log("KK: Craft TargetType no longer exists. Emptying this hangar space.");
+							
+							obj.setSetting("TargetType", "None");
+							PersistenceUtils.saveStaticPersistence(obj);
+						}
+					}
+
+					if (bHangarHasStoredCraft1 == "None" && bHangarHasStoredCraft2 == "None" && bHangarHasStoredCraft3 == "None")
+					{
+
+					}
+					else
+					{
+						string sHangarSpace = "";
+
+						foreach (Vessel vVesselStored in FlightGlobals.Vessels)
+						{
+							if (vVesselStored.id.ToString() == sInStorage)
+								sHangarSpace = "InStorage";
+
+							if (vVesselStored.id.ToString() == sInStorage2)
+								sHangarSpace = "TargetID";
+
+							if (vVesselStored.id.ToString() == sInStorage3)
+								sHangarSpace = "TargetType";
+
+							// If a vessel is hangared
+							if (vVesselStored.id.ToString() == sInStorage || vVesselStored.id.ToString() == sInStorage2 || vVesselStored.id.ToString() == sInStorage3)
+							{
+								if (vVesselStored == FlightGlobals.ActiveVessel)
+								{
+									// Craft has been taken control
+									// Empty the hangar
+									if (DebugMode) Debug.Log("KK: Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
+									
+									obj.setSetting(sHangarSpace, "None");
+									PersistenceUtils.saveStaticPersistence(obj);
+								}
+								else
+								{
+									if (DebugMode) Debug.Log("KK: Hiding vessel " + vVesselStored.vesselName + ". It is in the hangar.");
+									// Hide the vessel - it is in the hangar
+									
+									foreach (Part p in vVesselStored.Parts)
+									{
+										if (p != null && p.gameObject != null)
+											p.gameObject.SetActive(false);
+										else
+											continue;
+									}
+
+									vVesselStored.MakeInactive();
+									vVesselStored.enabled = false;
+									vVesselStored.Unload();
+								}
+							}
+
+						}
+					}
+				}
+			}
+		}
+
 		public void updateCache()
 		{
 			if (HighLogic.LoadedSceneIsGame)
@@ -952,26 +1225,27 @@ namespace KerbalKonstructs
 				{
 					playerPos = selectedObject.gameObject.transform.position;
 
-					if (KerbalKonstructs.instance.DebugMode)
+					if (DebugMode)
 						Debug.Log("KK: updateCache using selectedObject as playerPos");
 				}
 				else if (FlightGlobals.ActiveVessel != null)
 				{
 					playerPos = FlightGlobals.ActiveVessel.transform.position;
 
-					if (KerbalKonstructs.instance.DebugMode)
+					if (DebugMode)
 						Debug.Log("KK: updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
 				}
 				else if (Camera.main != null)
 				{
 					playerPos = Camera.main.transform.position;
 
-					if (KerbalKonstructs.instance.DebugMode)
+					if (DebugMode)
 						Debug.Log("KK: updateCache using Camera.main as playerPos");
 				}
 				else
 				{
-					Debug.Log("KK: KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
+					if (DebugMode)
+						Debug.Log("KK: KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
 				}
 
 				staticDB.updateCache(playerPos);
@@ -1027,7 +1301,8 @@ namespace KerbalKonstructs
 							string sThisMesh = (string)soThis.model.getSetting("mesh");
 							string sThatMesh = (string)obj.model.getSetting("mesh");
 
-							Debug.Log("KK: Custom instance has a RadialPosition that already has an instance."
+							if (DebugMode) 
+								Debug.Log("KK: Custom instance has a RadialPosition that already has an instance."
 								+ sThisMesh + ":"
 								+ (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
 								+ sThatMesh + ":"
@@ -1047,12 +1322,12 @@ namespace KerbalKonstructs
 								}
 								else
 								{
-									Debug.Log("KK: Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
+									if (DebugMode) Debug.Log("KK: Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
 								}
 							}
 							else
 							{
-								Debug.Log("KK: Different models. Allowing. Could be a terrain foundation or integrator.");
+								if (DebugMode) Debug.Log("KK: Different models. Allowing. Could be a terrain foundation or integrator.");
 							}
 						}
 					}
@@ -1097,7 +1372,7 @@ namespace KerbalKonstructs
 				}
 
 				staticDB.addStatic(obj);
-				obj.spawnObject(false);
+				obj.spawnObject(false, false);
 
 				if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
 					LaunchSiteManager.createLaunchSite(obj);
@@ -1291,8 +1566,6 @@ namespace KerbalKonstructs
 					string sModelName = modelConfig.GetValue("name");
 					modelConfig.AddValue("pointername", sModelName);
 
-					//if (sInstGroup != "" && sGroup == "") sBase = sInstGroup;
-
 					modelConfig.RemoveValue("name");
 					modelConfig.AddValue("name", sPackName + "_" + sBase + "_" + sModelName);
 					
@@ -1307,10 +1580,19 @@ namespace KerbalKonstructs
 		public void deleteObject(StaticObject obj)
 		{
 			if (selectedObject == obj)
-				deselectObject();
+				deselectObject(true, false);
+
+			InputLockManager.RemoveControlLock("KKShipLock");
+			InputLockManager.RemoveControlLock("KKEVALock");
+			InputLockManager.RemoveControlLock("KKCamControls");
+			InputLockManager.RemoveControlLock("KKCamModes");
+
+			if (camControl.active) camControl.disable();
 
 			if (snapTargetInstance == obj)
 				snapTargetInstance = null;
+
+			if (DebugMode) Debug.Log("KK: deleteObject");
 
 			staticDB.deleteObject(obj);
 		}
@@ -1320,36 +1602,48 @@ namespace KerbalKonstructs
 			snapTargetInstance = obj;
 		}
 
-		public void selectObject(StaticObject obj, bool isEditing = true)
+		public void selectObject(StaticObject obj, bool isEditing, bool bFocus, bool bPreview)
 		{
-			InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
-			InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
-			InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "KKCamControls");
-			InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
+			if (bFocus)
+			{
+				InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
+				InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
+				InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "KKCamControls");
+				InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
+
+				if (selectedObject != null)
+					deselectObject(true, true);
+
+				if (camControl.active)
+					camControl.disable();
+
+				camControl.enable(obj.gameObject);
+			}
+			else
+			{
+				if (selectedObject != null)
+					deselectObject(true, true);
+			}
 			
-			if (selectedObject != null)
-				deselectObject();
-			
+			//obj.preview = bPreview;
+			if (DebugMode) Debug.Log("KK: obj.preview is " + obj.preview.ToString());
+
 			selectedObject = obj;
+			if (DebugMode) Debug.Log("KK: selectedObject.preview is " + selectedObject.preview.ToString());
 			
 			if (isEditing)
 			{
 				selectedObject.editing = true;
 				selectedObject.ToggleAllColliders(false);
 			}
-			
-			if(camControl.active)
-				camControl.disable();
-			
-			camControl.enable(obj.gameObject);
 		}
 
-		public void deselectObject(Boolean disableCam = true)
+		public void deselectObject(Boolean disableCam, Boolean enableColliders)
 		{
 			if (selectedObject != null)
 			{
 				selectedObject.editing = false;
-				selectedObject.ToggleAllColliders(true);
+				if (enableColliders) selectedObject.ToggleAllColliders(true);
 
 				Color highlightColor = new Color(0, 0, 0, 0);
 				selectedObject.HighlightObject(highlightColor);
@@ -1369,6 +1663,16 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region App Button Toggles
+		void onKKSettingsOn()
+		{
+			showSettings = true;
+		}
+
+		void onKKSettingsOff()
+		{
+			showSettings = false;
+		}
+
 		void onKSCmanagerOn()
 		{
 			showKSCmanager = true;
@@ -1408,7 +1712,7 @@ namespace KerbalKonstructs
 		{
 			showFlightManager = false;
 			if (selectedObject != null)
-				deselectObject();
+				deselectObject(true, true);
 		}
 
 		void onMapManagerOff()
@@ -1433,7 +1737,7 @@ namespace KerbalKonstructs
 		public bool loadConfig()
 		{
 			string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
-			//ConfigNode cfg = ConfigNode.Load((installDir + @"\KerbalKonstructs.cfg").Replace('/', '\\'));
+
 			ConfigNode cfg = ConfigNode.Load(saveConfigPath);
 			if (cfg != null)
 			{
@@ -1446,7 +1750,8 @@ namespace KerbalKonstructs
 					}
 					else
 					{
-						//Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");
+						if (DebugMode) Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");
+						
 						continue;
 					}
 				}

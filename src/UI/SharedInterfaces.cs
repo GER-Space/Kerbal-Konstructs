@@ -11,31 +11,37 @@ namespace KerbalKonstructs.UI
 	public class SharedInterfaces
 	{
 		public static GUIStyle BoxInfo;
+		public static GUIStyle ButtonSmallText;
 
 		public static void OpenCloseFacility(StaticObject selectedFacility)
 		{
 			BoxInfo = new GUIStyle(GUI.skin.box);
-			BoxInfo.normal.textColor = Color.cyan;
-			BoxInfo.fontSize = 13;
+			BoxInfo.normal.textColor = Color.white;
+			BoxInfo.fontSize = 12;
 			BoxInfo.padding.top = 2;
 			BoxInfo.padding.bottom = 1;
 			BoxInfo.padding.left = 5;
 			BoxInfo.padding.right = 5;
 			BoxInfo.normal.background = null;
 
+			ButtonSmallText = new GUIStyle(GUI.skin.button);
+			ButtonSmallText.fontSize = 12;
+			ButtonSmallText.fontStyle = FontStyle.Normal;
+
 			float iFundsOpen2 = (float)selectedFacility.getSetting("OpenCost");
 			float iFundsClose2 = (float)selectedFacility.getSetting("CloseValue");
+			float iFundsDefaultCost = (float)selectedFacility.model.getSetting("cost");
 
 			bool isAlwaysOpen2 = false;
 			bool cannotBeClosed2 = false;
 
 			// Career mode
 			// If a launchsite is 0 to open it is always open
-			if (iFundsOpen2 == 0)
+			if (iFundsOpen2 == 0 && iFundsDefaultCost == 0)
 				isAlwaysOpen2 = true;
 
 			// If it is 0 to close you cannot close it
-			if (iFundsClose2 == 0)
+			if (iFundsClose2 == 0 && iFundsDefaultCost == 0)
 				cannotBeClosed2 = true;
 
 			if (MiscUtils.isCareerGame())
@@ -47,7 +53,10 @@ namespace KerbalKonstructs.UI
 					if (!isAlwaysOpen2)
 					{
 						GUI.enabled = !isOpen2;
-						if (GUILayout.Button("Open Facility for \n" + iFundsOpen2 + " funds"))
+
+						if (iFundsOpen2 == 0) iFundsOpen2 = iFundsDefaultCost;
+
+						if (GUILayout.Button("Open for \n" + iFundsOpen2 + " funds", ButtonSmallText, GUILayout.Height(30)))
 						{
 							double currentfunds2 = Funding.Instance.Funds;
 
@@ -77,7 +86,10 @@ namespace KerbalKonstructs.UI
 					if (!cannotBeClosed2)
 					{
 						GUI.enabled = isOpen2;
-						if (GUILayout.Button("Close Facility for \n" + iFundsClose2 + " funds"))
+
+						if (iFundsClose2 == 0) iFundsClose2 = iFundsDefaultCost / 4;
+
+						if (GUILayout.Button("Close for \n" + iFundsClose2 + " funds", ButtonSmallText, GUILayout.Height(30)))
 						{
 							// Close the site - save to instance
 							// Pay back some funds

@@ -322,23 +322,26 @@ namespace KerbalKonstructs.UI
 			{
 				if (displayStats)
 				{
-					if (selectedSite.recoveryfactor > 0)
+					if (!KerbalKonstructs.instance.disableRemoteRecovery)
 					{
-						GUILayout.Label("Recovery Factor: " + selectedSite.recoveryfactor.ToString() + "%", LabelInfo);
-						if (selectedSite.name != "Runway" && selectedSite.name != "LaunchPad")
+						if (selectedSite.recoveryfactor > 0)
 						{
-							if (selectedSite.recoveryrange > 0)
-								rangekm = selectedSite.recoveryrange / 1000;
-							else
-								rangekm = 0;
+							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryfactor.ToString() + "%", LabelInfo);
+							if (selectedSite.name != "Runway" && selectedSite.name != "LaunchPad")
+							{
+								if (selectedSite.recoveryrange > 0)
+									rangekm = selectedSite.recoveryrange / 1000;
+								else
+									rangekm = 0;
 
-							GUILayout.Label("Effective Range: " + rangekm.ToString() + " km", LabelInfo);
+								GUILayout.Label("Effective Range: " + rangekm.ToString() + " km", LabelInfo);
+							}
+							else
+								GUILayout.Label("Effective Range: Unlimited", LabelInfo);
 						}
 						else
-							GUILayout.Label("Effective Range: Unlimited", LabelInfo);
+							GUILayout.Label("No Recovery Capability", LabelInfo);
 					}
-					else
-						GUILayout.Label("No Recovery Capability", LabelInfo);
 
 					GUILayout.FlexibleSpace();
 					GUILayout.Label("Launch Refund: " + selectedSite.launchrefund.ToString() + "%", LabelInfo);
@@ -363,18 +366,21 @@ namespace KerbalKonstructs.UI
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				if (!isAlwaysOpen)
 				{
-					if (GUILayout.Button("Open Base for \n" + iFundsOpen + " funds", GUILayout.Height(40)))
+					if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
 					{
-						double currentfunds = Funding.Instance.Funds;
-
-						if (iFundsOpen > currentfunds)
-							ScreenMessages.PostScreenMessage("Insufficient funds to open this base!", 10,
-								ScreenMessageStyle.LOWER_CENTER);
-						else
+						if (GUILayout.Button("Open Base for \n" + iFundsOpen + " funds", GUILayout.Height(40)))
 						{
-							selectedSite.openclosestate = "Open";
-							Funding.Instance.AddFunds(-iFundsOpen, TransactionReasons.Cheating);
-							PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
+							double currentfunds = Funding.Instance.Funds;
+
+							if (iFundsOpen > currentfunds)
+								ScreenMessages.PostScreenMessage("Insufficient funds to open this base!", 10,
+									ScreenMessageStyle.LOWER_CENTER);
+							else
+							{
+								selectedSite.openclosestate = "Open";
+								Funding.Instance.AddFunds(-iFundsOpen, TransactionReasons.Cheating);
+								PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
+							}
 						}
 					}
 				}

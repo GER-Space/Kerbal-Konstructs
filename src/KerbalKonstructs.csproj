@@ -72,6 +72,9 @@
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />
     <Compile Include="UI\BaseManager.cs" />
+    <Compile Include="UI\ModelInfo.cs" />
+    <Compile Include="UI\KKSettingsGUI.cs" />
+    <Compile Include="UI\StaticsEditorGUI.cs" />
     <Compile Include="UI\DownlinkGUI.cs" />
     <Compile Include="UI\FuelTanksGUI.cs" />
     <Compile Include="UI\TrackingStationGUI.cs" />
@@ -98,24 +101,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>IF DEFINED KSPDIR (
-  echo Using KSPDIR
-) ELSE IF DEFINED ProgramFiles(x86) (
-  echo Using 64bit Steam directory
-  set "KSPDIR=%25ProgramFiles(x86)%25\Steam\SteamApps\common\Kerbal Space Program"
-) ELSE (
-  echo Falling back to 32bit Steam directory, this might fail
-  set "KSPDIR=%25ProgramFiles%25\Steam\SteamApps\common\Kerbal Space Program"
-)
-
-copy /Y $(TargetFileName) "$(SolutionDir)GameData\medsouz\KerbalKonstructs"
-xcopy /S /Y "$(SolutionDir)GameData" "%25KSPDIR%25\GameData"
-7za a -tzip "$(SolutionDir)KerbalKonstructs.zip" "$(SolutionDir)GameData" 2&gt; NUL
-if %25ERRORLEVEL%25==9009 (
-  echo 7za not found, mod not packaged
-  REM Clear ERRORLEVEL to prevent build failure
-  set ERRORLEVEL = 0
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

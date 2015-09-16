@@ -21,6 +21,7 @@ namespace KerbalKonstructs.UI
 
 			#region Texture Definitions
 			// Texture definitions
+			public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 			public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
 			public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
 			public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
@@ -51,17 +52,21 @@ namespace KerbalKonstructs.UI
 			#region GUI Windows
 			// GUI Windows
 			Rect toolRect = new Rect(300, 35, 310, 570);
-			Rect editorRect = new Rect(10, 25, 520, 520);
 			Rect siteEditorRect = new Rect(400, 45, 340, 480);
-			Rect StaticInfoRect = new Rect(300, 50, 250, 400);
+
 			#endregion
 
 			#region GUI elements
 			// GUI elements
-			Vector2 scrollPos;
 			Vector2 descScroll;
 			GUIStyle listStyle = new GUIStyle();
 			GUIStyle navStyle = new GUIStyle();
+
+			GUIStyle DeadButton;
+			GUIStyle DeadButtonRed;
+			GUIStyle KKWindow;
+			GUIStyle BoxNoBorder;
+
 			SiteType siteType;
 			GUIContent[] siteTypeOptions = {
 											new GUIContent("VAB"),
@@ -82,21 +87,10 @@ namespace KerbalKonstructs.UI
 			public static String xOri, yOri, zOri = "";
 			public static String facType = "None";
 			public static String sGroup = "Ungrouped";
-			String customgroup = "";
-			String categoryfilter = "";
-			String titlefilter = "";
-			String categoryfilterset = "";
-			String titlefilterset = "";
-			String sTitleHolder = "";
-			String sCategoryHolder = "";
-			String groupfilter = "";
-			String groupfilterset = "";
-			String sPackName = "";
 			public static String visrange = "";
 			String increment = "1";
 			String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
 			float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund;
-			float localRange = 10000f;
 
 			Vector3 orientation = Vector3.zero;
 			Vector3 vbsnapangle1 = new Vector3(0,0,0);
@@ -105,13 +99,6 @@ namespace KerbalKonstructs.UI
 			Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
 			Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
 
-			String infTitle = "";
-			String infMesh = "";
-			String infCost = "";
-			String infAuthor = "";
-			String infManufacturer = "";
-			String infDescription = "";
-			String infCategory = "";
 			String sSTROT = "";
 
 			GameObject selectedSnapPoint = null;
@@ -148,11 +135,6 @@ namespace KerbalKonstructs.UI
 
 		#region draw Methods
 
-		public void drawStaticInfo()
-		{
-			StaticInfoRect = GUI.Window(0xD00B1E2, StaticInfoRect, drawStaticInfoWindow, "KK Static Model Info");
-		}
-
 		public void drawEditor(StaticObject obj)
 		{
 			if (obj != null)
@@ -160,453 +142,21 @@ namespace KerbalKonstructs.UI
 				if (selectedObject != obj)
 					updateSelection(obj);
 
-				toolRect = GUI.Window(0xB00B1E3, toolRect, drawToolWindow, "KK Instance Editor");
+				KKWindow = new GUIStyle(GUI.skin.window);
+				KKWindow.padding = new RectOffset(8, 8, 3, 3);
+
+				toolRect = GUI.Window(0xB00B1E3, toolRect, drawToolWindow, "", KKWindow);
 
 				if (editingSite)
 				{
-						siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "KK Launchsite Editor");
+						siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindow);
 				}
 			}
-
-			if (displayingInfo)
-			{
-				StaticInfoRect = GUI.Window(0xD00B1E2, StaticInfoRect, drawStaticInfoWindow, "KK Static Model Info");
-			}
-
-			editorRect = GUI.Window(0xB00B1E5, editorRect, drawEditorWindow, "Kerbal Konstructs Statics Editor");
-		}
-
-		void drawStaticInfoWindow(int WindowID)
-		{
-			GUILayout.Box(" " + infTitle + " ");
-			GUILayout.Box("Mesh: " + infMesh + ".mu");
-			GUILayout.Box("Manufacturer: " + infManufacturer);
-			GUILayout.Box("Author: " + infAuthor);
-			GUILayout.Box("Category: " + infCategory);
-			GUILayout.Box("Cost: " + infCost);
-			GUILayout.Label("Description: ");
-			GUILayout.Label(infDescription);
-
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Close", GUILayout.Height(23)))
-			{
-				displayingInfo = false;
-			}
-
-			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
 		#endregion
 		
 		#region Editors
-
-		#region Statics Editor
-		// STATICS EDITOR
-
-		void drawEditorWindow(int id)
-		{
-			string smessage = "";
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
-
-			GUILayout.BeginArea(new Rect(10, 25, 500, 485));
-			
-			GUILayout.BeginHorizontal();
-				GUI.enabled = !creatingInstance;
-				if (GUILayout.Button("Spawn New", GUILayout.Width(115)))
-				{
-					creatingInstance = true;
-					showLocal = false;
-				}
-				GUILayout.Space(10);
-				GUI.enabled = creatingInstance || showLocal;
-				if (GUILayout.Button("All Instances", GUILayout.Width(108)))
-				{
-					creatingInstance = false;
-					showLocal = false;
-				}
-				GUI.enabled = true;
-				GUILayout.Space(2);
-				GUI.enabled = creatingInstance || !showLocal;
-				if (GUILayout.Button("Local Instances", GUILayout.Width(108)))
-				{
-					creatingInstance = false;
-					showLocal = true;
-				}
-				GUI.enabled = true;
-				GUILayout.FlexibleSpace();
-				if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(115)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					smessage = "Saved all changes to all objects.";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-				}
-			GUILayout.EndHorizontal();
-
-			if (creatingInstance)
-			{
-				GUILayout.BeginHorizontal();
-					GUILayout.Label("Category", GUILayout.Width(125));
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("Title ");
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("Mesh ", GUILayout.Width(175));
-				GUILayout.EndHorizontal();
-			}
-
-			bool showStatic = false;
-			scrollPos = GUILayout.BeginScrollView(scrollPos);
-				if (creatingInstance)
-				{
-					foreach (StaticModel model in KerbalKonstructs.instance.getStaticDB().getModels())
-					{
-						if (titlefilterset == "" && categoryfilterset == "")
-							showStatic = true;
-
-						if (titlefilterset != "")
-						{
-							sTitleHolder = (string)model.getSetting("title"); 
-							if (sTitleHolder.Contains(titlefilterset))
-								showStatic = true;
-							else
-								showStatic = false;
-						}
-
-						if (categoryfilterset != "")
-						{
-							sCategoryHolder = (string)model.getSetting("category");
-							if (sCategoryHolder.Contains(categoryfilterset))
-								showStatic = true;
-							else
-								showStatic = false;
-						}
-
-						if (categoryfilterset != "" && titlefilterset != "")
-						{
-							sTitleHolder = (string)model.getSetting("title");
-							sCategoryHolder = (string)model.getSetting("category");
-							if (sCategoryHolder.Contains(categoryfilterset) && sTitleHolder.Contains(titlefilterset))
-								showStatic = true;
-							else
-								showStatic = false;
-						}
-
-						if (showStatic)
-						{
-							GUILayout.BeginHorizontal();
-							GUILayout.Box("" + model.getSetting("category"), GUILayout.Width(100), GUILayout.Height(28));
-							if (GUILayout.Button(new GUIContent("" + "" + model.getSetting("title"), "Spawn an instance of this static."), GUILayout.Height(25)))
-							{
-								spawnInstance(model);
-								smessage = "Spawned " + model.getSetting("title");
-								ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-							}
-							GUILayout.FlexibleSpace();
-							GUILayout.Box(" " + model.getSetting("mesh") + " ", GUILayout.Height(28));
-							if (GUILayout.Button("i", GUILayout.Width(20), GUILayout.Height(25)))
-							{
-								displayingInfo = true;
-								infAuthor = (string)model.getSetting("author");
-								infMesh = "" + model.getSetting("mesh");
-								infManufacturer = (string)model.getSetting("manufacturer");
-								infCost = model.getSetting("cost").ToString();
-								infDescription = (string)model.getSetting("description");
-								infTitle = (string)model.getSetting("title");
-								infCategory = (string)model.getSetting("category");
-								//displayingInfo = true;
-							}
-							GUILayout.EndHorizontal();
-							GUILayout.Space(2);
-						}
-					}
-				}
-
-				if (!creatingInstance)
-				{
-					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-					{
-						bool isLocal = true;
-
-						if (showLocal)
-						{
-							if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
-							{
-								var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-								isLocal = dist < localRange;
-							}
-							else
-								isLocal = false;
-						}
-
-						string sGroupHolder = "";
-						if (!showLocal)
-						{
-							if (groupfilterset != "")
-							{
-								sGroupHolder = (string)obj.getSetting("Group");
-								if (!sGroupHolder.Contains(groupfilterset))
-								{
-									isLocal = false;
-								}
-							}
-						}
-
-						string sLaunchType = "";
-
-						if (isLocal)
-						{
-							GUILayout.BeginHorizontal();
-							GUILayout.Box("" + obj.getSetting("Group"), GUILayout.Width(120), GUILayout.Height(28));
-
-							sLaunchType = (string)obj.getSetting("Category");
-
-							if (sLaunchType == "Runway" || sLaunchType == "Helipad")
-							{
-								GUILayout.Box(tSPH, GUILayout.Width(25), GUILayout.Height(28));
-							}
-							else
-							{
-								if (sLaunchType == "RocketPad")
-								{
-									GUILayout.Box(tVAB, GUILayout.Width(25), GUILayout.Height(28));
-								}
-								else
-								{
-									if (sLaunchType == "Other" && obj.settings.ContainsKey("LaunchSiteName"))
-									{
-										GUILayout.Box(tANY, GUILayout.Width(25), GUILayout.Height(28));
-									}
-									else
-									{
-										GUILayout.Box("", GUILayout.Width(25), GUILayout.Height(28));
-									}
-								}
-							}
-
-							//GUI.enabled = (obj != selectedObject);
-							if (GUILayout.Button(new GUIContent("" + obj.model.getSetting("title"), "Edit this instance."), GUILayout.Height(25)))
-							{
-								enableColliders = true;
-
-								if (selectedObject != null)
-								{
-									selectedObjectPrevious = selectedObject;
-									Color highlightColor = new Color(0, 0, 0, 0);
-									obj.HighlightObject(highlightColor);
-								}
-
-								if (snapTargetInstance == obj)
-								{
-									snapTargetInstance = null;
-									KerbalKonstructs.instance.snapTargetInstance = null;
-								}
-
-								KerbalKonstructs.instance.selectObject(obj, false);
-								//obj.selectObject(false);
-
-								Color highlightColor2 = XKCDColors.Green_Yellow;
-								obj.HighlightObject(highlightColor2);
-							}
-							//GUI.enabled = true;
-
-							if (showLocal)
-							{
-								GUI.enabled = (snapTargetInstance != obj && obj != selectedObject);
-								if (GUILayout.Button(new GUIContent(tFocus,"Set as snap target." ),GUILayout.Height(25), GUILayout.Width(25)))
-								{
-									if (snapTargetInstance != null)
-									{
-										snapTargetInstancePrevious = snapTargetInstance;
-										Color highlightColor3 = new Color(0, 0, 0, 0);
-										snapTargetInstance.HighlightObject(highlightColor3);
-									}
-
-									snapTargetInstance = obj;
-									KerbalKonstructs.instance.setSnapTarget(obj);
-
-									Color highlightColor4 = XKCDColors.RedPink;
-									obj.HighlightObject(highlightColor4);
-								}
-								GUI.enabled = true;
-							}
-							GUILayout.EndHorizontal();
-							GUILayout.Space(2);
-						}
-					}
-				}
-			GUILayout.EndScrollView();
-			GUI.enabled = true;
-
-			if (creatingInstance)
-			{
-				GUILayout.BeginHorizontal();
-					GUILayout.Label("Filter by ");
-					GUILayout.Label(" Category:");
-					categoryfilter = GUILayout.TextField(categoryfilter, 30, GUILayout.Width(90));
-					if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						categoryfilterset = categoryfilter;
-						titlefilterset = titlefilter;
-					}
-					if (GUILayout.Button(new GUIContent(tCancelSearch, "Remove Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						categoryfilter = "";
-						categoryfilterset = "";
-					}
-					GUILayout.Label("  Title:");
-					titlefilter = GUILayout.TextField(titlefilter, 30, GUILayout.Width(90));
-					if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						categoryfilterset = categoryfilter;
-						titlefilterset = titlefilter;
-					}
-					if (GUILayout.Button(new GUIContent(tCancelSearch, "Remove Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						titlefilter = "";
-						titlefilterset = "";
-					}
-				GUILayout.EndHorizontal();
-			}
-	
-			if (!showLocal && !creatingInstance)
-			{
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Filter by Group:", GUILayout.Width(140));
-					//GUILayout.FlexibleSpace();
-					groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
-					if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						groupfilterset = groupfilter;
-					}
-					if (GUILayout.Button(new GUIContent(tCancelSearch, "Remove Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						groupfilter = "";
-						groupfilterset = "";
-					}
-				}
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Pack Name: ", GUILayout.Width(140));
-					//GUILayout.FlexibleSpace();
-					sPackName = GUILayout.TextField(sPackName, 30, GUILayout.Width(140));
-					//GUILayout.FlexibleSpace();
-
-					GUI.enabled = (sPackName != "" && groupfilter != "");
-					if (GUILayout.Button("Export Group"))
-					{
-						//Validate the groupfilter to see if it is a Group name
-						bool bValidGroupName = false;
-
-						foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-						{
-							if ((string)obj.getSetting("Group") == groupfilter)
-							{
-								bValidGroupName = true;
-								break;
-							}
-						}
-
-						if (bValidGroupName)
-						{
-							KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
-							smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
-							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-						}
-						else
-						{
-							smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
-							ScreenMessages.PostScreenMessage(smessage, 20, smsStyle);
-						}
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = (sPackName != "");
-					if (GUILayout.Button("Export All"))
-					{
-						KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
-						smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
-						ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-					}
-					GUI.enabled = true;
-				}
-				GUILayout.EndHorizontal();
-			}
-
-			if (showLocal)
-			{
-				GUILayout.BeginHorizontal();
-					GUILayout.Label("Local:");
-					GUI.enabled = false;
-					GUILayout.Label(localRange.ToString("0") + " m", GUILayout.Width(50));
-					GUI.enabled = showLocal;
-					if (GUILayout.Button("-", GUILayout.Width(25)))
-					{
-						if (localRange < 5000)
-						{
-
-						}
-						else
-							localRange = localRange / 2;
-					}
-					if (GUILayout.Button("+", GUILayout.Width(25)))
-					{
-						if (localRange > 79999)
-						{
-
-						}
-						else
-							localRange = localRange * 2;
-					}
-					GUI.enabled = true;
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("Group:");
-					// GUILayout.Space(5);
-					GUI.enabled = showLocal;
-					customgroup = GUILayout.TextField(customgroup, 25, GUILayout.Width(125));
-					GUI.enabled = true;
-					//GUILayout.Space(5);
-					GUI.enabled = showLocal;
-					if (GUILayout.Button("Set as Group", GUILayout.Width(100)))
-					{
-						setLocalsGroup(customgroup, localRange);
-						smessage = "Set group as " + customgroup;
-						ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
-					}
-					GUI.enabled = true;
-				GUILayout.EndHorizontal();
-			}
-
-			GUILayout.EndArea();
-
-			if (GUI.tooltip != "")
-			{
-				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-				GUI.Box(new Rect(Event.current.mousePosition.x -(25+(labelSize.x/2)), Event.current.mousePosition.y -40, labelSize.x + 10, labelSize.y + 5), GUI.tooltip);
-			}
-
-			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-		}
-
-		void setLocalsGroup(string sGroup, float fRange)
-		{
-			if (sGroup == "")
-				return;
-
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-			{
-				if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
-				{
-					var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-					if (dist < fRange)
-					{
-						KerbalKonstructs.instance.getStaticDB().changeGroup(obj, sGroup);
-					}
-				}
-			}
-		}
-		#endregion
 
 		#region Instance Editor
 		string savedxpos = "";
@@ -617,135 +167,37 @@ namespace KerbalKonstructs.UI
 		bool savedpos = false;
 		bool pospasted = false;
 
-		void FixDrift(bool bRotate = false)
-		{
-			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-			if (selectedObject == null || snapTargetInstance == null) return;
-
-			Vector3 snapSourceLocalPos = selectedSnapPoint.transform.localPosition;
-			Vector3 snapSourceWorldPos = selectedSnapPoint.transform.position;
-			Vector3 selSourceWorldPos = selectedObject.gameObject.transform.position;
-			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-			Vector3 snapTargetLocalPos = selectedSnapPoint2.transform.localPosition;
-			Vector3 snapTargetWorldPos = selectedSnapPoint2.transform.position;
-			Vector3 selTargetWorldPos = snapTargetInstance.gameObject.transform.position;
-			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
-			var spdist = 0f;
-
-			if (!bRotate) spdist = Vector3.Distance(snapSourceWorldPos, snapTargetWorldPos);
-			if (bRotate) spdist = Vector3.Distance(selSourceRot * snapSourceWorldPos, selTargetRot * snapTargetWorldPos);
-			
-			int iGiveUp = 0;
-
-			while (spdist > 0.01 && iGiveUp < 100)
-			{
-				if (!bRotate)
-				{
-					snpspos = selectedSnapPoint.transform.position;
-					snptpos = selectedSnapPoint2.transform.position;
-
-					vDrift = snpspos - snptpos;
-					vCurrpos = selectedObject.pqsCity.repositionRadial;
-					selectedObject.setSetting("RadialPosition", vCurrpos + vDrift);
-					updateSelection(selectedObject);
-
-					spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
-					iGiveUp = iGiveUp + 1;
-				}
-
-				if (bRotate)
-				{
-					iGiveUp = 100;
-				}
-			}
-		}
-
-		 Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
-		 {
-		   Vector3 dir = point - pivot; // get point direction relative to pivot
-		   dir = Quaternion.Euler(angles) * dir; // rotate it
-		   Vector3 newpoint = dir + pivot; // calculate rotated point
-		   return newpoint;
-		}
-
-		void SnapToTarget(bool bRotate = false)
-		{
-			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-			if (selectedObject == null || snapTargetInstance == null) return;
-
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
-
-			Vector3 snapPointRelation = new Vector3(0, 0, 0);
-			Vector3 snapPoint2Relation = new Vector3(0, 0, 0);
-			Vector3 snapVector = new Vector3(0, 0, 0);
-			Vector3 snapVectorNoRot = new Vector3(0, 0, 0);
-			Vector3 vFinalPos = new Vector3(0, 0, 0);
-
-			Vector3 snapSourcePos = selectedSnapPoint.transform.localPosition;
-			snapSourceWorldPos = selectedSnapPoint.transform.position;
-			Vector3 selSourcePos = selectedObject.gameObject.transform.position;
-			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-			Vector3 snapTargetPos = selectedSnapPoint2.transform.localPosition;
-			snapTargetWorldPos = selectedSnapPoint2.transform.position;
-			Vector3 selTargetPos = snapTargetInstance.gameObject.transform.position;
-			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
-
-			vbsnapangle1 = selectedSnapPoint.transform.position;
-			vbsnapangle2 = selectedSnapPoint2.transform.position;
-
-			if (!bRotate)
-			{
-				// Quaternion quatSelObj = Quaternion.AngleAxis(selSourceRot, selSourcePos);
-				snapPointRelation = snapSourcePos;
-				//quatSelObj * snapSourcePos;
-
-				//Quaternion quatSelTar = Quaternion.AngleAxis(selTargetRot, selTargetPos);
-				snapPoint2Relation = snapTargetPos;
-				//quatSelTar * snapTargetPos;
-
-				snapVector = (snapPoint2Relation - snapPointRelation);
-				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition") + snapVector;
-			}
-			else
-			{
-				// THIS SHIT DO NOT WORK
-				//ScreenMessages.PostScreenMessage("Snapping with rotation.", 60, smsStyle);
-				// Stick the origins on each other
-				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
-				selectedObject.setSetting("RadialPosition", vFinalPos);
-				updateSelection(selectedObject);
-
-				// Get the offset of the source and move by that
-				Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
-				snapPointRelation = selectedObject.gameObject.transform.position -
-					selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
-				ScreenMessages.PostScreenMessage("" + snapPointRelation.ToString(), 60, smsStyle);
-				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
-				selectedObject.setSetting("RadialPosition", vFinalPos);
-				updateSelection(selectedObject);
-
-				// Get the offset of the target and move by that
-				vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
-				snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
-					selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
-				ScreenMessages.PostScreenMessage("" + snapPoint2Relation.ToString(), 60, smsStyle);
-				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
-			}
-
-			snapSourcePos = selectedSnapPoint.transform.localPosition;
-			snapTargetPos = selectedSnapPoint2.transform.localPosition;
-			snapVectorNoRot = (snapSourcePos - snapTargetPos);
-
-			selectedObject.setSetting("RadialPosition", vFinalPos);
-			selectedObject.setSetting("RadiusOffset", (float)snapTargetInstance.getSetting("RadiusOffset") + snapVectorNoRot.y);
-
-			updateSelection(selectedObject);
-			if (!bRotate) FixDrift();
-		}
-
 		// INSTANCE EDITOR
 		void drawToolWindow(int windowID)
 		{
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+			BoxNoBorder.normal.textColor = Color.white;
+
+			DeadButton = new GUIStyle(GUI.skin.button);
+			DeadButton.normal.background = null;
+			DeadButton.hover.background = null;
+			DeadButton.active.background = null;
+			DeadButton.focused.background = null;
+			DeadButton.normal.textColor = Color.yellow;
+			DeadButton.hover.textColor = Color.white;
+			DeadButton.active.textColor = Color.yellow;
+			DeadButton.focused.textColor = Color.yellow;
+			DeadButton.fontSize = 14;
+			DeadButton.fontStyle = FontStyle.Normal;
+
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
+
 			string smessage = "";
 			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 			Vector3 position = Vector3.zero;
@@ -758,14 +210,41 @@ namespace KerbalKonstructs.UI
 			double objLat = 0;
 			double objLon = 0;
 
-			GUILayout.BeginArea(new Rect(5, 25, 295, 550));
+			GUILayout.BeginHorizontal();
+			{
+				GUI.enabled = false;
+				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+
+				GUILayout.FlexibleSpace();
+
+				GUILayout.Button("Instance Editor", DeadButton, GUILayout.Height(21));
+
+				GUILayout.FlexibleSpace();
+
+				GUI.enabled = true;
+
+				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+				{
+					KerbalKonstructs.instance.saveObjects();
+					KerbalKonstructs.instance.deselectObject(true, true);
+				}
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+			GUILayout.Space(2);
 
 			GUILayout.Box((string)selectedObject.model.getSetting("title"));
+
+			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.Label("Position   ");
 				GUILayout.Space(15);
+
 				if (GUILayout.Button(new GUIContent(tCopyPos, "Copy Position."), GUILayout.Width(23), GUILayout.Height(23)))
 				{
 					savedpos = true;
@@ -817,10 +296,10 @@ namespace KerbalKonstructs.UI
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
+
 			GUILayout.Label("X:");
 			GUILayout.FlexibleSpace();
 			xPos = GUILayout.TextField(xPos, 25, GUILayout.Width(80));
-			GUI.enabled = true;
 			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
 			{
 				position.x -= float.Parse(increment);
@@ -837,7 +316,6 @@ namespace KerbalKonstructs.UI
 			GUILayout.Label("Y:");
 			GUILayout.FlexibleSpace();
 			yPos = GUILayout.TextField(yPos, 25, GUILayout.Width(80));
-			GUI.enabled = true;
 			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
 			{
 				position.y -= float.Parse(increment);
@@ -854,7 +332,6 @@ namespace KerbalKonstructs.UI
 			GUILayout.Label("Z:");
 			GUILayout.FlexibleSpace();
 			zPos = GUILayout.TextField(zPos, 25, GUILayout.Width(80));
-			GUI.enabled = true;
 			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
 			{
 				position.z -= float.Parse(increment);
@@ -866,6 +343,8 @@ namespace KerbalKonstructs.UI
 				shouldUpdateSelection = true;
 			}
 			GUILayout.EndHorizontal();
+
+			GUI.enabled = true;
 
 			GUILayout.BeginHorizontal();
 			{
@@ -887,12 +366,13 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
+			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.Label("Alt.");
 				GUILayout.FlexibleSpace();
 				altitude = GUILayout.TextField(altitude, 25, GUILayout.Width(80));
-				GUI.enabled = true;
 				if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
 				{
 					alt -= float.Parse(increment);
@@ -913,6 +393,8 @@ namespace KerbalKonstructs.UI
 				alt = 1.0f + ((float)(pqsc.GetSurfaceHeight((Vector3)selectedObject.getSetting("RadialPosition")) - pqsc.radius - (float)selectedObject.getSetting("RadiusOffset")));
 				shouldUpdateSelection = true;
 			}
+
+			GUI.enabled = true;
 
 			bool isDevMode = KerbalKonstructs.instance.DevMode;
 
@@ -1004,6 +486,8 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.Space(5);
 
+			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.Label("Rot.");
@@ -1032,6 +516,8 @@ namespace KerbalKonstructs.UI
 				}
 			}
 			GUILayout.EndHorizontal();
+
+			GUI.enabled = true;
 
 			GUILayout.BeginHorizontal();
 			{
@@ -1063,6 +549,9 @@ namespace KerbalKonstructs.UI
 			GUILayout.EndHorizontal();
 
 			GUILayout.Space(5);
+
+			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+
 			GUILayout.BeginHorizontal();
 			{
 				GUILayout.Label("Orientation");
@@ -1139,29 +628,33 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
-			GUILayout.Space(5);
-
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Label("Facility Type: ");
-				GUILayout.FlexibleSpace();
-				facType = GUILayout.TextField(facType, 30, GUILayout.Width(185));
-			}
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Label("Group: ");
-				GUILayout.FlexibleSpace();
-				sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(185));
-			}
-			GUILayout.EndHorizontal();
+			GUI.enabled = true;
 
 			GUILayout.Space(5);
 
 			GUILayout.BeginHorizontal();
 			{
-				enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140));
+				GUILayout.Label("Facility Type: ", GUILayout.Height(23));
+				GUILayout.FlexibleSpace();
+				facType = GUILayout.TextField(facType, 30, GUILayout.Width(185), GUILayout.Height(23));
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Label("Group: ", GUILayout.Height(23));
+				GUILayout.FlexibleSpace();
+				sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(185), GUILayout.Height(23));
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.Space(5);
+
+			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+
+			GUILayout.BeginHorizontal();
+			{
+				enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140), GUILayout.Height(23));
 
 				Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
 				List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.collider != null select t.gameObject).ToList();
@@ -1183,7 +676,7 @@ namespace KerbalKonstructs.UI
 
 				GUILayout.FlexibleSpace();
 
-				if (GUILayout.Button("Duplicate", GUILayout.Width(130)))
+				if (GUILayout.Button("Duplicate", GUILayout.Width(130), GUILayout.Height(23)))
 				{
 					KerbalKonstructs.instance.saveObjects();
 					StaticModel oModel = selectedObject.model;
@@ -1191,13 +684,14 @@ namespace KerbalKonstructs.UI
 					Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
 					float fAngle = (float)selectedObject.getSetting("RotationAngle");
 					smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
-					//KerbalKonstructs.instance.selectedObject = null;
-					KerbalKonstructs.instance.deselectObject();
+					KerbalKonstructs.instance.deselectObject(true, true);
 					spawnInstance(oModel, fOffset, vPosition, fAngle);
 					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
 				}
 			}
 			GUILayout.EndHorizontal();
+
+			GUI.enabled = true;
 
 			GUILayout.Space(10);
 
@@ -1211,7 +705,7 @@ namespace KerbalKonstructs.UI
 			if (sLaunchPadTransform == "" && sDefaultPadTransform == "")
 				GUI.enabled = false;
 
-			if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite"))
+			if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
 			{
 				// Edit or make a launchsite
 				siteName = (string)selectedObject.getSetting("LaunchSiteName");
@@ -1247,18 +741,17 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.BeginHorizontal();
 			{
-				if (GUILayout.Button("Save", GUILayout.Width(130)))
+				if (GUILayout.Button("Save", GUILayout.Width(130), GUILayout.Height(23)))
 				{
 					KerbalKonstructs.instance.saveObjects();
 					smessage = "Saved all changes to all objects.";
 					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
 				}
 				GUILayout.FlexibleSpace();
-				if (GUILayout.Button("Deselect", GUILayout.Width(130)))
+				if (GUILayout.Button("Deselect", GUILayout.Width(130), GUILayout.Height(23)))
 				{
 					KerbalKonstructs.instance.saveObjects();
-					//KerbalKonstructs.instance.selectedObject = null;
-					KerbalKonstructs.instance.deselectObject();
+					KerbalKonstructs.instance.deselectObject(true, true);
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -1388,7 +881,10 @@ namespace KerbalKonstructs.UI
 				updateSelection(selectedObject);
 			}
 
-			GUILayout.EndArea();
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+			GUILayout.Space(2);
 
 			if (GUI.tooltip != "")
 			{
@@ -1399,61 +895,7 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		public StaticObject spawnInstance(StaticModel model)
-		{
-			StaticObject obj = new StaticObject();
-			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
-			obj.setSetting("RadiusOffset", (float)FlightGlobals.ActiveVessel.altitude);
-			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-			obj.setSetting("Group", "Ungrouped");
-			obj.setSetting("RadialPosition", KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position));
-			obj.setSetting("RotationAngle", 0f);
-			obj.setSetting("Orientation", Vector3.up);
-			obj.setSetting("VisibilityRange", 25000f);
 
-			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
-			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
-
-			if (!KerbalKonstructs.instance.DevMode)
-			{
-				obj.setSetting("CustomInstance", "True");
-			}
-			
-			obj.model = model;
-
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
-			enableColliders = false;
-			obj.spawnObject(true);
-			return obj;
-		}
-
-		public StaticObject spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
-		{
-			StaticObject obj = new StaticObject();
-			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
-			obj.setSetting("RadiusOffset", fOffset);
-			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-			obj.setSetting("Group", "Ungrouped");
-			obj.setSetting("RadialPosition", vPosition);
-			obj.setSetting("RotationAngle", fAngle);
-			obj.setSetting("Orientation", Vector3.up);
-			obj.setSetting("VisibilityRange", 25000f);
-
-			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
-			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
-
-			if (!KerbalKonstructs.instance.DevMode)
-			{
-				obj.setSetting("CustomInstance", "True");
-			}
-
-			obj.model = model;
-
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
-			enableColliders = false;
-			obj.spawnObject(true);
-			return obj;
-		}
 		#endregion
 
 		#region Launchsite Editor
@@ -1467,6 +909,59 @@ namespace KerbalKonstructs.UI
 		// LAUNCHSITE EDITOR
 		void drawSiteEditorWindow(int id)
 		{
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+			BoxNoBorder.normal.textColor = Color.white;
+
+			DeadButton = new GUIStyle(GUI.skin.button);
+			DeadButton.normal.background = null;
+			DeadButton.hover.background = null;
+			DeadButton.active.background = null;
+			DeadButton.focused.background = null;
+			DeadButton.normal.textColor = Color.yellow;
+			DeadButton.hover.textColor = Color.white;
+			DeadButton.active.textColor = Color.yellow;
+			DeadButton.focused.textColor = Color.yellow;
+			DeadButton.fontSize = 14;
+			DeadButton.fontStyle = FontStyle.Normal;
+
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
+
+			GUILayout.BeginHorizontal();
+			{
+				GUI.enabled = false;
+				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+
+				GUILayout.FlexibleSpace();
+
+				GUILayout.Button("Launchsite Editor", DeadButton, GUILayout.Height(21));
+
+				GUILayout.FlexibleSpace();
+
+				GUI.enabled = true;
+
+				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+				{
+					editingSite = false;
+				}
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+			GUILayout.Space(2);
+
 			GUILayout.Box((string)selectedObject.model.getSetting("title"));
 			
 			GUILayout.BeginHorizontal();
@@ -1597,6 +1092,11 @@ namespace KerbalKonstructs.UI
 				}
 			GUILayout.EndHorizontal();
 
+			GUILayout.Space(1);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+			GUILayout.Space(2);
+
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 		#endregion
@@ -1608,6 +1108,34 @@ namespace KerbalKonstructs.UI
 		#endregion
 
 		#region Utility Functions
+
+		public StaticObject spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
+		{
+			StaticObject obj = new StaticObject();
+			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+			obj.setSetting("RadiusOffset", fOffset);
+			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
+			obj.setSetting("Group", "Ungrouped");
+			obj.setSetting("RadialPosition", vPosition);
+			obj.setSetting("RotationAngle", fAngle);
+			obj.setSetting("Orientation", Vector3.up);
+			obj.setSetting("VisibilityRange", 25000f);
+
+			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
+			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
+
+			if (!KerbalKonstructs.instance.DevMode)
+			{
+				obj.setSetting("CustomInstance", "True");
+			}
+
+			obj.model = model;
+
+			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
+			enableColliders = false;
+			obj.spawnObject(true, false);
+			return obj;
+		}
 
 		public static void setTargetSite(LaunchSite lsTarget, string sName = "")
 		{
@@ -1658,6 +1186,133 @@ namespace KerbalKonstructs.UI
 					return SiteType.Any;
 			}
 		}
+
+		void FixDrift(bool bRotate = false)
+		{
+			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
+			if (selectedObject == null || snapTargetInstance == null) return;
+
+			Vector3 snapSourceLocalPos = selectedSnapPoint.transform.localPosition;
+			Vector3 snapSourceWorldPos = selectedSnapPoint.transform.position;
+			Vector3 selSourceWorldPos = selectedObject.gameObject.transform.position;
+			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
+			Vector3 snapTargetLocalPos = selectedSnapPoint2.transform.localPosition;
+			Vector3 snapTargetWorldPos = selectedSnapPoint2.transform.position;
+			Vector3 selTargetWorldPos = snapTargetInstance.gameObject.transform.position;
+			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
+			var spdist = 0f;
+
+			if (!bRotate) spdist = Vector3.Distance(snapSourceWorldPos, snapTargetWorldPos);
+			if (bRotate) spdist = Vector3.Distance(selSourceRot * snapSourceWorldPos, selTargetRot * snapTargetWorldPos);
+
+			int iGiveUp = 0;
+
+			while (spdist > 0.01 && iGiveUp < 100)
+			{
+				if (!bRotate)
+				{
+					snpspos = selectedSnapPoint.transform.position;
+					snptpos = selectedSnapPoint2.transform.position;
+
+					vDrift = snpspos - snptpos;
+					vCurrpos = selectedObject.pqsCity.repositionRadial;
+					selectedObject.setSetting("RadialPosition", vCurrpos + vDrift);
+					updateSelection(selectedObject);
+
+					spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
+					iGiveUp = iGiveUp + 1;
+				}
+
+				if (bRotate)
+				{
+					iGiveUp = 100;
+				}
+			}
+		}
+
+		Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+		{
+			Vector3 dir = point - pivot; // get point direction relative to pivot
+			dir = Quaternion.Euler(angles) * dir; // rotate it
+			Vector3 newpoint = dir + pivot; // calculate rotated point
+			return newpoint;
+		}
+
+		void SnapToTarget(bool bRotate = false)
+		{
+			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
+			if (selectedObject == null || snapTargetInstance == null) return;
+
+			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
+
+			Vector3 snapPointRelation = new Vector3(0, 0, 0);
+			Vector3 snapPoint2Relation = new Vector3(0, 0, 0);
+			Vector3 snapVector = new Vector3(0, 0, 0);
+			Vector3 snapVectorNoRot = new Vector3(0, 0, 0);
+			Vector3 vFinalPos = new Vector3(0, 0, 0);
+
+			Vector3 snapSourcePos = selectedSnapPoint.transform.localPosition;
+			snapSourceWorldPos = selectedSnapPoint.transform.position;
+			Vector3 selSourcePos = selectedObject.gameObject.transform.position;
+			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
+			Vector3 snapTargetPos = selectedSnapPoint2.transform.localPosition;
+			snapTargetWorldPos = selectedSnapPoint2.transform.position;
+			Vector3 selTargetPos = snapTargetInstance.gameObject.transform.position;
+			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
+
+			vbsnapangle1 = selectedSnapPoint.transform.position;
+			vbsnapangle2 = selectedSnapPoint2.transform.position;
+
+			if (!bRotate)
+			{
+				// Quaternion quatSelObj = Quaternion.AngleAxis(selSourceRot, selSourcePos);
+				snapPointRelation = snapSourcePos;
+				//quatSelObj * snapSourcePos;
+
+				//Quaternion quatSelTar = Quaternion.AngleAxis(selTargetRot, selTargetPos);
+				snapPoint2Relation = snapTargetPos;
+				//quatSelTar * snapTargetPos;
+
+				snapVector = (snapPoint2Relation - snapPointRelation);
+				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition") + snapVector;
+			}
+			else
+			{
+				// THIS SHIT DO NOT WORK
+				//ScreenMessages.PostScreenMessage("Snapping with rotation.", 60, smsStyle);
+				// Stick the origins on each other
+				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
+				selectedObject.setSetting("RadialPosition", vFinalPos);
+				updateSelection(selectedObject);
+
+				// Get the offset of the source and move by that
+				Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
+				snapPointRelation = selectedObject.gameObject.transform.position -
+					selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
+				ScreenMessages.PostScreenMessage("" + snapPointRelation.ToString(), 60, smsStyle);
+				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
+				selectedObject.setSetting("RadialPosition", vFinalPos);
+				updateSelection(selectedObject);
+
+				// Get the offset of the target and move by that
+				vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
+				snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
+					selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
+				ScreenMessages.PostScreenMessage("" + snapPoint2Relation.ToString(), 60, smsStyle);
+				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
+			}
+
+			snapSourcePos = selectedSnapPoint.transform.localPosition;
+			snapTargetPos = selectedSnapPoint2.transform.localPosition;
+			snapVectorNoRot = (snapSourcePos - snapTargetPos);
+
+			selectedObject.setSetting("RadialPosition", vFinalPos);
+			selectedObject.setSetting("RadiusOffset", (float)snapTargetInstance.getSetting("RadiusOffset") + snapVectorNoRot.y);
+
+			updateSelection(selectedObject);
+			if (!bRotate) FixDrift();
+		}
+
 		#endregion
 	}
 }
