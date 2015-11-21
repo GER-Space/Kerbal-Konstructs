@@ -208,6 +208,7 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
 			KKAPI.addModelSetting("pointername", new ConfigGenericString());
 			KKAPI.addModelSetting("name", new ConfigGenericString());
+            KKAPI.addModelSetting("concaveColliders", new ConfigGenericString());
 			#endregion
 
 			#region Instance API
@@ -1278,6 +1279,20 @@ namespace KerbalKonstructs
 					Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
 					continue;
 				}
+
+                // Fix colliders
+                if (!String.IsNullOrEmpty(model.getSetting("concaveColliders").ToString().Trim()))
+                {
+                    string value = model.getSetting("concaveColliders").ToString();
+                    string[] names = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    MeshCollider[] colliders = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
+                    MeshCollider[] concave = value.ToLower() == "all" ? colliders : colliders.Where(c => names.Contains(c.name)).ToArray();
+                    foreach (MeshCollider collider in concave)
+                    {
+                        if (DebugMode) Debug.Log("KK: Making collider " + collider.name + " concave.");
+                        collider.convex = false;
+                    }
+                }
 
 				obj.settings = KKAPI.loadConfig(ins, KKAPI.getInstanceSettings());
 
