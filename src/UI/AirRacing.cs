@@ -119,7 +119,7 @@ namespace KerbalKonstructs.UI
 						if (fDistToStart < 150)
 						{
 							dStartTime = Planetarium.GetUniversalTime();
-							ScreenMessages.PostScreenMessage("!!! GO GO GO !!!", 10, ScreenMessageStyle.UPPER_CENTER);
+							MiscUtils.HUDMessage("!!! GO GO GO !!!", 10, 0);
 							started = true;
 							racing = true;
 						}
@@ -161,7 +161,7 @@ namespace KerbalKonstructs.UI
 								GUILayout.Box("Distance to Next Gate: " + fDistToGate.ToString("#0.0") + " m");
 							else
 							{
-								ScreenMessages.PostScreenMessage("!!! GATE  " + fNextGate.ToString() + "  CLEAR !!!", 10, ScreenMessageStyle.UPPER_CENTER);
+								MiscUtils.HUDMessage("!!! GATE  " + fNextGate.ToString() + "  CLEAR !!!", 10, 0);
 								fNextGate = fNextGate + 1;
 							}
 						}
@@ -201,7 +201,7 @@ namespace KerbalKonstructs.UI
 					if (dFinishTime == 0)
 					{
 						dFinishTime = Planetarium.GetUniversalTime() - dStartTime;
-						ScreenMessages.PostScreenMessage("!!! FINISHED !!!", 10, ScreenMessageStyle.UPPER_CENTER);
+						MiscUtils.HUDMessage("!!! FINISHED !!!", 10, 0);
 					}
 
 					fTimeMins = (int)dFinishTime / 60;
@@ -211,7 +211,7 @@ namespace KerbalKonstructs.UI
 
 					if (GUILayout.Button("Save Race Results", GUILayout.Height(22)))
 					{
-						ScreenMessages.PostScreenMessage("Feature still WIP", 10, ScreenMessageStyle.LOWER_CENTER);
+						MiscUtils.HUDMessage("Feature still WIP", 10, 3);
 					}
 
 					if (GUILayout.Button("Race Again!", GUILayout.Height(22))) ResetRace();

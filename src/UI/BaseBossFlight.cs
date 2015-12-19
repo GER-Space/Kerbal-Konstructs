@@ -67,7 +67,6 @@ namespace KerbalKonstructs.UI
 			LaunchSite lNearest;
 			LaunchSite lBase;
 			string smessage = "";
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
 			BoxNoBorder.normal.background = null;
@@ -221,7 +220,7 @@ namespace KerbalKonstructs.UI
 						{
 							NavGuidanceSystem.setTargetSite(lNearest);
 							smessage = "NGS set to " + Base;
-							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
 					}
 				}
@@ -252,7 +251,7 @@ namespace KerbalKonstructs.UI
 						NavGuidanceSystem.setTargetSite(lBase);
 
 						smessage = "NGS set to " + Base;
-						ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+						MiscUtils.HUDMessage(smessage, 10, 2);
 					}
 				}
 			}
@@ -280,7 +279,7 @@ namespace KerbalKonstructs.UI
 
 							if (fOpenCost > currentfunds)
 							{
-								ScreenMessages.PostScreenMessage("Insufficient funds to open this site!", 10, 0);
+								MiscUtils.HUDMessage("Insufficient funds to open this site!", 10, 0);
 							}
 							else
 							{
@@ -288,7 +287,7 @@ namespace KerbalKonstructs.UI
 
 								LaunchSiteManager.setSiteOpenCloseState(Base, "Open");
 								smessage = Base + " opened";
-								ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+								MiscUtils.HUDMessage(smessage, 10, 2);
 							}
 						}
 					}

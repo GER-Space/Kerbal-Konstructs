@@ -34,5 +34,11 @@ namespace KerbalKonstructs.Utilities
 			MessageSystem.Message m = new MessageSystem.Message(sTitle, sMessage, cColor, bIcon);
 			MessageSystem.Instance.AddMessage(m);
 		}
+
+		public static void HUDMessage(string sMessage, float fDuration = 10f, int iStyle = 2)
+		{
+			ScreenMessageStyle smsStyle = (ScreenMessageStyle)iStyle;
+			ScreenMessages.PostScreenMessage(sMessage, fDuration, smsStyle);
+		}
 	}
 }

@@ -301,7 +301,7 @@ namespace KerbalKonstructs.UI
 
 									if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
 									{
-										//ScreenMessages.PostScreenMessage("Selected base is " + sToolTip + ".", 5f, ScreenMessageStyle.LOWER_CENTER);
+										//MiscUtils.HUDMessage("Selected base is " + sToolTip + ".", 5f, 3);
 										Debug.Log("KK: Selected station in map");
 										float sTrackAngle = (float)obj.getSetting("TrackingAngle");
 										Debug.Log("KK: Before save load " + sTrackAngle.ToString());
@@ -414,7 +414,7 @@ namespace KerbalKonstructs.UI
 											// Select a base by clicking on the icon
 											if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
 											{
-												ScreenMessages.PostScreenMessage("Selected base is " + sToolTip + ".", 5f, ScreenMessageStyle.LOWER_CENTER);
+												MiscUtils.HUDMessage("Selected base is " + sToolTip + ".", 5f, 3);
 												BaseManager.setSelectedSite(site);
 												selectedSite = site;
 												NavGuidanceSystem.setTargetSite(selectedSite);

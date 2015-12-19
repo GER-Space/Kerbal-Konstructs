@@ -46,7 +46,6 @@ namespace KerbalKonstructs.UI
 		public static void FuelTanksInterface(StaticObject selectedObject)
 		{
 			string smessage = "";
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 
 			string sFacilityName = (string)selectedObject.model.getSetting("title");
 			string sFacilityRole = (string)selectedObject.getSetting("FacilityType");
@@ -140,7 +139,7 @@ namespace KerbalKonstructs.UI
 					bLqFOut = false;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer stopped";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();
@@ -178,7 +177,7 @@ namespace KerbalKonstructs.UI
 				{
 					if ((float)selectedObject.getSetting("LqFCurrent") + (float.Parse(fLqFAmount)) > fLqFMax)
 					{
-						ScreenMessages.PostScreenMessage("Insufficient fuel capacity!", 10, 0);
+						MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
 						fLqFAmount = "0.00";
 					}
 					else
@@ -189,7 +188,7 @@ namespace KerbalKonstructs.UI
 
 							if (fLqFCost > currentfunds)
 							{
-								ScreenMessages.PostScreenMessage("Insufficient funds!", 10, 0);
+								MiscUtils.HUDMessage("Insufficient funds!", 10, 0);
 							}
 							else
 							{
@@ -256,7 +255,7 @@ namespace KerbalKonstructs.UI
 					bOxFOut = false;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer stopped";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();
@@ -294,7 +293,7 @@ namespace KerbalKonstructs.UI
 				{
 					if ((float)selectedObject.getSetting("OxFCurrent") + (float.Parse(fOxFAmount)) > fOxFMax)
 					{
-						ScreenMessages.PostScreenMessage("Insufficient fuel capacity!", 10, 0);
+						MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
 						fOxFAmount = "0.00";
 					}
 					else
@@ -305,7 +304,7 @@ namespace KerbalKonstructs.UI
 
 							if (fOxFCost > currentfunds)
 							{
-								ScreenMessages.PostScreenMessage("Insufficient funds!", 10, 0);
+								MiscUtils.HUDMessage("Insufficient funds!", 10, 0);
 							}
 							else
 							{
@@ -372,7 +371,7 @@ namespace KerbalKonstructs.UI
 					bMoFOut = false;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer stopped";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();
@@ -410,7 +409,7 @@ namespace KerbalKonstructs.UI
 				{
 					if ((float)selectedObject.getSetting("MoFCurrent") + (float.Parse(fMoFAmount)) > fMoFMax)
 					{
-						ScreenMessages.PostScreenMessage("Insufficient fuel capacity!", 10, 0);
+						MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
 						fMoFAmount = "0.00";
 					}
 					else
@@ -421,7 +420,7 @@ namespace KerbalKonstructs.UI
 
 							if (fMoFCost > currentfunds)
 							{
-								ScreenMessages.PostScreenMessage("Insufficient funds!", 10, 0);
+								MiscUtils.HUDMessage("Insufficient funds!", 10, 0);
 							}
 							else
 							{
@@ -457,7 +456,7 @@ namespace KerbalKonstructs.UI
 					fTransferRate = 0.01f;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer rate set to x1";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = (fTransferRate != 0.04f);
 				if (GUILayout.Button(" x4", GUILayout.Height(18)))
@@ -465,7 +464,7 @@ namespace KerbalKonstructs.UI
 					fTransferRate = 0.04f;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer rate set to x4";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = (fTransferRate != 0.1f);
 				if (GUILayout.Button("x10", GUILayout.Height(18)))
@@ -473,7 +472,7 @@ namespace KerbalKonstructs.UI
 					fTransferRate = 0.1f;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
 					smessage = "Fuel transfer rate set to x10";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();

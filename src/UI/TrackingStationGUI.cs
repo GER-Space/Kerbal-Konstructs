@@ -83,7 +83,7 @@ namespace KerbalKonstructs.UI
 					GUILayout.FlexibleSpace();
 					if (GUILayout.Button("Upgrade", GUILayout.Height(20), GUILayout.Width(70)))
 					{
-						ScreenMessages.PostScreenMessage("Unable to upgrade this facility. Insufficient materials.", 10, ScreenMessageStyle.LOWER_CENTER);
+						MiscUtils.HUDMessage("Unable to upgrade this facility. Insufficient materials.", 10, 0);
 					}
 				}
 			}
@@ -141,7 +141,7 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("Change", GUILayout.Height(20), GUILayout.Width(70)))
 				{
 					if (sTargetType == "None" || sTargetType == "Station's Discretion")
-						ScreenMessages.PostScreenMessage("Please select a target type first.", 10, ScreenMessageStyle.LOWER_CENTER);
+						MiscUtils.HUDMessage("Please select a target type first.", 10, 3);
 					else
 					{
 						sSelectedTrackingTarget = "None";

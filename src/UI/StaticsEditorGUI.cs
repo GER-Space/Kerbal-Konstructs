@@ -154,7 +154,6 @@ namespace KerbalKonstructs.UI
 			DeadButtonRed.fontStyle = FontStyle.Bold;
 
 			string smessage = "";
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 
 			GUILayout.BeginHorizontal();
 			{
@@ -206,6 +205,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("" + sButtonText, GUILayout.Height(23), GUILayout.Width(fButtonWidth)))
 				{
+					EditorGUI.CloseEditors();
 					creatingInstance = true;
 					showLocal = false;
 				}
@@ -219,6 +219,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("" + sButtonText, GUILayout.Width(fButtonWidth), GUILayout.Height(23)))
 				{
+					EditorGUI.CloseEditors();
 					creatingInstance = false;
 					showLocal = false;
 					KerbalKonstructs.instance.DeletePreviewObject();
@@ -234,6 +235,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("" + sButtonText, GUILayout.Width(fButtonWidth), GUILayout.Height(23)))
 				{
+					EditorGUI.CloseEditors();
 					creatingInstance = false;
 					showLocal = true;
 					KerbalKonstructs.instance.DeletePreviewObject();
@@ -246,7 +248,7 @@ namespace KerbalKonstructs.UI
 				{
 					KerbalKonstructs.instance.saveObjects();
 					smessage = "Saved all changes to all objects.";
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -349,11 +351,12 @@ namespace KerbalKonstructs.UI
 
 						if (GUILayout.Button(new GUIContent("" + "" + model.getSetting("title"), "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
 						{
+							EditorGUI.CloseEditors();
 							KerbalKonstructs.instance.DeletePreviewObject();
 							KerbalKonstructs.instance.bDisablePositionEditing = false;
 							spawnInstance(model);
 							smessage = "Spawned " + model.getSetting("title");
-							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
 
 						if (!foldedIn)
@@ -442,6 +445,7 @@ namespace KerbalKonstructs.UI
 						{
 							KerbalKonstructs.instance.bDisablePositionEditing = false;
 							enableColliders = true;
+							EditorGUI.CloseEditors();
 
 							if (selectedObject != null)
 							{
@@ -587,12 +591,12 @@ namespace KerbalKonstructs.UI
 							{
 								KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
 								smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
-								ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+								MiscUtils.HUDMessage(smessage, 10, 2);
 							}
 							else
 							{
 								smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
-								ScreenMessages.PostScreenMessage(smessage, 20, smsStyle);
+								MiscUtils.HUDMessage(smessage, 20, 2);
 							}
 						}
 						GUI.enabled = true;
@@ -602,7 +606,7 @@ namespace KerbalKonstructs.UI
 						{
 							KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
 							smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
-							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
 						GUI.enabled = true;
 					}
@@ -688,7 +692,7 @@ namespace KerbalKonstructs.UI
 				{
 					setLocalsGroup(customgroup, localRange);
 					smessage = "Set group as " + customgroup;
-					ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();

@@ -112,7 +112,6 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder.normal.textColor = Color.white;
 
 			string smessage = "";
-			ScreenMessageStyle smsStyle = (ScreenMessageStyle)2;
 
 			GUILayout.BeginHorizontal();
 			{
@@ -337,7 +336,7 @@ namespace KerbalKonstructs.UI
 						{
 							LaunchSiteManager.setLaunchSite(site);
 							smessage = "Launchsite set to " + sButtonName;
-							ScreenMessages.PostScreenMessage(smessage, 10, smsStyle);
+							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
 					}
 					GUI.enabled = true;
@@ -413,7 +412,7 @@ namespace KerbalKonstructs.UI
 								if (DefaultSite.openclosestate == "Closed" && DefaultSite.opencost != 0)
 								{
 									smessage = "Default site is closed.";
-									ScreenMessages.PostScreenMessage(smessage, 10, 0);
+									MiscUtils.HUDMessage(smessage, 10, 0);
 								}
 								else
 									LaunchSiteManager.setLaunchSite(DefaultSite);
@@ -438,7 +437,7 @@ namespace KerbalKonstructs.UI
 								if (DefaultSite.openclosestate == "Closed" && DefaultSite.opencost != 0)
 								{
 									smessage = "Default site is closed.";
-									ScreenMessages.PostScreenMessage(smessage, 10, 0);
+									MiscUtils.HUDMessage(smessage, 10, 0);
 								}
 								else
 									LaunchSiteManager.setLaunchSite(DefaultSite);
@@ -451,12 +450,12 @@ namespace KerbalKonstructs.UI
 					if (DefaultSite != null)
 					{
 						smessage = DefaultSite.name + " has been set as the launchsite";
-						ScreenMessages.PostScreenMessage(smessage, 10, 0);
+						MiscUtils.HUDMessage(smessage, 10, 0);
 					}
 					else
 					{
 						smessage = "KK could not determine the default launchsite.";
-						ScreenMessages.PostScreenMessage(smessage, 10, 0);
+						MiscUtils.HUDMessage(smessage, 10, 0);
 					}
 				}
 			}

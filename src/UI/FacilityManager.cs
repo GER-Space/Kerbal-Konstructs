@@ -404,8 +404,8 @@ namespace KerbalKonstructs.UI
 									}
 									else
 									{
-										ScreenMessages.PostScreenMessage("Cannot roll craft out. Clear the way first!", 10,
-											ScreenMessageStyle.LOWER_CENTER);
+										MiscUtils.HUDMessage("Cannot roll craft out. Clear the way first!", 10,
+											3);
 									}
 								}
 								break;
@@ -427,8 +427,8 @@ namespace KerbalKonstructs.UI
 									}
 									else
 									{
-										ScreenMessages.PostScreenMessage("Cannot roll craft out. Clear the way first!", 10,
-											ScreenMessageStyle.LOWER_CENTER);
+										MiscUtils.HUDMessage("Cannot roll craft out. Clear the way first!", 10,
+											3);
 									}
 								}
 								break;
@@ -450,8 +450,8 @@ namespace KerbalKonstructs.UI
 									}
 									else
 									{
-										ScreenMessages.PostScreenMessage("Cannot roll craft out. Clear the way first!", 10,
-											ScreenMessageStyle.LOWER_CENTER);
+										MiscUtils.HUDMessage("Cannot roll craft out. Clear the way first!", 10,
+											3);
 									}
 								}
 								break;
@@ -491,8 +491,8 @@ namespace KerbalKonstructs.UI
 
 							if (fMass > fMaxMass)
 							{
-								ScreenMessages.PostScreenMessage("Craft too heavy for this facility. Max " + fMaxMass.ToString("#0") + "T per craft.", 10,
-									ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("Craft too heavy for this facility. Max " + fMaxMass.ToString("#0") + "T per craft.", 10,
+									3);
 							}
 							else
 							{
@@ -504,8 +504,8 @@ namespace KerbalKonstructs.UI
 								if (iNumberCraft < (int)fMaxCraft)
 									HangarCraft(vVessel, selectedFacility, (int)fMaxCraft);
 								else
-									ScreenMessages.PostScreenMessage("This facility is full. Max craft: " + fMaxCraft.ToString("#0"), 10,
-										ScreenMessageStyle.LOWER_CENTER);
+									MiscUtils.HUDMessage("This facility is full. Max craft: " + fMaxCraft.ToString("#0"), 10,
+										3);
 							}
 						}
 					}
@@ -532,8 +532,8 @@ namespace KerbalKonstructs.UI
 					if (GUILayout.Button("Construct a Craft", ButtonSmallText, GUILayout.Height(20)))
 					{ 
 						if (sProducing != "None")
-							ScreenMessages.PostScreenMessage("Only one craft can be constructed at a time.", 10,
-								ScreenMessageStyle.LOWER_CENTER);
+							MiscUtils.HUDMessage("Only one craft can be constructed at a time.", 10,
+								3);
 					}
 
 					GUILayout.Space(3);
@@ -882,8 +882,8 @@ namespace KerbalKonstructs.UI
 
 			if (sSpace == "None")
 			{
-				ScreenMessages.PostScreenMessage("This facility is full.", 10,
-					ScreenMessageStyle.LOWER_CENTER);
+				MiscUtils.HUDMessage("This facility is full.", 10,
+					3);
 			}
 			else
 			{

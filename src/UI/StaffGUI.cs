@@ -230,16 +230,16 @@ namespace KerbalKonstructs.UI
 						{
 							if (fStaff == fMaxStaff)
 							{
-								ScreenMessages.PostScreenMessage("Facility is full.", 10,
-									ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("Facility is full.", 10,
+									3);
 							}
 							else
 							{
 								double currentfunds = Funding.Instance.Funds;
 
 								if (fHireFundCost > currentfunds)
-									ScreenMessages.PostScreenMessage("Insufficient funds to hire staff!", 10,
-										ScreenMessageStyle.LOWER_CENTER);
+									MiscUtils.HUDMessage("Insufficient funds to hire staff!", 10,
+										3);
 								else
 								{
 									selectedFacility.setSetting("StaffCurrent", (float)fStaff + 1);
@@ -254,13 +254,13 @@ namespace KerbalKonstructs.UI
 						{
 							if (fStaff < 2)
 							{
-								ScreenMessages.PostScreenMessage("This facility must have at least one caretaker.", 10, ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("This facility must have at least one caretaker.", 10, 3);
 							}
 							else
 							{
 								if ((float)selectedFacility.getSetting("ProductionRateCurrent") < 1)
 								{
-									ScreenMessages.PostScreenMessage("All staff are assigned to duties. Staff must be unassigned in order to fire them.", 10, ScreenMessageStyle.LOWER_CENTER);
+									MiscUtils.HUDMessage("All staff are assigned to duties. Staff must be unassigned in order to fire them.", 10, 3);
 								}
 								else
 								{
@@ -296,8 +296,8 @@ namespace KerbalKonstructs.UI
 						{
 							if (fStaff == fMaxStaff)
 							{
-								ScreenMessages.PostScreenMessage("Facility is fully staffed.", 10,
-									ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("Facility is fully staffed.", 10,
+									3);
 							}
 							else
 							{
@@ -305,7 +305,7 @@ namespace KerbalKonstructs.UI
 
 								if (fAvailable < 1)
 								{
-									ScreenMessages.PostScreenMessage("No unassigned staff available.", 10, ScreenMessageStyle.LOWER_CENTER);
+									MiscUtils.HUDMessage("No unassigned staff available.", 10, 3);
 								}
 								else
 								{
@@ -320,7 +320,7 @@ namespace KerbalKonstructs.UI
 										PersistenceUtils.saveStaticPersistence(soNearestBarracks);
 									}
 									else
-										ScreenMessages.PostScreenMessage("No facility with available staff is nearby.", 10, ScreenMessageStyle.LOWER_CENTER);
+										MiscUtils.HUDMessage("No facility with available staff is nearby.", 10, 3);
 								}
 							}
 						}
@@ -329,7 +329,7 @@ namespace KerbalKonstructs.UI
 						{
 							if (fStaff < 2)
 							{
-								ScreenMessages.PostScreenMessage("An open facility must have one resident caretaker.", 10, ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("An open facility must have one resident caretaker.", 10, 3);
 							}
 							else
 							{
@@ -344,7 +344,7 @@ namespace KerbalKonstructs.UI
 								}
 								else
 								{
-									ScreenMessages.PostScreenMessage("There's no room left in a barracks or apartment for this kerbal to go to.", 10, ScreenMessageStyle.LOWER_CENTER);
+									MiscUtils.HUDMessage("There's no room left in a barracks or apartment for this kerbal to go to.", 10, 3);
 								}
 							}
 						}
@@ -384,7 +384,7 @@ namespace KerbalKonstructs.UI
 						{
 							if (fXP < 1)
 							{
-								ScreenMessages.PostScreenMessage("No XP to spend!", 10, ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("No XP to spend!", 10, 3);
 							}
 
 						}

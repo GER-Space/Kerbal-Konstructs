@@ -373,8 +373,8 @@ namespace KerbalKonstructs.UI
 							double currentfunds = Funding.Instance.Funds;
 
 							if (iFundsOpen > currentfunds)
-								ScreenMessages.PostScreenMessage("Insufficient funds to open this base!", 10,
-									ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("Insufficient funds to open this base!", 10,
+									3);
 							else
 							{
 								selectedSite.openclosestate = "Open";
@@ -420,7 +420,7 @@ namespace KerbalKonstructs.UI
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);
 							string smessage = sButtonName + " has been set as the launchsite";
-							ScreenMessages.PostScreenMessage(smessage, 10, 0);
+							MiscUtils.HUDMessage(smessage, 10, 0);
 						}
 						GUI.enabled = true;
 

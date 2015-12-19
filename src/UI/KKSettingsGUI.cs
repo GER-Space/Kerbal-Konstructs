@@ -732,6 +732,24 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
+			if (KerbalKonstructs.instance.DevMode)
+			{
+				GUILayout.Label("WARNING: If you are not a developer and don't know what you're doing, don't click the button below. It deletes all current instances and then re-writes all core config files without instances.", LabelInfo);
+
+				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
+				{
+					foreach (StaticModel model in KerbalKonstructs.instance.staticDB.getModels())
+					{
+						foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.getObjectsFromModel(model))
+						{
+							KerbalKonstructs.instance.deleteObject(obj);
+						}
+					}
+
+					KerbalKonstructs.instance.saveObjects();
+				}
+			}
+
 			GUILayout.EndScrollView();
 			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));

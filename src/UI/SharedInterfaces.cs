@@ -62,7 +62,7 @@ namespace KerbalKonstructs.UI
 
 							if (iFundsOpen2 > currentfunds2)
 							{
-								ScreenMessages.PostScreenMessage("Insufficient funds to open this facility!", 10, ScreenMessageStyle.LOWER_CENTER);
+								MiscUtils.HUDMessage("Insufficient funds to open this facility!", 10, 0);
 							}
 							else
 							{
