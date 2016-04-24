@@ -1,6 +1,7 @@
 ﻿using KerbalKonstructs.LaunchSites;
 using KerbalKonstructs.StaticObjects;
 using KerbalKonstructs.API;
+using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using LibNoise.Unity.Operator;
@@ -14,21 +15,33 @@ namespace KerbalKonstructs.UI
 {
 	class KSCManager
 	{
-		Rect KSCmanagerRect = new Rect(150, 50, 640, 380);
+		Rect KSCmanagerRect = new Rect(150, 50, 400, 650);
 
-		public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadmin", false);
+		public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadminister", false);
+		public Texture tBanner = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/banner", false);
 
-		public Texture tAdmin = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadmin", false);
-		public Texture tTracking = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksctracking", false);
-		public Texture tRND = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscrnd", false);
-		public Texture tLaunch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksclaunch", false);
-		public Texture tRunway = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscrun", false);
-		public Texture tFacVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscvab", false);
-		public Texture tFacSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscsph", false);
-		public Texture tAstro = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscastro", false);
-		public Texture tControl = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksccommand", false);
+		public Texture tAdmin = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadminister", false);
+		public Texture tTracking = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksctrack", false);
+		public Texture tRND = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksclabs", false);
+		public Texture tLaunch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscpad", false);
+		public Texture tRunway = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscway", false);
+		public Texture tFacVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscassembly", false);
+		public Texture tFacSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kschangar", false);
+		public Texture tAstro = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscquarters", false);
+		public Texture tControl = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ksccontrol", false);
 		public Texture tTick = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingstick", false);
 		public Texture tCross = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingscross", false);
+
+		GUIStyle Yellowtext;
+		GUIStyle TextAreaNoBorder;
+		GUIStyle KKWindow;
+		GUIStyle BoxNoBorder;
+		GUIStyle SmallButton;
+		GUIStyle LabelWhite;
+		GUIStyle KKWindowTitle;
+		GUIStyle LabelInfo;
+		GUIStyle DeadButton;
+		GUIStyle DeadButtonRed;
 
 		public String sSelectedfacility = "";
 		public String strLaunchpad = "";
@@ -54,10 +67,13 @@ namespace KerbalKonstructs.UI
 
 		public void drawKSCManager()
 		{
-			KSCmanagerRect = GUI.Window(0xC00B1E2, KSCmanagerRect, drawKSCmanagerWindow, "Base Boss : KSC Manager");
+			KKWindow = new GUIStyle(GUI.skin.window);
+			KKWindow.padding = new RectOffset(3, 3, 5, 5);
+
+			KSCmanagerRect = GUI.Window(0xC00B1E2, KSCmanagerRect, drawKSCmanagerWindow, "", KKWindow);
 		}
 
-		public void DetermineFacilityLevels()
+		public string DetermineFacilityLevels(string sFacility)
 		{
 			foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
 			{
@@ -83,96 +99,188 @@ namespace KerbalKonstructs.UI
 					strRND = sString;
 				if (facility.name == "Administration")
 					strAdmin = sString;
+
+				if (sFacility == "Launchpad") return strLaunchpad;
+				if (sFacility == "Runway") return strRunway;
+				if (sFacility == "VAB") return strVAB;
+				if (sFacility == "SPH") return strSPH;
+				if (sFacility == "R&D") return strRND;
+				if (sFacility == "Mission Control") return strControl;
+				if (sFacility == "Administration") return strAdmin;
+				if (sFacility == "Tracking Center") return strTracking;
+				if (sFacility == "Astronaut Complex") return strAstro;
 			}
+			return "None";
 		}
 
 		public void drawKSCmanagerWindow(int WindowID)
 		{
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Box("LaunchPad", GUILayout.Width(66));
-				GUILayout.Box("Runway", GUILayout.Width(66));
-				GUILayout.Box("VAB", GUILayout.Width(66));
-				GUILayout.Box("SPH", GUILayout.Width(66));
-				GUILayout.Box("Tracking", GUILayout.Width(66));
-				GUILayout.Box("Astro", GUILayout.Width(66));
-				GUILayout.Box("Control", GUILayout.Width(66));
-				GUILayout.Box("R&D", GUILayout.Width(66));
-				GUILayout.Box("Admin", GUILayout.Width(66));
-			}
-			GUILayout.EndHorizontal();
+			DeadButton = new GUIStyle(GUI.skin.button);
+			DeadButton.normal.background = null;
+			DeadButton.hover.background = null;
+			DeadButton.active.background = null;
+			DeadButton.focused.background = null;
+			DeadButton.normal.textColor = Color.white;
+			DeadButton.hover.textColor = Color.white;
+			DeadButton.active.textColor = Color.white;
+			DeadButton.focused.textColor = Color.white;
+			DeadButton.fontSize = 14;
+			DeadButton.fontStyle = FontStyle.Bold;
 
-			GUILayout.BeginHorizontal();
-			{
-				GUI.enabled = !(sSelectedfacility == "LaunchPad");
-				if (GUILayout.Button(tLaunch, GUILayout.Width(66)))
-					sSelectedfacility = "LaunchPad";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "Runway");
-				if (GUILayout.Button(tRunway, GUILayout.Width(66)))
-					sSelectedfacility = "Runway";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "VAB");
-				if (GUILayout.Button(tFacVAB, GUILayout.Width(66)))
-					sSelectedfacility = "VAB";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "SPH");
-				if (GUILayout.Button(tFacSPH, GUILayout.Width(66)))
-					sSelectedfacility = "SPH";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "Tracking");
-				if (GUILayout.Button(tTracking, GUILayout.Width(66)))
-					sSelectedfacility = "Tracking";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "Astro");
-				if (GUILayout.Button(tAstro, GUILayout.Width(66)))
-					sSelectedfacility = "Astro";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "Control");
-				if (GUILayout.Button(tControl, GUILayout.Width(66)))
-					sSelectedfacility = "Control";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "R&D");
-				if (GUILayout.Button(tRND, GUILayout.Width(66)))
-					sSelectedfacility = "R&D";
-				GUI.enabled = true;
-				GUI.enabled = !(sSelectedfacility == "Admin");
-				if (GUILayout.Button(tAdmin, GUILayout.Width(66)))
-					sSelectedfacility = "Admin";
-				GUI.enabled = true;
-			}
-			GUILayout.EndHorizontal();
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
 
-			GUILayout.BeginHorizontal();
+			Yellowtext = new GUIStyle(GUI.skin.box);
+			Yellowtext.normal.textColor = Color.yellow;
+			Yellowtext.normal.background = null;
+
+			TextAreaNoBorder = new GUIStyle(GUI.skin.textArea);
+			TextAreaNoBorder.normal.background = null;
+			TextAreaNoBorder.normal.textColor = Color.white;
+			TextAreaNoBorder.fontSize = 12;
+			TextAreaNoBorder.padding.left = 1;
+			TextAreaNoBorder.padding.right = 1;
+			TextAreaNoBorder.padding.top = 4;
+
+			BoxNoBorder = new GUIStyle(GUI.skin.box);
+			BoxNoBorder.normal.background = null;
+			BoxNoBorder.normal.textColor = Color.white;
+
+			LabelWhite = new GUIStyle(GUI.skin.label);
+			LabelWhite.normal.background = null;
+			LabelWhite.normal.textColor = Color.white;
+			LabelWhite.fontSize = 12;
+			LabelWhite.padding.left = 1;
+			LabelWhite.padding.right = 1;
+			LabelWhite.padding.top = 4;
+
+			LabelInfo = new GUIStyle(GUI.skin.label);
+			LabelInfo.normal.background = null;
+			LabelInfo.normal.textColor = Color.white;
+			LabelInfo.fontSize = 13;
+			LabelInfo.fontStyle = FontStyle.Bold;
+			LabelInfo.padding.left = 3;
+			LabelInfo.padding.top = 0;
+			LabelInfo.padding.bottom = 0;
+
+			KKWindowTitle = new GUIStyle(GUI.skin.box);
+			KKWindowTitle.normal.background = null;
+			KKWindowTitle.normal.textColor = Color.white;
+			KKWindowTitle.fontSize = 14;
+			KKWindowTitle.fontStyle = FontStyle.Bold;
+
+			SmallButton = new GUIStyle(GUI.skin.button);
+			SmallButton.normal.textColor = Color.red;
+			SmallButton.hover.textColor = Color.white;
+			SmallButton.padding.top = 1;
+			SmallButton.padding.left = 1;
+			SmallButton.padding.right = 1;
+			SmallButton.padding.bottom = 4;
+			SmallButton.normal.background = null;
+			SmallButton.hover.background = null;
+			SmallButton.fontSize = 12;
+
+			GUILayout.Box(tBanner, BoxNoBorder);
+			GUILayout.Space(5);
+
+			if (MiscUtils.isCareerGame())
 			{
-				if (!bDetermined)
+				GUILayout.Box("KSC Primary Facilities");
+				GUILayout.BeginHorizontal();
 				{
-					DetermineFacilityLevels();
-					bDetermined = true;
+					GUI.enabled = !(sSelectedfacility == "Launchpad");
+					if (GUILayout.Button(tLaunch, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Launchpad";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "Runway");
+					if (GUILayout.Button(tRunway, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Runway";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "VAB");
+					if (GUILayout.Button(tFacVAB, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "VAB";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "SPH");
+					if (GUILayout.Button(tFacSPH, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "SPH";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "Tracking Center");
+					if (GUILayout.Button(tTracking, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Tracking Center";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "Astronaut Complex");
+					if (GUILayout.Button(tAstro, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Astronaut Complex";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "Mission Control");
+					if (GUILayout.Button(tControl, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Mission Control";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "R&D");
+					if (GUILayout.Button(tRND, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "R&D";
+					GUI.enabled = true;
+					GUI.enabled = !(sSelectedfacility == "Administration");
+					if (GUILayout.Button(tAdmin, GUILayout.Height(30), GUILayout.Width(35)))
+						sSelectedfacility = "Administration";
+					GUI.enabled = true;
 				}
+				GUILayout.EndHorizontal();
 
-				double dTicker = Planetarium.GetUniversalTime();
-				if ((dTicker - dUpdater) > 10)
+				GUILayout.BeginHorizontal();
 				{
-					dUpdater = Planetarium.GetUniversalTime();
-					bDetermined = false;
+					GUILayout.Label("Selected Facility: " + sSelectedfacility, LabelInfo);
+					string sLevel = DetermineFacilityLevels(sSelectedfacility);
+					GUILayout.FlexibleSpace();
+					GUILayout.Label(sLevel, LabelInfo);
 				}
+				GUILayout.EndHorizontal();
 
-				GUILayout.Box(strLaunchpad, GUILayout.Width(66));
-				GUILayout.Box(strRunway, GUILayout.Width(66));
-				GUILayout.Box(strVAB, GUILayout.Width(66));
-				GUILayout.Box(strSPH, GUILayout.Width(66));
-				GUILayout.Box(strTracking, GUILayout.Width(66));
-				GUILayout.Box(strAstro, GUILayout.Width(66));
-				GUILayout.Box(strControl, GUILayout.Width(66));
-				GUILayout.Box(strRND, GUILayout.Width(66));
-				GUILayout.Box(strAdmin, GUILayout.Width(66));
+				GUILayout.Space(3);
+				GUILayout.Box("KSC Secondary Facilities");
+				GUILayout.Label("Interface under construction. Please use a door and go talk to them.", LabelInfo);
+
+				GUILayout.Space(3);
+				GUILayout.Box("Remote Base Management");
+				GUILayout.Label("Interface under construction. Please use other interfaces available through primary KSC facilities or launch a plane and go and see them.", LabelInfo);
+
+				GUILayout.Space(3);
+				GUILayout.Box("United Kerbin Council");
+				GUILayout.Label("All funding of KSC staffing and management covered, with a few exclusions. Like snacks. And secondary facilities. And you still need to fund your vehicle construction. And facility repairs. Talk to Gene for funding sources. Not Mortimer.", LabelInfo);
+				GUILayout.Label("Additional Grants", LabelInfo);
+				GUILayout.Label("None", LabelInfo);
+				GUILayout.Label("None", LabelInfo);
+				GUILayout.Label("None", LabelInfo);
+
+				GUILayout.Space(3);
+				GUILayout.Box("KSP International Support & Enmity");
+				GUILayout.Label("All nations in full support of KSP through the UKC. No enmities of concern. Maybe some jealousy and abject terror in a few places.", LabelInfo);
+
+				GUILayout.Space(3);
+				GUILayout.Box("Competing International Programs");
+				GUILayout.Label("None known. Yet.", LabelInfo);
+
+				GUILayout.Space(3);
+				GUILayout.Box("Independent Commercial Programs");
+				GUILayout.Label("None known. Yet.", LabelInfo);
 			}
-			GUILayout.EndHorizontal();
+			else
+			{
+				GUILayout.Box("Many features of Kerbal Konstructs are disabled when not in Career Mode");
+			}
 
 			GUILayout.FlexibleSpace();
 
-			if (GUILayout.Button("KERBAL KONSTRUCTS SETTINGS"))
+			if (GUILayout.Button("Mod Settings"))
 			{
 				if (!KerbalKonstructs.instance.showSettings)
 					KerbalKonstructs.instance.showSettings = true;

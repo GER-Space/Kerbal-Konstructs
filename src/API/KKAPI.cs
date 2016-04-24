@@ -11,6 +11,7 @@ namespace KerbalKonstructs.API
 		private static Dictionary<string, IConfigItem> instanceSettings = new Dictionary<string, IConfigItem>();
 		private static Dictionary<string, IConfigItem> modelSettings = new Dictionary<string, IConfigItem>();
 		private static Dictionary<string, IConfigItem> launchsiteSettings = new Dictionary<string, IConfigItem>();
+		private static Dictionary<string, IConfigItem> nationSettings = new Dictionary<string, IConfigItem>();
 
 		public static void addInstanceSetting(string name, IConfigItem conf)
 		{
@@ -27,6 +28,11 @@ namespace KerbalKonstructs.API
 			launchsiteSettings.Add(name, conf);
 		}
 
+		public static void addNationSetting(string name, IConfigItem conf)
+		{
+			nationSettings.Add(name, conf);
+		}
+
 		public static Dictionary<string, IConfigItem> getInstanceSettings()
 		{
 			return instanceSettings;
@@ -40,6 +46,11 @@ namespace KerbalKonstructs.API
 		public static Dictionary<string, IConfigItem> getLaunchsiteSettings()
 		{
 			return launchsiteSettings;
+		}
+
+		public static Dictionary<string, IConfigItem> getNationSettings()
+		{
+			return nationSettings;
 		}
 
 		public static Dictionary<string, object> loadConfig(ConfigNode cfgNode, Dictionary<string, IConfigItem> kkConfig)

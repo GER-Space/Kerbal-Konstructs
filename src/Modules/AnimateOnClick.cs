@@ -7,7 +7,7 @@ namespace KerbalKonstructs
 {
 	public class AnimateOnClick : MonoBehaviour
 	{
-		public new string collider;
+		public string collider;
 		public string animationName;
 		//optional
 		public bool HighlightOnHover = true;
@@ -51,8 +51,8 @@ namespace KerbalKonstructs
 		{
 			if (HighlightOnHover)
 			{
-				gameObject.renderer.material.SetFloat("_RimFalloff", 2.5f);
-				gameObject.renderer.material.SetColor("_RimColor", Color.green);
+				gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+				gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
 			}
 		}
 
@@ -60,8 +60,8 @@ namespace KerbalKonstructs
 		{
 			if (HighlightOnHover)
 			{
-				gameObject.renderer.material.SetFloat("_RimFalloff", 2.5f);
-				gameObject.renderer.material.SetColor("_RimColor", Color.clear);
+				gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+				gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
 			}
 		}
 

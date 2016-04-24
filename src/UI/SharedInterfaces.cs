@@ -13,6 +13,9 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle BoxInfo;
 		public static GUIStyle ButtonSmallText;
 
+		public static event Action evFacilityOpened;
+		public static event Action evFacilityClosed;
+
 		public static void OpenCloseFacility(StaticObject selectedFacility)
 		{
 			BoxInfo = new GUIStyle(GUI.skin.box);
@@ -74,6 +77,10 @@ namespace KerbalKonstructs.UI
 
 								// Save new state to persistence
 								PersistenceUtils.saveStaticPersistence(selectedFacility);
+
+								if (evFacilityOpened != null) evFacilityOpened();							
+								
+								//PersistenceUtils.saveRTCareerBackup();
 							}
 						}
 						GUI.enabled = true;
@@ -98,6 +105,9 @@ namespace KerbalKonstructs.UI
 
 							// Save new state to persistence
 							PersistenceUtils.saveStaticPersistence(selectedFacility);
+
+							if (evFacilityClosed != null) evFacilityClosed();
+							//PersistenceUtils.saveRTCareerBackup();
 						}
 						GUI.enabled = true;
 					}

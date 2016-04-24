@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 using KerbalKonstructs.API;
 using UnityEngine;
+using KSP.UI.Screens;
 using System.Reflection;
 
 namespace KerbalKonstructs.StaticObjects
@@ -89,11 +91,11 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			
-			List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.collider != null select t.gameObject).ToList();
+			List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
 
 			foreach (GameObject gocollider in colliderList)
 			{
-				gocollider.collider.enabled = enable;
+				gocollider.GetComponent<Collider>().enabled = enable;
 			}
 		}
 
@@ -110,7 +112,7 @@ namespace KerbalKonstructs.StaticObjects
 			SetActiveRecursively(gameObject, editing);
 			
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
-			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.renderer != null select t.gameObject).ToList();
+			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
 
 			setLayerRecursively(gameObject, 15);
 
@@ -176,13 +178,13 @@ namespace KerbalKonstructs.StaticObjects
 
 			foreach (GameObject gorenderer in rendererList)
 			{
-				gorenderer.renderer.enabled = true;
+				gorenderer.GetComponent<Renderer>().enabled = true;
 			}
 		}
 
 		public void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
 		{
-			if ((sGameObject.collider != null && sGameObject.collider.enabled && !sGameObject.collider.isTrigger) || sGameObject.collider == null)
+			if ((sGameObject.GetComponent<Collider>() != null && sGameObject.GetComponent<Collider>().enabled && !sGameObject.GetComponent<Collider>().isTrigger) || sGameObject.GetComponent<Collider>() == null)
 			{
 				sGameObject.layer = newLayerNumber;
 			}

@@ -43,12 +43,12 @@ namespace KerbalKonstructs
 
 				// Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
 
-				FieldInfo lat = spaceCenter.GetType().GetField("\u0002", BindingFlags.NonPublic | BindingFlags.Instance);
-				lat.SetValue(spaceCenter, spaceCenter.cb.GetLatitude(gameObject.transform.position));
-				FieldInfo lon = spaceCenter.GetType().GetField("\u0003", BindingFlags.NonPublic | BindingFlags.Instance);
-				lon.SetValue(spaceCenter, spaceCenter.cb.GetLongitude(gameObject.transform.position));
-				FieldInfo srfVector = spaceCenter.GetType().GetField("\u0004", BindingFlags.NonPublic | BindingFlags.Instance);
-				srfVector.SetValue(spaceCenter, spaceCenter.cb.GetRelSurfaceNVector(spaceCenter.Latitude, spaceCenter.Longitude));
+				FieldInfo Latitude = spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
+				Latitude.SetValue(spaceCenter, spaceCenter.cb.GetLatitude(gameObject.transform.position));
+				FieldInfo Longitude = spaceCenter.GetType().GetField("longitude", BindingFlags.NonPublic | BindingFlags.Instance);
+				Longitude.SetValue(spaceCenter, spaceCenter.cb.GetLongitude(gameObject.transform.position));
+				FieldInfo SrfNVector = spaceCenter.GetType().GetField("srfNVector", BindingFlags.NonPublic | BindingFlags.Instance);
+				SrfNVector.SetValue(spaceCenter, spaceCenter.cb.GetRelSurfaceNVector(spaceCenter.Latitude, spaceCenter.Longitude));
 			}
 			else
 			{

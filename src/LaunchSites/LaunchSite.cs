@@ -25,6 +25,12 @@ namespace KerbalKonstructs.LaunchSites
 		[PersistentField]
 		public string favouritesite;
 
+		[PersistentField]
+		public float missioncount;
+
+		[PersistentField]
+		public string missionlog;
+
 		public float reflon;
 		public float reflat;
 		public float refalt;
@@ -34,13 +40,17 @@ namespace KerbalKonstructs.LaunchSites
 		public float recoveryfactor;
 		public float recoveryrange;
 
+		public string nation;
+
 		public GameObject GameObject;
 		public PSystemSetup.SpaceCenterFacility facility;
 
 		public LaunchSite(string sName, string sAuthor, SiteType sType, Texture sLogo, Texture sIcon,
 			string sDescription, string sDevice, float fOpenCost, float fCloseValue, string sOpenCloseState, float fRefLon, 
 			float fRefLat, float fRefAlt, float fLength, float fWidth, float fRefund, float fRecoveryFactor, float fRecoveryRange,
-			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null, string sFavourite = "No")
+			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null, 
+			string sMissionLog = "Too busy to keep this log. Signed Gene Kerman.", 
+			string sNation = "United Kerbin", string sFavourite = "No", float fMissionCount = 0)
 		{
 			name = sName;
 			author = sAuthor;
@@ -63,6 +73,9 @@ namespace KerbalKonstructs.LaunchSites
 			recoveryfactor = fRecoveryFactor;
 			recoveryrange = fRecoveryRange;
 			favouritesite = sFavourite;
+			missioncount = fMissionCount;
+			nation = sNation;
+			missionlog = sMissionLog;
 		}
 	}
 

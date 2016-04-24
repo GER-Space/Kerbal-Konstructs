@@ -21,8 +21,13 @@ E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\TDx.TDxInput.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\TrackIRUnity.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Mono.Cecil.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Mono.Security.dll
-E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Assembly-CSharp.xml
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\UnityEngine.xml
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\obj\Debug\KerbalKonstructs.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\obj\Debug\KerbalKonstructs.pdb
-E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\obj\Debug\KerbalKonstructs.csprojResolveAssemblyReference.cache
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\KSPUtil.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\UnityEngine.UI.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Vectrosity.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\SaveUpgradePipeline.Core.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\KSPAssets.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\ContractConfigurator.dll
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Assembly-CSharp.xml

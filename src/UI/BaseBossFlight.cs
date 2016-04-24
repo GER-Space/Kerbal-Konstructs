@@ -192,11 +192,11 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
-			GUILayout.Space(6);
+			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 			GUILayout.Space(2);
 
-			GUILayout.Box("Base Proximity", BoxNoBorder);
+			GUILayout.Box("Active Beacons", BoxNoBorder);
 
 			if (MiscUtils.isCareerGame())
 			{
@@ -204,23 +204,35 @@ namespace KerbalKonstructs.UI
 				{
 					string snearestopen = "";
 					LaunchSiteManager.getNearestOpenBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Range, out lNearest);
-					if (Range < 10000)
-						snearestopen = Base + " at " + Range.ToString("#0.0") + " m";
-					else
-						snearestopen = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
-
-					GUILayout.Space(5);
-					GUILayout.Label("Nearest Open: ", LabelInfo);
-					GUILayout.Label(snearestopen, LabelInfo, GUILayout.Width(150));
-					
-					if (KerbalKonstructs.instance.enableNGS)
+					if (FlightGlobals.ActiveVessel.altitude > 75000)
 					{
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("NGS", GUILayout.Height(21)))
+						GUILayout.Label("No base's beacon in range at this altitude.", LabelInfo);
+					}
+					else
+					if (Base == "")
+					{
+						GUILayout.Label("No open base found.", LabelInfo);
+					}
+					else
+					{
+						if (Range < 10000)
+							snearestopen = Base + " at " + Range.ToString("#0.0") + " m";
+						else
+							snearestopen = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
+
+						GUILayout.Space(5);
+						GUILayout.Label("Nearest Open: ", LabelInfo);
+						GUILayout.Label(snearestopen, LabelInfo, GUILayout.Width(150));
+
+						if (KerbalKonstructs.instance.enableNGS)
 						{
-							NavGuidanceSystem.setTargetSite(lNearest);
-							smessage = "NGS set to " + Base;
-							MiscUtils.HUDMessage(smessage, 10, 2);
+							GUILayout.FlexibleSpace();
+							if (GUILayout.Button("NGS", GUILayout.Height(21)))
+							{
+								NavGuidanceSystem.setTargetSite(lNearest);
+								smessage = "NGS set to " + Base;
+								MiscUtils.HUDMessage(smessage, 10, 2);
+							}
 						}
 					}
 				}
@@ -234,28 +246,45 @@ namespace KerbalKonstructs.UI
 				string sNearestbase = "";
 				LaunchSiteManager.getNearestBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Range, out lBase);
 
-				if (Range < 10000)
-					sNearestbase = Base + " at " + Range.ToString("#0.0") + " m";
-				else
-					sNearestbase = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
-
-				GUILayout.Space(5);
-				GUILayout.Label("Nearest Base: ", LabelInfo);
-				GUILayout.Label(sNearestbase, LabelInfo, GUILayout.Width(150));
-
-				if (KerbalKonstructs.instance.enableNGS)
+				if (FlightGlobals.ActiveVessel.altitude > 75000)
 				{
-					GUILayout.FlexibleSpace();
-					if (GUILayout.Button("NGS", GUILayout.Height(21)))
-					{
-						NavGuidanceSystem.setTargetSite(lBase);
+					GUILayout.Label("No base's beacon in range at this altitude.", LabelInfo);
+				}
+				else
+				if (Base == "")
+				{
+					GUILayout.Label("No nearest base found.", LabelInfo);
+				}
+				else
+				{
+					if (Range < 10000)
+						sNearestbase = Base + " at " + Range.ToString("#0.0") + " m";
+					else
+						sNearestbase = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
 
-						smessage = "NGS set to " + Base;
-						MiscUtils.HUDMessage(smessage, 10, 2);
+					GUILayout.Space(5);
+					GUILayout.Label("Nearest Base: ", LabelInfo);
+					GUILayout.Label(sNearestbase, LabelInfo, GUILayout.Width(150));
+
+					if (KerbalKonstructs.instance.enableNGS)
+					{
+						GUILayout.FlexibleSpace();
+						if (GUILayout.Button("NGS", GUILayout.Height(21)))
+						{
+							NavGuidanceSystem.setTargetSite(lBase);
+
+							smessage = "NGS set to " + Base;
+							MiscUtils.HUDMessage(smessage, 10, 2);
+						}
 					}
 				}
 			}
 			GUILayout.EndHorizontal();
+
+			GUILayout.Space(2);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+			GUILayout.Space(2);
+			GUILayout.Box("Base Status", BoxNoBorder);
 
 			if (MiscUtils.isCareerGame())
 			{
@@ -299,9 +328,20 @@ namespace KerbalKonstructs.UI
 						GUI.enabled = true;
 					}
 
+					if (bLanded && (sClosed == "OpenLocked" || sClosed == "ClosedLocked"))
+					{
+						GUI.enabled = false;
+						GUILayout.Button("Base cannot be opened or closed", GUILayout.Height(23));
+						GUI.enabled = true;
+					}
+
 					GUILayout.Space(2);
 					GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 					GUILayout.Space(2);
+				}
+				else
+				{
+					GUILayout.Label("Bases can only be opened or closed at the base when within 2km of the base.", LabelInfo);
 				}
 
 				if (Range > 100000)
@@ -318,11 +358,22 @@ namespace KerbalKonstructs.UI
 						GUILayout.Space(2);
 					}
 				}
+				else
+				{
+					GUILayout.Label("New bases cannot be built within 100 km of an existing base.", LabelInfo);
+				}
 			}
+
+			GUILayout.Space(2);
+			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+			GUILayout.Space(2);
+			GUILayout.Box("Operational Facilities", BoxNoBorder);
+			
+			bool bAreFacilities = false;
 
 			if (FlightGlobals.ActiveVessel.Landed)
 			{
-				if (GUILayout.Button("Nearby Facilities", GUILayout.Height(23)))
+				if (GUILayout.Button("Show/Hide", GUILayout.Height(23)))
 				{
 					if (bShowFacilities)
 						bShowFacilities = false;
@@ -347,9 +398,9 @@ namespace KerbalKonstructs.UI
 					}
 				}
 
-				scrollPos = GUILayout.BeginScrollView(scrollPos);
 				if (bShowFacilities)
 				{
+					scrollPos = GUILayout.BeginScrollView(scrollPos);
 					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 					{
 						bool isLocal = true;
@@ -368,6 +419,7 @@ namespace KerbalKonstructs.UI
 
 						if (isLocal)
 						{
+							bAreFacilities = true;
 							GUILayout.BeginHorizontal();
 							{
 								bIsOpen = ((string)obj.getSetting("OpenCloseState") == "Open");
@@ -396,6 +448,7 @@ namespace KerbalKonstructs.UI
 							GUILayout.EndHorizontal();
 						}
 					}
+					GUILayout.EndScrollView();
 				}
 				else
 				{
@@ -423,14 +476,23 @@ namespace KerbalKonstructs.UI
 					}
 				}
 			}
-			GUILayout.EndScrollView();
+			else
+			{
+				GUILayout.Label("Nearby facilities can only be shown when landed.", LabelInfo);
+				bShowFacilities = false;
+			}
 
+			if (bAreFacilities == false)
+			{
+				//GUILayout.Label("There are no nearby operational facilities.", LabelInfo);
+			}
+
+			GUILayout.FlexibleSpace();
 			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 			GUILayout.Space(2);
-			GUILayout.FlexibleSpace();
-			GUILayout.Space(3);
-			if (GUILayout.Button("I want to race!", GUILayout.Height(23)))
+			GUILayout.Box("Other Features", BoxNoBorder);
+			if (GUILayout.Button("Start Air Racing!", GUILayout.Height(23)))
 			{
 				KerbalKonstructs.instance.showRacingApp = true;
 				AirRacing.runningRace = true;

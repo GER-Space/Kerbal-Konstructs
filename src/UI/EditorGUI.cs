@@ -786,20 +786,20 @@ namespace KerbalKonstructs.UI
 					enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140), GUILayout.Height(23));
 
 					Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
-					List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.collider != null select t.gameObject).ToList();
+					List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
 
 					if (enableColliders)
 					{
 						foreach (GameObject collider in colliderList)
 						{
-							collider.collider.enabled = true;
+							collider.GetComponent<Collider>().enabled = true;
 						}
 					}
 					if (!enableColliders)
 					{
 						foreach (GameObject collider in colliderList)
 						{
-							collider.collider.enabled = false;
+							collider.GetComponent<Collider>().enabled = false;
 						}
 					}
 

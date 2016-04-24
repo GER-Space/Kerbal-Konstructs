@@ -175,7 +175,7 @@ namespace KerbalKonstructs.UI
 			DisAudio.playOnAwake = false;
 			DisAudio.rolloffMode = AudioRolloffMode.Logarithmic;
 			DisAudio.dopplerLevel = 1f;
-			DisAudio.panLevel = 1f;
+			//DisAudio.panLevel = 1f;
 			DisAudio.volume = GameSettings.SHIP_VOLUME / 2f;
 			DisAudio.bypassEffects = true;
 			Dis.transform.SetParent(FlightCamera.fetch.mainCamera.transform);

@@ -66,7 +66,10 @@ namespace KerbalKonstructs.SpaceCenters
 
 				if (dist < smallestDist)
 				{
-					if (isCareer && sOpenCloseState == "Closed")
+					bool bBaseIsOpen = true;
+					if (sOpenCloseState == "Closed" || sOpenCloseState == "ClosedLocked" || sOpenCloseState == "OpenLocked") bBaseIsOpen = false;
+
+					if (isCareer && !bBaseIsOpen)
 					{ }
 					else
 					{

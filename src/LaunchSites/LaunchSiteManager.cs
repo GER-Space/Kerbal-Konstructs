@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using KSP.UI.Screens;
 using Upgradeables;
 using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
-
-// R and T LOG
-// 14112014 ASH
 
 namespace KerbalKonstructs.LaunchSites
 {
@@ -37,17 +35,16 @@ namespace KerbalKonstructs.LaunchSites
 			launchSites.Add(launchpad);
 		}
 
+		// Add a launchsite to the KK launchsite and custom space centre database
+		// Please note there's some near hackery here to get KSP to recognise additional launchsites and space centres
 		public static void createLaunchSite(StaticObject obj)
 		{
 			if (obj.settings.ContainsKey("LaunchSiteName") && obj.gameObject.transform.Find((string) obj.getSetting("LaunchPadTransform")) != null)
 			{
-				// Debug.Log("KK: Creating launch site " + obj.getSetting("LaunchSiteName"));
 				obj.gameObject.transform.name = (string) obj.getSetting("LaunchSiteName");
 				obj.gameObject.name = (string) obj.getSetting("LaunchSiteName");
 
-				// Debug.Log("KK: Get CelBody");
 				CelestialBody CelBody = (CelestialBody)obj.getSetting("CelestialBody");
-				// Debug.Log("KK: CelBody is " + CelBody);
 				var objectpos = CelBody.transform.InverseTransformPoint(obj.gameObject.transform.position);
 				var dObjectLat = NavUtils.GetLatitude(objectpos);
 				var dObjectLon = NavUtils.GetLongitude(objectpos);
@@ -55,11 +52,8 @@ namespace KerbalKonstructs.LaunchSites
 				var disObjectLon = dObjectLon * 180 / Math.PI;
 
 				if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
-				// Debug.Log("KK: disObjectLat is " + disObjectLat);
-				// Debug.Log("KK: disObjecton is " + disObjectLon);
 				obj.setSetting("RefLatitude", (float)disObjectLat);
 				obj.setSetting("RefLongitude", (float)disObjectLon);
-				// Debug.Log("KK: RefLatitude and RefLongitude set");
 
 				foreach (FieldInfo fi in PSystemSetup.Instance.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
 				{
@@ -100,8 +94,7 @@ namespace KerbalKonstructs.LaunchSites
 							if(obj.settings.ContainsKey("LaunchSiteIcon"))
 								icon = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteIcon"), false);
 							
-							// TODO This is still hard-code and needs to use the API properly
-							// ASH 12112014 - Added career open close costs
+							// TODO This is still hard-code and needs to use an API properly
 							launchSites.Add(new LaunchSite(
 								(string)obj.getSetting("LaunchSiteName"), 
 								(obj.settings.ContainsKey("LaunchSiteAuthor")) ? (string)obj.getSetting("LaunchSiteAuthor") : (string)obj.model.getSetting("author"), 
@@ -124,9 +117,9 @@ namespace KerbalKonstructs.LaunchSites
 								(float)obj.getSetting("RecoveryFactor"),
 								(float)obj.getSetting("RecoveryRange"),
 								obj.gameObject, 
-								newFacility
+								newFacility,
+								(string)obj.getSetting("LaunchSiteNation")
 								));
-							// Debug.Log("KK: Created launch site \"" + newFacility.name + "\" with transform " + obj.getSetting("LaunchSiteName") + "/" + obj.getSetting("LaunchPadTransform"));
 						}
 						else
 						{
@@ -150,7 +143,7 @@ namespace KerbalKonstructs.LaunchSites
 			}
 		}
 
-		// ASH 28102014 Added handling for Category filter
+		// Returns a list of launchsites. Supports category filtering.
 		public static List<LaunchSite> getLaunchSites(String usedFilter = "ALL")
 		{
 			List<LaunchSite> sites = new List<LaunchSite>();
@@ -171,7 +164,7 @@ namespace KerbalKonstructs.LaunchSites
 			return sites;
 		}
 
-		// ASH 28102014 Added handling for Category filter
+		// Returns a list of launchsites. Supports sitetype and category filtering.
 		public static List<LaunchSite> getLaunchSites(SiteType type, Boolean allowAny = true, String appliedFilter = "ALL")
 		{
 			List<LaunchSite> sites = new List<LaunchSite>();
@@ -195,7 +188,7 @@ namespace KerbalKonstructs.LaunchSites
 			return sites;
 		}
 
-		// Open and close a launchsite
+		// Open or close a launchsite
 		public static void setSiteOpenCloseState(string sSiteName, string sState)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -210,7 +203,41 @@ namespace KerbalKonstructs.LaunchSites
 			}
 		}
 
-		// Find out if a launchsite is open or closed
+		// Lock a launchsite so it cannot be opened or closed or launched from
+		public static void setSiteLocked(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					site.openclosestate = site.openclosestate + "Locked";
+					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
+					return;
+				}
+			}
+		}
+
+		// Unlock a launchsite so it can be opened or closed or launched from
+		public static void setSiteUnlocked(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					if (site.openclosestate == "OpenLocked")
+						site.openclosestate = "Open";
+					else
+						site.openclosestate = "Closed";
+					
+					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
+					return;
+				}
+			}
+		}
+
+		// Returns whether a site is open or closed and how much it costs to open
 		public static void getSiteOpenCloseState(string sSiteName, out string sOpenCloseState, out float fOpenCost)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -228,6 +255,52 @@ namespace KerbalKonstructs.LaunchSites
 			fOpenCost = 0;
 		}
 
+		// Returns whether a site is locked
+		public static bool getIsSiteLocked(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					if (site.openclosestate == "OpenLocked" || site.openclosestate == "ClosedLocked")
+						return true;
+				}
+			}
+			return false;
+		}
+
+		// Returns whether a site is open
+		public static bool getIsSiteOpen(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					if (site.openclosestate == "Open")
+						return true;
+				}
+			}
+			return false;
+		}
+
+		// Returns whether a site is closed
+		public static bool getIsSiteClosed(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					if (site.openclosestate == "Closed")
+						return true;
+				}
+			}
+			return false;
+		}
+
+		// Returns the launch refund percentage of a site
 		public static void getSiteLaunchRefund(string sSiteName, out float fRefund)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -243,6 +316,7 @@ namespace KerbalKonstructs.LaunchSites
 			fRefund = 0;
 		}
 
+		// Returns the GameObject of a site
 		public static GameObject getSiteGameObject(string sSiteName)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -257,6 +331,22 @@ namespace KerbalKonstructs.LaunchSites
 			return null;
 		}
 
+		// Returns a specific Launchsite, keyed by site.name
+		public static LaunchSite getLaunchSiteByName(string sSiteName)
+		{
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					return site;
+				}
+			}
+
+			return null;
+		}
+
+		// Closes all launchsites. Necessary when leaving a career game and going to the main menu
 		public static void setAllLaunchsitesClosed()
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -266,6 +356,7 @@ namespace KerbalKonstructs.LaunchSites
 			}
 		}
 
+		// Returns the distance in m from a position to a specified Launchsite
 		public static float getDistanceToBase(Vector3 position, LaunchSite lTarget)
 		{
 			float flRange = 0f;
@@ -284,7 +375,8 @@ namespace KerbalKonstructs.LaunchSites
 			return flRange;
 		}
 
-		// Get the nearest open base and range to it
+		// Returns the nearest open Launchsite to a position and range to the Launchsite in m
+		// The basic ATC feature is in here
 		public static void getNearestOpenBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lNearest)
 		{
 			SpaceCenter KSC = SpaceCenter.Instance;
@@ -302,8 +394,6 @@ namespace KerbalKonstructs.LaunchSites
 
 				if (!MiscUtils.isCareerGame())
 					sOpenCloseState = "Open";
-
-				//if (site.recoveryfactor == 0) continue;
 
 				if (sOpenCloseState == "Open")
 				{
@@ -372,7 +462,7 @@ namespace KerbalKonstructs.LaunchSites
 			lNearest = lNearestBase;
 		}
 
-		// Get nearest base, either open or closed, and the range to it
+		// Returns the nearest Launchsite to a position and range in m to the Launchsite, regardless of whether it is open or closed
 		public static void getNearestBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lSite)
 		{
 			SpaceCenter KSC = SpaceCenter.Instance;
@@ -386,7 +476,6 @@ namespace KerbalKonstructs.LaunchSites
 			foreach (LaunchSite site in basesites)
 			{
 				if (site.GameObject == null) continue;
-				//if (site.recoveryfactor == 0) continue;
 
 				var radialposition = site.GameObject.transform.position;
 				var dist = Vector3.Distance(position, radialposition);
@@ -421,13 +510,11 @@ namespace KerbalKonstructs.LaunchSites
 			lSite = lTargetSite;
 		}
 
+		// Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
+		// This only works because they use multiple variables to store the same value, basically its black magic
+		// Original author: medsouz
 		public static void setLaunchSite(LaunchSite site)
 		{
-			// Debug.Log("KK: EditorLogic.fetch.launchSiteName set to " + site.name);
-			//Trick KSP to think that you launched from Runway or LaunchPad
-			//I'm sure Squad will break this in the future
-			//This only works because they use multiple variables to store the same value, basically its black magic.
-			//--medsouz
 			if (site.facility != null)
 			{
 				if (EditorDriver.editorFacility.Equals(EditorFacility.SPH))
@@ -442,11 +529,13 @@ namespace KerbalKonstructs.LaunchSites
 			EditorLogic.fetch.launchSiteName = site.name;
 		}
 
+		// Returns the internal launchSite that KSP has been told is the launchsite
 		public static string getCurrentLaunchSite()
 		{
 			return EditorLogic.fetch.launchSiteName;
 		}
 
+		// Handy get of all launchSites
 		public static List<LaunchSite> AllLaunchSites { get { return launchSites; } }
 	}
 }

@@ -114,7 +114,7 @@ namespace KerbalKonstructs.Utilities
 			"FacilityType", "StaffMax", "ScienceOMax", "RepOMax", "FundsOMax", "ProductionRateMax"};
 
 		public static List<string> pStringAttributes = new List<string>{
-			"FacilityType", "InStorage", "TargetType", "TargetID", "Producing", "OpenCloseState"};
+			"FacilityType", "InStorage", "TargetType", "TargetID", "Producing", "OpenCloseState", "MissionLog"};
 
 		public static List<string> pFloatAttributes = new List<string>{
 			"FacilityLengthUsed", "FacilityWidthUsed", "FacilityHeightUsed", "FacilityMassUsed",
@@ -122,7 +122,7 @@ namespace KerbalKonstructs.Utilities
 			"StaffMax", "StaffCurrent", "LqFCurrent", "OxFCurrent", "MoFCurrent",
 			"ECCurrent", "OreCurrent", "PrOreCurrent", "ScienceOMax", "ScienceOCurrent",
 			"RepOMax", "RepOCurrent", "FundsOMax", "FundsOCurrent", "LastCheck",
-			"ProductionRateMax", "ProductionRateCurrent"};
+			"ProductionRateMax", "ProductionRateCurrent", "MissionCount"};
 
 		public static void saveStaticPersistence(StaticObject obj)
 		{
@@ -199,6 +199,162 @@ namespace KerbalKonstructs.Utilities
 			rootNode.Save(saveConfigPath);
 		}
 
+		/* public static void UpdateRTGroundStations()
+		{
+			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
+			if (!bRTLoaded) return;
+			
+			string sGuID;
+			string sTSName;
+			string sDLat;
+			string sDLon;
+			string sHeight;
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				if ((string)obj.getSetting("FacilityType") == "TrackingStation")
+				{
+					if ((string)obj.getSetting("OpenCloseState") == "Open")
+					{
+						sGuID = obj.getSetting("RadialPosition").ToString();
+						sGuID = sGuID.Trim(new Char[] { ' ', ',', '.', '(', ')' });
+						sGuID = sGuID.Replace(" ", "").Replace(",", "").Replace(".", "").Replace(")", "").Replace("(", "").Replace("-", "1");
+
+						CelestialBody CelBody = (CelestialBody)obj.getSetting("CelestialBody");
+						var objectpos = CelBody.transform.InverseTransformPoint(obj.gameObject.transform.position);
+						var dObjectLat = NavUtils.GetLatitude(objectpos);
+						var dObjectLon = NavUtils.GetLongitude(objectpos);
+						var disObjectLat = dObjectLat * 180 / Math.PI;
+						var disObjectLon = dObjectLon * 180 / Math.PI;
+
+						sDLat = disObjectLat.ToString();
+						sDLon = disObjectLon.ToString();
+						sTSName = "Stn at Lt " + sDLat + " Ln " + sDLon;
+						sHeight = obj.getSetting("RadiusOffset").ToString();
+					}
+					else
+					{
+
+					}
+				}
+			}
+		}
+
+		public static void saveRTCareerBackup()
+		{
+			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
+			if (!bRTLoaded) return;
+
+			string rtPath = string.Format("{0}GameData/RemoteTech/", KSPUtil.ApplicationRootPath);
+			string rtConfigPath = string.Format("{0}GameData/RemoteTech/RemoteTech_Settings.cfg", KSPUtil.ApplicationRootPath);
+			if (!Directory.Exists(rtPath)) return;
+			if (!File.Exists(rtConfigPath)) return;
+
+			// Re-write the config
+			/* ConfigNode rootNode = new ConfigNode();
+
+			rootNode = ConfigNode.Load(rtConfigPath);
+
+			ConfigNode rootrootNode = rootNode.GetNode("RemoteTechSettings");
+			ConfigNode rrrNode = rootrootNode.GetNode("GroundStations");
+			rrrNode.RemoveNodes("STATION");
+
+			string sGuID;
+			string sTSName;
+			string sDLat;
+			string sDLon;
+			string sHeight;
+
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			{
+				if ((string)obj.getSetting("FacilityType") == "TrackingStation" && (string)obj.getSetting("OpenCloseState") == "Open") 
+				{
+					sGuID = obj.getSetting("RadialPosition").ToString();
+					sGuID = sGuID.Trim(new Char[] { ' ', ',', '.', '(',')' });
+					sGuID = sGuID.Replace(" ", "").Replace(",", "").Replace(".", "").Replace(")", "").Replace("(", "").Replace("-","1");
+
+					CelestialBody CelBody = (CelestialBody)obj.getSetting("CelestialBody");
+					var objectpos = CelBody.transform.InverseTransformPoint(obj.gameObject.transform.position);
+					var dObjectLat = NavUtils.GetLatitude(objectpos);
+					var dObjectLon = NavUtils.GetLongitude(objectpos);
+					var disObjectLat = dObjectLat * 180 / Math.PI;
+					var disObjectLon = dObjectLon * 180 / Math.PI;
+
+					sDLat = disObjectLat.ToString();
+					sDLon = disObjectLon.ToString();
+					sTSName = "Station at Lat " + sDLat + " Lon "+ sDLon;
+					sHeight = obj.getSetting("RadiusOffset").ToString();
+
+					ConfigNode newComm = new ConfigNode("STATION");
+					newComm.AddValue("Guid", sGuID);
+					newComm.AddValue("Name", sTSName);
+					newComm.AddValue("Latitude", sDLat);
+					newComm.AddValue("Longitude", sDLon);
+					newComm.AddValue("Height", sHeight);
+					newComm.AddValue("Body", "1");
+					newComm.AddValue("MarkColor", "1,1,0,1");
+
+					ConfigNode cnAntennas = new ConfigNode("Antennas");
+
+					ConfigNode cnAntenna = new ConfigNode("ANTENNA");
+					cnAntenna.AddValue("Omni", "5E+06");
+
+					cnAntennas.AddNode(cnAntenna);
+					newComm.AddNode(cnAntennas);
+					rrrNode.AddNode(newComm);
+				}
+			}
+			rootNode.Save(rtConfigPath);
+
+			UpdateRTGroundStations();
+
+			// Back it up
+			string backupConfigPath = string.Format("{0}saves/{1}/KKRTCareerBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			File.Copy(rtConfigPath, backupConfigPath, true);
+		} */
+
+		/* public static void loadRTCareerBackup()
+		{
+			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
+			if (!bRTLoaded) return;
+
+			string rtPath = string.Format("{0}GameData/RemoteTech/", KSPUtil.ApplicationRootPath);
+			string rtConfigPath = string.Format("{0}GameData/RemoteTech/RemoteTech_Settings.cfg", KSPUtil.ApplicationRootPath);
+			if (!Directory.Exists(rtPath)) return;
+			if (!File.Exists(rtConfigPath)) return;
+
+			// Write the backup over the current
+			string backupConfigPath = string.Format("{0}saves/{1}/KKRTCareerBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			if (!File.Exists(backupConfigPath)) return;
+			File.Copy(backupConfigPath, rtConfigPath, true);
+
+			UpdateRTGroundStations();
+		} */
+
+		public static void backupRemoteTechConfig()
+		{
+			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
+			if (!bRTLoaded) return;
+
+			string saveConfigPath = string.Format("{0}GameData/RemoteTech/RemoteTech_Settings.cfg", KSPUtil.ApplicationRootPath);
+			string backupConfigPath = KerbalKonstructs.installDir + "/KKRTBack.cfg";
+
+			if (File.Exists(saveConfigPath))
+				File.Copy(saveConfigPath, backupConfigPath, true);
+		}
+
+		public static void restoreRemoteTechConfig()
+		{
+			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
+			if (!bRTLoaded) return;
+
+			string saveConfigPath = KerbalKonstructs.installDir + "/KKRTBack.cfg";
+			string restoreConfigPath = string.Format("{0}GameData/RemoteTech/RemoteTech_Settings.cfg", KSPUtil.ApplicationRootPath);
+
+			if (File.Exists(saveConfigPath) && File.Exists(restoreConfigPath))
+				File.Copy(saveConfigPath, restoreConfigPath, true);
+		}
+
 		public static void savePersistenceBackup()
 		{
 			string saveConfigPath = string.Format("{0}saves/{1}/KKFacilities.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
@@ -206,6 +362,12 @@ namespace KerbalKonstructs.Utilities
 
 			if (File.Exists(saveConfigPath))
 				File.Copy(saveConfigPath, backupConfigPath, true);
+
+			string saveConfigPath2 = string.Format("{0}saves/{1}/KK.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			string backupConfigPath2 = string.Format("{0}saves/{1}/KKBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+
+			if (File.Exists(saveConfigPath2))
+				File.Copy(saveConfigPath2, backupConfigPath2, true);
 		}
 
 		public static void loadPersistenceBackup()
@@ -215,6 +377,12 @@ namespace KerbalKonstructs.Utilities
 
 			if (File.Exists(backupConfigPath))
 				File.Copy(backupConfigPath, saveConfigPath, true);
+
+			string saveConfigPath2 = string.Format("{0}saves/{1}/KK.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			string backupConfigPath2 = string.Format("{0}saves/{1}/KKBack.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+
+			if (File.Exists(backupConfigPath2))
+				File.Copy(backupConfigPath2, saveConfigPath2, true);
 		}
 
 		public static void loadStaticPersistence(StaticObject obj)
@@ -279,9 +447,12 @@ namespace KerbalKonstructs.Utilities
 				{
 					string sDefault = "Default" + sAtt5;
 
-					if (obj.model.getSetting(sDefault) == null) continue;
-
-					obj.setSetting(sAtt5, obj.model.getSetting(sDefault));
+					if (obj.getSetting(sAtt5) == null)
+					{
+						if (obj.model.getSetting(sDefault) == null) continue;
+						else
+							obj.setSetting(sAtt5, obj.model.getSetting(sDefault));
+					}
 				}
 
 				foreach (string sAtt3 in pStringAttributes)

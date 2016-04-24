@@ -55,6 +55,7 @@ namespace KerbalKonstructs.UI
 		public Boolean displayLog = false;
 		public Boolean foldedIn = false;
 		public Boolean doneFold = false;
+		public Boolean isLocked = false;
 
 		public void drawBaseManager()
 		{
@@ -351,10 +352,12 @@ namespace KerbalKonstructs.UI
 				{
 					logScrollPosition = GUILayout.BeginScrollView(logScrollPosition, GUILayout.Height(120));
 					{
-						GUILayout.Box("Feature is WIP");
-						GUILayout.Box("Log Entry");
-						GUILayout.Box("Log Entry");
-						GUILayout.Box("Log Entry");
+						Char csep = '|';
+						string[] sLogEntries = selectedSite.missionlog.Split(csep);
+						foreach (string sEntry in sLogEntries)
+						{
+							GUILayout.Label(sEntry, LabelInfo);
+						}
 					}
 					GUILayout.EndScrollView();
 
@@ -362,7 +365,8 @@ namespace KerbalKonstructs.UI
 				}
 
 				isOpen = (selectedSite.openclosestate == "Open");
-				GUI.enabled = !isOpen;
+				isLocked = (selectedSite.openclosestate == "OpenLocked" || selectedSite.openclosestate == "ClosedLocked");
+				GUI.enabled = !isOpen && !isLocked;
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				if (!isAlwaysOpen)
 				{
@@ -386,7 +390,7 @@ namespace KerbalKonstructs.UI
 				}
 				GUI.enabled = true;
 
-				GUI.enabled = isOpen;
+				GUI.enabled = isOpen && !isLocked;
 				if (!cannotBeClosed)
 				{
 					if (GUILayout.Button("Close Base for \n" + iFundsClose + " funds", GUILayout.Height(40)))
@@ -415,7 +419,7 @@ namespace KerbalKonstructs.UI
 
 						GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
 						
-						GUI.enabled = (isOpen || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
+						GUI.enabled = !isLocked && (isOpen || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
 						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(40)))
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.KerbinNations;
 using KerbalKonstructs.LaunchSites;
 using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
@@ -12,6 +13,7 @@ using System.Reflection;
 using KerbalKonstructs.SpaceCenters;
 using KerbalKonstructs.API;
 using KerbalKonstructs.API.Config;
+using KSP.UI.Screens;
 using Upgradeables;
 using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
@@ -24,6 +26,8 @@ namespace KerbalKonstructs
 		public static KerbalKonstructs instance;		
 		public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
 		private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
+
+		public string sKKVersion = "0.9.5.9";
 
 		#region Holders
 		public StaticObject selectedObject;
@@ -155,13 +159,15 @@ namespace KerbalKonstructs
 		public Boolean DebugMode = false;
 		[KSPField]
 		public Boolean DevMode = false;
+		[KSPField]
+		public Boolean enableRTsupport = false;
 		#endregion
 
 		#region Other Mods Wrappers
 		// StageRecovery Wrapping
 		void SRProcessingFinished(Vessel vessel)
 		{
-			OnVesselRecovered(vessel.protoVessel);
+			OnVesselRecovered(vessel.protoVessel, true);
 		}
 		#endregion
 
@@ -208,6 +214,7 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
 			KKAPI.addModelSetting("pointername", new ConfigGenericString());
 			KKAPI.addModelSetting("name", new ConfigGenericString());
+			KKAPI.addModelSetting("concaveColliders", new ConfigGenericString());
 			#endregion
 
 			#region Instance API
@@ -217,6 +224,8 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("Orientation", new ConfigVector3());
 			KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
 			KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
+
+			KKAPI.addInstanceSetting("RTGuid", new ConfigRTGuid());
 
 			// Calculated References - do not set, it will not work
 			KKAPI.addInstanceSetting("RefLatitude", new ConfigFloat());
@@ -245,6 +254,7 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("Category", category);
 			KKAPI.addInstanceSetting("LaunchSiteLength", new ConfigFloat());
 			KKAPI.addInstanceSetting("LaunchSiteWidth", new ConfigFloat());
+			KKAPI.addInstanceSetting("LaunchSiteNation", new ConfigGenericString());
 
 			// Career Mode Strategy Instances
 			ConfigFloat openCost = new ConfigFloat();
@@ -259,6 +269,12 @@ namespace KerbalKonstructs
 			ConfigGenericString favouriteSite = new ConfigGenericString();
 			favouriteSite.setDefaultValue("No");
 			KKAPI.addInstanceSetting("FavouriteSite", favouriteSite);
+			ConfigFloat missionCount = new ConfigFloat();
+			missionCount.setDefaultValue(0f);
+			KKAPI.addInstanceSetting("MissionCount", missionCount);
+			ConfigGenericString missionlog = new ConfigGenericString();
+			missionlog.setDefaultValue("No missions logged");
+			KKAPI.addInstanceSetting("MissionLog", missionlog);
 
 			// Facility Types
 			ConfigGenericString facilityrole = new ConfigGenericString();
@@ -356,6 +372,23 @@ namespace KerbalKonstructs
 			// Activity logging
 			KKAPI.addInstanceSetting("LastCheck", new ConfigFloat());
 
+			// Nation API
+			KKAPI.addNationSetting("nationName", new ConfigGenericString());
+			KKAPI.addNationSetting("shortname", new ConfigGenericString());
+			KKAPI.addNationSetting("abbreviation", new ConfigGenericString());
+			KKAPI.addNationSetting("nationIcon", new ConfigGenericString());
+			KKAPI.addNationSetting("description", new ConfigGenericString());
+			KKAPI.addNationSetting("rulership", new ConfigGenericString());
+			ConfigFloat fnationratingresources = new ConfigFloat();
+			fnationratingresources.setDefaultValue(0f);
+			KKAPI.addNationSetting("ratingresources", fnationratingresources);
+			ConfigFloat fnationratingmilitary = new ConfigFloat();
+			fnationratingmilitary.setDefaultValue(0f);
+			KKAPI.addNationSetting("ratingmilitary", fnationratingmilitary);
+			ConfigFloat fnationratingtech = new ConfigFloat();
+			fnationratingtech.setDefaultValue(0f);
+			KKAPI.addNationSetting("ratingtech", fnationratingtech);
+
 			#endregion
 
 			SpaceCenterManager.setKSC();
@@ -366,60 +399,81 @@ namespace KerbalKonstructs
 			DontDestroyOnLoad(this);
 			loadObjects();
 			importCustomInstances();
+			Debug.Log("KK: Version is " + sKKVersion);
+			Debug.Log("KK: Version is " + sKKVersion);
+			Debug.Log("KK: Version is " + sKKVersion);
 		}
 
 		#region Game Events
 
 		public void LoadState(ConfigNode configNode)
 		{
-			if (DebugMode) Debug.Log("KK: LoadState");
-			PersistenceUtils.loadPersistenceBackup();
+			if (HighLogic.LoadedScene == GameScenes.MAINMENU)
+			{}
+			else
+			{
+				if (DebugMode) Debug.Log("KK: LoadState");
+				PersistenceUtils.loadPersistenceBackup();
+				//PersistenceUtils.loadRTCareerBackup();
+			}
 		}
 
 		public void SaveState(ConfigNode configNode)
 		{
-			PersistenceUtils.savePersistenceBackup();
-			if (DebugMode) Debug.Log("KK: SaveState");
+			if (HighLogic.LoadedScene == GameScenes.MAINMENU)
+			{}
+			else
+			{
+				PersistenceUtils.savePersistenceBackup();
+				//PersistenceUtils.saveRTCareerBackup();
+				if (DebugMode) Debug.Log("KK: SaveState");
+			}
 		}
 
 		void OnVesselLaunched(ShipConstruct vVessel)
 		{
-			if (vVessel == null) return;
-			if (EditorLogic.fetch.launchSiteName == null) return;
+			Debug.Log("KK: OnVesselLaunched");
 
-			PersistenceUtils.savePersistenceBackup();
-
-			if (EditorLogic.fetch.launchSiteName == "Runway") return;
-			if (EditorLogic.fetch.launchSiteName == "LaunchPad") return;
-			if (EditorLogic.fetch.launchSiteName == "KSC") return;
-
-			/* StaticObject soTemp = null;
-
-			foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			if (!MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 			{
-				if (soThis.getSetting("LaunchSiteName") == null)
-					continue;
-				else
-					if ((string)soThis.getSetting("LaunchSiteName") == (string)EditorLogic.fetch.launchSiteName)
-					{
-						soTemp = soThis;
-						break;
-					}
-			} */
-
-			// Don't know why newly created launchsites don't appear without a restart of KSP still.
-			// This doesn't seem to help.
-			/* if (soTemp != null)
+				return;
+			}
+			else
 			{
-				if (DebugMode) Debug.Log("KK: Got launchsite gameobject" + (string)EditorLogic.fetch.launchSiteName);
-					
-				soTemp.SetActiveRecursively(soTemp.gameObject, true);
-			} */
+				Debug.Log("KK: OnVesselLaunched is Career");
 
-			if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
-			{
-				VesselLaunched = true;
+				PersistenceUtils.savePersistenceBackup();
 				string sitename = EditorLogic.fetch.launchSiteName;
+
+				if (sitename == "Runway") return;
+				if (sitename == "LaunchPad") return;
+				if (sitename == "KSC") return;
+				if (sitename == "") return;
+
+				LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
+				float fMissionCount = lsSite.missioncount;
+				lsSite.missioncount = fMissionCount + 1;
+
+				double dSecs = HighLogic.CurrentGame.UniversalTime;
+
+				double hours = dSecs / 60.0 / 60.0;
+				double kHours = Math.Floor(hours % 6.0);
+				double kMinutes = Math.Floor((dSecs / 60.0) % 60.0);
+				double kSeconds = Math.Floor(dSecs % 60.0);
+				double kYears = Math.Floor(hours / 2556.5402) + 1; // Kerbin year is 2556.5402 hours
+				double kDays = Math.Floor(hours % 2556.5402 / 6.0) + 1;
+
+				string sDate =  "Y" + kYears.ToString() + " D" + kDays.ToString() + " " + " " + kHours.ToString("00") + ":" + kMinutes.ToString("00") + ":" + kSeconds.ToString("00");
+				
+				string sCraft = vVessel.shipName;
+				string sWeight = vVessel.GetTotalMass().ToString();
+				string sLogEntry = lsSite.missionlog + sDate + ", Launched " + sCraft + ", Mass " +sWeight + " t|";
+				lsSite.missionlog = sLogEntry;
+
+				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+				PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
+				
+				VesselLaunched = true;
 
 				float dryCost = 0f;
 				float fuelCost = 0f;
@@ -530,6 +584,8 @@ namespace KerbalKonstructs
 				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				iMenuCount = iMenuCount + 1;
 				InitialisedFacilities = false;
+				PersistenceUtils.restoreRemoteTechConfig();
+				PersistenceUtils.backupRemoteTechConfig();
 			}
 
 			if (data.Equals(GameScenes.EDITOR))
@@ -592,16 +648,28 @@ namespace KerbalKonstructs
 
 		void OnProcessRecovery(ProtoVessel vessel, MissionRecoveryDialog dialog, float fFloat)
 		{
-			dRecoveryValue = dialog.fundsEarned;
-			PersistenceUtils.savePersistenceBackup();
-		}
-
-		void OnVesselRecoveryRequested(Vessel data)
-		{
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
+					Debug.Log("KK: OnProcessRecovery");
+					if (vessel == null) return;
+					if (dialog == null) return;
+					Debug.Log("KK: OnProcessRecovery2");
+					dRecoveryValue = dialog.fundsEarned;
+					PersistenceUtils.savePersistenceBackup();
+				}
+			}
+		}
+
+		void OnVesselRecoveryRequested(Vessel data)
+		{
+			Debug.Log("KK: OnVesselRecoveryRequested");
+			if (!disableRemoteRecovery)
+			{
+				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+				{
+					Debug.Log("KK: OnVesselRecoveryRequested is career");
 					// Change the Space Centre to the nearest open base
 					fRecovFactor = 0;
 					float fDist = 0f;
@@ -611,7 +679,13 @@ namespace KerbalKonstructs
 
 					SpaceCenter csc;
 					SpaceCenterManager.getClosestSpaceCenter(data.gameObject.transform.position, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
+
 					SpaceCenter.Instance = csc;
+
+					if (SpaceCenter.Instance == null)
+					{
+						SpaceCenter.Instance = SpaceCenterManager.KSC;
+					}
 
 					lastRecoveryBase = sBaseName;
 					if (sBaseName == "Runway" || sBaseName == "LaunchPad") lastRecoveryBase = "KSC";
@@ -624,13 +698,18 @@ namespace KerbalKonstructs
 			}
 		}
 
-		void OnVesselRecovered(ProtoVessel vessel)
+		void OnVesselRecovered(ProtoVessel vessel, Boolean bHuhWTFIDK)
 		{
 			if (!disableRemoteRecovery)
 			{
 				if (vessel == null)
 				{
-					if (DebugMode) Debug.Log("KK: onVesselRecovered vessel was null but we don't care");
+					if (DebugMode) Debug.Log("KK: onVesselRecovered vessel was null");
+					if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+					{
+						SpaceCenter.Instance = SpaceCenterManager.KSC;
+					}
+					return;
 				}
 
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
@@ -892,20 +971,20 @@ namespace KerbalKonstructs
 				if (flightManager == null || !ApplicationLauncher.Instance.Contains(flightManager, out vis))				
 					flightManager = ApplicationLauncher.Instance.AddModApplication(onFlightManagerOn, onFlightManagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.FLIGHT, 
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
+						ApplicationLauncher.AppScenes.FLIGHT,
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
 
 				if (mapManager == null || !ApplicationLauncher.Instance.Contains(mapManager, out vis))
 					mapManager = ApplicationLauncher.Instance.AddModApplication(onMapManagerOn, onMapManagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW, 
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
+						ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW,
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
 
 				if (KSCmanager == null || !ApplicationLauncher.Instance.Contains(KSCmanager, out vis))
 					KSCmanager = ApplicationLauncher.Instance.AddModApplication(onKSCmanagerOn, onKSCmanagerOff, 
 						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.SPACECENTER, 
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/BaseManagerIcon", false));
+						ApplicationLauncher.AppScenes.SPACECENTER,
+						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
 			}
 		}
 
@@ -1002,12 +1081,8 @@ namespace KerbalKonstructs
 					DownlinkGUI.Dis.SetActive(false);
 			}
 
-			if (MapView.MapIsEnabled)
+			/* if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
 			{
-				if (HighLogic.LoadedScene == GameScenes.EDITOR) return;
-				if (HighLogic.LoadedScene == GameScenes.SPACECENTER) return;
-				if (HighLogic.LoadedScene == GameScenes.MAINMENU) return;
-
 				if (showMapIconManager)
 				{
 					GUI_MapIconManager.drawManager();
@@ -1018,13 +1093,39 @@ namespace KerbalKonstructs
 					if (showBaseManager)
 						GUI_BaseManager.drawBaseManager();
 
-					if (toggleIconsWithBB)
-						GUI_MapIconManager.drawIcons();
+					//if (toggleIconsWithBB)
+					//GUI_MapIconManager.drawIcons();
 				}
 
-				if (!toggleIconsWithBB)
-					GUI_MapIconManager.drawIcons();
+				//if (!toggleIconsWithBB)
+				GUI_MapIconManager.drawIcons();
 			}
+			else
+			{ */
+				if (MapView.MapIsEnabled)
+				{
+					if (HighLogic.LoadedScene == GameScenes.EDITOR) return;
+					if (HighLogic.LoadedScene == GameScenes.SPACECENTER) return;
+					if (HighLogic.LoadedScene == GameScenes.MAINMENU) return;
+
+					if (showMapIconManager)
+					{
+						GUI_MapIconManager.drawManager();
+
+						if (showFacilityManager)
+							GUI_FacilityManager.drawFacilityManager(selectedObject);
+
+						if (showBaseManager)
+							GUI_BaseManager.drawBaseManager();
+
+						if (toggleIconsWithBB)
+							GUI_MapIconManager.drawIcons();
+					}
+
+					if (!toggleIconsWithBB)
+						GUI_MapIconManager.drawIcons();
+				}
+			//}
 		}
 
 		void onSiteSelectorOnHover()
@@ -1270,6 +1371,21 @@ namespace KerbalKonstructs
 					continue;
 				}
 
+				// Fix colliders
+				//if (!String.IsNullOrEmpty(model.getSetting("concaveColliders").ToString().Trim()))
+				//{
+					//string value = model.getSetting("concaveColliders").ToString();
+					//string[] names = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+					//MeshCollider[] colliders = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
+					MeshCollider[] concave = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
+					//MeshCollider[] concave = value.ToLower() == "all" ? colliders : colliders.Where(c => names.Contains(c.name)).ToArray();
+					foreach (MeshCollider collider in concave)
+					{
+						if (DebugMode) Debug.Log("KK: Making collider " + collider.name + " concave.");
+						collider.convex = false;
+					}
+				//}
+
 				obj.settings = KKAPI.loadConfig(ins, KKAPI.getInstanceSettings());
 
 				if (obj.settings == null)
@@ -1423,6 +1539,16 @@ namespace KerbalKonstructs
 						break;
 					}
 				}
+			}
+		}
+
+		public void loadNations()
+		{
+			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("KERBINNATION");
+
+			foreach (UrlDir.UrlConfig conf in configs)
+			{
+				KerbinNation nation = new KerbinNation();
 			}
 		}
 
@@ -1827,6 +1953,10 @@ namespace KerbalKonstructs
 			// wow so robust
 		}
 
+
+		#endregion
+
+		#region CC Extensions
 
 		#endregion
 	}

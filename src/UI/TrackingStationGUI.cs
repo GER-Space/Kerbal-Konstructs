@@ -78,22 +78,22 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 				GUILayout.Label("Max Angle: " + fMaxAngle.ToString("#0") + "°", LabelInfo, GUILayout.Height(25));
 
-				if (KerbalKonstructs.instance.DevMode)
+				/* if (KerbalKonstructs.instance.DevMode)
 				{
 					GUILayout.FlexibleSpace();
 					if (GUILayout.Button("Upgrade", GUILayout.Height(20), GUILayout.Width(70)))
 					{
 						MiscUtils.HUDMessage("Unable to upgrade this facility. Insufficient materials.", 10, 0);
 					}
-				}
+				} */
 			}
 			GUILayout.EndHorizontal();
 
-			if (KerbalKonstructs.instance.DevMode)
+			/* if (KerbalKonstructs.instance.DevMode)
 			{
 				GUILayout.Space(1);
 				GUILayout.Box("To upgrade a kerbonaut Scientist and Engineer must be at the station. Then processed ore can be ordered for delivery to the station.", BoxInfo);
-			}
+			} */
 			
 			GUILayout.Space(2);
 

@@ -3,6 +3,7 @@ using KerbalKonstructs.StaticObjects;
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
+using KSP.UI.Screens;
 using KerbalKonstructs.API;
 using UnityEngine;
 
@@ -250,23 +251,23 @@ namespace KerbalKonstructs.UI
 		{
 			displayingTooltip = false;
 			MapObject target = PlanetariumCamera.fetch.target;
-			
-			if (target.type == MapObject.MapObjectType.CELESTIALBODY)
+
+			if (target.type == MapObject.ObjectType.CelestialBody)
 			{
 				// Do tracking stations first
 				foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 				{
 					bool display2 = false;
-					if ((string)obj.getSetting("FacilityType") == "TrackingStation")
+					if ((string)obj.getSetting("FacilityType") != "TrackingStation")
+							continue;
+					else
 					{
 						if (!isOccluded(obj.gameObject.transform.position, target.celestialBody))
 						{
 							if (MiscUtils.isCareerGame())
 							{
-								//PersistenceUtils.loadStaticPersistence(obj);
 								string openclosed2 = (string)obj.getSetting("OpenCloseState");
-								// To do manage open and close state of tracking stations
-								if (KerbalKonstructs.instance.mapShowOpenT) // && openclosed == "Open")
+								if (KerbalKonstructs.instance.mapShowOpenT)
 									display2 = true;
 								if (!KerbalKonstructs.instance.mapShowClosed && openclosed2 == "Closed")
 									display2 = false;
@@ -279,7 +280,7 @@ namespace KerbalKonstructs.UI
 
 							if (display2)
 							{
-								Vector3 pos = MapView.MapCamera.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
+								Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
 								Rect screenRect2 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
 								Graphics.DrawTexture(screenRect2, TrackingStationIcon);
 
@@ -297,29 +298,20 @@ namespace KerbalKonstructs.UI
 
 									//Only display one tooltip at a time
 									displayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
-									// TO DO Display Lat and Lon in tooltip too
 
 									if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
 									{
-										//MiscUtils.HUDMessage("Selected base is " + sToolTip + ".", 5f, 3);
-										Debug.Log("KK: Selected station in map");
 										float sTrackAngle = (float)obj.getSetting("TrackingAngle");
-										Debug.Log("KK: Before save load " + sTrackAngle.ToString());
 										float sTrackRange = (float)obj.getSetting("TrackingShort");
-										Debug.Log("KK: Before save load " + sTrackRange.ToString());
-										
-										//PersistenceUtils.saveStaticPersistence(obj);
+
 										PersistenceUtils.loadStaticPersistence(obj);
 
 										float sTrackAngle2 = (float)obj.getSetting("TrackingAngle");
-										Debug.Log("KK: After save load " + sTrackAngle2.ToString());
 										float sTrackRange2 = (float)obj.getSetting("TrackingShort");
-										Debug.Log("KK: After save load " + sTrackRange2.ToString());
 										
 										selectedFacility = obj;
 										FacilityManager.setSelectedFacility(obj);
 										KerbalKonstructs.instance.showFacilityManager = true;
-										//EditorGUI.setTargetSite(selectedSite);
 									}
 								}
 								else
@@ -334,16 +326,13 @@ namespace KerbalKonstructs.UI
 						{ // is occluded
 						}
 					}
-					else
-					{ // Not a tracking station
-					}
 				} //end foreach
 
 				// Then do launchsites
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				foreach (LaunchSite site in sites)
 				{
-					bool display = false;
+					bool display = true;
 					PSystemSetup.SpaceCenterFacility facility = PSystemSetup.Instance.GetSpaceCenterFacility(site.name);
 					if (facility != null)
 					{
@@ -354,20 +343,20 @@ namespace KerbalKonstructs.UI
 							{
 								if (!isOccluded(sp.GetSpawnPointTransform().position, target.celestialBody))
 								{
-									Vector3 pos = MapView.MapCamera.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(sp.GetSpawnPointTransform().position));
+									Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(sp.GetSpawnPointTransform().position));
 									Rect screenRect = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
 
 									string openclosed = site.openclosestate;
 									string category = site.category;
 
-									if (KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
-										display = true;
-									if (KerbalKonstructs.instance.mapShowOther && category == "Other")
-										display = true;
-									if (KerbalKonstructs.instance.mapShowRocketbases && category == "RocketPad")
-										display = true;
-									if (KerbalKonstructs.instance.mapShowRunways && category == "Runway")
-										display = true;
+									if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
+										display = false;
+									if (!KerbalKonstructs.instance.mapShowOther && category == "Other")
+										display = false;
+									if (!KerbalKonstructs.instance.mapShowRocketbases && category == "RocketPad")
+										display = false;
+									if (!KerbalKonstructs.instance.mapShowRunways && category == "Runway")
+										display = false;
 
 									if (display && MiscUtils.isCareerGame())
 									{
@@ -376,6 +365,8 @@ namespace KerbalKonstructs.UI
 										if (!KerbalKonstructs.instance.mapShowClosed && openclosed == "Closed")
 											display = false;
 										if (KerbalKonstructs.instance.disableDisplayClosed && openclosed == "Closed")
+											display = false;
+										if (openclosed == "OpenLocked" || openclosed == "ClosedLocked")
 											display = false;
 									}
 
