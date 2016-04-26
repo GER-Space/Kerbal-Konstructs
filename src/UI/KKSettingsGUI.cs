@@ -15,7 +15,7 @@ namespace KerbalKonstructs.UI
 {
 	class KKSettingsGUI
 	{
-		Rect KKSettingsRect = new Rect(400, 20, 375, 550);
+		Rect KKSettingsRect = new Rect(400, 20, 385, 560);
 
 		public Vector2 scrollSettings;
 

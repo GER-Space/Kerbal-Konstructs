@@ -15,7 +15,7 @@ namespace KerbalKonstructs.UI
 {
 	class KSCManager
 	{
-		Rect KSCmanagerRect = new Rect(150, 50, 400, 650);
+		Rect KSCmanagerRect = new Rect(150, 50, 410, 660);
 
 		public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadminister", false);
 		public Texture tBanner = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/banner", false);

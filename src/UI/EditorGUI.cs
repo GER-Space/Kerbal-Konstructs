@@ -61,9 +61,9 @@ namespace KerbalKonstructs.UI
 
 			#region GUI Windows
 			// GUI Windows
-			Rect toolRect = new Rect(300, 35, 310, 570);
-			Rect siteEditorRect = new Rect(400, 45, 340, 570);
-			Rect facilityEditorRect = new Rect(400, 45, 340, 350);
+			Rect toolRect = new Rect(300, 35, 330, 590);
+			Rect siteEditorRect = new Rect(400, 45, 360, 590);
+			Rect facilityEditorRect = new Rect(400, 45, 360, 370);
 
 			#endregion
 

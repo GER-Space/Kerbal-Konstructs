@@ -73,6 +73,16 @@ namespace KerbalKonstructs.API
 		public static CelestialBody getCelestialBody(String name)
 		{
 			CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
+			
+			if (name == "HomeWorld")
+			{
+				foreach (CelestialBody body in bodies)
+				{
+					if (body.isHomeWorld)
+						return body;
+				}
+			}
+			
 			foreach (CelestialBody body in bodies)
 			{
 				if (body.bodyName == name)

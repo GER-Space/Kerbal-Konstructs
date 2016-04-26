@@ -13,7 +13,7 @@ namespace KerbalKonstructs.UI
 {
 	class NavGuidanceSystem
 	{
-		Rect NGSRect = new Rect(250, 50, 395, 110);
+		Rect NGSRect = new Rect(250, 50, 400, 120);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 

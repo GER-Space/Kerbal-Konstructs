@@ -13,8 +13,8 @@ namespace KerbalKonstructs.UI
 {
 	public class FacilityManager
 	{
-		Rect targetSelectorRect = new Rect(640, 120, 200, 400);
-		public static Rect facilityManagerRect = new Rect(150, 75, 300, 650);
+		Rect targetSelectorRect = new Rect(640, 120, 220, 420);
+		public static Rect facilityManagerRect = new Rect(150, 75, 320, 670);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 

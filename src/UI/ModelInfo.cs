@@ -23,7 +23,7 @@ namespace KerbalKonstructs.UI
 
 		public double dUpdater = 0;
 
-		Rect StaticInfoRect = new Rect(300, 50, 300, 600);
+		Rect StaticInfoRect = new Rect(300, 50, 320, 620);
 
 		public Boolean displayingInfo = false;
 		public Boolean bCycle = true;

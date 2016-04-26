@@ -13,7 +13,7 @@ namespace KerbalKonstructs.UI
 {
 	public class AirRacing
 	{
-		Rect racingRect = new Rect(40, 80, 300, 160);
+		Rect racingRect = new Rect(40, 80, 320, 170);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 

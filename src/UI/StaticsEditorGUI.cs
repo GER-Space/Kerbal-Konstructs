@@ -16,7 +16,7 @@ namespace KerbalKonstructs.UI
 	class StaticsEditorGUI
 	{
 
-		Rect editorRect = new Rect(10, 25, 520, 520);
+		Rect editorRect = new Rect(10, 25, 540, 540);
 
 		GUIStyle DeadButton;
 		GUIStyle DeadButtonRed;

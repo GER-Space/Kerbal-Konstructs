@@ -13,8 +13,8 @@ namespace KerbalKonstructs.UI
 {
 	public class DownlinkGUI
 	{
-		Rect targetSelectorRect = new Rect(640, 120, 190, 400);
-		Rect DownlinkRect = new Rect(300, 30, 175, 720);
+		Rect targetSelectorRect = new Rect(640, 120, 210, 420);
+		Rect DownlinkRect = new Rect(300, 30, 195, 740);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep", false);
 		public Texture tSpeaker = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speaker", false);

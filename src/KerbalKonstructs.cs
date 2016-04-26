@@ -27,7 +27,7 @@ namespace KerbalKonstructs
 		public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
 		private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
 
-		public string sKKVersion = "0.9.5.9";
+		public string sKKVersion = "0.9.6.0";
 
 		#region Holders
 		public StaticObject selectedObject;
@@ -214,7 +214,7 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
 			KKAPI.addModelSetting("pointername", new ConfigGenericString());
 			KKAPI.addModelSetting("name", new ConfigGenericString());
-			KKAPI.addModelSetting("concaveColliders", new ConfigGenericString());
+			KKAPI.addModelSetting("keepConvex", new ConfigGenericString());
 			#endregion
 
 			#region Instance API
@@ -555,7 +555,8 @@ namespace KerbalKonstructs
 
 				// Tighter control over what statics are active
 				bTreatBodyAsNullForStatics = false;
-				currentBody = KKAPI.getCelestialBody("Kerbin");
+				currentBody = KKAPI.getCelestialBody("HomeWorld");
+				Debug.Log("KK: Homeworld is " + currentBody.name);
 				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				//staticDB.onBodyChanged(null);
 				staticDB.ToggleActiveStaticsInGroup("KSCUpgrades", true);
@@ -1371,20 +1372,17 @@ namespace KerbalKonstructs
 					continue;
 				}
 
-				// Fix colliders
-				//if (!String.IsNullOrEmpty(model.getSetting("concaveColliders").ToString().Trim()))
-				//{
-					//string value = model.getSetting("concaveColliders").ToString();
-					//string[] names = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-					//MeshCollider[] colliders = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
+				if ((string)model.getSetting("keepConvex") == "true" || (string)model.getSetting("keepConvex") == "True" || (string)model.getSetting("keepConvex") == "TRUE")
+				{ }
+				else
+				{
 					MeshCollider[] concave = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
-					//MeshCollider[] concave = value.ToLower() == "all" ? colliders : colliders.Where(c => names.Contains(c.name)).ToArray();
 					foreach (MeshCollider collider in concave)
 					{
 						if (DebugMode) Debug.Log("KK: Making collider " + collider.name + " concave.");
 						collider.convex = false;
 					}
-				//}
+				}
 
 				obj.settings = KKAPI.loadConfig(ins, KKAPI.getInstanceSettings());
 

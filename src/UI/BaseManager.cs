@@ -10,7 +10,7 @@ namespace KerbalKonstructs.UI
 {
 	public class BaseManager
 	{
-		public static Rect BaseManagerRect = new Rect(250, 60, 165, 680);
+		public static Rect BaseManagerRect = new Rect(250, 60, 185, 700);
 
 		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
 		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);

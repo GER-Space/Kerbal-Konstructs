@@ -39,6 +39,7 @@ namespace KerbalKonstructs.UI
 		GUIStyle KKWindow;
 		GUIStyle BoxNoBorder;
 		GUIStyle ButtonKK;
+		GUIStyle KKToolTip;
 
 		LaunchSite selectedSite;
 		public List<LaunchSite> sites;
@@ -58,7 +59,7 @@ namespace KerbalKonstructs.UI
 		public bool bOtherOn = true;
 		public bool bFavesOnly = false;
 
-		Rect windowRect = new Rect(((Screen.width - Camera.main.rect.x) / 2) + Camera.main.rect.x - 125, (Screen.height / 2 - 250), 390, 450);
+		Rect windowRect = new Rect(((Screen.width - Camera.main.rect.x) / 2) + Camera.main.rect.x - 125, (Screen.height / 2 - 250), 400, 460);
 
 		public void drawSelector()
 		{
@@ -110,6 +111,11 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
 			BoxNoBorder.normal.background = null;
 			BoxNoBorder.normal.textColor = Color.white;
+
+			KKToolTip = new GUIStyle(GUI.skin.box);
+			KKToolTip.normal.textColor = Color.white;
+			KKToolTip.fontSize = 11;
+			KKToolTip.fontStyle = FontStyle.Normal;
 
 			string smessage = "";
 
@@ -491,7 +497,7 @@ namespace KerbalKonstructs.UI
 			if (GUI.tooltip != "")
 			{
 				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-				GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 2, labelSize.y + 2), GUI.tooltip, BoxNoBorder);
+				GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, KKToolTip);
 			}
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));

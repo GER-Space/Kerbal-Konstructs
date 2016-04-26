@@ -331,14 +331,41 @@ namespace KerbalKonstructs.LaunchSites
 			return null;
 		}
 
-		// Returns a specific Launchsite, keyed by site.name
-		public static LaunchSite getLaunchSiteByName(string sSiteName)
+		public static string sBaseMem = "";
+		public static LaunchSite launchsitemem = null;
+
+		public static bool checkLaunchSiteExists(string sSiteName)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 			foreach (LaunchSite site in sites)
 			{
 				if (site.name == sSiteName)
 				{
+					return true;
+				}
+			}
+
+			return false;		
+		}
+
+		// Returns a specific Launchsite, keyed by site.name
+		public static LaunchSite getLaunchSiteByName(string sSiteName, bool bRemember = false)
+		{
+			if (bRemember)
+			{
+				if (sBaseMem == sSiteName) return launchsitemem;
+			}
+
+			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+			foreach (LaunchSite site in sites)
+			{
+				if (site.name == sSiteName)
+				{
+					if (bRemember)
+					{
+						sBaseMem = sSiteName;
+						launchsitemem = site;
+					}
 					return site;
 				}
 			}

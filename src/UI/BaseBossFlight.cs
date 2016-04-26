@@ -21,10 +21,10 @@ namespace KerbalKonstructs.UI
 		public Texture tToggle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
 		public Texture tToggle2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
 		
-		Rect managerRect = new Rect(10, 25, 300, 500);
-		Rect facilityRect = new Rect(150, 75, 400, 620);
-		Rect targetSelectorRect = new Rect(450, 150, 250, 550);
-		Rect downlickRect = new Rect(300, 50, 140, 350);
+		Rect managerRect = new Rect(10, 25, 320, 520);
+		Rect facilityRect = new Rect(150, 75, 420, 640);
+		Rect targetSelectorRect = new Rect(450, 150, 270, 570);
+		Rect downlickRect = new Rect(300, 50, 160, 370);
 
 		public float iFundsOpen2 = 0f;
 		

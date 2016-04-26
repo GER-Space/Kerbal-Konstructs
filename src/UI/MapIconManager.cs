@@ -34,7 +34,7 @@ namespace KerbalKonstructs.UI
 		public Texture tOtherOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOn", false);
 		public Texture tOtherOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOff", false);
 
-		Rect mapManagerRect = new Rect(250, 40, 320, 70);
+		Rect mapManagerRect = new Rect(250, 40, 340, 75);
 
 		private Boolean displayingTooltip = false;
 		
@@ -64,6 +64,7 @@ namespace KerbalKonstructs.UI
 		GUIStyle BoxNoBorder;
 		GUIStyle ButtonKK;
 		GUIStyle ButtonRed;
+		GUIStyle KKToolTip;
 
 		GUIStyle navStyle = new GUIStyle();
 
@@ -85,7 +86,7 @@ namespace KerbalKonstructs.UI
 		public void displayMapIconToolTip(string sitename, Vector3 pos)
 		{
 			displayingTooltip = true;
-			GUI.Label(new Rect((float)(pos.x) + 16, (float)(Screen.height - pos.y) - 8, 200, 20), sitename);
+			GUI.Label(new Rect((float)(pos.x) + 16, (float)(Screen.height - pos.y) - 8, 210, 25), sitename);
 		}
 
 		public void drawManager()
@@ -116,6 +117,11 @@ namespace KerbalKonstructs.UI
 
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
 			BoxNoBorder.normal.background = null;
+
+			KKToolTip = new GUIStyle(GUI.skin.box);
+			KKToolTip.normal.textColor = Color.white;
+			KKToolTip.fontSize = 11;
+			KKToolTip.fontStyle = FontStyle.Normal;
 
 			if (!loadedPersistence && MiscUtils.isCareerGame())
 			{
@@ -241,7 +247,7 @@ namespace KerbalKonstructs.UI
 			if (GUI.tooltip != "")
 			{
 				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-				GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 2, labelSize.y + 2), GUI.tooltip, BoxNoBorder);
+				GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, KKToolTip);
 			}
 			
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
