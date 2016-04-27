@@ -10,7 +10,7 @@ using System.IO;
 
 namespace KerbalKonstructs.Utilities
 {
-	class PersistenceUtils
+	public class PersistenceUtils
 	{
 		public static void saveCommsPersistence(Vessel vVessel, Part pPart, string sTargetType, 
 			string sTargetKey, bool isRelay, string sRelayTarget = "None", string sStationKey = "None")
@@ -108,7 +108,7 @@ namespace KerbalKonstructs.Utilities
 			"StaffMax", "StaffCurrent", "LqFCurrent", "OxFCurrent", "MoFCurrent",
 			"ECCurrent", "OreCurrent", "PrOreCurrent", "ScienceOMax", "ScienceOCurrent",
 			"RepOMax", "RepOCurrent", "FundsOMax", "FundsOCurrent", "LastCheck",
-			"ProductionRateMax", "ProductionRateCurrent", "Producing", "OpenCloseState"};
+			"ProductionRateMax", "ProductionRateCurrent", "Producing", "OpenCloseState", "RTGuid"};
 
 		public static List<string> pDefaultAttributes = new List<string>{
 			"FacilityType", "StaffMax", "ScienceOMax", "RepOMax", "FundsOMax", "ProductionRateMax"};
@@ -331,7 +331,7 @@ namespace KerbalKonstructs.Utilities
 			UpdateRTGroundStations();
 		} */
 
-		public static void backupRemoteTechConfig()
+		/* public static void backupRemoteTechConfig()
 		{
 			bool bRTLoaded = AssemblyLoader.loadedAssemblies.Any(a => a.name == "RemoteTech");
 			if (!bRTLoaded) return;
@@ -353,7 +353,7 @@ namespace KerbalKonstructs.Utilities
 
 			if (File.Exists(saveConfigPath) && File.Exists(restoreConfigPath))
 				File.Copy(saveConfigPath, restoreConfigPath, true);
-		}
+		} */
 
 		public static void savePersistenceBackup()
 		{
@@ -392,6 +392,7 @@ namespace KerbalKonstructs.Utilities
 			// Debug.Log("KK: FacilityKey is " + FacilityKey.ToString());
 
 			string saveConfigPath = string.Format("{0}saves/{1}/KKFacilities.cfg", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+			Guid nguid;
 
 			ConfigNode rootNode = new ConfigNode();
 
@@ -417,6 +418,23 @@ namespace KerbalKonstructs.Utilities
 					{
 						// Debug.Log("KK: Found a KKStatic");
 						string sRadPos = insins.GetValue("RadialPosition");
+						
+						string sGuid = insins.GetValue("RTGuid");
+
+						//Debug.Log("KK: >");
+
+						if (sGuid != "")
+						{
+							//Debug.Log("KK: >>");
+							//Debug.Log("KK: Guid string is " + sGuid);
+							nguid = new Guid(sGuid);
+							obj.setSetting("RTGuid", nguid);
+						}
+						else
+							obj.setSetting("RTGuid", Guid.Empty);
+
+						//Debug.Log("KK: >>>");
+
 						if (sRadPos == FacilityKey.ToString())
 						{
 							foreach (string sAtt in pStringAttributes)

@@ -8,14 +8,9 @@ namespace KerbalKonstructs.API.Config
 
 		private object defaultValue = Guid.Empty;
 
-		public void setValue(Guid configValue)
-		{
-			guid = configValue;
-		}
-
 		public void setValue(string configValue)
 		{
-
+			guid = new Guid(configValue);
 		}
 
 		public object getValue()

@@ -225,7 +225,9 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
 			KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
 
-			KKAPI.addInstanceSetting("RTGuid", new ConfigRTGuid());
+			ConfigRTGuid cguid = new ConfigRTGuid();
+			cguid.setDefaultValue(Guid.Empty);
+			KKAPI.addInstanceSetting("RTGuid", cguid);
 
 			// Calculated References - do not set, it will not work
 			KKAPI.addInstanceSetting("RefLatitude", new ConfigFloat());
@@ -585,8 +587,8 @@ namespace KerbalKonstructs
 				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				iMenuCount = iMenuCount + 1;
 				InitialisedFacilities = false;
-				PersistenceUtils.restoreRemoteTechConfig();
-				PersistenceUtils.backupRemoteTechConfig();
+				//PersistenceUtils.restoreRemoteTechConfig();
+				//PersistenceUtils.backupRemoteTechConfig();
 			}
 
 			if (data.Equals(GameScenes.EDITOR))
