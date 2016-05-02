@@ -66,7 +66,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Config\ConfigRTGuid.cs" />
     <Compile Include="API\Config\ConfigCelestialBody.cs" />
     <Compile Include="API\Config\ConfigFile.cs" />
     <Compile Include="API\Config\ConfigFloat.cs" />

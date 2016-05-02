@@ -10,17 +10,17 @@ namespace KerbalKonstructs.UI
 {
 	public class SharedInterfaces
 	{
+		public static event Action<StaticObject> evFacilityOpened;
+		public static event Action<StaticObject> evFacilityClosed;
+
 		public static GUIStyle BoxInfo;
 		public static GUIStyle ButtonSmallText;
 
-		public static event Action evFacilityOpened;
-		public static event Action evFacilityClosed;
-
-		public static StaticObject storedEventso;
+		public static StaticObject soStoredEventObject;
 
 		public static StaticObject getStoredEventObject()
 		{
-			return storedEventso;
+			return soStoredEventObject;
 		}
 
 		public static void OpenCloseFacility(StaticObject selectedFacility)
@@ -84,10 +84,11 @@ namespace KerbalKonstructs.UI
 
 								// Save new state to persistence
 								PersistenceUtils.saveStaticPersistence(selectedFacility);
+								soStoredEventObject = selectedFacility;
+								if (evFacilityOpened != null)
+									evFacilityOpened(selectedFacility);
 
-								storedEventso = selectedFacility;
-								if (evFacilityOpened != null) evFacilityOpened();							
-								
+
 								//PersistenceUtils.saveRTCareerBackup();
 							}
 						}
@@ -114,9 +115,9 @@ namespace KerbalKonstructs.UI
 							// Save new state to persistence
 							PersistenceUtils.saveStaticPersistence(selectedFacility);
 
-							storedEventso = selectedFacility;
-							if (evFacilityClosed != null) evFacilityClosed();
-							//PersistenceUtils.saveRTCareerBackup();
+							soStoredEventObject = selectedFacility;
+							if (evFacilityClosed != null)
+								evFacilityClosed(selectedFacility);
 						}
 						GUI.enabled = true;
 					}

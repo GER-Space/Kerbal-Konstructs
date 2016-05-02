@@ -350,16 +350,20 @@ namespace KerbalKonstructs.UI
 					{
 						GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 						GUILayout.Space(2);
+						GUILayout.Label("This feature is WIP.", LabelInfo);
+						GUI.enabled = false;
 						if (GUILayout.Button("Found a New Base", GUILayout.Height(23)))
 						{
 							foundingBase = true;
 						}
+						GUI.enabled = true;
 						GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 						GUILayout.Space(2);
 					}
 				}
 				else
 				{
+					GUILayout.Label("This feature is WIP.", LabelInfo);
 					GUILayout.Label("New bases cannot be built within 100 km of an existing base.", LabelInfo);
 				}
 			}
@@ -496,6 +500,14 @@ namespace KerbalKonstructs.UI
 			{
 				KerbalKonstructs.instance.showRacingApp = true;
 				AirRacing.runningRace = true;
+				KerbalKonstructs.instance.showNGS = false;
+				KerbalKonstructs.instance.showFlightManager = false;
+			}
+			if (GUILayout.Button("Basic Orbital Data", GUILayout.Height(23)))
+			{
+				KerbalKonstructs.instance.showRacingApp = true;
+				AirRacing.runningRace = false;
+				AirRacing.basicorbitalhud = true;
 				KerbalKonstructs.instance.showNGS = false;
 				KerbalKonstructs.instance.showFlightManager = false;
 			}

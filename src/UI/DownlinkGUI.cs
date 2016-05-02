@@ -14,7 +14,7 @@ namespace KerbalKonstructs.UI
 	public class DownlinkGUI
 	{
 		Rect targetSelectorRect = new Rect(640, 120, 210, 420);
-		Rect DownlinkRect = new Rect(300, 30, 195, 740);
+		Rect DownlinkRect = new Rect(300, 30, 195, 750);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep", false);
 		public Texture tSpeaker = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/speaker", false);
@@ -105,6 +105,7 @@ namespace KerbalKonstructs.UI
 		GUIStyle DeadButton;
 		GUIStyle DeadButtonRed;
 		GUIStyle BoxNoBorder;
+		GUIStyle BoxDisclaimer;
 		GUIStyle navStyle = new GUIStyle();
 
 		GUIStyle ButtonSmallText;
@@ -347,6 +348,11 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder.normal.background = null;
 			BoxNoBorder.normal.textColor = Color.white;
 			BoxNoBorder.fontSize = 13;
+
+			BoxDisclaimer = new GUIStyle(GUI.skin.box);
+			BoxDisclaimer.normal.background = null;
+			BoxDisclaimer.normal.textColor = Color.yellow;
+			BoxDisclaimer.fontSize = 12;
 
 			BoxTitle = new GUIStyle(GUI.skin.button);
 			BoxTitle.normal.background = tTitleBox;
@@ -1559,6 +1565,7 @@ namespace KerbalKonstructs.UI
 			GUILayout.Space(1);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 			GUILayout.Space(1);
+			GUILayout.Box("WIP. Just a toy. Not compatible with RemoteTech.", BoxDisclaimer);
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
@@ -1584,7 +1591,7 @@ namespace KerbalKonstructs.UI
 				{
 					fBestSignal = fSignal;
 					vBest = vVessel;
-					Debug.Log("KK: Scan found a better signal to a vessel");
+					// Debug.Log("KK: Scan found a better signal to a vessel");
 				}
 			}
 
@@ -1593,13 +1600,13 @@ namespace KerbalKonstructs.UI
 				vTargetVessel = vBest;
 				sTarget = vBest.name + "_" + vBest.id.ToString();
 				SaveCommsState();
-				Debug.Log("KK: Best signal is " + sTarget);
+				// Debug.Log("KK: Best signal is " + sTarget);
 			}
 			else
 			{
 				sTarget = "None";
 				vTargetVessel = null;
-				Debug.Log("KK: Scan found no signal to any other vessel");
+				// Debug.Log("KK: Scan found no signal to any other vessel");
 			}
 
 			// bScanning = false;

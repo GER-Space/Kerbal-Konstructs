@@ -86,13 +86,25 @@ namespace KerbalKonstructs.LaunchSites
 							Texture icon = null;
 
 							if (obj.settings.ContainsKey("LaunchSiteLogo"))
-								logo = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteLogo"), false);
-
+							{
+								string sLogoPath = (string)obj.getSetting("LaunchSiteLogo");
+								logo = GameDatabase.Instance.GetTexture(sLogoPath, false);
+							
+								if (logo == null)
+									logo = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteLogo"), false);
+							}
+							
 							if (logo == null)
 								logo = defaultLaunchSiteLogo;
 
 							if(obj.settings.ContainsKey("LaunchSiteIcon"))
-								icon = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteIcon"), false);
+							{
+								string sIconPath = (string)obj.getSetting("LaunchSiteIcon");
+								icon = GameDatabase.Instance.GetTexture(sIconPath, false);
+
+								if (icon == null)
+									icon = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteIcon"), false);
+							}							
 							
 							// TODO This is still hard-code and needs to use an API properly
 							launchSites.Add(new LaunchSite(

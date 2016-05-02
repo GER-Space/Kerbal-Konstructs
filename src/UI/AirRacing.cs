@@ -14,6 +14,7 @@ namespace KerbalKonstructs.UI
 	public class AirRacing
 	{
 		Rect racingRect = new Rect(40, 80, 320, 170);
+		Rect orbitalRect = new Rect(40, 80, 420, 80);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
@@ -21,6 +22,7 @@ namespace KerbalKonstructs.UI
 		public Boolean racing = false;
 		public Boolean started = false;
 		public Boolean finished = false;
+		public static Boolean basicorbitalhud = false;
 
 		public float fNextGate = 1;
 		public float fTimeMins = 0;
@@ -39,6 +41,7 @@ namespace KerbalKonstructs.UI
 
 		GUIStyle raceStyle = new GUIStyle();
 		GUIStyle BoxNoBorder;
+		GUIStyle BoxNoBorderS;
 		GUIStyle DeadButton;
 		GUIStyle DeadButtonRed;
 
@@ -48,6 +51,9 @@ namespace KerbalKonstructs.UI
 
 			if (runningRace)
 				racingRect = GUI.Window(0xC00C1E8, racingRect, drawRacingWindow, "", raceStyle);
+
+			if (basicorbitalhud)
+				orbitalRect = GUI.Window(0xC00C1E8, orbitalRect, drawRacingWindow, "", raceStyle);
 		}
 
 		public void drawRacingWindow(int windowID)
@@ -55,6 +61,11 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
 			BoxNoBorder.normal.background = null;
 			BoxNoBorder.normal.textColor = Color.white;
+
+			BoxNoBorderS = new GUIStyle(GUI.skin.box);
+			BoxNoBorderS.normal.background = null;
+			BoxNoBorderS.normal.textColor = Color.white;
+			BoxNoBorderS.fontSize = 13;
 
 			DeadButton = new GUIStyle(GUI.skin.button);
 			DeadButton.normal.background = null;
@@ -86,8 +97,10 @@ namespace KerbalKonstructs.UI
 				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
 
 				GUILayout.FlexibleSpace();
-
-				GUILayout.Button("Air-Racing", DeadButton, GUILayout.Height(16));
+				if (basicorbitalhud)
+					GUILayout.Button("Orbital Data", DeadButton, GUILayout.Height(16));
+				else
+					GUILayout.Button("Air-Racing", DeadButton, GUILayout.Height(16));
 
 				GUILayout.FlexibleSpace();
 
@@ -98,6 +111,7 @@ namespace KerbalKonstructs.UI
 					ResetRace();
 					KerbalKonstructs.instance.showRacingApp = false;
 					runningRace = false;
+					basicorbitalhud = false;
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -105,126 +119,149 @@ namespace KerbalKonstructs.UI
 			GUILayout.Space(1);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			if (!racing)
+			if (basicorbitalhud)
 			{
-				GUILayout.Box("Cross a start line to begin a race.");
-
-				if (!started)
+				string sBody = FlightGlobals.ActiveVessel.mainBody.name;
+				double dPeriapsis = FlightGlobals.ActiveVessel.orbit.PeA;
+				double dApoapsis = FlightGlobals.ActiveVessel.orbit.ApA;
+				double dInclination = FlightGlobals.ActiveVessel.orbit.inclination;
+				GUILayout.BeginHorizontal();
 				{
-					StartLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceStart");
-					if (StartLine != null)
-					{
-						fDistToStart = StartLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
-
-						if (fDistToStart < 150)
-						{
-							dStartTime = Planetarium.GetUniversalTime();
-							MiscUtils.HUDMessage("!!! GO GO GO !!!", 10, 0);
-							started = true;
-							racing = true;
-						}
-
-						if (fDistToStart < 200)
-							GUILayout.Box("!!!!!! RACE ON! GO GO GO !!!!!!");
-
-						if (fDistToStart >= 200)
-							GUILayout.Box("Distance to Start Line: " + fDistToStart.ToString("#0.00") + " m");
-					}
-					else
-					{
-						GUILayout.Box("Cannot find any start lines.");
-					}
+					GUILayout.Box("SOI: " + sBody, BoxNoBorder, GUILayout.Width(75));
+					GUILayout.FlexibleSpace();
+					GUILayout.Box("Periapsis " + (dPeriapsis/1000).ToString("#0.0") + " km", BoxNoBorder, GUILayout.Width(90));
+					GUILayout.FlexibleSpace();
+					GUILayout.Box("Apoapsis " + (dApoapsis/1000).ToString("#0.0") + " km", BoxNoBorder, GUILayout.Width(90));
+					GUILayout.FlexibleSpace();
+					GUILayout.Box("Inclination " + dInclination.ToString("#0.00") + "°", BoxNoBorder, GUILayout.Width(80));
 				}
+				GUILayout.EndHorizontal();
 			}
-
-			if (racing)
+			else
 			{
-				if (!finished && started)
+
+				if (!racing)
 				{
-					dTimeSinceStart = Planetarium.GetUniversalTime() - dStartTime;
-					fTimeMins = (int)dTimeSinceStart / 60;
-					fTimeSecs = (float)(dTimeSinceStart - (fTimeMins * 60));
+					GUILayout.Box("Cross a start line to begin a race.");
 
-					GUILayout.Box("Race Time: " + fTimeMins.ToString("#0") + " minutes " + fTimeSecs.ToString("#0.00") + " seconds ");
-
-					if (fNextGate > 0)
+					if (!started)
 					{
-						StaticObject soNextGate = GetNextGate(StartLine, fNextGate);
-						if (soNextGate != null)
+						StartLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceStart");
+						if (StartLine != null)
 						{
-							GUILayout.Box("Next Gate: " + fNextGate);
-							fDistToGate = GetDistanceToGate(soNextGate, FlightGlobals.ActiveVessel.GetTransform().position);
+							fDistToStart = StartLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
 
-							fDistBetween = (GetGateWidth(soNextGate) / 2) + 10;
-
-							if (fDistToGate > fDistBetween)
-								GUILayout.Box("Distance to Next Gate: " + fDistToGate.ToString("#0.0") + " m");
-							else
+							if (fDistToStart < 150)
 							{
-								MiscUtils.HUDMessage("!!! GATE  " + fNextGate.ToString() + "  CLEAR !!!", 10, 0);
-								fNextGate = fNextGate + 1;
+								dStartTime = Planetarium.GetUniversalTime();
+								MiscUtils.HUDMessage("!!! GO GO GO !!!", 10, 0);
+								started = true;
+								racing = true;
 							}
-						}
-						else fNextGate = 0;
-					}
-					else
-					{
-						GUILayout.Box("Final Stretch!");
-					}
 
-					if (fNextGate == 0)
-					{
-						FinishLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceFinish");
-						if (FinishLine != null)
-						{
-							fDistToFinish = FinishLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
+							if (fDistToStart < 200)
+								GUILayout.Box("!!!!!! RACE ON! GO GO GO !!!!!!");
 
-							GUILayout.Box("Distance to Finish Line: " + fDistToFinish.ToString("#0.0") + " m");
-
-							if (fDistToFinish < 150)
-							{
-								finished = true;
-								started = false;
-							}
+							if (fDistToStart >= 200)
+								GUILayout.Box("Distance to Start Line: " + fDistToStart.ToString("#0.00") + " m");
 						}
 						else
 						{
-							GUILayout.Box("Cannot find any finish lines.");
+							GUILayout.Box("Cannot find any start lines.");
 						}
 					}
 				}
 
-				if (finished)
+				if (racing)
 				{
-					GUILayout.Box("!!!!! FINISH LINE !!!!!");
-
-					if (dFinishTime == 0)
+					if (!finished && started)
 					{
-						dFinishTime = Planetarium.GetUniversalTime() - dStartTime;
-						MiscUtils.HUDMessage("!!! FINISHED !!!", 10, 0);
+						dTimeSinceStart = Planetarium.GetUniversalTime() - dStartTime;
+						fTimeMins = (int)dTimeSinceStart / 60;
+						fTimeSecs = (float)(dTimeSinceStart - (fTimeMins * 60));
+
+						GUILayout.Box("Race Time: " + fTimeMins.ToString("#0") + " minutes " + fTimeSecs.ToString("#0.00") + " seconds ");
+
+						if (fNextGate > 0)
+						{
+							StaticObject soNextGate = GetNextGate(StartLine, fNextGate);
+							if (soNextGate != null)
+							{
+								GUILayout.Box("Next Gate: " + fNextGate);
+								fDistToGate = GetDistanceToGate(soNextGate, FlightGlobals.ActiveVessel.GetTransform().position);
+
+								fDistBetween = (GetGateWidth(soNextGate) / 2) + 10;
+
+								if (fDistToGate > fDistBetween)
+									GUILayout.Box("Distance to Next Gate: " + fDistToGate.ToString("#0.0") + " m");
+								else
+								{
+									MiscUtils.HUDMessage("!!! GATE  " + fNextGate.ToString() + "  CLEAR !!!", 10, 0);
+									fNextGate = fNextGate + 1;
+								}
+							}
+							else fNextGate = 0;
+						}
+						else
+						{
+							GUILayout.Box("Final Stretch!");
+						}
+
+						if (fNextGate == 0)
+						{
+							FinishLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceFinish");
+							if (FinishLine != null)
+							{
+								fDistToFinish = FinishLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
+
+								GUILayout.Box("Distance to Finish Line: " + fDistToFinish.ToString("#0.0") + " m");
+
+								if (fDistToFinish < 150)
+								{
+									finished = true;
+									started = false;
+								}
+							}
+							else
+							{
+								GUILayout.Box("Cannot find any finish lines.");
+							}
+						}
 					}
 
-					fTimeMins = (int)dFinishTime / 60;
-					fTimeSecs = (float)(dFinishTime - (fTimeMins * 60));
-
-					GUILayout.Box("Race Time: " + fTimeMins.ToString("#0") + " minutes " + fTimeSecs.ToString("#0.00") + " seconds ");
-
-					if (GUILayout.Button("Save Race Results", GUILayout.Height(22)))
+					if (finished)
 					{
-						MiscUtils.HUDMessage("Feature still WIP", 10, 3);
-					}
+						GUILayout.Box("!!!!! FINISH LINE !!!!!");
 
-					if (GUILayout.Button("Race Again!", GUILayout.Height(22))) ResetRace();
+						if (dFinishTime == 0)
+						{
+							dFinishTime = Planetarium.GetUniversalTime() - dStartTime;
+							MiscUtils.HUDMessage("!!! FINISHED !!!", 10, 0);
+						}
+
+						fTimeMins = (int)dFinishTime / 60;
+						fTimeSecs = (float)(dFinishTime - (fTimeMins * 60));
+
+						GUILayout.Box("Race Time: " + fTimeMins.ToString("#0") + " minutes " + fTimeSecs.ToString("#0.00") + " seconds ");
+
+						if (GUILayout.Button("Save Race Results", GUILayout.Height(22)))
+						{
+							MiscUtils.HUDMessage("Feature still WIP", 10, 3);
+						}
+
+						if (GUILayout.Button("Race Again!", GUILayout.Height(22))) ResetRace();
+					}
+				}
+
+				GUILayout.Space(5);
+				if (GUILayout.Button("I'm done racing!", GUILayout.Height(22)))
+				{
+					ResetRace();
+					KerbalKonstructs.instance.showRacingApp = false;
+					runningRace = false;
 				}
 			}
 
-			GUILayout.Space(5);
-			if (GUILayout.Button("I'm done racing!", GUILayout.Height(22)))
-			{
-				ResetRace();
-				KerbalKonstructs.instance.showRacingApp = false;
-				runningRace = false;
-			}
 			GUILayout.FlexibleSpace();
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 			GUILayout.Space(3);

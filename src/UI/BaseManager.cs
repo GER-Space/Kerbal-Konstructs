@@ -56,6 +56,7 @@ namespace KerbalKonstructs.UI
 		public Boolean foldedIn = false;
 		public Boolean doneFold = false;
 		public Boolean isLocked = false;
+		public Boolean isLaunch = false;
 
 		public void drawBaseManager()
 		{
@@ -366,6 +367,7 @@ namespace KerbalKonstructs.UI
 
 				isOpen = (selectedSite.openclosestate == "Open");
 				isLocked = (selectedSite.openclosestate == "OpenLocked" || selectedSite.openclosestate == "ClosedLocked");
+				isLaunch = (selectedSite.openclosestate == "OpenLocked" || selectedSite.openclosestate == "Open");
 				GUI.enabled = !isOpen && !isLocked;
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				if (!isAlwaysOpen)
@@ -419,7 +421,7 @@ namespace KerbalKonstructs.UI
 
 						GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
 						
-						GUI.enabled = !isLocked && (isOpen || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
+						GUI.enabled = (isLaunch || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
 						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(40)))
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);

@@ -27,7 +27,7 @@ namespace KerbalKonstructs
 		public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
 		private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
 
-		public string sKKVersion = "0.9.6.0";
+		public string sKKVersion = "0.9.6.5";
 
 		#region Holders
 		public StaticObject selectedObject;
@@ -225,10 +225,6 @@ namespace KerbalKonstructs
 			KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
 			KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
 
-			ConfigRTGuid cguid = new ConfigRTGuid();
-			cguid.setDefaultValue(Guid.Empty);
-			KKAPI.addInstanceSetting("RTGuid", cguid);
-
 			// Calculated References - do not set, it will not work
 			KKAPI.addInstanceSetting("RefLatitude", new ConfigFloat());
 			KKAPI.addInstanceSetting("RefLongitude", new ConfigFloat());
@@ -416,7 +412,6 @@ namespace KerbalKonstructs
 			{
 				if (DebugMode) Debug.Log("KK: LoadState");
 				PersistenceUtils.loadPersistenceBackup();
-				//PersistenceUtils.loadRTCareerBackup();
 			}
 		}
 
@@ -434,7 +429,7 @@ namespace KerbalKonstructs
 
 		void OnVesselLaunched(ShipConstruct vVessel)
 		{
-			Debug.Log("KK: OnVesselLaunched");
+			if (DebugMode) Debug.Log("KK: OnVesselLaunched");
 
 			if (!MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 			{
@@ -442,7 +437,7 @@ namespace KerbalKonstructs
 			}
 			else
 			{
-				Debug.Log("KK: OnVesselLaunched is Career");
+				if (DebugMode) Debug.Log("KK: OnVesselLaunched is Career");
 
 				PersistenceUtils.savePersistenceBackup();
 				string sitename = EditorLogic.fetch.launchSiteName;
@@ -558,7 +553,8 @@ namespace KerbalKonstructs
 				// Tighter control over what statics are active
 				bTreatBodyAsNullForStatics = false;
 				currentBody = KKAPI.getCelestialBody("HomeWorld");
-				Debug.Log("KK: Homeworld is " + currentBody.name);
+				if (DebugMode) Debug.Log("KK: Homeworld is " + currentBody.name);
+
 				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				//staticDB.onBodyChanged(null);
 				staticDB.ToggleActiveStaticsInGroup("KSCUpgrades", true);
@@ -667,12 +663,12 @@ namespace KerbalKonstructs
 
 		void OnVesselRecoveryRequested(Vessel data)
 		{
-			Debug.Log("KK: OnVesselRecoveryRequested");
+			if (DebugMode) Debug.Log("KK: OnVesselRecoveryRequested");
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					Debug.Log("KK: OnVesselRecoveryRequested is career");
+					if (DebugMode) Debug.Log("KK: OnVesselRecoveryRequested is career");
 					// Change the Space Centre to the nearest open base
 					fRecovFactor = 0;
 					float fDist = 0f;
