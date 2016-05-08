@@ -15,12 +15,17 @@ namespace KerbalKonstructs.UI
 		public static string sSelectedTrackingTarget = "None";
 		public static string sDisplayTarget = "None";
 		public static string sDisplayRange = "0m";
+		public static string sUplink = "None";
+		public static string sFacLvl = "Lvl 1/3";
+		public static string sGroup = "Ungrouped";
 
 		public static StaticObject selectedStation = null;
 
 		public static float fRange = 0f;
 		public static float fMaxAngle = 45f;
 		public static float StationLOS = 0f;
+		public static float fTSRange = 90000f;
+		public static float fTSAngle = 45f;
 
 		public static Boolean bChangeTargetType = false;
 
@@ -43,6 +48,9 @@ namespace KerbalKonstructs.UI
 		public static Double disObjectLon = 0;
 
 		public static Boolean bGUIenabled = false;
+		public static Boolean bCraftLock = false;
+
+		public static Boolean bNotInit = false;
 
 		public static void TrackingInterface(StaticObject soStation)
 		{
@@ -50,7 +58,9 @@ namespace KerbalKonstructs.UI
 			sTargetType = (string)soStation.getSetting("TargetType");
 			sTarget = (string)soStation.getSetting("TargetID");
 			fMaxAngle = (float)soStation.getSetting("TrackingAngle");
-
+			sGroup = (string)soStation.getSetting("Group");
+			bCraftLock = false;
+			
 			LabelInfo = new GUIStyle(GUI.skin.label);
 			LabelInfo.normal.background = null;
 			LabelInfo.normal.textColor = Color.white;
@@ -70,6 +80,38 @@ namespace KerbalKonstructs.UI
 			BoxInfo.normal.background = null;
 
 			GUILayout.Space(2);
+
+			if (fRange < 1f) bNotInit = true;
+			if (fMaxAngle < 1f) bNotInit = true;
+
+			if (bNotInit)
+			{
+				sFacLvl = KSCManager.DetermineFacilityLevel("TrackingStation");
+				if (sGroup == "KSCUpgrades")
+				{
+					fTSRange = 250000f;
+					fTSAngle = 75f;
+					if (sFacLvl == "Lvl 2/3")
+					{
+						fTSRange = 10000000f;
+						fTSAngle = 85f;
+					}
+					if (sFacLvl == "Lvl 3/3")
+					{
+						fTSRange = 25000000f;
+						fTSAngle = 90f;
+					}
+
+					fRange = fTSRange;
+					fMaxAngle = fTSAngle;
+
+					soStation.setSetting("TrackingShort", fTSRange);
+					soStation.setSetting("TrackingAngle", fTSAngle);
+					soStation.setSetting("OpenCloseState", "Open");
+					PersistenceUtils.saveStaticPersistence(soStation);
+					bNotInit = false;
+				}
+			}
 
 			GUILayout.BeginHorizontal();
 			{
@@ -157,6 +199,7 @@ namespace KerbalKonstructs.UI
 
 				GUILayout.Label("Status: ", LabelInfo, GUILayout.Height(25));
 				string sStationStatus = "Offline";
+				sUplink = "None";
 
 				if (sTarget != "None")
 				{
@@ -176,6 +219,7 @@ namespace KerbalKonstructs.UI
 
 								if (StationLOS <= fMaxAngle)
 								{
+									bCraftLock = true;
 									sDisplayRange = "0m";
 									float fRangeToTarget = GetRangeToCraft(soStation, vTargetVessel);
 
@@ -184,12 +228,23 @@ namespace KerbalKonstructs.UI
 									else
 										sDisplayRange = fRangeToTarget.ToString("#0") + "m";
 
-									if (fRangeToTarget > fRange) sStationStatus = "Lock " + StationLOS.ToString("#0") 
-										+ "° " + sDisplayRange;
-									else
+									if (fRangeToTarget > fRange)
+									{
+										int iUplink = GetUplinkQuality(fRange, fRangeToTarget);
+										sUplink = iUplink.ToString() + "%";
 										sStationStatus = "Lock " + StationLOS.ToString("#0") + "° " + sDisplayRange;
+									}
+									else
+									{
+										sStationStatus = "Lock " + StationLOS.ToString("#0") + "° " + sDisplayRange;
+										sUplink = "100%";
+									}
 								}
-								else sStationStatus = "No lock";
+								else
+								{
+									sStationStatus = "No lock";
+									bCraftLock = false;
+								}
 							}
 						}
 					}
@@ -268,7 +323,25 @@ namespace KerbalKonstructs.UI
 				}
 			}
 			GUILayout.EndHorizontal();
+			if (sTargetType == "Craft" && bCraftLock)
+			{
+				GUILayout.Label("Uplink Quality:" + sUplink, LabelInfo);
+			}
 			GUILayout.Space(5);
+		}
+
+		public static int GetUplinkQuality(float flRange, float fRangeToTarget)
+		{
+			int iUplink = 95;
+			if (fRangeToTarget > (flRange * 2)) iUplink = 90;
+			if (fRangeToTarget > (flRange * 5)) iUplink = 85;
+			if (fRangeToTarget > (flRange * 10)) iUplink = 75;
+			if (fRangeToTarget > (flRange * 100)) iUplink = 50;
+			if (fRangeToTarget > (flRange * 1000)) iUplink = 25;
+			if (fRangeToTarget > (flRange * 10000)) iUplink = 10;
+			if (fRangeToTarget > (flRange * 100000)) iUplink = 5;
+			if (fRangeToTarget > (flRange * 1000000)) iUplink = 1;
+			return iUplink;
 		}
 
 		public static void TargetSelector(string sTargetTypeSelected, StaticObject selectedFacility = null)

@@ -50,8 +50,8 @@ namespace KerbalKonstructs.UI
 
 		public bool bDetermined = false;
 
-		float fFacLvl = 0f;
-		float fmaxLvl = 0f;
+		public static float fFacLvl = 0f;
+		public static float fmaxLvl = 0f;
 
 		public double dUpdater = 0;
 
@@ -63,7 +63,7 @@ namespace KerbalKonstructs.UI
 			KSCmanagerRect = GUI.Window(0xC00B1E2, KSCmanagerRect, drawKSCmanagerWindow, "", KKWindow);
 		}
 
-		public string DetermineFacilityLevel(string sFacility)
+		public static string DetermineFacilityLevel(string sFacility)
 		{
 			string slLevel = "Lvl 1";
 			string sString;

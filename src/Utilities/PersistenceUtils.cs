@@ -1,6 +1,7 @@
 ﻿using KerbalKonstructs.LaunchSites;
 using KerbalKonstructs.StaticObjects;
 using KerbalKonstructs.API;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using LibNoise.Unity.Operator;
@@ -315,6 +316,28 @@ namespace KerbalKonstructs.Utilities
 				obj.setSetting("StaffCurrent", 1f);
 				obj.setSetting("TargetID", "None");
 				obj.setSetting("OpenCloseState", "Closed");
+
+				// Link KSC TrackingStation to upgardelevel
+				if ((string)obj.getSetting("FacilityType") == "TrackingStation" && (string)obj.getSetting("Group") == "KSCUpgrades")
+				{
+					Debug.Log("KK: Initialising KSC TrackingStation");
+					string sFacLvl = KSCManager.DetermineFacilityLevel("TrackingStation");
+					float fTSRange = 250000;
+					float fTSAngle = 75;
+					if (sFacLvl == "Lvl 2/3")
+					{
+						fTSRange = 1000000;
+						fTSAngle = 85;
+					}
+					if (sFacLvl == "Lvl 3/3")
+					{
+						fTSRange = 2500000;
+						fTSAngle = 90;
+					}
+
+					obj.setSetting("TrackingShort", fTSRange.ToString());
+					obj.setSetting("TrackingAngle", fTSAngle.ToString());
+				}
 				
 				saveStaticPersistence(obj);
 			}

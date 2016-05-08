@@ -521,6 +521,9 @@ namespace KerbalKonstructs.UI
 		public void Close()
 		{
 			sites = null;
+			InputLockManager.RemoveControlLock("KKEditorLock");
+			InputLockManager.RemoveControlLock("KKEditorLock2");
+			KerbalKonstructs.instance.showSiteSelector = false;
 		}
 
 	}

@@ -27,7 +27,7 @@ namespace KerbalKonstructs
 		public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
 		private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
 
-		public string sKKVersion = "0.9.6.5";
+		public string sKKVersion = "0.9.6.7";
 
 		#region Holders
 		public StaticObject selectedObject;
@@ -145,6 +145,14 @@ namespace KerbalKonstructs
 		public Boolean mapShowRocketbases = true;
 		[KSPField]
 		public Boolean mapShowOther = false;
+		[KSPField]
+		public Boolean mapShowRadar = false;
+		[KSPField]
+		public Boolean mapShowUplinks = false;
+		[KSPField]
+		public Boolean mapShowGroundComms = false;
+		[KSPField]
+		public Boolean mapHideIconsBehindBody = true;
 		[KSPField]
 		public Boolean disableRemoteRecovery = false;
 		[KSPField]
@@ -278,30 +286,20 @@ namespace KerbalKonstructs
 			ConfigGenericString facilityrole = new ConfigGenericString();
 			facilityrole.setDefaultValue("None");
 			KKAPI.addModelSetting("DefaultFacilityType", facilityrole);
-			ConfigGenericString instfacilityrole = new ConfigGenericString();
-			instfacilityrole.setDefaultValue("None");
-			KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
 			KKAPI.addModelSetting("DefaultFacilityLength", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultFacilityWidth", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultFacilityHeight", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultFacilityMassCapacity", new ConfigFloat());
 			KKAPI.addModelSetting("DefaultFacilityCraftCapacity", new ConfigFloat());
+
+			ConfigGenericString instfacilityrole = new ConfigGenericString();
+			instfacilityrole.setDefaultValue("None");
+			KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
 			KKAPI.addInstanceSetting("FacilityLengthUsed", new ConfigFloat());
 			KKAPI.addInstanceSetting("FacilityWidthUsed", new ConfigFloat());
 			KKAPI.addInstanceSetting("FacilityHeightUsed", new ConfigFloat());
 			KKAPI.addInstanceSetting("FacilityMassUsed", new ConfigFloat());
 			KKAPI.addInstanceSetting("InStorage", new ConfigGenericString());
-
-			// Local to a specific save - constructed in a specific save-game
-			// WIP for founding
-			ConfigGenericString LocalToSave = new ConfigGenericString();
-			LocalToSave.setDefaultValue("False");
-			KKAPI.addInstanceSetting("LocalToSave", LocalToSave);
-				
-			// Custom instances - added or modified by player with the editor
-			ConfigGenericString CustomInstance = new ConfigGenericString();
-			CustomInstance.setDefaultValue("False");
-			KKAPI.addInstanceSetting("CustomInstance", CustomInstance);
 
 			// Facility Ratings
 
@@ -355,7 +353,18 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("DefaultFundsOMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("FundsOMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("FundsOCurrent", new ConfigFloat());
-				
+
+			// Local to a specific save - constructed in a specific save-game
+			// WIP for founding
+			ConfigGenericString LocalToSave = new ConfigGenericString();
+			LocalToSave.setDefaultValue("False");
+			KKAPI.addInstanceSetting("LocalToSave", LocalToSave);
+
+			// Custom instances - added or modified by player with the editor
+			ConfigGenericString CustomInstance = new ConfigGenericString();
+			CustomInstance.setDefaultValue("False");
+			KKAPI.addInstanceSetting("CustomInstance", CustomInstance);
+	
 			// Launch and Recovery
 			ConfigFloat flaunchrefund = new ConfigFloat();
 			flaunchrefund.setDefaultValue(0f);
@@ -422,7 +431,6 @@ namespace KerbalKonstructs
 			else
 			{
 				PersistenceUtils.savePersistenceBackup();
-				//PersistenceUtils.saveRTCareerBackup();
 				if (DebugMode) Debug.Log("KK: SaveState");
 			}
 		}
@@ -577,14 +585,9 @@ namespace KerbalKonstructs
 				// Close all the launchsite objects
 				LaunchSiteManager.setAllLaunchsitesClosed();
 				atMainMenu = true;
-				// CHANGED 19082015
 				bTreatBodyAsNullForStatics = false;
-				//currentBody = KKAPI.getCelestialBody("Kerbin");
-				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				iMenuCount = iMenuCount + 1;
 				InitialisedFacilities = false;
-				//PersistenceUtils.restoreRemoteTechConfig();
-				//PersistenceUtils.backupRemoteTechConfig();
 			}
 
 			if (data.Equals(GameScenes.EDITOR))
@@ -651,10 +654,10 @@ namespace KerbalKonstructs
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					Debug.Log("KK: OnProcessRecovery");
+					if (DebugMode) Debug.Log("KK: OnProcessRecovery");
 					if (vessel == null) return;
 					if (dialog == null) return;
-					Debug.Log("KK: OnProcessRecovery2");
+					if (DebugMode) Debug.Log("KK: OnProcessRecovery");
 					dRecoveryValue = dialog.fundsEarned;
 					PersistenceUtils.savePersistenceBackup();
 				}
@@ -664,6 +667,7 @@ namespace KerbalKonstructs
 		void OnVesselRecoveryRequested(Vessel data)
 		{
 			if (DebugMode) Debug.Log("KK: OnVesselRecoveryRequested");
+			
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
@@ -704,6 +708,7 @@ namespace KerbalKonstructs
 				if (vessel == null)
 				{
 					if (DebugMode) Debug.Log("KK: onVesselRecovered vessel was null");
+					
 					if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 					{
 						SpaceCenter.Instance = SpaceCenterManager.KSC;
@@ -931,7 +936,6 @@ namespace KerbalKonstructs
 			{
 				ToggleEditor();
 			}
-
 		}
 
 		public void ToggleEditor()

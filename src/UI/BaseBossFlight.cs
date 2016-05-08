@@ -63,9 +63,11 @@ namespace KerbalKonstructs.UI
 		void drawBaseManagerWindow(int windowID)
 		{
 			string Base;
+			string Base2;
 			float Range;
 			LaunchSite lNearest;
 			LaunchSite lBase;
+			LaunchSite lBase2;
 			string smessage = "";
 
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
@@ -244,7 +246,7 @@ namespace KerbalKonstructs.UI
 			GUILayout.BeginHorizontal();
 			{
 				string sNearestbase = "";
-				LaunchSiteManager.getNearestBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Range, out lBase);
+				LaunchSiteManager.getNearestBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Base2, out Range, out lBase, out lBase2);
 
 				if (FlightGlobals.ActiveVessel.altitude > 75000)
 				{

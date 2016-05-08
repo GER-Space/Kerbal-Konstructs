@@ -88,7 +88,7 @@ namespace KerbalKonstructs.UI
 											new GUIContent("SPH"),
 											new GUIContent("ANY")
 										};
-			ComboBox siteTypeMenu;
+			// ComboBox siteTypeMenu;
 			#endregion
 
 			#region Holders
@@ -148,7 +148,7 @@ namespace KerbalKonstructs.UI
 			navStyle.padding.top = 1;
 			navStyle.padding.bottom = 3;
 			
-			siteTypeMenu = new ComboBox(siteTypeOptions[0], siteTypeOptions, "button", "box", null, listStyle);
+			// siteTypeMenu = new ComboBox(siteTypeOptions[0], siteTypeOptions, "button", "box", null, listStyle);
 		}
 
 		#region draw Methods

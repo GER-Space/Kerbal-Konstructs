@@ -49,9 +49,6 @@ namespace KerbalKonstructs.UI
 
 		string sFacilityName = "Unknown";
 		string sFacilityType = "Unknown";
-		string sInStorage = "None";
-		string sInStorage2 = "None";
-		string sInStorage3 = "None";
 		public static string sTargetType = "None";
 
 		// string sOreTransferAmount = "0";
@@ -343,7 +340,9 @@ namespace KerbalKonstructs.UI
 
 				if (sFacilityType == "Hangar" || sFacilityType == "RocketAssembly" || sFacilityType == "PlaneAssembly" || sFacilityType == "CraftAssembly")
 				{
-					sInStorage = (string)selectedFacility.getSetting("InStorage");
+					HangarGUI.HangarInterface(selectedFacility);
+				}
+					/* sInStorage = (string)selectedFacility.getSetting("InStorage");
 					sInStorage2 = (string)selectedFacility.getSetting("TargetID");
 					sInStorage3 = (string)selectedFacility.getSetting("TargetType");
 
@@ -516,7 +515,7 @@ namespace KerbalKonstructs.UI
 					GUILayout.EndScrollView();
 
 					GUILayout.FlexibleSpace();
-				}
+				} */
 
 /*				if (sFacilityType == "RocketAssembly" || sFacilityType == "PlaneAssembly" || sFacilityType == "CraftAssembly")
 				{
@@ -855,7 +854,7 @@ namespace KerbalKonstructs.UI
 			sTargetType = sType;
 		}
 
-		public static Boolean HangarwayIsClear(StaticObject soHangar)
+		/* public static Boolean HangarwayIsClear(StaticObject soHangar)
 		{
 			Boolean bIsClear = true;
 
@@ -985,6 +984,6 @@ namespace KerbalKonstructs.UI
 			// And yes, this time KSP does load an unloaded vessel with no need for protovessel b******t. I don't care why.
 			vNewVessel.Unload();
 			vNewVessel.Load();
-		}
+		} */
 	}
 }

@@ -502,13 +502,16 @@ namespace KerbalKonstructs.LaunchSites
 		}
 
 		// Returns the nearest Launchsite to a position and range in m to the Launchsite, regardless of whether it is open or closed
-		public static void getNearestBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lSite)
+		public static void getNearestBase(Vector3 position, out string sBase, out string sBase2, out float flRange, out LaunchSite lSite, out LaunchSite lSite2)
 		{
 			SpaceCenter KSC = SpaceCenter.Instance;
 			var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
+			var lastSmallestDist = Vector3.Distance(KSC.gameObject.transform.position, position); 
 			string sNearestBase = "";
 			LaunchSite lTargetSite = null;
+			LaunchSite lLastSite = null;
 			LaunchSite lKSC = null;
+			string sLastNearest = "";
 
 			List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
 
@@ -519,6 +522,8 @@ namespace KerbalKonstructs.LaunchSites
 				var radialposition = site.GameObject.transform.position;
 				var dist = Vector3.Distance(position, radialposition);
 
+				if (radialposition == position) continue;
+
 				if (site.name == "Runway" || site.name == "LaunchPad")
 				{
 					lKSC = site;
@@ -527,11 +532,18 @@ namespace KerbalKonstructs.LaunchSites
 				{
 					if ((float)dist < (float)smallestDist)
 					{
-						{
-							sNearestBase = site.name;
-							smallestDist = dist;
-							lTargetSite = site;
-						}
+						sLastNearest = sNearestBase;
+						lLastSite = lTargetSite;
+						lastSmallestDist = smallestDist;
+						sNearestBase = site.name;
+						smallestDist = dist;
+						lTargetSite = site;
+					}
+					else if (dist < lastSmallestDist)
+					{
+						sLastNearest = site.name;
+						lastSmallestDist = dist;
+						lLastSite = site;
 					}
 				}
 			}
@@ -541,12 +553,19 @@ namespace KerbalKonstructs.LaunchSites
 				sNearestBase = "KSC";
 				lTargetSite = lKSC;
 			}
+			if (sLastNearest == "")
+			{
+				sLastNearest = "KSC";
+				lLastSite = lKSC;
+			}
 
 			RangeNearestBase = (float)smallestDist;
 
 			sBase = sNearestBase;
+			sBase2 = sLastNearest;
 			flRange = RangeNearestBase;
 			lSite = lTargetSite;
+			lSite2 = lLastSite;
 		}
 
 		// Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
