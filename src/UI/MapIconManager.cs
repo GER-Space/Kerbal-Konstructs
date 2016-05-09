@@ -68,6 +68,8 @@ namespace KerbalKonstructs.UI
 		public Vector2 sitesScrollPosition;
 		public Vector2 descriptionScrollPosition;
 
+		public int iRadarCounter;
+
 		Vector3 ObjectPos = new Vector3(0, 0, 0);
 
 		bool loadedPersistence = false;
@@ -350,8 +352,6 @@ namespace KerbalKonstructs.UI
 
 			if (mMat == null)
 			{
-				// Unity has a built-in shader that is useful for drawing
-				// simple colored things.
 				var shader = Shader.Find("Hidden/Internal-Colored");
 				mMat = new Material(shader);
 				mMat.hideFlags = HideFlags.HideAndDontSave;
@@ -370,15 +370,98 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public void drawTrackingStations()
+		public void drawGroundComms(StaticObject obj, LaunchSite lSite = null)
 		{
-			displayingTooltip2 = false;
-			MapObject target = PlanetariumCamera.fetch.target;
 			string Base = "";
 			string Base2 = "";
 			float Range = 0f;
 			LaunchSite lBase = null;
 			LaunchSite lBase2 = null;
+			Vector3 pos = Vector3.zero;
+
+			if (lSite != null)
+			{
+				GameObject golSite = lSite.GameObject;
+				pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(golSite.transform.position));
+				LaunchSiteManager.getNearestBase(golSite.transform.position, out Base, out Base2, out Range, out lBase, out lBase2);
+			}
+
+			if (obj != null)
+			{
+				pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
+				LaunchSiteManager.getNearestBase(obj.gameObject.transform.position, out Base, out Base2, out Range, out lBase, out lBase2);
+			}
+
+			Vector3 vNeighbourPos = Vector3.zero;
+			Vector3 vNeighbourPos2 = Vector3.zero;
+			Vector3 vBasePos = Vector3.zero;
+			Vector3 vBasePos2 = Vector3.zero;
+
+			GameObject goNeighbour = null;
+			GameObject goNeighbour2 = null;
+
+			if (Base != "")
+			{
+				if (Base == "KSC")
+				{
+					goNeighbour = SpaceCenterManager.KSC.gameObject;
+				}
+				else
+					goNeighbour = LaunchSiteManager.getSiteGameObject(Base);
+			}
+
+			if (Base2 != "")
+			{
+
+				if (Base2 == "KSC")
+				{
+					goNeighbour2 = SpaceCenterManager.KSC.gameObject;
+				}
+				else
+					goNeighbour2 = LaunchSiteManager.getSiteGameObject(Base2);
+			}
+
+			if (goNeighbour != null)
+			{
+				vNeighbourPos = goNeighbour.transform.position;
+				vBasePos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vNeighbourPos));
+			}
+
+			if (goNeighbour2 != null)
+			{
+				vNeighbourPos2 = goNeighbour2.transform.position;
+				vBasePos2 = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vNeighbourPos2));
+			}
+
+			if (goNeighbour != null && vNeighbourPos != Vector3.zero && vBasePos != Vector3.zero)
+			{
+				CreateLineMaterial(1);
+
+				GL.Begin(GL.LINES);
+				lineMaterial1.SetPass(0);
+				GL.Color(new Color(1f, 1f, 1f, 0.7f));
+				GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
+				GL.Vertex3(vBasePos.x - Screen.width / 2, vBasePos.y - Screen.height / 2, vBasePos.z);
+				GL.End();
+			}
+
+			if (goNeighbour2 != null && vNeighbourPos2 != Vector3.zero && vBasePos2 != Vector3.zero)
+			{
+				CreateLineMaterial(2);
+
+				GL.Begin(GL.LINES);
+				lineMaterial2.SetPass(0);
+				GL.Color(new Color(1f, 1f, 1f, 0.7f));
+				GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
+				GL.Vertex3(vBasePos2.x - Screen.width / 2, vBasePos2.y - Screen.height / 2, vBasePos2.z);
+				GL.End();
+			}
+		}
+
+		public void drawTrackingStations()
+		{
+			displayingTooltip2 = false;
+			MapObject target = PlanetariumCamera.fetch.target;
 
 			// Do tracking stations first
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
@@ -413,7 +496,11 @@ namespace KerbalKonstructs.UI
 
 				Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
 				Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
-				Graphics.DrawTexture(screenRect6, TrackingStationIcon);
+				// Distance between camera and spawnpoint sort of
+				float fPosZ = pos.z;
+				float fRadarRadius = 12800 / fPosZ;
+				
+				if (fRadarRadius > 15) Graphics.DrawTexture(screenRect6, TrackingStationIcon);
 
 				string sTarget = (string)obj.getSetting("TargetID");
 				float fStRange = (float)obj.getSetting("TrackingShort");
@@ -421,7 +508,8 @@ namespace KerbalKonstructs.UI
 
 				if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
 				{
-					LaunchSiteManager.getNearestBase(obj.gameObject.transform.position, out Base, out Base2, out Range, out lBase, out lBase2);
+					drawGroundComms(obj);
+					/* LaunchSiteManager.getNearestBase(obj.gameObject.transform.position, out Base, out Base2, out Range, out lBase, out lBase2);
 					Vector3 vNeighbourPos = Vector3.zero;
 					Vector3 vNeighbourPos2 = Vector3.zero;
 					Vector3 vBasePos = Vector3.zero;
@@ -485,7 +573,7 @@ namespace KerbalKonstructs.UI
 						GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
 						GL.Vertex3(vBasePos2.x - Screen.width / 2, vBasePos2.y - Screen.height / 2, vBasePos2.z);
 						GL.End();
-					}
+					} */
 				}
 
 				if ((string)obj.getSetting("TargetType") == "Craft" && sTarget != "None")
@@ -593,6 +681,11 @@ namespace KerbalKonstructs.UI
 			if (target.type != MapObject.ObjectType.CelestialBody) return;
 
 			drawTrackingStations();
+
+			int iPulseRate = 180;
+
+			iRadarCounter = iRadarCounter + 1;
+			if (iRadarCounter > iPulseRate) iRadarCounter = 0;
 			
 			// Then do launchsites
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -660,39 +753,55 @@ namespace KerbalKonstructs.UI
 
 				if (fRadarRadius > 15)
 				{
-					if (category == "Runway" && KerbalKonstructs.instance.mapShowRadar)
+					if (category == "Runway" && KerbalKonstructs.instance.mapShowRadar && openclosed == "Open")
 					{
-						Graphics.DrawTexture(screenRect2, tRadarCover);
-						Graphics.DrawTexture(screenRect3, tRadarCover);
-						Graphics.DrawTexture(screenRect4, tRadarCover);
-						Graphics.DrawTexture(screenRect5, tRadarCover);
+						if (iRadarCounter > iPulseRate / 2)
+							Graphics.DrawTexture(screenRect2, tRadarCover);
+						if (iRadarCounter > iPulseRate / 3)
+							Graphics.DrawTexture(screenRect3, tRadarCover);
+						if (iRadarCounter > iPulseRate / 4)
+							Graphics.DrawTexture(screenRect4, tRadarCover);
+						if (iRadarCounter > iPulseRate / 5)
+							Graphics.DrawTexture(screenRect5, tRadarCover);
 					}
 
-					if (category == "Helipad" && KerbalKonstructs.instance.mapShowRadar)
+					if (category == "Helipad" && KerbalKonstructs.instance.mapShowRadar && openclosed == "Open")
 					{
-						Graphics.DrawTexture(screenRect3, tRadarCover);
-						Graphics.DrawTexture(screenRect4, tRadarCover);
-						Graphics.DrawTexture(screenRect5, tRadarCover);
+						if (iRadarCounter > iPulseRate / 2)
+							Graphics.DrawTexture(screenRect3, tRadarCover);
+						if (iRadarCounter > iPulseRate / 3)
+							Graphics.DrawTexture(screenRect4, tRadarCover);
+						if (iRadarCounter > iPulseRate / 4)
+							Graphics.DrawTexture(screenRect5, tRadarCover);
 					}
+				}
+
+				if (openclosed == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
+				{
+					drawGroundComms(null, site);
 				}
 										
 				if (site.icon != null)
 				{
-					Graphics.DrawTexture(screenRect, site.icon);
+					if (fRadarRadius > 15)
+						Graphics.DrawTexture(screenRect, site.icon);
 				}
 				else
 				{
-					switch (site.type)
+					if (fRadarRadius > 15)
 					{
-						case SiteType.VAB:
-							Graphics.DrawTexture(screenRect, VABIcon);
-							break;
-						case SiteType.SPH:
-							Graphics.DrawTexture(screenRect, SPHIcon);
-							break;
-						default:
-							Graphics.DrawTexture(screenRect, ANYIcon);
-							break;
+						switch (site.type)
+						{
+							case SiteType.VAB:
+								Graphics.DrawTexture(screenRect, VABIcon);
+								break;
+							case SiteType.SPH:
+								Graphics.DrawTexture(screenRect, SPHIcon);
+								break;
+							default:
+								Graphics.DrawTexture(screenRect, ANYIcon);
+								break;
+						}
 					}
 				}
 
