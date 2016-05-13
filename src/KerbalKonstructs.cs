@@ -148,6 +148,8 @@ namespace KerbalKonstructs
 		[KSPField]
 		public Boolean mapShowRadar = false;
 		[KSPField]
+		public Boolean mapShowDownlinks = false;
+		[KSPField]
 		public Boolean mapShowUplinks = false;
 		[KSPField]
 		public Boolean mapShowGroundComms = false;
@@ -244,6 +246,10 @@ namespace KerbalKonstructs
 			ConfigGenericString groupConfig = new ConfigGenericString();
 			groupConfig.setDefaultValue("Ungrouped");
 			KKAPI.addInstanceSetting("Group", groupConfig);
+			ConfigGenericString groupCenter = new ConfigGenericString();
+			groupCenter.setDefaultValue("false");
+			KKAPI.addInstanceSetting("GroupCenter", groupCenter);
+			KKAPI.addInstanceSetting("RefCenter", new ConfigVector3());
 
 			// Launchsite
 			KKAPI.addInstanceSetting("LaunchSiteName", new ConfigGenericString());
@@ -1739,6 +1745,86 @@ namespace KerbalKonstructs
 					{
 						Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.path);
 						staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.configPath, "Exported custom instances by Kerbal Konstructs");
+					}
+				}
+			}
+		}
+
+		public void exportMasters()
+		{
+			string sBase = "";
+			string activeBodyName = "";
+
+			Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
+			
+			foreach (StaticObject obj in getStaticDB().getAllStatics())
+			{
+				String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
+				String groupName = (string) obj.getSetting("Group");
+
+				if (!groupList.ContainsKey(bodyName))
+				{
+					groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+					Debug.Log("Added " + bodyName);
+				}
+
+				if (!groupList[bodyName].ContainsKey(groupName))
+				{
+					StaticGroup group = new StaticGroup(groupName, bodyName);
+					groupList[bodyName].Add(groupName, group);
+					Debug.Log("Added " + groupName);
+				}
+			}
+
+			foreach (CelestialBody cBody in FlightGlobals.Bodies)
+			{
+				activeBodyName = cBody.name;
+				Debug.Log("activeBodyName is " + cBody.name);
+
+				if (!groupList.ContainsKey(activeBodyName)) continue;
+
+				foreach (StaticGroup group in groupList[activeBodyName].Values)
+				{
+					sBase = group.groupName;
+					Debug.Log("sBase is " + sBase);
+
+					foreach (StaticModel model in staticDB.getModels())
+					{
+						ConfigNode staticNode = new ConfigNode("STATIC");
+						ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
+
+						//Debug.Log("Model is " + model.getSetting("name"));
+
+						modelConfig.RemoveNodes("Instances");
+						bool bNoInstances = true;
+
+						foreach (StaticObject obj in staticDB.getObjectsFromModel(model))
+						{
+							string sObjGroup = (string)obj.getSetting("Group");
+							if (sObjGroup != sBase) continue;
+
+							ConfigNode inst = new ConfigNode("Instances");
+
+							foreach (KeyValuePair<string, object> setting in obj.settings)
+							{
+								inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
+							}
+							modelConfig.nodes.Add(inst);
+							bNoInstances = false;
+						}
+
+						if (bNoInstances) continue;
+
+						string sModelName = modelConfig.GetValue("name");
+						modelConfig.AddValue("pointername", sModelName);
+
+						modelConfig.RemoveValue("name");
+						modelConfig.AddValue("name", "Master" + "_" + sBase + "_" + sModelName);
+
+						staticNode.AddNode(modelConfig);
+
+						Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/");
+						staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/" + sModelName + ".cfg", "Exported master instances by Kerbal Konstructs");
 					}
 				}
 			}

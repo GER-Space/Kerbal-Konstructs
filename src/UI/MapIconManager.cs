@@ -43,8 +43,10 @@ namespace KerbalKonstructs.UI
 		public Texture tGroundCommsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOff", false);
 		public Texture tHideOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOn", false);
 		public Texture tHideOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOff", false);
+		public Texture tDownlinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOn", false);
+		public Texture tDownlinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOff", false);
 
-		Rect mapManagerRect = new Rect(250, 40, 480, 75);
+		Rect mapManagerRect = new Rect(250, 40, 515, 75);
 
 		private Boolean displayingTooltip = false;
 		private Boolean displayingTooltip2 = false;
@@ -254,12 +256,24 @@ namespace KerbalKonstructs.UI
 			GUI.enabled = (MiscUtils.isCareerGame());
 			if (!MiscUtils.isCareerGame())
 			{
+				GUILayout.Button(tDownlinksOff, GUILayout.Width(32), GUILayout.Height(32));
 				GUILayout.Button(tUplinksOff, GUILayout.Width(32), GUILayout.Height(32));
 				GUILayout.Button(tRadarOff, GUILayout.Width(32), GUILayout.Height(32));
 				GUILayout.Button(tGroundCommsOff, GUILayout.Width(32), GUILayout.Height(32));
 			}
 			else
 			{
+				if (KerbalKonstructs.instance.mapShowDownlinks)
+				{
+					if (GUILayout.Button(new GUIContent(tDownlinksOn, "Downlinks"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowDownlinks = false;
+				}
+				else
+				{
+					if (GUILayout.Button(new GUIContent(tDownlinksOff, "Downlinks"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+						KerbalKonstructs.instance.mapShowDownlinks = true;
+				}
+				
 				if (KerbalKonstructs.instance.mapShowUplinks)
 				{
 					if (GUILayout.Button(new GUIContent(tUplinksOn, "Uplinks"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
@@ -319,16 +333,6 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.EndHorizontal();
 
-			/* float fFOV = MapView.MapCamera.GetComponent<Camera>().fieldOfView;
-			float fFCP = MapView.MapCamera.GetComponent<Camera>().farClipPlane;
-			float fNCP = MapView.MapCamera.GetComponent<Camera>().nearClipPlane;
-			Vector3 CamPos = MapView.MapCamera.GetComponent<Camera>().ScreenToWorldPoint(ScaledSpace.ScaledToLocalSpace(PlanetariumCamera.fetch.target.gameObject.transform.position));
-			float fDistCam = Vector3.Distance(CamPos, PlanetariumCamera.fetch.target.gameObject.transform.position);
-
-			GUILayout.Label(" Pos: x" + CamPos.x.ToString("#0.000") + "y" + CamPos.y.ToString("#0.000") + "z" + CamPos.z.ToString("#0.000") + " Dist " + fDistCam.ToString("0.0"));
-			*/
-
-
 			if (GUI.tooltip != "")
 			{
 				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
@@ -336,6 +340,16 @@ namespace KerbalKonstructs.UI
 			}
 			
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+		}
+
+		public void drawIcons()
+		{
+			MapObject target = PlanetariumCamera.fetch.target;
+
+			if (target.type != MapObject.ObjectType.CelestialBody) return;
+
+			drawTrackingStations(target);
+			drawLaunchsites(target);
 		}
 
 		static Material lineMaterial1;
@@ -458,10 +472,9 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public void drawTrackingStations()
+		public void drawTrackingStations(MapObject target)
 		{
 			displayingTooltip2 = false;
-			MapObject target = PlanetariumCamera.fetch.target;
 
 			// Do tracking stations first
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
@@ -507,74 +520,7 @@ namespace KerbalKonstructs.UI
 				float fStAngle = (float)obj.getSetting("TrackingAngle");
 
 				if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
-				{
 					drawGroundComms(obj);
-					/* LaunchSiteManager.getNearestBase(obj.gameObject.transform.position, out Base, out Base2, out Range, out lBase, out lBase2);
-					Vector3 vNeighbourPos = Vector3.zero;
-					Vector3 vNeighbourPos2 = Vector3.zero;
-					Vector3 vBasePos = Vector3.zero;
-					Vector3 vBasePos2 = Vector3.zero;
-
-					GameObject goNeighbour = null;
-					GameObject goNeighbour2 = null;
-
-					if (Base != "")
-					{
-						if (Base == "KSC")
-						{
-							goNeighbour = SpaceCenterManager.KSC.gameObject;
-						}
-						else
-							goNeighbour = LaunchSiteManager.getSiteGameObject(Base);
-					}
-
-					if (Base2 != "")
-					{ 
-
-						if (Base2 == "KSC")
-						{
-							goNeighbour2 = SpaceCenterManager.KSC.gameObject;
-						}
-						else
-							goNeighbour2 = LaunchSiteManager.getSiteGameObject(Base2);
-					}
-
-					if (goNeighbour != null)
-					{
-						vNeighbourPos = goNeighbour.transform.position;
-						vBasePos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vNeighbourPos));
-					}
-
-					if (goNeighbour2 != null)
-					{
-						vNeighbourPos2 = goNeighbour2.transform.position;
-						vBasePos2 = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vNeighbourPos2));
-					}
-
-					if (goNeighbour != null && vNeighbourPos != Vector3.zero && vBasePos != Vector3.zero)
-					{
-						CreateLineMaterial(1);
-
-						GL.Begin(GL.LINES);
-						lineMaterial1.SetPass(0);
-						GL.Color(new Color(1f, 1f, 1f, 0.7f));
-						GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
-						GL.Vertex3(vBasePos.x - Screen.width / 2, vBasePos.y - Screen.height / 2, vBasePos.z);
-						GL.End();
-					}
-
-					if (goNeighbour2 != null && vNeighbourPos2 != Vector3.zero && vBasePos2 != Vector3.zero)
-					{
-						CreateLineMaterial(2);
-
-						GL.Begin(GL.LINES);
-						lineMaterial2.SetPass(0);
-						GL.Color(new Color(1f, 1f, 1f, 0.7f));
-						GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
-						GL.Vertex3(vBasePos2.x - Screen.width / 2, vBasePos2.y - Screen.height / 2, vBasePos2.z);
-						GL.End();
-					} */
-				}
 
 				if ((string)obj.getSetting("TargetType") == "Craft" && sTarget != "None")
 				{
@@ -672,33 +618,68 @@ namespace KerbalKonstructs.UI
 				}
 			}
 		}
-		
-		public void drawIcons()
+
+		public void drawRadar(Vector3 pos, string category, string openclosed)
+		{
+			if (openclosed != "Open") return;
+
+			float fPosZ = pos.z;
+			float fRadarRadius = 12800 / fPosZ;
+			float fRadarOffset = fRadarRadius / 2;
+
+			int iPulseRate = 180;
+
+			Rect screenRect2 = new Rect((pos.x - fRadarOffset), (Screen.height - pos.y) - fRadarOffset, fRadarRadius, fRadarRadius);
+			Rect screenRect3 = new Rect((pos.x - (fRadarOffset / 2)), (Screen.height - pos.y) - (fRadarOffset / 2), fRadarRadius / 2, fRadarRadius / 2);
+			Rect screenRect4 = new Rect((pos.x - (fRadarOffset / 3)), (Screen.height - pos.y) - (fRadarOffset / 3), fRadarRadius / 3, fRadarRadius / 3);
+			Rect screenRect5 = new Rect((pos.x - (fRadarOffset / 4)), (Screen.height - pos.y) - (fRadarOffset / 4), fRadarRadius / 4, fRadarRadius / 4);
+
+			if (fRadarRadius > 15)
+			{
+				if (category == "Runway")
+				{
+					if (iRadarCounter > iPulseRate / 2)
+						Graphics.DrawTexture(screenRect2, tRadarCover);
+					if (iRadarCounter > iPulseRate / 3)
+						Graphics.DrawTexture(screenRect3, tRadarCover);
+					if (iRadarCounter > iPulseRate / 4)
+						Graphics.DrawTexture(screenRect4, tRadarCover);
+					if (iRadarCounter > iPulseRate / 5)
+						Graphics.DrawTexture(screenRect5, tRadarCover);
+				}
+
+				if (category == "Helipad")
+				{
+					if (iRadarCounter > iPulseRate / 2)
+						Graphics.DrawTexture(screenRect3, tRadarCover);
+					if (iRadarCounter > iPulseRate / 3)
+						Graphics.DrawTexture(screenRect4, tRadarCover);
+					if (iRadarCounter > iPulseRate / 4)
+						Graphics.DrawTexture(screenRect5, tRadarCover);
+				}
+			}
+		}
+
+		public void drawLaunchsites(MapObject target)
 		{
 			displayingTooltip = false;
-			MapObject target = PlanetariumCamera.fetch.target;
-
-			if (target.type != MapObject.ObjectType.CelestialBody) return;
-
-			drawTrackingStations();
-
 			int iPulseRate = 180;
 
 			iRadarCounter = iRadarCounter + 1;
 			if (iRadarCounter > iPulseRate) iRadarCounter = 0;
-			
+
 			// Then do launchsites
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 			foreach (LaunchSite site in sites)
 			{
 				PSystemSetup.SpaceCenterFacility facility = PSystemSetup.Instance.GetSpaceCenterFacility(site.name);
 
-				if (facility == null) 
+				if (facility == null)
 					continue;
 
 				PSystemSetup.SpaceCenterFacility.SpawnPoint sp = facility.GetSpawnPoint(site.name);
 
-				if (sp == null) 
+				if (sp == null)
 					continue;
 
 				if (facility.facilityPQS != target.celestialBody.pqsController)
@@ -717,11 +698,6 @@ namespace KerbalKonstructs.UI
 
 				float fRadarRadius = 12800 / fPosZ;
 				float fRadarOffset = fRadarRadius / 2;
-									
-				Rect screenRect2 = new Rect((pos.x -fRadarOffset), (Screen.height - pos.y) -fRadarOffset, fRadarRadius, fRadarRadius);
-				Rect screenRect3 = new Rect((pos.x - (fRadarOffset / 2)), (Screen.height - pos.y) - (fRadarOffset / 2), fRadarRadius / 2, fRadarRadius / 2);
-				Rect screenRect4 = new Rect((pos.x - (fRadarOffset / 3)), (Screen.height - pos.y) - (fRadarOffset / 3), fRadarRadius / 3, fRadarRadius / 3);
-				Rect screenRect5 = new Rect((pos.x - (fRadarOffset / 4)), (Screen.height - pos.y) - (fRadarOffset / 4), fRadarRadius / 4, fRadarRadius / 4);
 
 				string openclosed = site.openclosestate;
 				string category = site.category;
@@ -751,36 +727,14 @@ namespace KerbalKonstructs.UI
 
 				if (!display) continue;
 
-				if (fRadarRadius > 15)
-				{
-					if (category == "Runway" && KerbalKonstructs.instance.mapShowRadar && openclosed == "Open")
-					{
-						if (iRadarCounter > iPulseRate / 2)
-							Graphics.DrawTexture(screenRect2, tRadarCover);
-						if (iRadarCounter > iPulseRate / 3)
-							Graphics.DrawTexture(screenRect3, tRadarCover);
-						if (iRadarCounter > iPulseRate / 4)
-							Graphics.DrawTexture(screenRect4, tRadarCover);
-						if (iRadarCounter > iPulseRate / 5)
-							Graphics.DrawTexture(screenRect5, tRadarCover);
-					}
-
-					if (category == "Helipad" && KerbalKonstructs.instance.mapShowRadar && openclosed == "Open")
-					{
-						if (iRadarCounter > iPulseRate / 2)
-							Graphics.DrawTexture(screenRect3, tRadarCover);
-						if (iRadarCounter > iPulseRate / 3)
-							Graphics.DrawTexture(screenRect4, tRadarCover);
-						if (iRadarCounter > iPulseRate / 4)
-							Graphics.DrawTexture(screenRect5, tRadarCover);
-					}
-				}
+				if (KerbalKonstructs.instance.mapShowRadar)
+					drawRadar(pos, category, openclosed);
 
 				if (openclosed == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
 				{
 					drawGroundComms(null, site);
 				}
-										
+
 				if (site.icon != null)
 				{
 					if (fRadarRadius > 15)

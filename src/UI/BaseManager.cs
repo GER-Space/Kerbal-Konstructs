@@ -10,7 +10,7 @@ namespace KerbalKonstructs.UI
 {
 	public class BaseManager
 	{
-		public static Rect BaseManagerRect = new Rect(250, 60, 185, 700);
+		public static Rect BaseManagerRect = new Rect(250, 60, 185, 720);
 
 		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
 		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);
@@ -26,6 +26,14 @@ namespace KerbalKonstructs.UI
 		public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
 		public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 		public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+
+		public static Texture tKerbica = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkerbica", false);
+		public Texture tKerbaland = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkerbaland", false);
+		public Texture tEmpire = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagempire", false);
+		public Texture tKeuropia = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkeuropia", false);
+		public Texture tMiddle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagmiddle", false);
+		public Texture tUnitedKerbin = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagunited", false);
+		public Texture tNation = tKerbica;
 		
 		public static LaunchSite selectedSite = null;
 
@@ -57,6 +65,8 @@ namespace KerbalKonstructs.UI
 		public Boolean doneFold = false;
 		public Boolean isLocked = false;
 		public Boolean isLaunch = false;
+
+		public string sNation;
 
 		public void drawBaseManager()
 		{
@@ -298,6 +308,30 @@ namespace KerbalKonstructs.UI
 
 			if (displayStats)
 			{
+				sNation = selectedSite.nation;
+				if (sNation == "Kerbaland") tNation = tKerbaland;
+				if (sNation == "Kerbica") tNation = tKerbica;
+				if (sNation == "Empire") tNation = tEmpire;
+				if (sNation == "Middle") tNation = tMiddle;
+				if (sNation == "Keuropia") tNation = tKeuropia;
+
+				if (sNation != "")
+				{
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("Nation: \n" + sNation, LabelInfo);
+					GUILayout.FlexibleSpace();
+					GUILayout.Label(tNation, GUILayout.Height(40), GUILayout.Width(64));
+					GUILayout.EndHorizontal();
+				}
+				else
+				{
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("Nation: \nUnited Kerbin", LabelInfo);
+					GUILayout.FlexibleSpace();
+					GUILayout.Label(tUnitedKerbin, GUILayout.Height(40), GUILayout.Width(64));
+					GUILayout.EndHorizontal();
+				}
+
 				GUILayout.Label("Altitude: " + selectedSite.refalt.ToString("#0.0") + " m", LabelInfo);
 				GUILayout.Label("Longitude: " + selectedSite.reflon.ToString("#0.000"), LabelInfo);
 				GUILayout.Label("Latitude: " + selectedSite.reflat.ToString("#0.000"), LabelInfo);
@@ -374,7 +408,7 @@ namespace KerbalKonstructs.UI
 				{
 					if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
 					{
-						if (GUILayout.Button("Open Base for \n" + iFundsOpen + " funds", GUILayout.Height(40)))
+						if (GUILayout.Button("Open Base for \n" + iFundsOpen + " funds", GUILayout.Height(38)))
 						{
 							double currentfunds = Funding.Instance.Funds;
 
@@ -395,7 +429,7 @@ namespace KerbalKonstructs.UI
 				GUI.enabled = isOpen && !isLocked;
 				if (!cannotBeClosed)
 				{
-					if (GUILayout.Button("Close Base for \n" + iFundsClose + " funds", GUILayout.Height(40)))
+					if (GUILayout.Button("Close Base for \n" + iFundsClose + " funds", GUILayout.Height(38)))
 					{
 						Funding.Instance.AddFunds(iFundsClose, TransactionReasons.Cheating);
 						selectedSite.openclosestate = "Closed";
@@ -422,7 +456,7 @@ namespace KerbalKonstructs.UI
 						GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
 						
 						GUI.enabled = (isLaunch || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
-						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(40)))
+						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);
 							string smessage = sButtonName + " has been set as the launchsite";

@@ -130,6 +130,7 @@ namespace KerbalKonstructs.LaunchSites
 								(float)obj.getSetting("RecoveryRange"),
 								obj.gameObject, 
 								newFacility,
+								"No log",
 								(string)obj.getSetting("LaunchSiteNation")
 								));
 						}

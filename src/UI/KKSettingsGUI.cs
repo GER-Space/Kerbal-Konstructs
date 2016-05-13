@@ -734,6 +734,14 @@ namespace KerbalKonstructs.UI
 
 			if (KerbalKonstructs.instance.DevMode)
 			{
+				GUILayout.Label("All instances will be exported to appropriate group folders. This process may take some time and will lag the game whilst working!", LabelInfo);
+
+				if (GUILayout.Button("Export Masters", GUILayout.Height(23)))
+				{
+					KerbalKonstructs.instance.saveObjects();
+					KerbalKonstructs.instance.exportMasters();
+				}
+
 				GUILayout.Label("WARNING: If you are not a developer and don't know what you're doing, don't click the button below. It deletes all current instances and then re-writes all core config files without instances.", LabelInfo);
 
 				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
