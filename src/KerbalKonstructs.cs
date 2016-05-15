@@ -334,6 +334,10 @@ namespace KerbalKonstructs
 			KKAPI.addModelSetting("MoFMax", new ConfigFloat());
 			KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
 
+			KKAPI.addInstanceSetting("LqFAlt", new ConfigGenericString());
+			KKAPI.addInstanceSetting("OxFAlt", new ConfigGenericString());
+			KKAPI.addInstanceSetting("MoFAlt", new ConfigGenericString());
+
 			KKAPI.addModelSetting("ECMax", new ConfigFloat());
 			KKAPI.addModelSetting("ECRechargeRate", new ConfigFloat());
 			KKAPI.addInstanceSetting("ECCurrent", new ConfigFloat());

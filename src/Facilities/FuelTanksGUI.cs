@@ -43,12 +43,29 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle LabelInfo;
 		public static GUIStyle BoxInfo;
 
+		public static string getResourceAlt(StaticObject obj, string sOriginal)
+		{
+			string sAlt = sOriginal;
+ 
+			if (sOriginal == "LiquidFuel") sAlt = (string)obj.getSetting("LqFAlt");
+			if (sOriginal == "Oxidizer") sAlt = (string)obj.getSetting("OxFAlt");
+			if (sOriginal == "Monopropellant") sAlt = (string)obj.getSetting("MoFAlt");
+
+			if (sAlt != "") return sAlt;
+			else
+				return sOriginal;
+		}
+
 		public static void FuelTanksInterface(StaticObject selectedObject)
 		{
 			string smessage = "";
 
 			string sFacilityName = (string)selectedObject.model.getSetting("title");
 			string sFacilityRole = (string)selectedObject.getSetting("FacilityType");
+
+			string sResource1 = "LiquidFuel";
+			string sResource2 = "Oxidizer";
+			string sResource3 = "Monopropellant";
 
 			fLqFMax = (float)selectedObject.model.getSetting("LqFMax");
 			fLqFCurrent = (float)selectedObject.getSetting("LqFCurrent");
@@ -93,12 +110,16 @@ namespace KerbalKonstructs.UI
 				LockFuelTank();
 			}
 
+			sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
+			sResource2 = getResourceAlt(selectedObject, "Oxidizer");
+			sResource3 = getResourceAlt(selectedObject, "Monopropellant");
+
 			GUILayout.Space(3);
 			GUILayout.Label("Fuel Stores", LabelInfo);
 			scrollPos4 = GUILayout.BeginScrollView(scrollPos4);
 			if (fLqFMax > 0)
 			{
-				GUILayout.Label("LiquidFuel", LabelInfo);
+				GUILayout.Label(sResource1, LabelInfo);
 				
 				GUILayout.BeginHorizontal();
 				GUILayout.Label("Max ", LabelInfo);
@@ -214,7 +235,7 @@ namespace KerbalKonstructs.UI
 
 			if (fOxFMax > 0)
 			{
-				GUILayout.Label("Oxidizer", LabelInfo);
+				GUILayout.Label(sResource2, LabelInfo);
 
 				GUILayout.BeginHorizontal();
 				GUILayout.Label("Max ", LabelInfo);
@@ -330,7 +351,7 @@ namespace KerbalKonstructs.UI
 
 			if (fMoFMax > 0)
 			{
-				GUILayout.Label("Monopropellant", LabelInfo);
+				GUILayout.Label(sResource3, LabelInfo);
 
 				GUILayout.BeginHorizontal();
 				GUILayout.Label("Max ", LabelInfo);
@@ -451,7 +472,7 @@ namespace KerbalKonstructs.UI
 				GUILayout.Label("Transfer Rate", LabelInfo);
 
 				GUI.enabled = (fTransferRate != 0.01f);
-				if (GUILayout.Button(" x1", GUILayout.Height(18)))
+				if (GUILayout.Button("x1", GUILayout.Height(18)))
 				{
 					fTransferRate = 0.01f;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
@@ -459,7 +480,7 @@ namespace KerbalKonstructs.UI
 					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
 				GUI.enabled = (fTransferRate != 0.04f);
-				if (GUILayout.Button(" x4", GUILayout.Height(18)))
+				if (GUILayout.Button("x4", GUILayout.Height(18)))
 				{
 					fTransferRate = 0.04f;
 					PersistenceUtils.saveStaticPersistence(selectedObject);
@@ -474,6 +495,22 @@ namespace KerbalKonstructs.UI
 					smessage = "Fuel transfer rate set to x10";
 					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
+				GUI.enabled = (fTransferRate != 0.25f);
+				if (GUILayout.Button("x25", GUILayout.Height(18)))
+				{
+					fTransferRate = 0.25f;
+					PersistenceUtils.saveStaticPersistence(selectedObject);
+					smessage = "Fuel transfer rate set to x25";
+					MiscUtils.HUDMessage(smessage, 10, 2);
+				}
+				GUI.enabled = (fTransferRate != 1.0f);
+				if (GUILayout.Button("x100", GUILayout.Height(18)))
+				{
+					fTransferRate = 1.0f;
+					PersistenceUtils.saveStaticPersistence(selectedObject);
+					smessage = "Fuel transfer rate set to x100";
+					MiscUtils.HUDMessage(smessage, 10, 2);
+				}
 				GUI.enabled = true;
 				GUILayout.EndHorizontal();
 
@@ -486,7 +523,7 @@ namespace KerbalKonstructs.UI
 					{
 						foreach (PartResource rResource in fTank.Resources)
 						{
-							if (rResource.resourceName == "LiquidFuel" || rResource.resourceName == "Oxidizer" || rResource.resourceName == "MonoPropellant")
+							if (rResource.resourceName == sResource1 || rResource.resourceName == sResource2 || rResource.resourceName == sResource3)
 							{
 								if (SelectedTank == fTank && SelectedResource == rResource)
 									PartSelected = true;
@@ -548,13 +585,17 @@ namespace KerbalKonstructs.UI
 			if (SelectedResource == null) return;
 			if (SelectedTank == null) return;
 
-			if (SelectedResource.resourceName == "MonoPropellant" && !bMoFOut) return;
-			if (SelectedResource.resourceName == "LiquidFuel" && !bLqFOut) return;
-			if (SelectedResource.resourceName == "Oxidizer" && !bOxFOut) return;
+			string sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
+			string sResource2 = getResourceAlt(selectedObject, "Oxidizer");
+			string sResource3 = getResourceAlt(selectedObject, "Monopropellant");
 
-			if (SelectedResource.resourceName == "MonoPropellant" && fMoFCurrent <= 0) return;
-			if (SelectedResource.resourceName == "LiquidFuel" && fLqFCurrent <= 0) return;
-			if (SelectedResource.resourceName == "Oxidizer" && fOxFCurrent <= 0) return;
+			if (SelectedResource.resourceName == sResource3 && !bMoFOut) return;
+			if (SelectedResource.resourceName == sResource1 && !bLqFOut) return;
+			if (SelectedResource.resourceName == sResource2 && !bOxFOut) return;
+
+			if (SelectedResource.resourceName == sResource3 && fMoFCurrent <= 0) return;
+			if (SelectedResource.resourceName == sResource1 && fLqFCurrent <= 0) return;
+			if (SelectedResource.resourceName == sResource2 && fOxFCurrent <= 0) return;
 
 			if (SelectedResource.amount >= SelectedResource.maxAmount) return;
 
@@ -563,19 +604,19 @@ namespace KerbalKonstructs.UI
 			SelectedResource.amount = SelectedResource.amount + fTransferRate;
 			if (SelectedResource.amount > SelectedResource.maxAmount) SelectedResource.amount = SelectedResource.maxAmount;
 
-			if (SelectedResource.resourceName == "MonoPropellant")
+			if (SelectedResource.resourceName == sResource3)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("MoFCurrent")) - fTransferRate;
 				if (dStaticFuel < 0) dStaticFuel = 0;
 				selectedObject.setSetting("MoFCurrent", dStaticFuel);
 			}
-			if (SelectedResource.resourceName == "LiquidFuel")
+			if (SelectedResource.resourceName == sResource1)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("LqFCurrent")) - fTransferRate;
 				if (dStaticFuel < 0) dStaticFuel = 0;
 				selectedObject.setSetting("LqFCurrent", dStaticFuel);
 			}
-			if (SelectedResource.resourceName == "Oxidizer")
+			if (SelectedResource.resourceName == sResource2)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("OxFCurrent")) - fTransferRate;
 				if (dStaticFuel < 0) dStaticFuel = 0;
@@ -588,13 +629,17 @@ namespace KerbalKonstructs.UI
 			if (SelectedResource == null) return;
 			if (SelectedTank == null) return;
 
-			if (SelectedResource.resourceName == "MonoPropellant" && !bMoFIn) return;
-			if (SelectedResource.resourceName == "LiquidFuel" && !bLqFIn) return;
-			if (SelectedResource.resourceName == "Oxidizer" && !bOxFIn) return;
+			string sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
+			string sResource2 = getResourceAlt(selectedObject, "Oxidizer");
+			string sResource3 = getResourceAlt(selectedObject, "Monopropellant");
 
-			if (SelectedResource.resourceName == "MonoPropellant" && fMoFCurrent >= fMoFMax) return;
-			if (SelectedResource.resourceName == "LiquidFuel" && fLqFCurrent >= fLqFMax) return;
-			if (SelectedResource.resourceName == "Oxidizer" && fOxFCurrent >= fOxFMax) return;
+			if (SelectedResource.resourceName == sResource3 && !bMoFIn) return;
+			if (SelectedResource.resourceName == sResource1 && !bLqFIn) return;
+			if (SelectedResource.resourceName == sResource2 && !bOxFIn) return;
+
+			if (SelectedResource.resourceName == sResource3 && fMoFCurrent >= fMoFMax) return;
+			if (SelectedResource.resourceName == sResource1 && fLqFCurrent >= fLqFMax) return;
+			if (SelectedResource.resourceName == sResource2 && fOxFCurrent >= fOxFMax) return;
 
 			if (SelectedResource.amount <= 0) return;
 
@@ -603,19 +648,19 @@ namespace KerbalKonstructs.UI
 			SelectedResource.amount = SelectedResource.amount - fTransferRate;
 			if (SelectedResource.amount < 0) SelectedResource.amount = 0;
 
-			if (SelectedResource.resourceName == "MonoPropellant")
+			if (SelectedResource.resourceName == sResource3)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("MoFCurrent")) + fTransferRate;
 				if (dStaticFuel > fMoFMax) dStaticFuel = fMoFMax;
 				selectedObject.setSetting("MoFCurrent", dStaticFuel);
 			}
-			if (SelectedResource.resourceName == "LiquidFuel")
+			if (SelectedResource.resourceName == sResource1)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("LqFCurrent")) + fTransferRate;
 				if (dStaticFuel > fLqFMax) dStaticFuel = fLqFMax;
 				selectedObject.setSetting("LqFCurrent", dStaticFuel);
 			}
-			if (SelectedResource.resourceName == "Oxidizer")
+			if (SelectedResource.resourceName == sResource2)
 			{
 				dStaticFuel = ((float)selectedObject.getSetting("OxFCurrent")) + fTransferRate;
 				if (dStaticFuel > fOxFMax) dStaticFuel = fOxFMax;
