@@ -146,6 +146,8 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
 				{
+					KerbalKonstructs.instance.updateCache();
+
 					if (KerbalKonstructs.instance.enableATC)
 						KerbalKonstructs.instance.enableATC = false;
 					else

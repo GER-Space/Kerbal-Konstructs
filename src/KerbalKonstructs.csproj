@@ -84,6 +84,7 @@
     <Compile Include="Modules\Compat\AnimateOnClick.cs" />
     <Compile Include="SpaceCenters\CustomSpaceCenter.cs" />
     <Compile Include="SpaceCenters\SpaceCenterManager.cs" />
+    <Compile Include="StaticObjects\StaticUtils.cs" />
     <Compile Include="UI\UIMain.cs" />
     <Compile Include="Wrappers\StageRecoveryWrapper.cs" />
     <Compile Include="Nations\KerbinNation.cs" />

@@ -10,53 +10,83 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-	public class UIMain
+	public static class UIMain
 	{
-		public Texture VABIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-		public Texture SPHIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-		public Texture ANYIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-		public Texture TrackingStationIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/TrackingMapIcon", false);
+		public static Texture VABIcon;
+		public static Texture SPHIcon;
+		public static Texture ANYIcon;
+		public static Texture TrackingStationIcon;
 
-		public Texture2D tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
-		public Texture2D tHoverButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonHover", false);
+		public static Texture2D tNormalButton;
+		public static Texture2D tHoverButton;
 
-		public Texture tOpenBasesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOpenBasesOn", false);
-		public Texture tOpenBasesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOpenBasesOff", false);
-		public Texture tClosedBasesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapClosedBasesOn", false);
-		public Texture tClosedBasesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapClosedBasesOff", false);
-		public Texture tHelipadsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHelipadsOn", false);
-		public Texture tHelipadsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHelipadsOff", false);
-		public Texture tRunwaysOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRunwaysOn", false);
-		public Texture tRunwaysOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRunwaysOff", false);
-		public Texture tTrackingOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapTrackingOn", false);
-		public Texture tTrackingOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapTrackingOff", false);
-		public Texture tLaunchpadsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapLaunchpadsOn", false);
-		public Texture tLaunchpadsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapLaunchpadsOff", false);
-		public Texture tOtherOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOn", false);
-		public Texture tOtherOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOff", false);
-		public Texture tRadarCover = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/radarcover", false);
-		public Texture tRadarOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOn", false);
-		public Texture tRadarOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOff", false);
-		public Texture tUplinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOn", false);
-		public Texture tUplinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOff", false);
-		public Texture tGroundCommsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOn", false);
-		public Texture tGroundCommsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOff", false);
-		public Texture tHideOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOn", false);
-		public Texture tHideOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOff", false);
-		public Texture tDownlinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOn", false);
-		public Texture tDownlinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOff", false);
+		public static Texture tOpenBasesOn;
+		public static Texture tOpenBasesOff;
+		public static Texture tClosedBasesOn;
+		public static Texture tClosedBasesOff;
+		public static Texture tHelipadsOn;
+		public static Texture tHelipadsOff;
+		public static Texture tRunwaysOn;
+		public static Texture tRunwaysOff;
+		public static Texture tTrackingOn;
+		public static Texture tTrackingOff;
+		public static Texture tLaunchpadsOn;
+		public static Texture tLaunchpadsOff;
+		public static Texture tOtherOn;
+		public static Texture tOtherOff;
+		public static Texture tRadarCover;
+		public static Texture tRadarOn;
+		public static Texture tRadarOff;
+		public static Texture tUplinksOn;
+		public static Texture tUplinksOff;
+		public static Texture tGroundCommsOn;
+		public static Texture tGroundCommsOff;
+		public static Texture tHideOn;
+		public static Texture tHideOff;
+		public static Texture tDownlinksOn;
+		public static Texture tDownlinksOff;
 
-		public GUIStyle Yellowtext;
-		public GUIStyle TextAreaNoBorder;
-		public GUIStyle BoxNoBorder;
-		public GUIStyle ButtonKK;
-		public GUIStyle ButtonRed;
-		public GUIStyle KKToolTip;
+		public static Texture tHorizontalSep;
 
-		public GUIStyle navStyle = new GUIStyle();
+		public static Texture tIconClosed;
+		public static Texture tIconOpen;
+		public static Texture tLeftOn;
+		public static Texture tLeftOff;
+		public static Texture tRightOn;
+		public static Texture tRightOff;
 
-		public void setStyles()
+		public static GUIStyle Yellowtext;
+		public static GUIStyle TextAreaNoBorder;
+		public static GUIStyle BoxNoBorder;
+		public static GUIStyle BoxNoBorderW;
+		public static GUIStyle ButtonKK;
+		public static GUIStyle ButtonRed;
+		public static GUIStyle DeadButtonRed;
+		public static GUIStyle KKToolTip;
+
+		public static GUIStyle navStyle;
+
+		public static void setStyles()
 		{
+			navStyle = new GUIStyle();
+			navStyle.padding.left = 0;
+			navStyle.padding.right = 0;
+			navStyle.padding.top = 1;
+			navStyle.padding.bottom = 3;
+			navStyle.normal.background = null;
+
+			DeadButtonRed = new GUIStyle(GUI.skin.button);
+			DeadButtonRed.normal.background = null;
+			DeadButtonRed.hover.background = null;
+			DeadButtonRed.active.background = null;
+			DeadButtonRed.focused.background = null;
+			DeadButtonRed.normal.textColor = Color.red;
+			DeadButtonRed.hover.textColor = Color.yellow;
+			DeadButtonRed.active.textColor = Color.red;
+			DeadButtonRed.focused.textColor = Color.red;
+			DeadButtonRed.fontSize = 12;
+			DeadButtonRed.fontStyle = FontStyle.Bold;
+
 			ButtonRed = new GUIStyle(GUI.skin.button);
 			ButtonRed.normal.textColor = Color.red;
 			ButtonRed.active.textColor = Color.red;
@@ -79,10 +109,60 @@ namespace KerbalKonstructs.UI
 			BoxNoBorder = new GUIStyle(GUI.skin.box);
 			BoxNoBorder.normal.background = null;
 
+			BoxNoBorderW = new GUIStyle(GUI.skin.box);
+			BoxNoBorderW.normal.background = null;
+			BoxNoBorderW.normal.textColor = Color.white;
+
 			KKToolTip = new GUIStyle(GUI.skin.box);
 			KKToolTip.normal.textColor = Color.white;
 			KKToolTip.fontSize = 11;
 			KKToolTip.fontStyle = FontStyle.Normal;
+		}
+
+		public static void setTextures()
+		{
+			VABIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
+			SPHIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+			ANYIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
+			TrackingStationIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/TrackingMapIcon", false);
+
+			tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
+			tHoverButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonHover", false);
+
+			tOpenBasesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOpenBasesOn", false);
+			tOpenBasesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOpenBasesOff", false);
+			tClosedBasesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapClosedBasesOn", false);
+			tClosedBasesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapClosedBasesOff", false);
+			tHelipadsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHelipadsOn", false);
+			tHelipadsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHelipadsOff", false);
+			tRunwaysOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRunwaysOn", false);
+			tRunwaysOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRunwaysOff", false);
+			tTrackingOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapTrackingOn", false);
+			tTrackingOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapTrackingOff", false);
+			tLaunchpadsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapLaunchpadsOn", false);
+			tLaunchpadsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapLaunchpadsOff", false);
+			tOtherOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOn", false);
+			tOtherOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOff", false);
+			tRadarCover = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/radarcover", false);
+			tRadarOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOn", false);
+			tRadarOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOff", false);
+			tUplinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOn", false);
+			tUplinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOff", false);
+			tGroundCommsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOn", false);
+			tGroundCommsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOff", false);
+			tHideOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOn", false);
+			tHideOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOff", false);
+			tDownlinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOn", false);
+			tDownlinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOff", false);
+
+			tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+
+			tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+			tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+			tLeftOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lefton", false);
+			tLeftOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
+			tRightOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/righton", false);
+			tRightOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
 		}
 	}
 }

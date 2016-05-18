@@ -57,6 +57,7 @@ namespace KerbalKonstructs
 		public Boolean InitialisedFacilities = false;
 		public Boolean VesselLaunched = false;
 		public Boolean bImportedCustom = false;
+		public Boolean bStylesSet = false;
 
 		public Boolean bDisablePositionEditing = false;
 		#endregion
@@ -419,6 +420,8 @@ namespace KerbalKonstructs
 			Debug.Log("KK: Version is " + sKKVersion);
 			Debug.Log("KK: Version is " + sKKVersion);
 			Debug.Log("KK: Version is " + sKKVersion);
+
+			UIMain.setTextures();
 		}
 
 		#region Game Events
@@ -1001,9 +1004,87 @@ namespace KerbalKonstructs
 			}
 		}
 
+		public Material lineMaterial1;
+
+		public void CreateLineMaterial()
+		{
+			if (lineMaterial1 == null)
+			{
+				var shader = Shader.Find("Hidden/Internal-Colored");
+				lineMaterial1 = new Material(shader);
+				lineMaterial1.hideFlags = HideFlags.HideAndDontSave;
+				// Turn on alpha blending
+				lineMaterial1.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+				lineMaterial1.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+				// Turn backface culling off
+				lineMaterial1.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+				// Turn off depth writes
+				lineMaterial1.SetInt("_ZWrite", 0);
+			}
+		}
+
+		public Vector3 vLineStart = Vector3.zero;
+		public Vector3 vLineEnd = Vector3.zero;
+		public StaticObject soLandingGuide = null;
+
+		public void drawLandingGuide(StaticObject obj)
+		{
+			if (obj == null)
+			{
+				vLineStart = Vector3.zero;
+				vLineEnd = Vector3.zero;
+				return;
+			}
+
+			if (HighLogic.LoadedScene != GameScenes.FLIGHT) return;
+			if (!enableATC)
+			{
+				vLineStart = Vector3.zero;
+				vLineEnd = Vector3.zero;
+				return;
+			}
+
+			Vessel vesCraft = FlightGlobals.ActiveVessel;
+			if (vesCraft == null) return;
+
+			Debug.Log("KK: drawLandingGuide");
+
+			vLineStart = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
+			vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
+			soLandingGuide = obj;
+		}
+
 		void OnGUI()
 		{
 			GUI.skin = HighLogic.Skin;
+
+			if (!bStylesSet)
+			{
+				UIMain.setStyles();
+				bStylesSet = true;
+			}
+
+			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+			{
+				Vessel vesCraft = FlightGlobals.ActiveVessel;
+				if (vesCraft != null && enableATC && soLandingGuide != null)
+				{
+					if (vLineEnd != Vector3.zero && vLineStart != Vector3.zero)
+					{
+						vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
+						vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
+
+						CreateLineMaterial();
+
+						GL.Begin(GL.LINES);
+						lineMaterial1.SetPass(0);
+						GL.Color(new Color(1f, 0.5f, 1f, 0.8f));
+						GL.Vertex3(vLineEnd.x - Screen.width / 2, vLineEnd.y - Screen.height / 2, vLineEnd.z);
+						GL.Vertex3(vLineStart.x - Screen.width / 2, vLineStart.y - Screen.height / 2, vLineStart.z);
+						GL.End();
+					}
+				}
+			}
 
 			if (HighLogic.LoadedScene == GameScenes.EDITOR)
 			{
@@ -1899,12 +1980,13 @@ namespace KerbalKonstructs
 		{
 			if (selectedObject != null)
 			{
-				selectedObject.editing = false;
+				/* selectedObject.editing = false;
 				if (enableColliders) selectedObject.ToggleAllColliders(true);
 
 				Color highlightColor = new Color(0, 0, 0, 0);
-				selectedObject.HighlightObject(highlightColor);
+				selectedObject.HighlightObject(highlightColor); */
 
+				selectedObject.deselectObject(enableColliders);
 				selectedObject = null;
 			}
 
@@ -1920,6 +2002,7 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region App Button Toggles
+		
 		void onKKSettingsOn()
 		{
 			showSettings = true;
@@ -1935,27 +2018,15 @@ namespace KerbalKonstructs
 			showKSCmanager = true;
 		}
 
+		void onKSCmanagerOff()
+		{
+			showKSCmanager = false;
+		}
+
 		void onSiteSelectorOn()
 		{
 			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 			showSiteSelector = true;
-		}
-
-		void onFlightManagerOn()
-		{
-			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showFlightManager = true;
-		}
-
-		void onMapManagerOn()
-		{
-			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showMapIconManager = true;
-		}
-
-		void onKSCmanagerOff()
-		{
-			showKSCmanager = false;
 		}
 
 		void onSiteSelectorOff()
@@ -1965,6 +2036,12 @@ namespace KerbalKonstructs
 			PersistenceFile<LaunchSite>.SaveList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 		}
 
+		void onFlightManagerOn()
+		{
+			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
+			showFlightManager = true;
+		}
+
 		void onFlightManagerOff()
 		{
 			showFlightManager = false;
@@ -1972,13 +2049,21 @@ namespace KerbalKonstructs
 				deselectObject(true, true);
 		}
 
+		void onMapManagerOn()
+		{
+			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
+			showMapIconManager = true;
+		}
+
 		void onMapManagerOff()
 		{
 			showMapIconManager = false;
 		}
+		
 		#endregion
 
 		#region Get Methods
+		
 		public StaticDatabase getStaticDB()
 		{
 			return staticDB;
@@ -1988,9 +2073,11 @@ namespace KerbalKonstructs
 		{
 			return currentBody;
 		}
+		
 		#endregion
 
 		#region Config Methods
+		
 		public bool loadConfig()
 		{
 			string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
@@ -2007,8 +2094,7 @@ namespace KerbalKonstructs
 					}
 					else
 					{
-						if (DebugMode) Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");
-						
+						if (DebugMode) Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");				
 						continue;
 					}
 				}
@@ -2016,7 +2102,6 @@ namespace KerbalKonstructs
 
 			}
 			return false;
-
 		}
 
 		public void saveConfig()
@@ -2035,6 +2120,7 @@ namespace KerbalKonstructs
 			string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
 			cfg.Save(saveConfigPath, "Kerbal Konstructs Settings");
 		}
+		
 		#endregion
 
 		#region Utilities
@@ -2042,11 +2128,6 @@ namespace KerbalKonstructs
 		{
 			// wow so robust
 		}
-
-
-		#endregion
-
-		#region CC Extensions
 
 		#endregion
 	}

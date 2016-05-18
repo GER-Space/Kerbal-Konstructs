@@ -247,6 +247,7 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(fButtonWidth - 10), GUILayout.Height(23)))
 				{
 					KerbalKonstructs.instance.saveObjects();
+					KerbalKonstructs.instance.updateCache();
 					smessage = "Saved all changes to all objects.";
 					MiscUtils.HUDMessage(smessage, 10, 2);
 				}

@@ -16,7 +16,7 @@ namespace KerbalKonstructs
 		
 		public static void CreateFromLaunchsite(string name, GameObject go)
 		{
-			StaticObject staticObject = KerbalKonstructs.instance.getStaticDB().getStaticFromGameObject(go);
+			StaticObject staticObject = Utilities.StaticUtils.getStaticFromGameObject(go);
 			if (staticObject != null)
 			{
 				var csc = new CustomSpaceCenter();
@@ -29,7 +29,7 @@ namespace KerbalKonstructs
 			}
 			else
 			{
-				// Debug.Log("KK: CreateFromLaunchsite failed because staticObject is null.");
+				Debug.Log("KK: CreateFromLaunchsite failed because staticObject is null.");
 			}
 		}
 

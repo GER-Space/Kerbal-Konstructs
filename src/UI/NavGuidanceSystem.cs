@@ -15,8 +15,6 @@ namespace KerbalKonstructs.UI
 	{
 		Rect NGSRect = new Rect(250, 50, 400, 120);
 
-		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-
 		public bool bClosing = false;
 		public int iCorrection = 3;
 
@@ -38,34 +36,19 @@ namespace KerbalKonstructs.UI
 
 		static LaunchSite lTargetSite = null;
 
-		public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-		public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-		public Texture tLeftOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lefton", false);
-		public Texture tLeftOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
-		public Texture tRightOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/righton", false);
-		public Texture tRightOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
 		public Texture tTextureLeft = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
 		public Texture tTextureRight = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
 		public Texture tTextureMiddle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
 
-		GUIStyle navStyle = new GUIStyle();
-		GUIStyle BoxNoBorder;
-		GUIStyle DeadButtonRed;
-
 		public NavGuidanceSystem()
 		{
-			navStyle.padding.left = 0;
-			navStyle.padding.right = 0;
-			navStyle.padding.top = 1;
-			navStyle.padding.bottom = 3;
-			navStyle.normal.background = null;
 		}
 
 		public void drawNGS()
 		{
 			if (KerbalKonstructs.instance.showNGS)
 			{
-				NGSRect = GUI.Window(0xB00B1E9, NGSRect, drawNGSWindow, "", navStyle);
+				NGSRect = GUI.Window(0xB00B1E9, NGSRect, drawNGSWindow, "", UIMain.navStyle);
 			}
 		}
 
@@ -99,11 +82,11 @@ namespace KerbalKonstructs.UI
 
 				if (bClosing)
 				{
-					tTextureMiddle = tIconOpen;
+					tTextureMiddle = UIMain.tIconOpen;
 				}
 				else
 				{
-					tTextureMiddle = tIconClosed;
+					tTextureMiddle = UIMain.tIconClosed;
 				}
 
 				Vector3 vcraftpos = FlightGlobals.ActiveVessel.GetTransform().position;
@@ -135,52 +118,36 @@ namespace KerbalKonstructs.UI
 
 				if (bClosing)
 				{
-					tTextureLeft = tLeftOff;
-					tTextureRight = tRightOff;
+					tTextureLeft = UIMain.tLeftOff;
+					tTextureRight = UIMain.tRightOff;
 				}
 				else
 				{
-					tTextureLeft = tLeftOn;
-					tTextureRight = tRightOn;
+					tTextureLeft = UIMain.tLeftOn;
+					tTextureRight = UIMain.tRightOn;
 				}
 
 				if (iCorrection == 1)
 				{
-					tTextureLeft = tLeftOn;
-					tTextureRight = tRightOff;
+					tTextureLeft = UIMain.tLeftOn;
+					tTextureRight = UIMain.tRightOff;
 				}
 				if (iCorrection == 2)
 				{
-					tTextureLeft = tLeftOff;
-					tTextureRight = tRightOn;
+					tTextureLeft = UIMain.tLeftOff;
+					tTextureRight = UIMain.tRightOn;
 				}
 			}
 			else
 			{
-				tTextureMiddle = tIconClosed;
-				tTextureLeft = tLeftOff;
-				tTextureRight = tRightOff;
+				tTextureMiddle = UIMain.tIconClosed;
+				tTextureLeft = UIMain.tLeftOff;
+				tTextureRight = UIMain.tRightOff;
 			}
 		}
 
 		void drawNGSWindow(int windowID)
 		{
-			BoxNoBorder = new GUIStyle(GUI.skin.box);
-			BoxNoBorder.normal.background = null;
-			BoxNoBorder.normal.textColor = Color.white;
-
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
-			DeadButtonRed.normal.background = null;
-			DeadButtonRed.hover.background = null;
-			DeadButtonRed.active.background = null;
-			DeadButtonRed.focused.background = null;
-			DeadButtonRed.normal.textColor = Color.red;
-			DeadButtonRed.hover.textColor = Color.yellow;
-			DeadButtonRed.active.textColor = Color.red;
-			DeadButtonRed.focused.textColor = Color.red;
-			DeadButtonRed.fontSize = 12;
-			DeadButtonRed.fontStyle = FontStyle.Bold;
-
 			GUILayout.BeginHorizontal();
 			{
 				string sTargetSiteAlias = "";
@@ -188,11 +155,11 @@ namespace KerbalKonstructs.UI
 				if (sTargetSiteName == "Runway") sTargetSiteAlias = "KSC Runway";
 				if (sTargetSiteName == "LaunchPad") sTargetSiteAlias = "KSC LaunchPad";
 
-				GUILayout.Box("-KK-", BoxNoBorder, GUILayout.Width(32), GUILayout.Height(16));
+				GUILayout.Box("-KK-", UIMain.BoxNoBorderW, GUILayout.Width(32), GUILayout.Height(16));
 				GUILayout.Space(2);
 				GUILayout.Box("NGS: " + sTargetSiteAlias, GUILayout.Height(16));
 				GUILayout.Space(2);
-				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Width(32), GUILayout.Height(16)))
+				if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Width(32), GUILayout.Height(16)))
 				{
 					KerbalKonstructs.instance.enableNGS = false;
 					KerbalKonstructs.instance.showNGS = false;
@@ -208,11 +175,11 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.BeginHorizontal();
 			{
-				GUILayout.Box(tTextureLeft, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(165));
+				GUILayout.Box(tTextureLeft, UIMain.BoxNoBorderW, GUILayout.Height(25), GUILayout.Width(165));
 				GUILayout.FlexibleSpace();
-				GUILayout.Box(tTextureMiddle, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(25));
+				GUILayout.Box(tTextureMiddle, UIMain.BoxNoBorderW, GUILayout.Height(25), GUILayout.Width(25));
 				GUILayout.FlexibleSpace();
-				GUILayout.Box(tTextureRight, BoxNoBorder, GUILayout.Height(25), GUILayout.Width(165));
+				GUILayout.Box(tTextureRight, UIMain.BoxNoBorderW, GUILayout.Height(25), GUILayout.Width(165));
 			}
 			GUILayout.EndHorizontal();
 
@@ -247,7 +214,7 @@ namespace KerbalKonstructs.UI
 			GUILayout.EndHorizontal();
 
 			GUILayout.FlexibleSpace();
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+			GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
 			GUILayout.Space(1);
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));

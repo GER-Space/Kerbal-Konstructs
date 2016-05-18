@@ -184,10 +184,15 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
 		{
-			if ((sGameObject.GetComponent<Collider>() != null && sGameObject.GetComponent<Collider>().enabled && !sGameObject.GetComponent<Collider>().isTrigger) || sGameObject.GetComponent<Collider>() == null)
+			if (sGameObject.GetComponent<Collider>() == null) sGameObject.layer = newLayerNumber;
+			else
+				if (!sGameObject.GetComponent<Collider>().isTrigger) sGameObject.layer = newLayerNumber;
+
+
+			/* if ((sGameObject.GetComponent<Collider>() != null && sGameObject.GetComponent<Collider>().enabled && !sGameObject.GetComponent<Collider>().isTrigger) || sGameObject.GetComponent<Collider>() == null)
 			{
 				sGameObject.layer = newLayerNumber;
-			}
+			} */
 
 			foreach (Transform child in sGameObject.transform)
 			{
@@ -203,6 +208,15 @@ namespace KerbalKonstructs.StaticObjects
 			{
 				SetActiveRecursively(childTransform.gameObject, active);
 			}
+		}
+
+		public void deselectObject(Boolean enableColliders)
+		{
+			this.editing = false;
+			if (enableColliders) this.ToggleAllColliders(true);
+
+			Color highlightColor = new Color(0, 0, 0, 0);
+			this.HighlightObject(highlightColor);
 		}
 	}
 }

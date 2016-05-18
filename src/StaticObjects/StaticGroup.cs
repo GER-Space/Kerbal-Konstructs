@@ -105,24 +105,29 @@ namespace KerbalKonstructs.StaticObjects
 
 				if (sFacType == "Hangar")
 				{
-					HangarGUI.CacheHangaredCraft(obj);
+					if (visible) HangarGUI.CacheHangaredCraft(obj);
+				}
+
+				if (sFacType == "LandingGuide")
+				{
+					if (visible) KerbalKonstructs.instance.drawLandingGuide(obj);
+					else
+						KerbalKonstructs.instance.drawLandingGuide(null);
 				}
 
 				if (sFacType == "CityLights")
 				{
-					if (dist < 60000f)
-						SetActiveRecursively(obj.gameObject, false);
-					else
+					if (dist < 65000f)
 					{
-						if (visible)
-							SetActiveRecursively(obj.gameObject, true);
+						SetActiveRecursively(obj.gameObject, false);
+						return;
 					}
 				}
+			
+				if (visible)
+					SetActiveRecursively(obj.gameObject, true);
 				else
-				{				
-					if (visible)
-						SetActiveRecursively(obj.gameObject, true);
-				}
+					SetActiveRecursively(obj.gameObject, false);
 			}
 		}
 

@@ -4,6 +4,7 @@ using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
 using Upgradeables;
@@ -344,9 +345,38 @@ namespace KerbalKonstructs.LaunchSites
 			return null;
 		}
 
+		// Returns the StaticObject of a site. Can provide a sitename or a GameObject
+		public static StaticObject getSiteStaticObject(string sSiteName, GameObject go = null)
+		{
+			StaticObject soSite = null;
+			if (go != null)
+			{
+				soSite = Utilities.StaticUtils.getStaticFromGameObject(go);
+
+				if (soSite == null) return null;
+				return soSite;
+			}
+
+			string sName = "";
+			object oName = null;
+			foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.getAllStatics())
+			{
+				oName = obj.getSetting("LaunchSiteName");
+				if (oName == null) continue;
+
+				oName = null;
+
+				sName = (string)obj.getSetting("LaunchSiteName");
+				if (sName == sSiteName) return obj;
+			}
+
+			return null;
+		}
+
 		public static string sBaseMem = "";
 		public static LaunchSite launchsitemem = null;
 
+		// Returns if a launchsite exists. Hook used by KerKonConConExt
 		public static bool checkLaunchSiteExists(string sSiteName)
 		{
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
@@ -416,7 +446,7 @@ namespace KerbalKonstructs.LaunchSites
 		}
 
 		// Returns the nearest open Launchsite to a position and range to the Launchsite in m
-		// The basic ATC feature is in here
+		// The basic ATC feature is in here for now
 		public static void getNearestOpenBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lNearest)
 		{
 			SpaceCenter KSC = SpaceCenter.Instance;

@@ -1188,6 +1188,18 @@ namespace KerbalKonstructs.UI
 					bChangeFacilityType = false;
 				}
 
+				if (GUILayout.Button("City Lights", GUILayout.Height(23)))
+				{
+					infFacType = "CityLights";
+					bChangeFacilityType = false;
+				}
+
+				if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
+				{
+					infFacType = "LandingGuide";
+					bChangeFacilityType = false;
+				}
+
 				GUILayout.EndScrollView();
 			}
 
