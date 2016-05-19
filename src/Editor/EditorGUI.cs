@@ -1200,6 +1200,18 @@ namespace KerbalKonstructs.UI
 					bChangeFacilityType = false;
 				}
 
+				if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
+				{
+					infFacType = "TouchdownGuideR";
+					bChangeFacilityType = false;
+				}
+
+				if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
+				{
+					infFacType = "TouchdownGuideL";
+					bChangeFacilityType = false;
+				}
+
 				GUILayout.EndScrollView();
 			}
 

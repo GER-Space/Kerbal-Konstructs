@@ -31,3 +31,4 @@ E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\SaveUpgradePipeline.Core
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\KSPAssets.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\ContractConfigurator.dll
 E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\bin\Debug\Assembly-CSharp.xml
+E:\Kerbal-KonstructsDEV\Kerbal-Konstructs\src\obj\Debug\KerbalKonstructs.csprojResolveAssemblyReference.cache

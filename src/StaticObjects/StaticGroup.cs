@@ -115,6 +115,20 @@ namespace KerbalKonstructs.StaticObjects
 						KerbalKonstructs.instance.drawLandingGuide(null);
 				}
 
+				if (sFacType == "TouchdownGuideL")
+				{
+					if (visible) KerbalKonstructs.instance.drawTouchDownGuideL(obj);
+					else
+						KerbalKonstructs.instance.drawTouchDownGuideL(null);
+				}
+
+				if (sFacType == "TouchdownGuideR")
+				{
+					if (visible) KerbalKonstructs.instance.drawTouchDownGuideR(obj);
+					else
+						KerbalKonstructs.instance.drawTouchDownGuideR(null);
+				}
+
 				if (sFacType == "CityLights")
 				{
 					if (dist < 65000f)

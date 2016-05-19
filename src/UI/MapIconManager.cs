@@ -277,38 +277,6 @@ namespace KerbalKonstructs.UI
 			drawLaunchsites(target);
 		}
 
-		static Material lineMaterial1;
-		static Material lineMaterial2;
-		static Material lineMaterial3;
-		static Material lineMaterial4;
-
-		static void CreateLineMaterial(int iMat = 1)
-		{
-			Material mMat = lineMaterial1;
-			if (iMat == 2) mMat = lineMaterial2;
-			if (iMat == 3) mMat = lineMaterial3;
-			if (iMat == 4) mMat = lineMaterial4;
-
-			if (mMat == null)
-			{
-				var shader = Shader.Find("Hidden/Internal-Colored");
-				mMat = new Material(shader);
-				mMat.hideFlags = HideFlags.HideAndDontSave;
-				// Turn on alpha blending
-				mMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-				mMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-				// Turn backface culling off
-				mMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-				// Turn off depth writes
-				mMat.SetInt("_ZWrite", 0);
-
-				if (iMat == 1) lineMaterial1 = mMat;
-				if (iMat == 2) lineMaterial2 = mMat;
-				if (iMat == 3) lineMaterial3 = mMat;
-				if (iMat == 4) lineMaterial4 = mMat;
-			}
-		}
-
 		public void drawGroundComms(StaticObject obj, LaunchSite lSite = null)
 		{
 			string Base = "";
@@ -374,10 +342,10 @@ namespace KerbalKonstructs.UI
 
 			if (goNeighbour != null && vNeighbourPos != Vector3.zero && vBasePos != Vector3.zero)
 			{
-				CreateLineMaterial(1);
+				NavUtils.CreateLineMaterial(1);
 
 				GL.Begin(GL.LINES);
-				lineMaterial1.SetPass(0);
+				NavUtils.lineMaterial1.SetPass(0);
 				GL.Color(new Color(1f, 1f, 1f, 0.7f));
 				GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
 				GL.Vertex3(vBasePos.x - Screen.width / 2, vBasePos.y - Screen.height / 2, vBasePos.z);
@@ -386,10 +354,10 @@ namespace KerbalKonstructs.UI
 
 			if (goNeighbour2 != null && vNeighbourPos2 != Vector3.zero && vBasePos2 != Vector3.zero)
 			{
-				CreateLineMaterial(2);
+				NavUtils.CreateLineMaterial(2);
 
 				GL.Begin(GL.LINES);
-				lineMaterial2.SetPass(0);
+				NavUtils.lineMaterial2.SetPass(0);
 				GL.Color(new Color(1f, 1f, 1f, 0.7f));
 				GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
 				GL.Vertex3(vBasePos2.x - Screen.width / 2, vBasePos2.y - Screen.height / 2, vBasePos2.z);
@@ -498,10 +466,10 @@ namespace KerbalKonstructs.UI
 									fAlpha = 0.5f;
 								}
 
-								CreateLineMaterial(3);
+								NavUtils.CreateLineMaterial(3);
 
 								GL.Begin(GL.LINES);
-								lineMaterial3.SetPass(0);
+								NavUtils.lineMaterial3.SetPass(0);
 								GL.Color(new Color(fRed, fGreen, fBlue, fAlpha));
 								GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
 								GL.Vertex3(vCraftPos.x - Screen.width / 2, vCraftPos.y - Screen.height / 2, vCraftPos.z);
