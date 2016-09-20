@@ -1,0 +1,5 @@
+C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\bin\Release\KerbalKonstructs.dll
+C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\bin\Release\KerbalKonstructs.pdb
+C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\bin\Release\System.Xml.dll
+C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\obj\Release\KerbalKonstructs.dll
+C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\obj\Release\KerbalKonstructs.pdb

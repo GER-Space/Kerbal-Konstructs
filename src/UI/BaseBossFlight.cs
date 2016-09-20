@@ -469,7 +469,7 @@ namespace KerbalKonstructs.UI
 						GUILayout.Label("Acceleration " + FlightGlobals.ActiveVessel.acceleration.ToString());
 						GUILayout.Label("Angular Momentum " + FlightGlobals.ActiveVessel.angularMomentum.ToString("#0.000"));
 						GUILayout.Label("Angular Velocity " + FlightGlobals.ActiveVessel.angularVelocity.ToString("#0.000"));
-						GUILayout.Label("Centrifugal Acc " + FlightGlobals.ActiveVessel.CentrifugalAcc.ToString());
+                        //GUILayout.Label("Centrifugal Acc " + FlightGlobals.ActiveVessel.CentrifugalAcc.ToString());
 						GUILayout.Label("Horiz Srf Speed " + FlightGlobals.ActiveVessel.horizontalSrfSpeed.ToString("#0.00"));
 						GUILayout.Label("Indicated Air Speed " + FlightGlobals.ActiveVessel.indicatedAirSpeed.ToString("#0.00"));
 						GUILayout.Label("Mach " + FlightGlobals.ActiveVessel.mach.ToString("#0.00"));
