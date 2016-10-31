@@ -18,6 +18,5 @@ C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DE
 C:\Users\Reese Wilson\Desktop\KSP MODDING\MOD DIRECTORYS\KK\Kerbal-Konstructs_DEV-master\src\obj\Debug\KerbalKonstructs.pdb
 C:\Steam\SteamApps\common\Kerbal Space Program\GameData\KerbalKonstructs\KerbalKonstructs.dll
 C:\Steam\SteamApps\common\Kerbal Space Program\GameData\KerbalKonstructs\KerbalKonstructs.pdb
-C:\Git\Kerbal-Konstructs_1.2\src\obj\Debug\KerbalKonstructs.csprojResolveAssemblyReference.cache
 C:\Git\Kerbal-Konstructs_1.2\src\obj\Debug\KerbalKonstructs.dll
 C:\Git\Kerbal-Konstructs_1.2\src\obj\Debug\KerbalKonstructs.pdb

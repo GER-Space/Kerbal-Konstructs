@@ -203,10 +203,7 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region App Buttons
-		private ApplicationLauncherButton siteSelector;
-		private ApplicationLauncherButton flightManager;
-		private ApplicationLauncherButton mapManager;
-		private ApplicationLauncherButton KSCmanager;
+		private ApplicationLauncherButton masterButton;
 		#endregion
 
 		#region Configurable Variables
@@ -1076,34 +1073,13 @@ namespace KerbalKonstructs
 			if (ApplicationLauncher.Ready)
 			{
 				bool vis;
+                if (masterButton == null || !ApplicationLauncher.Instance.Contains(masterButton, out vis))
+                    masterButton = ApplicationLauncher.Instance.AddModApplication(ButtonController.ToggleButtonOn, ButtonController.ToggleButtonOff,
+                        ButtonController.OnHover, null, null, null,
+                        ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.FLIGHT,
+                        GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
 
-				if (!disableCustomLaunchsites)
-				{
-					if (siteSelector == null || !ApplicationLauncher.Instance.Contains(siteSelector, out vis))
-						siteSelector = ApplicationLauncher.Instance.AddModApplication(onSiteSelectorOn, onSiteSelectorOff,
-							onSiteSelectorOnHover, doNothing, doNothing, doNothing,
-							ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB,
-							GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
-				}
-
-				if (flightManager == null || !ApplicationLauncher.Instance.Contains(flightManager, out vis))				
-					flightManager = ApplicationLauncher.Instance.AddModApplication(onFlightManagerOn, onFlightManagerOff, 
-						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.FLIGHT,
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
-
-				if (mapManager == null || !ApplicationLauncher.Instance.Contains(mapManager, out vis))
-					mapManager = ApplicationLauncher.Instance.AddModApplication(onMapManagerOn, onMapManagerOff, 
-						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW,
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
-
-				if (KSCmanager == null || !ApplicationLauncher.Instance.Contains(KSCmanager, out vis))
-					KSCmanager = ApplicationLauncher.Instance.AddModApplication(onKSCmanagerOn, onKSCmanagerOff, 
-						doNothing, doNothing, doNothing, doNothing, 
-						ApplicationLauncher.AppScenes.SPACECENTER,
-						GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
-			}
+            }
 		}
 
 		public Vector3 vLineStart = Vector3.zero;
@@ -1445,13 +1421,6 @@ namespace KerbalKonstructs
 				}
 			//}
 		}
-
-		void onSiteSelectorOnHover()
-		{
-			string hovermessage = "Selected launchsite is " + EditorLogic.fetch.launchSiteName;
-			MiscUtils.HUDMessage(hovermessage, 10, 0);
-		}
-
 		#endregion
 
 		#region Object Methods
@@ -2225,66 +2194,6 @@ namespace KerbalKonstructs
 
 		#endregion
 
-		#region App Button Toggles
-		
-		void onKKSettingsOn()
-		{
-			showSettings = true;
-		}
-
-		void onKKSettingsOff()
-		{
-			showSettings = false;
-		}
-
-		void onKSCmanagerOn()
-		{
-			showKSCmanager = true;
-		}
-
-		void onKSCmanagerOff()
-		{
-			showKSCmanager = false;
-		}
-
-		void onSiteSelectorOn()
-		{
-			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showSiteSelector = true;
-		}
-
-		void onSiteSelectorOff()
-		{
-			showSiteSelector = false;
-			InputLockManager.RemoveControlLock("KKEditorLock");
-			PersistenceFile<LaunchSite>.SaveList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-		}
-
-		void onFlightManagerOn()
-		{
-			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showFlightManager = true;
-		}
-
-		void onFlightManagerOff()
-		{
-			showFlightManager = false;
-			if (selectedObject != null)
-				deselectObject(true, true);
-		}
-
-		void onMapManagerOn()
-		{
-			PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-			showMapIconManager = true;
-		}
-
-		void onMapManagerOff()
-		{
-			showMapIconManager = false;
-		}
-		
-		#endregion
 
 		#region Get Methods
 		
@@ -2347,12 +2256,5 @@ namespace KerbalKonstructs
 		
 		#endregion
 
-		#region Utilities
-		void doNothing()
-		{
-			// wow so robust
-		}
-
-		#endregion
 	}
 }

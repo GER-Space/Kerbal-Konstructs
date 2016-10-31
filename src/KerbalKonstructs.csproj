@@ -72,6 +72,7 @@
     <Compile Include="API\Config\IConfigItem.cs" />
     <Compile Include="API\KKAPI.cs" />
     <Compile Include="API\PersistenceFile.cs" />
+    <Compile Include="ButtonController.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
