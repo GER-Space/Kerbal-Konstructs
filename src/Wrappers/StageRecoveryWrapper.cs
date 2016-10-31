@@ -20,7 +20,10 @@ namespace KerbalKonstructs
         private static object instance_;
 
 
-        /* Call this to see if the addon is loaded. If this returns false, no additional API calls should be made! */
+        /// <summary>
+        /// Call this to see if the addon is loaded. If this returns false, no additional API calls should be made!
+        /// Also initializes SRType var, so it can by used later on. 
+        /// </summary>
         public static bool StageRecoveryAvailable
         {
             get
