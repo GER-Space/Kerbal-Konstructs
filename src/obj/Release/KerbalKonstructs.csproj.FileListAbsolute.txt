@@ -7,3 +7,5 @@ C:\Git\Kerbal-Konstructs_1.2\src\bin\Release\KerbalKonstructs.dll
 C:\Git\Kerbal-Konstructs_1.2\src\bin\Release\KerbalKonstructs.pdb
 C:\Git\Kerbal-Konstructs_1.2\src\obj\Release\KerbalKonstructs.dll
 C:\Git\Kerbal-Konstructs_1.2\src\obj\Release\KerbalKonstructs.pdb
+C:\Git\Kerbal-Konstructs_1.2\GameData\KerbalKonstructs\KerbalKonstructs.dll
+C:\Git\Kerbal-Konstructs_1.2\GameData\KerbalKonstructs\KerbalKonstructs.pdb
