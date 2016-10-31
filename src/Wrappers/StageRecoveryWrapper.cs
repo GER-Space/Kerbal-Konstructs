@@ -20,20 +20,21 @@ namespace KerbalKonstructs
         private static object instance_;
 
 
-        /* Call this to see if the addon is available. If this returns false, no additional API calls should be made! */
+        /* Call this to see if the addon is loaded. If this returns false, no additional API calls should be made! */
         public static bool StageRecoveryAvailable
         {
             get
             {
-                if (available == null)
                 {
-                    SRType = AssemblyLoader.loadedAssemblies
-                        .Select(a => a.assembly.GetExportedTypes())
-                        .SelectMany(t => t)
-                        .FirstOrDefault(t => t.FullName == "StageRecovery.APIManager");
-                    available = SRType != null;
+                    AssemblyLoader.loadedAssemblies.TypeOperation(t =>
+                    {
+                        if (t.FullName == "StageRecovery.APIManager")
+                            SRType = t;
+                    });
+                    available = (SRType != null);
+                    return (bool)available;
                 }
-                return (bool)available;
+
             }
         }
 
