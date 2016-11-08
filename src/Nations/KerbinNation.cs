@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using KerbalKonstructs.API;
+using KerbalKonstructs.Utilities;
 using UnityEngine;
 
 namespace KerbalKonstructs.KerbinNations
@@ -17,7 +18,7 @@ namespace KerbalKonstructs.KerbinNations
 				return settings[setting];
 			
 			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: Setting " + setting + " not found in nation " + config + ". This is harmless. Not a bug.");
+				Log.Normal("KK: Setting " + setting + " not found in nation " + config + ". This is harmless. Not a bug.");
 			
 			object defaultValue = KKAPI.getNationSettings()[setting].getDefaultValue();
 
@@ -28,7 +29,7 @@ namespace KerbalKonstructs.KerbinNations
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode) Debug.Log("KK: Setting " + setting + " not found in nation API. It may be on purpose. Not a bug.");
+				if (KerbalKonstructs.instance.DebugMode) Log.Normal("KK: Setting " + setting + " not found in nation API. It may be on purpose. Not a bug.");
 				
 				return null;
 			}

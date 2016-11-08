@@ -51,6 +51,8 @@ namespace KerbalKonstructs
 		public float fLaunchRefund = 0f;
 		public Double dRecoveryValue = 0;
 		public Double dActualRecoveryValue = 0;
+
+        public WindowManager WindowManager = null;
 		#endregion
 
 		#region Switches
@@ -64,34 +66,25 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region GUI Windows
-		private EditorGUI GUI_Editor = new EditorGUI();
-		private StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
-		private NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
-		private DownlinkGUI GUI_Downlink = new DownlinkGUI();
-		private BaseBossFlight GUI_FlightManager = new BaseBossFlight();
-		private FacilityManager GUI_FacilityManager = new FacilityManager();
-		private LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
-		private MapIconManager GUI_MapIconManager = new MapIconManager();
-		private KSCManager GUI_KSCManager = new KSCManager();
-		private AirRacing GUI_AirRacingApp = new AirRacing();
-		private BaseManager GUI_BaseManager = new BaseManager();
-		private KKSettingsGUI GUI_Settings = new KKSettingsGUI();
+		internal EditorGUI GUI_Editor = new EditorGUI();
+        internal StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
+        internal NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
+        internal DownlinkGUI GUI_Downlink = new DownlinkGUI();
+        internal BaseBossFlight GUI_FlightManager = new BaseBossFlight();
+        internal FacilityManager GUI_FacilityManager = new FacilityManager();
+        internal LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
+        internal MapIconManager GUI_MapIconManager = new MapIconManager();
+        internal KSCManager GUI_KSCManager = new KSCManager();
+        internal AirRacing GUI_AirRacingApp = new AirRacing();
+        internal BaseManager GUI_BaseManager = new BaseManager();
+        internal KKSettingsGUI GUI_Settings = new KKSettingsGUI();
 		public ModelInfo GUI_ModelInfo = new ModelInfo();
 		#endregion
 
 		#region Show Toggles
 		public Boolean showEditor = false;
-		public Boolean showSiteSelector = false;
-		public Boolean showBaseManager = false;
-		public Boolean showFlightManager = false;
-		public Boolean showMapIconManager = false;
-		public Boolean showKSCmanager = false;
-		public Boolean showNGS = false;
-		public Boolean showRacingApp = false;
-		public Boolean showFacilityManager = false;
-		public Boolean showDownlink = false;
-		public Boolean showATC = false;
-		public Boolean showSettings = false;
+//		public Boolean showNGS = false;
+//		public Boolean showATC = false;
 		public Boolean showModelInfo = false;
 
 		public GameObject go = null;
@@ -99,9 +92,6 @@ namespace KerbalKonstructs
 		public Boolean bPreviewModel = false;
 		#endregion
 
-		#region App Buttons
-		private ApplicationLauncherButton masterButton;
-		#endregion
 
 		#region Configurable Variables
 		[KSPField]
@@ -183,11 +173,12 @@ namespace KerbalKonstructs
 		void Awake()
 		{
 			instance = this;
+            var TbController = new ToolbarController();
 
-			#region Game Event Hooks
-			GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
+            #region Game Event Hooks
+            GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
 			GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
-			GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+			GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
 			GameEvents.OnVesselRecoveryRequested.Add(OnVesselRecoveryRequested);
 			GameEvents.OnFundsChanged.Add(OnDoshChanged);
 			GameEvents.onVesselRecovered.Add(OnVesselRecovered);
@@ -965,20 +956,6 @@ namespace KerbalKonstructs
 
 		#region GUI Methods
 
-		void OnGUIAppLauncherReady()
-		{
-			if (ApplicationLauncher.Ready)
-			{
-				bool vis;
-                if (masterButton == null || !ApplicationLauncher.Instance.Contains(masterButton, out vis))
-                    masterButton = ApplicationLauncher.Instance.AddModApplication(ButtonController.ToggleButtonOn, ButtonController.ToggleButtonOff,
-                        ButtonController.OnHover, null, null, null,
-                        ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.FLIGHT,
-                        GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
-
-            }
-		}
-
 		public Vector3 vLineStart = Vector3.zero;
 		public Vector3 vLineEnd = Vector3.zero;
 		public Vector3 vTDL = Vector3.zero;
@@ -1098,8 +1075,8 @@ namespace KerbalKonstructs
 				Rect Marker7 = new Rect((float)(vTDL.x) - (50 * flgWscale), (float)(Screen.height - vTDL.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
 				Rect Marker8 = new Rect((float)(vTDR.x) - (50 * flgWscale), (float)(Screen.height - vTDR.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
 
-				Graphics.DrawTexture(Marker7, tTGL);
-				Graphics.DrawTexture(Marker8, tTGR);
+				GUI.DrawTexture(Marker7, tTGL, ScaleMode.ScaleToFit, true);
+				GUI.DrawTexture(Marker8, tTGR, ScaleMode.ScaleToFit, true);
 			}
 
 			if (vLineEnd != Vector3.zero && vLineStart != Vector3.zero)
@@ -1160,14 +1137,14 @@ namespace KerbalKonstructs
 
 				if (fDist < 15000)
 				{
-					Graphics.DrawTexture(Marker1, tLGb);
-					Graphics.DrawTexture(Marker2, tLGm);
-					Graphics.DrawTexture(Marker3, tLGt);
+					GUI.DrawTexture(Marker1, tLGb, ScaleMode.ScaleToFit, true);
+					GUI.DrawTexture(Marker2, tLGm, ScaleMode.ScaleToFit, true);
+					GUI.DrawTexture(Marker3, tLGt, ScaleMode.ScaleToFit, true);
 				}
 
-				Graphics.DrawTexture(Marker4, tLGb);
-				Graphics.DrawTexture(Marker5, tLGm);
-				Graphics.DrawTexture(Marker6, tLGt);
+				GUI.DrawTexture(Marker4, tLGb, ScaleMode.ScaleToFit, true);
+				GUI.DrawTexture(Marker5, tLGm, ScaleMode.ScaleToFit, true);
+				GUI.DrawTexture(Marker6, tLGt, ScaleMode.ScaleToFit, true);
 			}
 		}
 
@@ -1183,30 +1160,7 @@ namespace KerbalKonstructs
 
 			if (HighLogic.LoadedScene == GameScenes.FLIGHT) drawLandingGuides();
 
-			if (HighLogic.LoadedScene == GameScenes.EDITOR)
-			{
-				if (!disableCustomLaunchsites)
-				{
-					if (showSiteSelector)
-					{
-						GUI_LaunchSiteSelector.drawSelector();
 
-						if (showBaseManager)
-							GUI_BaseManager.drawBaseManager();
-					}
-				}
-			}
-
-			if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
-			{
-				if (showKSCmanager)
-				{
-					GUI_KSCManager.drawKSCManager();
-
-					if (showSettings)
-						GUI_Settings.drawKKSettingsGUI();
-				}
-			}
 
 			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
 			{
@@ -1231,37 +1185,8 @@ namespace KerbalKonstructs
 					}
 					else
 						DeletePreviewObject();
-
-					if (showFlightManager)
-					{
-						GUI_FlightManager.drawManager(selectedObject);
-
-						if (showFacilityManager)
-						{
-							GUI_FacilityManager.drawFacilityManager(selectedObject);
-						}
-					}
-
-					if (showRacingApp)
-					{
-						GUI_AirRacingApp.drawRacing();
-					}
-
-					if (showDownlink)
-					{
-						GUI_Downlink.drawDownlink();
-					}
-					else
-					{
-						if (DownlinkGUI.DisAudio != null)
-							DownlinkGUI.DisAudio.Stop();
-					}
 				}
 
-				if (showNGS)
-				{
-					GUI_NGS.drawNGS();
-				}
 			}
 			else
 			{
@@ -1272,51 +1197,12 @@ namespace KerbalKonstructs
 					DownlinkGUI.Dis.SetActive(false);
 			}
 
-			/* if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
-			{
-				if (showMapIconManager)
-				{
-					GUI_MapIconManager.drawManager();
 
-					if (showFacilityManager)
-						GUI_FacilityManager.drawFacilityManager(selectedObject);
-
-					if (showBaseManager)
-						GUI_BaseManager.drawBaseManager();
-
-					//if (toggleIconsWithBB)
-					//GUI_MapIconManager.drawIcons();
-				}
-
-				//if (!toggleIconsWithBB)
-				GUI_MapIconManager.drawIcons();
-			}
-			else
-			{ */
 				if (MapView.MapIsEnabled)
 				{
-					if (HighLogic.LoadedScene == GameScenes.EDITOR) return;
-					if (HighLogic.LoadedScene == GameScenes.SPACECENTER) return;
-					if (HighLogic.LoadedScene == GameScenes.MAINMENU) return;
-
-					if (showMapIconManager)
-					{
-						GUI_MapIconManager.drawManager();
-
-						if (showFacilityManager)
-							GUI_FacilityManager.drawFacilityManager(selectedObject);
-
-						if (showBaseManager)
-							GUI_BaseManager.drawBaseManager();
-
-						if (toggleIconsWithBB)
-							GUI_MapIconManager.drawIcons();
-					}
-
-					if (!toggleIconsWithBB)
-						GUI_MapIconManager.drawIcons();
+					GUI_MapIconManager.drawIcons();
 				}
-			//}
+			
 		}
 		#endregion
 
@@ -2102,6 +1988,7 @@ namespace KerbalKonstructs
 		public CelestialBody getCurrentBody()
 		{
 			return currentBody;
+            //ToDo: FlightGlobals.currentMainBody;
 		}
 		
 		#endregion

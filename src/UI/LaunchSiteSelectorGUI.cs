@@ -136,7 +136,9 @@ namespace KerbalKonstructs.UI
 				{
 					InputLockManager.RemoveControlLock("KKEditorLock");
 					InputLockManager.RemoveControlLock("KKEditorLock2");
-					KerbalKonstructs.instance.showSiteSelector = false;
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_LaunchSiteSelector.drawSelector);
+                    return;
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -477,7 +479,7 @@ namespace KerbalKonstructs.UI
 			if (selectedSite != null)
 			{
 				BaseManager.setSelectedSite(selectedSite);
-				KerbalKonstructs.instance.showBaseManager = true;
+                WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
 			}
 			else
 			{
@@ -486,11 +488,11 @@ namespace KerbalKonstructs.UI
 					selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
 					LaunchSiteManager.setLaunchSite(selectedSite);
 					BaseManager.setSelectedSite(selectedSite);
-					KerbalKonstructs.instance.showBaseManager = true;
-				}
+                    WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                }
 				else
 				{
-					Debug.LogError("KK: ERROR Launch Selector cannot find KSC Runway or Launch Pad! PANIC! Runaway! Hide!");
+					Log.Error("ERROR Launch Selector cannot find KSC Runway or Launch Pad! PANIC! Runaway! Hide!");
 				}
 			}
 
@@ -523,8 +525,9 @@ namespace KerbalKonstructs.UI
 			sites = null;
 			InputLockManager.RemoveControlLock("KKEditorLock");
 			InputLockManager.RemoveControlLock("KKEditorLock2");
-			KerbalKonstructs.instance.showSiteSelector = false;
-		}
+            WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+            WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_LaunchSiteSelector.drawSelector);
+        }
 
 	}
 }

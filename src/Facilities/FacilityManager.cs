@@ -74,9 +74,10 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		public void drawFacilityManager(StaticObject soObject)
+		public void drawFacilityManager()
 		{
-			KKWindow = new GUIStyle(GUI.skin.window);
+            StaticObject soObject = KerbalKonstructs.instance.selectedObject;
+            KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);
 
 			if (bHalfwindow)
@@ -167,8 +168,9 @@ namespace KerbalKonstructs.UI
 				{
 					PersistenceUtils.saveStaticPersistence(selectedFacility);
 					selectedFacility = null;
-					KerbalKonstructs.instance.showFacilityManager = false;
-				}
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
+
+                }
 			}
 			GUILayout.EndHorizontal();
 

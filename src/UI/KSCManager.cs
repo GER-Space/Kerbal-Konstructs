@@ -296,10 +296,7 @@ namespace KerbalKonstructs.UI
 
 			if (GUILayout.Button("Mod Settings"))
 			{
-				if (!KerbalKonstructs.instance.showSettings)
-					KerbalKonstructs.instance.showSettings = true;
-				else
-					KerbalKonstructs.instance.showSettings = false;
+                WindowManager.instance.ToggleWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
 			}
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));

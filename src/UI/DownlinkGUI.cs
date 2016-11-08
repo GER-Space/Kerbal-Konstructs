@@ -211,16 +211,15 @@ namespace KerbalKonstructs.UI
 			DisAudio.Play();
 		}
 
-		public void drawDownlink()
-		{
-			if (KerbalKonstructs.instance.showDownlink)
-			{
-				DownlinkRect = GUI.Window(0xE05B9C9, DownlinkRect, drawDownlinkWindow, "", navStyle);
+        public void drawDownlink()
+        {
 
-				if (bChangeTarget)
-					targetSelectorRect = GUI.Window(0xB71B2A1, targetSelectorRect, drawTargetSelector, "Select Target");
-			}
-		}
+            DownlinkRect = GUI.Window(0xE05B9C9, DownlinkRect, drawDownlinkWindow, "", navStyle);
+
+            if (bChangeTarget)
+                targetSelectorRect = GUI.Window(0xB71B2A1, targetSelectorRect, drawTargetSelector, "Select Target");
+
+        }
 
 		void InitialiseBoard()
 		{
@@ -418,8 +417,9 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
 				{
 					KerbalKonstructs.instance.enableDownlink = false;
-					KerbalKonstructs.instance.showDownlink = false;
-				}
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Downlink.drawDownlink);
+                    DisAudio.Stop();
+                }
 			}
 			GUILayout.EndHorizontal();
 

@@ -3,19 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using KerbalKonstructs.Utilities;
+using KSP.UI.Screens;
 
-namespace KerbalKonstructs
+namespace KerbalKonstructs.NGUI
 {
-    class ButtonController
+    class ToolbarController
     {
         static internal KerbalKonstructs main = KerbalKonstructs.instance;
-        public static void ToggleButtonOn()
+        private static ApplicationLauncherButton masterButton;
+
+
+        public void OnGUIAppLauncherReady()
+        {
+            if (ApplicationLauncher.Ready)
+            {
+                bool vis;
+                if (masterButton == null || !ApplicationLauncher.Instance.Contains(masterButton, out vis))
+                    masterButton = ApplicationLauncher.Instance.AddModApplication(ToggleButtonOn, ToggleButtonOff,
+                        OnHover, null, null, null,
+                        ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.FLIGHT,
+                        GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SiteToolbarIcon", false));
+
+            }
+        }
+
+        internal static void ToggleButtonOn()
         {
             
             if  ( (!main.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
             {
-                main.showSiteSelector = true;
+                WindowManager.instance.OpenWindow(WindowManager.instance.GUI_LaunchSiteSelector.drawSelector);
             }
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
@@ -29,16 +48,16 @@ namespace KerbalKonstructs
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                main.showKSCmanager = true;
+                WindowManager.instance.OpenWindow(WindowManager.instance.GUI_KSCManager.drawKSCManager);
             }
         }
 
-        public static void ToggleButtonOff()
+        internal static void ToggleButtonOff()
         {
 
             if ((!main.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
             {
-                main.showSiteSelector = false;
+                WindowManager.instance.CloseWindow(WindowManager.instance.GUI_LaunchSiteSelector.drawSelector);
             }
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
@@ -52,11 +71,11 @@ namespace KerbalKonstructs
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                main.showKSCmanager = false;
+                WindowManager.instance.CloseWindow(WindowManager.instance.GUI_KSCManager.drawKSCManager);
             }
         }
 
-        public static void OnHover()
+        internal void OnHover()
         {
 
             if ((!main.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))

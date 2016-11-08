@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -9,6 +10,27 @@ namespace KerbalKonstructs.Utilities
 {
     internal class Log
     {
+        internal static void Normal (string message)
+        {
+#if DEBUG
+            UnityEngine.Debug.Log("KK: " + message);
+#endif
+        }
+
+        internal static void Warning(string message)
+        {
+#if DEBUG
+            UnityEngine.Debug.LogWarning("KK: " + message);
+#endif
+        }
+        internal static void Error(string message)
+        {
+#if DEBUG
+            UnityEngine.Debug.LogError("KK: " + message);
+#endif
+        }
+
+        // unused Code: Marked for Deleteion
         private const int baseFrameOffset = 3;
 
         private static string GetStackFrameString(int skipFrames)
