@@ -109,8 +109,8 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
 					ResetRace();
-					KerbalKonstructs.instance.showRacingApp = false;
-					runningRace = false;
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                    runningRace = false;
 					basicorbitalhud = false;
 				}
 			}
@@ -257,8 +257,8 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("I'm done racing!", GUILayout.Height(22)))
 				{
 					ResetRace();
-					KerbalKonstructs.instance.showRacingApp = false;
-					runningRace = false;
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                    runningRace = false;
 				}
 			}
 

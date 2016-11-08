@@ -118,7 +118,8 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
-					KerbalKonstructs.instance.showSettings = false;
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
+                    return;
 				}
 			}
 			GUILayout.EndHorizontal();

@@ -46,10 +46,7 @@ namespace KerbalKonstructs.UI
 
 		public void drawNGS()
 		{
-			if (KerbalKonstructs.instance.showNGS)
-			{
 				NGSRect = GUI.Window(0xB00B1E9, NGSRect, drawNGSWindow, "", UIMain.navStyle);
-			}
 		}
 
 		public static void setTargetSite(LaunchSite lsTarget, string sName = "")
@@ -162,8 +159,8 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Width(32), GUILayout.Height(16)))
 				{
 					KerbalKonstructs.instance.enableNGS = false;
-					KerbalKonstructs.instance.showNGS = false;
-				}
+                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
+                }
 				GUILayout.Space(2);
 			}
 			GUILayout.EndHorizontal();

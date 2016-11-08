@@ -208,8 +208,9 @@ namespace KerbalKonstructs.UI
 						InputLockManager.RemoveControlLock("KKEditorLock");
 						selectedSite = null;
 						loadedPersistence = false;
-						KerbalKonstructs.instance.showBaseManager = false;
-					}
+                        WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                        return;
+                    }
 				}
 			}
 			GUILayout.EndHorizontal();
