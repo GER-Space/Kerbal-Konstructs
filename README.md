@@ -7,13 +7,20 @@ Kerbal Konstructs is a reimplementation of the popular KerbTown mod by Razchek. 
 
 FAQ
 ---
+What about AlphaAsh?
+
+AlphaAsh resigned from KSP modding. He gave me the permission to continue the development of KerbalKontructs and the modifucation ditribution of his Art Assets.  
+
+Old FAQ
+---
+
 Why not just contribute to KerbTown?
 
 KerbTown is very dead. If the original authors of that mod choose to continue it, I may pursue merging this fork back in. I probably won't. This will just keep going on its merry way.
 
 What about medsouz?
 
-This is a fork of his work and I consider medsouz a friend. His involvement with this fork and my relationship with him and our collaboration or the future of it isn't something you need to worry about.
+This is a fork of his work and I(AlphaAsh) consider medsouz a friend. His involvement with this fork and my relationship with him and our collaboration or the future of it isn't something you need to worry about.
 
 Why should I use this instead of KerbTown?
 
@@ -25,7 +32,7 @@ License
 -------
 The MIT License (MIT)
 
-Copyright (c) 2015-2016 Matt *"medsouz"* Souza, Ash *"AlphaAsh"* Hall
+Copyright (c) 2015-2016 Matt *"medsouz"* Souza, Ash *"AlphaAsh"* Hall, Christian *"GER-Space" Bronk
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
