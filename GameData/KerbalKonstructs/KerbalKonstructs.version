@@ -1,6 +1,6 @@
 {
-    "NAME":"KerbalKonstructs",
-	"URL":"https://github.com/GER-Space/Kerbal-Konstructs/blob/master/GameData/KerbalKonstructs/KerbalKonstructs.version",
+    	"NAME":"KerbalKonstructs",
+	"URL":"https://raw.githubusercontent.com/GER-Space/Kerbal-Konstructs/master/GameData/KerbalKonstructs/KerbalKonstructs.version",
 	"DOWNLOAD":"https://github.com/GER-Space/Kerbal-Konstructs/releases",
 	"VERSION":
 	{
@@ -12,10 +12,10 @@
 	"KSP_VERSION":
 	{
 		"MAJOR":1,
-		"MINOR":1,
-		"PATCH":2
+		"MINOR":2,
+		"PATCH":1
 	},
-    "KSP_VERSION_MIN":
+    	"KSP_VERSION_MIN":
 	{
 		"MAJOR":1,
 		"MINOR":2,
