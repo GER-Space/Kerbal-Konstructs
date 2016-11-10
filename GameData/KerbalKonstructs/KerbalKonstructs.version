@@ -1,13 +1,13 @@
 {
     "NAME":"KerbalKonstructs",
-	"URL":"https://github.com/AlphaAsh/Kerbal-Konstructs_DEV/blob/master/GameData/KerbalKonstructs/KerbalKonstructs.version",
-	"DOWNLOAD":"http://spacedock.info/mod/124/Kerbal%20Konstructs",
+	"URL":"https://github.com/GER-Space/Kerbal-Konstructs/blob/master/GameData/KerbalKonstructs/KerbalKonstructs.version",
+	"DOWNLOAD":"https://github.com/GER-Space/Kerbal-Konstructs/releases",
 	"VERSION":
 	{
 		"MAJOR":0,
 		"MINOR":9,
-		"PATCH":7,
-		"BUILD":0
+		"PATCH":8,
+		"BUILD":2
 	},
 	"KSP_VERSION":
 	{
@@ -18,13 +18,13 @@
     "KSP_VERSION_MIN":
 	{
 		"MAJOR":1,
-		"MINOR":1,
-		"PATCH":2
+		"MINOR":2,
+		"PATCH":0
 	},
 	"KSP_VERSION_MAX":
 	{
 		"MAJOR":1,
-		"MINOR":1,
-		"PATCH":2
+		"MINOR":2,
+		"PATCH":1
 	}
 }
