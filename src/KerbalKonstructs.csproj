@@ -88,8 +88,8 @@
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
     <Compile Include="LaunchSites\LaunchSite.cs" />
-    <Compile Include="Modules\GUIOnClick.cs" />
-    <Compile Include="Modules\AnimateOnClick.cs" />
+    <Compile Include="Modules\OnClick\GUIOnClick.cs" />
+    <Compile Include="Modules\OnClick\AnimateOnClick.cs" />
     <Compile Include="Modules\Compat\AnimateOnClick.cs" />
     <Compile Include="SpaceCenters\CustomSpaceCenter.cs" />
     <Compile Include="SpaceCenters\SpaceCenterManager.cs" />

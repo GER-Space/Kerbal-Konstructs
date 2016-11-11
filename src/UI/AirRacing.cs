@@ -259,6 +259,7 @@ namespace KerbalKonstructs.UI
 					ResetRace();
                     WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
                     runningRace = false;
+                    return;
 				}
 			}
 

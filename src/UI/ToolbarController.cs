@@ -35,20 +35,24 @@ namespace KerbalKonstructs.UI
             if  ( (!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
             {
                 WindowManager.instance.OpenWindow(KKmain.GUI_LaunchSiteSelector.drawSelector);
+                return;
             }
             if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
             {
                 WindowManager.instance.OpenWindow(KKmain.GUI_FlightManager.drawManager);
+                return;
             }
 
             if ( (HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
                 WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
+                return;
             }
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
                 WindowManager.instance.OpenWindow(KKmain.GUI_KSCManager.drawKSCManager);
+                return;
             }
         }
 
@@ -59,21 +63,25 @@ namespace KerbalKonstructs.UI
             {
                 WindowManager.instance.CloseWindow(KKmain.GUI_LaunchSiteSelector.drawSelector);
                 WindowManager.instance.CloseWindow(KKmain.GUI_BaseManager.drawBaseManager);
+                return;
             }
             if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
             {
                 WindowManager.instance.CloseWindow(KKmain.GUI_FlightManager.drawManager);
+                return;
             }
 
             if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
                 WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
+                return;
             }
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
                 WindowManager.instance.CloseWindow(KKmain.GUI_KSCManager.drawKSCManager);
                 WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
+                return;
             }
         }
 
