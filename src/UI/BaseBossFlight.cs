@@ -147,7 +147,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Space(2);
                 GUILayout.Label("ATC ", LabelInfo);
 
-                if (KerbalKonstructs.instance.enableATC)
+                if (KerbalKonstructs.GUI_Landinguide.IsOpen())
                     tToggle = tIconOpen;
                 else
                     tToggle = tIconClosed;
@@ -156,10 +156,7 @@ namespace KerbalKonstructs.UI
                 {
                     KerbalKonstructs.instance.updateCache();
 
-                    if (KerbalKonstructs.instance.enableATC)
-                        KerbalKonstructs.instance.enableATC = false;
-                    else
-                        KerbalKonstructs.instance.enableATC = true;
+                    KerbalKonstructs.GUI_Landinguide.Toggle();
                 }
 
                 GUILayout.FlexibleSpace();

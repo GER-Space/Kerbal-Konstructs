@@ -504,7 +504,7 @@ namespace KerbalKonstructs.LaunchSites
 			RangeNearestOpenBase = (float)smallestDist;
 
 			// Air traffic control messaging
-			if (KerbalKonstructs.instance.enableATC)
+			if (KerbalKonstructs.GUI_Landinguide.IsOpen())
 			{
 				if (sNearestBase != NearestOpenBase)
 				{

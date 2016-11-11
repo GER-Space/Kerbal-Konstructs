@@ -320,7 +320,7 @@ namespace KerbalKonstructs.UI
 				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
 			}
 			GUILayout.EndHorizontal();
-
+/*
 			GUILayout.Space(3);
 			GUILayout.Box("Inflight Instruments Defaults");
 			GUILayout.BeginHorizontal();
@@ -381,9 +381,9 @@ namespace KerbalKonstructs.UI
 				}
 
 				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			} */
+			} 
 			GUILayout.EndHorizontal();
-
+            */
 			GUILayout.Space(3);
 			GUILayout.Box("Facility Defaults");
 			GUILayout.Label("Some facilities require a craft or kerbal to be close to use them.", LabelInfo);
@@ -785,7 +785,6 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.disableCareerStrategyLayer = false;
 				KerbalKonstructs.instance.disableCustomLaunchsites = false;
 				KerbalKonstructs.instance.disableRemoteBaseOpening = false;
-				KerbalKonstructs.instance.enableATC = true;
 				KerbalKonstructs.instance.facilityUseRange = 100;
 				KerbalKonstructs.instance.disableDisplayClosed = false;
 				KerbalKonstructs.instance.toggleIconsWithBB = false;

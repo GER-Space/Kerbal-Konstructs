@@ -110,23 +110,23 @@ namespace KerbalKonstructs.StaticObjects
 
 				if (sFacType == "LandingGuide")
 				{
-					if (visible) KerbalKonstructs.instance.drawLandingGuide(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(obj);
 					else
-						KerbalKonstructs.instance.drawLandingGuide(null);
+						KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
 				}
 
 				if (sFacType == "TouchdownGuideL")
 				{
-					if (visible) KerbalKonstructs.instance.drawTouchDownGuideL(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(obj);
 					else
-						KerbalKonstructs.instance.drawTouchDownGuideL(null);
+						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
 				}
 
 				if (sFacType == "TouchdownGuideR")
 				{
-					if (visible) KerbalKonstructs.instance.drawTouchDownGuideR(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(obj);
 					else
-						KerbalKonstructs.instance.drawTouchDownGuideR(null);
+						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
 				}
 
 				if (sFacType == "CityLights")
