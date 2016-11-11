@@ -94,6 +94,7 @@
     <Compile Include="SpaceCenters\CustomSpaceCenter.cs" />
     <Compile Include="SpaceCenters\SpaceCenterManager.cs" />
     <Compile Include="StaticObjects\StaticUtils.cs" />
+    <Compile Include="UI\KKWindow.cs" />
     <Compile Include="UI\ToolbarController.cs" />
     <Compile Include="UI\UIMain.cs" />
     <Compile Include="Utilities\Log.cs" />
@@ -131,7 +132,9 @@
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Utilities\NavUtils.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modules\LandingGuide\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj</PostBuildEvent>

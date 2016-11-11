@@ -66,19 +66,19 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region GUI Windows
-		internal EditorGUI GUI_Editor = new EditorGUI();
-        internal StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
-        internal NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
-        internal DownlinkGUI GUI_Downlink = new DownlinkGUI();
-        internal BaseBossFlight GUI_FlightManager = new BaseBossFlight();
-        internal FacilityManager GUI_FacilityManager = new FacilityManager();
-        internal LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
-        internal MapIconManager GUI_MapIconManager = new MapIconManager();
-        internal KSCManager GUI_KSCManager = new KSCManager();
-        internal AirRacing GUI_AirRacingApp = new AirRacing();
-        internal BaseManager GUI_BaseManager = new BaseManager();
-        internal KKSettingsGUI GUI_Settings = new KKSettingsGUI();
-		public ModelInfo GUI_ModelInfo = new ModelInfo();
+		internal static EditorGUI GUI_Editor = new EditorGUI();
+        internal static StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
+        internal static NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
+        internal static DownlinkGUI GUI_Downlink = new DownlinkGUI();
+        internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();
+        internal static FacilityManager GUI_FacilityManager = new FacilityManager();
+        internal static LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
+        internal static MapIconManager GUI_MapIconManager = new MapIconManager();
+        internal static KSCManager GUI_KSCManager = new KSCManager();
+        internal static AirRacing GUI_AirRacingApp = new AirRacing();
+        internal static BaseManager GUI_BaseManager = new BaseManager();
+        internal static KKSettingsGUI GUI_Settings = new KKSettingsGUI();
+        internal static ModelInfo GUI_ModelInfo = new ModelInfo();
 		#endregion
 
 		#region Show Toggles
@@ -110,10 +110,10 @@ namespace KerbalKonstructs
 		public Boolean disableAllInstanceEditing = true;
 		[KSPField]
 		public Boolean enableATC = true;
-		[KSPField]
-		public Boolean enableNGS = true;
-		[KSPField]
-		public Boolean enableDownlink = true;
+		//[KSPField]
+		//public Boolean enableNGS = true;
+		//[KSPField]
+		//public Boolean enableDownlink = true;
 		[KSPField]
 		public Double facilityUseRange = 100;
 		[KSPField]
@@ -1187,14 +1187,6 @@ namespace KerbalKonstructs
 						DeletePreviewObject();
 				}
 
-			}
-			else
-			{
-				if (DownlinkGUI.DisAudio != null)
-					DownlinkGUI.DisAudio.Stop();
-
-				if (DownlinkGUI.Dis != null)
-					DownlinkGUI.Dis.SetActive(false);
 			}
 
 

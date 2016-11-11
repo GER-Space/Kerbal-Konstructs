@@ -10,7 +10,7 @@ namespace KerbalKonstructs.UI
 {
     /// <summary>
     /// This class is designed to register and draw windows. This is the foundation to seperate the game-logic from the Gui. 
-    /// The "in the future to be implemented" Window-class should have: "Open" and "Close" functions which are calls to the WindowManager to register the "Draw" function.
+    /// Look in the implementation of the KKWindow class about registering daw functions.
     /// </summary>
     [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
     public class WindowManager : MonoBehaviour
@@ -20,6 +20,7 @@ namespace KerbalKonstructs.UI
 
 
         private Action draw;
+
         private List<Action> openWindows;
         private KerbalKonstructs KKmain;
 
@@ -85,12 +86,12 @@ namespace KerbalKonstructs.UI
         /// Adds a function pointer to the list of drawn windows.
         /// </summary>
         /// <param name="drawfunct"></param>
-        public void OpenWindow(Action drawfunct)
+        public static void OpenWindow(Action drawfunct)
         {
             if (!IsOpen(drawfunct))
             {
-                openWindows.Add(drawfunct);
-                draw += drawfunct;
+                instance.openWindows.Add(drawfunct);
+                instance.draw += drawfunct;
             }
         }
 
@@ -98,12 +99,12 @@ namespace KerbalKonstructs.UI
         /// Removes a function pointer from the list of open windows.
         /// </summary>
         /// <param name="drawfunct"></param>
-        public void CloseWindow(Action drawfunct)
+        public static void CloseWindow(Action drawfunct)
         {
             if (IsOpen(drawfunct))
             {
-                openWindows.Remove(drawfunct);
-                draw -= drawfunct;
+                instance.openWindows.Remove(drawfunct);
+                instance.draw -= drawfunct;
             }
         }
 
@@ -111,7 +112,7 @@ namespace KerbalKonstructs.UI
         /// Opens a closed window or closes an open one.
         /// </summary>
         /// <param name="drawfunct"></param>
-        public void ToggleWindow(Action drawfunct)
+        public static void ToggleWindow(Action drawfunct)
         {
             if (IsOpen(drawfunct))
             {
@@ -128,10 +129,11 @@ namespace KerbalKonstructs.UI
         /// </summary>
         /// <param name="drawfunct"></param>
         /// <returns></returns>
-        public bool IsOpen(Action drawfunct)
+        public static bool IsOpen(Action drawfunct)
         {
-            return openWindows.Contains(drawfunct);
+            return instance.openWindows.Contains(drawfunct);
         }
+
 
         #endregion
 

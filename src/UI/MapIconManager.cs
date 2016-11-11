@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-	public class MapIconManager
+	class MapIconManager :KKWindow
 	{
 		Rect mapManagerRect = new Rect(250, 40, 515, 75);
 
@@ -33,8 +33,6 @@ namespace KerbalKonstructs.UI
 		public Boolean bHideOccluded = false;
 		public Boolean bHideOccluded2 = false;
 
-		public Vector2 sitesScrollPosition;
-		public Vector2 descriptionScrollPosition;
 
 		public int iRadarCounter;
 
@@ -58,14 +56,23 @@ namespace KerbalKonstructs.UI
 			GUI.Label(new Rect((float)(pos.x) + 16, (float)(Screen.height - pos.y) - 8, 210, 25), sitename);
 		}
 
+                public override void Draw()
+        {
+            if (MapView.MapIsEnabled)
+            {
+                drawManager();
+            } else
+            {
+                this.Close();
+            } 
+        }
+
 		public void drawManager()
 		{
-            if (!MapView.MapIsEnabled) { return; }
-
             mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", UIMain.navStyle);
-		}
+        }
 
-		void drawMapManagerWindow(int windowID)
+        void drawMapManagerWindow(int windowID)
 		{
 			if (!loadedPersistence && MiscUtils.isCareerGame())
 			{
@@ -255,7 +262,7 @@ namespace KerbalKonstructs.UI
 			if (GUILayout.Button("X", UIMain.ButtonRed, GUILayout.Height(20), GUILayout.Width(20)))
 			{
 				loadedPersistence = false;
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
+                this.Close();
 			}
 
 			GUILayout.EndHorizontal();
@@ -271,7 +278,7 @@ namespace KerbalKonstructs.UI
 
 		public void drawIcons()
 		{
-            if ((!KerbalKonstructs.instance.toggleIconsWithBB) || (KerbalKonstructs.instance.toggleIconsWithBB && WindowManager.instance.IsOpen(KerbalKonstructs.instance.GUI_MapIconManager.drawManager)))
+            if ((!KerbalKonstructs.instance.toggleIconsWithBB) || (KerbalKonstructs.instance.toggleIconsWithBB && this.IsOpen() ))
             {
                 drawTrackingStations();
                 drawLaunchsites();
@@ -508,7 +515,7 @@ namespace KerbalKonstructs.UI
 
 						selectedFacility = obj;
 						FacilityManager.setSelectedFacility(obj);
-                        WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
+                        KerbalKonstructs.GUI_FacilityManager.Open();
                     }
 				}
 			}
@@ -695,7 +702,7 @@ namespace KerbalKonstructs.UI
 						BaseManager.setSelectedSite(site);
 						selectedSite = site;
 						NavGuidanceSystem.setTargetSite(selectedSite);
-                        WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                        KerbalKonstructs.GUI_BaseManager.Open();
                     }
 				}
 			}

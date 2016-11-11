@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-	public class BaseManager
+	class BaseManager :KKWindow
 	{
 		public static Rect BaseManagerRect = new Rect(250, 60, 185, 720);
 
@@ -68,7 +68,12 @@ namespace KerbalKonstructs.UI
 
 		public string sNation;
 
-		public void drawBaseManager()
+        public override void Draw()
+        {
+            drawBaseManager();
+        }
+
+        public void drawBaseManager()
 		{
 			KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3,3,5,5);
@@ -208,7 +213,7 @@ namespace KerbalKonstructs.UI
 						InputLockManager.RemoveControlLock("KKEditorLock");
 						selectedSite = null;
 						loadedPersistence = false;
-                        WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                        this.Close();
                         return;
                     }
 				}

@@ -11,7 +11,7 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-	public class AirRacing
+	class AirRacing : KKWindow
 	{
 		Rect racingRect = new Rect(40, 80, 320, 170);
 		Rect orbitalRect = new Rect(40, 80, 420, 80);
@@ -45,8 +45,12 @@ namespace KerbalKonstructs.UI
 		GUIStyle DeadButton;
 		GUIStyle DeadButtonRed;
 
-		public void drawRacing()
+		public override void Draw()
 		{
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
 			raceStyle.padding.top = 1;
 
 			if (runningRace)
@@ -109,7 +113,7 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
 					ResetRace();
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                    this.Close();
                     runningRace = false;
 					basicorbitalhud = false;
 				}
@@ -257,7 +261,7 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("I'm done racing!", GUILayout.Height(22)))
 				{
 					ResetRace();
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                    this.Close();
                     runningRace = false;
                     return;
 				}

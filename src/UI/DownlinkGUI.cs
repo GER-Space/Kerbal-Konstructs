@@ -11,7 +11,7 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-	public class DownlinkGUI
+	class DownlinkGUI :KKWindow
 	{
 		Rect targetSelectorRect = new Rect(640, 120, 210, 420);
 		Rect DownlinkRect = new Rect(300, 30, 195, 750);
@@ -211,8 +211,12 @@ namespace KerbalKonstructs.UI
 			DisAudio.Play();
 		}
 
-        public void drawDownlink()
+        public override void Draw()
         {
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
 
             DownlinkRect = GUI.Window(0xE05B9C9, DownlinkRect, drawDownlinkWindow, "", navStyle);
 
@@ -221,7 +225,18 @@ namespace KerbalKonstructs.UI
 
         }
 
-		void InitialiseBoard()
+        public override void Close()
+        {
+            base.Close();
+            if (DisAudio != null)
+            {
+                DisAudio.Stop();
+            }
+            if (Dis != null)
+                Dis.SetActive(false);
+        }
+
+        void InitialiseBoard()
 		{
 			sWarning1 = "None";
 			sWarning2 = "None";
@@ -416,9 +431,8 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
 				{
-					KerbalKonstructs.instance.enableDownlink = false;
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Downlink.drawDownlink);
-                    DisAudio.Stop();
+                    this.Close();
+                    return;
                 }
 			}
 			GUILayout.EndHorizontal();

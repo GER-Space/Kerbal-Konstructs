@@ -13,7 +13,7 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	class KSCManager
+	class KSCManager :KKWindow
 	{
 		Rect KSCmanagerRect = new Rect(150, 50, 410, 680);
 
@@ -55,7 +55,18 @@ namespace KerbalKonstructs.UI
 
 		public double dUpdater = 0;
 
-		public void drawKSCManager()
+        public override void Draw()
+        {
+            drawKSCManager();
+        }
+
+        public override void Close()
+        {
+            KerbalKonstructs.GUI_Settings.Close();
+            base.Close();
+        }
+
+        public void drawKSCManager()
 		{
 			KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);
@@ -296,8 +307,8 @@ namespace KerbalKonstructs.UI
 
 			if (GUILayout.Button("Mod Settings"))
 			{
-                WindowManager.instance.ToggleWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
-			}
+                KerbalKonstructs.GUI_Settings.Toggle();
+            }
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}

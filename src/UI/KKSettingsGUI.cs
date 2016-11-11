@@ -13,7 +13,7 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	class KKSettingsGUI
+	class KKSettingsGUI :KKWindow
 	{
 		Rect KKSettingsRect = new Rect(400, 20, 385, 560);
 
@@ -43,7 +43,12 @@ namespace KerbalKonstructs.UI
 		GUIStyle LabelInfo;
 		GUIStyle LabelYellow;
 
-		public void drawKKSettingsGUI()
+        public override void Draw()
+        {
+            drawKKSettingsGUI();
+        }
+
+        public void drawKKSettingsGUI()
 		{
 			KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);
@@ -118,7 +123,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
+                    this.Close();
                     return;
 				}
 			}
@@ -339,7 +344,7 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.BeginHorizontal();
-			if (!KerbalKonstructs.instance.enableNGS)
+/*			if (!KerbalKonstructs.instance.enableNGS)
 			{
 				if (GUILayout.Button("NGS Enabled", GUILayout.Height(23)))
 				{
@@ -376,7 +381,7 @@ namespace KerbalKonstructs.UI
 				}
 
 				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
+			} */
 			GUILayout.EndHorizontal();
 
 			GUILayout.Space(3);
@@ -781,8 +786,6 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.disableCustomLaunchsites = false;
 				KerbalKonstructs.instance.disableRemoteBaseOpening = false;
 				KerbalKonstructs.instance.enableATC = true;
-				KerbalKonstructs.instance.enableNGS = true;
-				KerbalKonstructs.instance.enableDownlink = true;
 				KerbalKonstructs.instance.facilityUseRange = 100;
 				KerbalKonstructs.instance.disableDisplayClosed = false;
 				KerbalKonstructs.instance.toggleIconsWithBB = false;

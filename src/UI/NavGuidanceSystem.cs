@@ -11,7 +11,7 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-	class NavGuidanceSystem
+	class NavGuidanceSystem :KKWindow
 	{
 		Rect NGSRect = new Rect(250, 50, 400, 120);
 
@@ -44,7 +44,16 @@ namespace KerbalKonstructs.UI
 		{
 		}
 
-		public void drawNGS()
+        public override void Draw()
+        {
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
+            drawNGS();
+        }
+
+        public void drawNGS()
 		{
 				NGSRect = GUI.Window(0xB00B1E9, NGSRect, drawNGSWindow, "", UIMain.navStyle);
 		}
@@ -158,8 +167,8 @@ namespace KerbalKonstructs.UI
 				GUILayout.Space(2);
 				if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Width(32), GUILayout.Height(16)))
 				{
-					KerbalKonstructs.instance.enableNGS = false;
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
+                    this.Close();
+                    return;
                 }
 				GUILayout.Space(2);
 			}

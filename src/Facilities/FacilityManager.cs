@@ -11,17 +11,17 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-	public class FacilityManager
+	class FacilityManager :KKWindow
 	{
 		Rect targetSelectorRect = new Rect(640, 120, 220, 420);
 		public static Rect facilityManagerRect = new Rect(150, 75, 320, 670);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
-		public Vector2 descriptionScrollPosition;
-		public Vector2 scrollNearbyCraft;
-		public Vector2 scrollOreTransfer;
-		public Vector2 scrollOreTransfer2;
+//		public Vector2 descriptionScrollPosition;
+//		public Vector2 scrollNearbyCraft;
+//		public Vector2 scrollOreTransfer;
+//		public Vector2 scrollOreTransfer2;
 		
 		public static LaunchSite selectedSite = null;
 		public static StaticObject selectedFacility = null;
@@ -74,7 +74,7 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		public void drawFacilityManager()
+		public override void Draw()
 		{
             StaticObject soObject = KerbalKonstructs.instance.selectedObject;
             KKWindow = new GUIStyle(GUI.skin.window);
@@ -168,7 +168,8 @@ namespace KerbalKonstructs.UI
 				{
 					PersistenceUtils.saveStaticPersistence(selectedFacility);
 					selectedFacility = null;
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
+                    this.Close();
+                    return;
 
                 }
 			}

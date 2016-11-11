@@ -34,24 +34,24 @@ namespace KerbalKonstructs.UI
             
             if  ( (!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
             {
-                WindowManager.instance.OpenWindow(KKmain.GUI_LaunchSiteSelector.drawSelector);
+                KerbalKonstructs.GUI_LaunchSiteSelector.Open();
                 return;
             }
             if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
             {
-                WindowManager.instance.OpenWindow(KKmain.GUI_FlightManager.drawManager);
+                KerbalKonstructs.GUI_FlightManager.Open();
                 return;
             }
 
             if ( (HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
-                WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
+                KerbalKonstructs.GUI_MapIconManager.Open();
                 return;
             }
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                WindowManager.instance.OpenWindow(KKmain.GUI_KSCManager.drawKSCManager);
+                KerbalKonstructs.GUI_KSCManager.Open();
                 return;
             }
         }
@@ -61,26 +61,25 @@ namespace KerbalKonstructs.UI
 
             if ((!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
             {
-                WindowManager.instance.CloseWindow(KKmain.GUI_LaunchSiteSelector.drawSelector);
-                WindowManager.instance.CloseWindow(KKmain.GUI_BaseManager.drawBaseManager);
+                KerbalKonstructs.GUI_LaunchSiteSelector.Close();
+                KerbalKonstructs.GUI_BaseManager.Close();
                 return;
             }
             if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
             {
-                WindowManager.instance.CloseWindow(KKmain.GUI_FlightManager.drawManager);
+                KerbalKonstructs.GUI_FlightManager.Close();
                 return;
             }
 
             if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
+                KerbalKonstructs.GUI_MapIconManager.Close();
                 return;
             }
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                WindowManager.instance.CloseWindow(KKmain.GUI_KSCManager.drawKSCManager);
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Settings.drawKKSettingsGUI);
+                KerbalKonstructs.GUI_KSCManager.Close();
                 return;
             }
         }

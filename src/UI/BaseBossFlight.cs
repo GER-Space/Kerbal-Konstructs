@@ -11,7 +11,7 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-	class BaseBossFlight
+	class BaseBossFlight : KKWindow
 	{
 		public StaticObject selectedObject = null;
 
@@ -46,8 +46,14 @@ namespace KerbalKonstructs.UI
 		GUIStyle BoxNoBorder;
 		GUIStyle LabelInfo;
 
-		public void drawManager()
+
+        public override void Draw()
 		{
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
+
             var obj = KerbalKonstructs.instance.selectedObject;
 			KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);
@@ -124,7 +130,7 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
 				{
 					bShowFacilities = false;
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_FlightManager.drawManager);
+                    this.Close();
                     return;
 				}
 			}
@@ -137,76 +143,52 @@ namespace KerbalKonstructs.UI
 			GUILayout.Box("Flight Tools", BoxNoBorder);
 
 			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Space(2);
-				GUILayout.Label("ATC ", LabelInfo);
+            {
+                GUILayout.Space(2);
+                GUILayout.Label("ATC ", LabelInfo);
 
-				if (KerbalKonstructs.instance.enableATC)
-					tToggle = tIconOpen;
-				else
-					tToggle = tIconClosed;
+                if (KerbalKonstructs.instance.enableATC)
+                    tToggle = tIconOpen;
+                else
+                    tToggle = tIconClosed;
 
-				if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
-				{
-					KerbalKonstructs.instance.updateCache();
+                if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
+                {
+                    KerbalKonstructs.instance.updateCache();
 
-					if (KerbalKonstructs.instance.enableATC)
-						KerbalKonstructs.instance.enableATC = false;
-					else
-						KerbalKonstructs.instance.enableATC = true;
-				}
+                    if (KerbalKonstructs.instance.enableATC)
+                        KerbalKonstructs.instance.enableATC = false;
+                    else
+                        KerbalKonstructs.instance.enableATC = true;
+                }
 
-//				KerbalKonstructs.instance.showATC = (KerbalKonstructs.instance.enableATC);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("NGS ", LabelInfo);
 
-				GUILayout.FlexibleSpace();
-				GUILayout.Label("NGS ", LabelInfo);
-
-				if (KerbalKonstructs.instance.enableNGS)
-					tToggle2 = tIconOpen;
-				else
-					tToggle2 = tIconClosed;
-
+                if (KerbalKonstructs.GUI_NGS.IsOpen())
+                {
+                    tToggle2 = tIconOpen;
+                } else {
+                    tToggle2 = tIconClosed;
+                }
 				if (GUILayout.Button(tToggle2, GUILayout.Height(18), GUILayout.Width(18)))
 				{
-                    if (KerbalKonstructs.instance.enableNGS)
-                    {
-                        KerbalKonstructs.instance.enableNGS = false;
-                        WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
-                    }
-                    else
-                    {
-                        KerbalKonstructs.instance.enableNGS = true;
-                        WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
-                    }
+                    KerbalKonstructs.GUI_NGS.Toggle();
 				}
-
-				// KerbalKonstructs.instance.showNGS = (KerbalKonstructs.instance.enableNGS);
 
 				GUILayout.FlexibleSpace();
 				GUILayout.Label("Downlink ", LabelInfo);
 
-				if (KerbalKonstructs.instance.enableDownlink)
-					tToggle2 = tIconOpen;
-				else
-					tToggle2 = tIconClosed;
+				if (KerbalKonstructs.GUI_Downlink.IsOpen())
+                {
+                    tToggle2 = tIconOpen;
+                } else {
+                    tToggle2 = tIconClosed;
+                }
 
 				if (GUILayout.Button(tToggle2, GUILayout.Height(18), GUILayout.Width(18)))
 				{
-                    if (KerbalKonstructs.instance.enableDownlink)
-                    {
-                        KerbalKonstructs.instance.enableDownlink = false;
-                        WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_Downlink.drawDownlink);
-                        if (DownlinkGUI.DisAudio != null)
-                        {
-                            DownlinkGUI.DisAudio.Stop();
-                        }
-                            
-                    }
-                    else
-                    {
-                        KerbalKonstructs.instance.enableDownlink = true;
-                        WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_Downlink.drawDownlink);
-                    }
+                    KerbalKonstructs.GUI_Downlink.Toggle();
                 }
 
 
@@ -246,7 +228,7 @@ namespace KerbalKonstructs.UI
 						GUILayout.Label("Nearest Open: ", LabelInfo);
 						GUILayout.Label(snearestopen, LabelInfo, GUILayout.Width(150));
 
-						if (KerbalKonstructs.instance.enableNGS)
+						if (KerbalKonstructs.GUI_NGS.IsOpen())
 						{
 							GUILayout.FlexibleSpace();
 							if (GUILayout.Button("NGS", GUILayout.Height(21)))
@@ -288,7 +270,7 @@ namespace KerbalKonstructs.UI
 					GUILayout.Label("Nearest Base: ", LabelInfo);
 					GUILayout.Label(sNearestbase, LabelInfo, GUILayout.Width(150));
 
-					if (KerbalKonstructs.instance.enableNGS)
+					if (KerbalKonstructs.GUI_NGS.IsOpen())
 					{
 						GUILayout.FlexibleSpace();
 						if (GUILayout.Button("NGS", GUILayout.Height(21)))
@@ -462,7 +444,7 @@ namespace KerbalKonstructs.UI
 									KerbalKonstructs.instance.selectObject(obj, false, true, false);
 									PersistenceUtils.loadStaticPersistence(obj);
 									FacilityManager.setSelectedFacility(obj);
-                                    WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
+                                    KerbalKonstructs.GUI_FacilityManager.Open();
                                 }
 
 								if (bIsOpen)
@@ -520,19 +502,18 @@ namespace KerbalKonstructs.UI
 			GUILayout.Box("Other Features", BoxNoBorder);
 			if (GUILayout.Button("Start Air Racing!", GUILayout.Height(23)))
 			{
-                WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                KerbalKonstructs.GUI_AirRacingApp.Open();
                 AirRacing.runningRace = true;
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
+                KerbalKonstructs.GUI_NGS.Close();
+                KerbalKonstructs.GUI_FacilityManager.Close();
 			}
 			if (GUILayout.Button("Basic Orbital Data", GUILayout.Height(23)))
 			{
-                WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_AirRacingApp.drawRacing);
+                KerbalKonstructs.GUI_AirRacingApp.Open();
                 AirRacing.runningRace = false;
 				AirRacing.basicorbitalhud = true;
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_NGS.drawNGS);
-                WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_FacilityManager.drawFacilityManager);
-
+                KerbalKonstructs.GUI_NGS.Close();
+                KerbalKonstructs.GUI_FacilityManager.Close();
 			}
 			GUILayout.Space(5);
 

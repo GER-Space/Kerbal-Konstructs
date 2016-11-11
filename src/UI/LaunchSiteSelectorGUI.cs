@@ -7,7 +7,7 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.UI
 {
-	public class LaunchSiteSelectorGUI
+	class LaunchSiteSelectorGUI :KKWindow
 	{
 		public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
 		public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
@@ -49,7 +49,6 @@ namespace KerbalKonstructs.UI
 		public string sCurrentSite = "";
 
 		public Vector2 sitesScrollPosition;
-		public Vector2 descriptionScrollPosition;
 
 		public bool bOpenOn = true;
 		public bool bClosedOn = true;
@@ -61,7 +60,21 @@ namespace KerbalKonstructs.UI
 
 		Rect windowRect = new Rect(((Screen.width - Camera.main.rect.x) / 2) + Camera.main.rect.x - 125, (Screen.height / 2 - 250), 400, 460);
 
-		public void drawSelector()
+        public override void Draw()
+        {
+            drawSelector();
+        }
+
+        public override void Close()
+        {
+            sites = null;
+            InputLockManager.RemoveControlLock("KKEditorLock");
+            InputLockManager.RemoveControlLock("KKEditorLock2");
+            KerbalKonstructs.GUI_BaseManager.Close();
+            base.Close();
+        }
+
+        public void drawSelector()
 		{
 			KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);
@@ -136,8 +149,7 @@ namespace KerbalKonstructs.UI
 				{
 					InputLockManager.RemoveControlLock("KKEditorLock");
 					InputLockManager.RemoveControlLock("KKEditorLock2");
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
-                    WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_LaunchSiteSelector.drawSelector);
+                    this.Close();
                     return;
 				}
 			}
@@ -479,7 +491,7 @@ namespace KerbalKonstructs.UI
 			if (selectedSite != null)
 			{
 				BaseManager.setSelectedSite(selectedSite);
-                WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                KerbalKonstructs.GUI_BaseManager.Open();
 			}
 			else
 			{
@@ -488,7 +500,7 @@ namespace KerbalKonstructs.UI
 					selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
 					LaunchSiteManager.setLaunchSite(selectedSite);
 					BaseManager.setSelectedSite(selectedSite);
-                    WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
+                    KerbalKonstructs.GUI_BaseManager.Open();
                 }
 				else
 				{
@@ -518,16 +530,7 @@ namespace KerbalKonstructs.UI
 				// if (!isCareerGame())
 				LaunchSiteManager.setLaunchSite(selectedSite);
 			}
-		}
-		
-		public void Close()
-		{
-			sites = null;
-			InputLockManager.RemoveControlLock("KKEditorLock");
-			InputLockManager.RemoveControlLock("KKEditorLock2");
-            WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_BaseManager.drawBaseManager);
-            WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_LaunchSiteSelector.drawSelector);
-        }
+		}	
 
 	}
 }
