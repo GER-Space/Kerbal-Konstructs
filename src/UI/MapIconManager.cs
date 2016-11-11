@@ -60,7 +60,9 @@ namespace KerbalKonstructs.UI
 
 		public void drawManager()
 		{
-			mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", UIMain.navStyle);
+            if (!MapView.MapIsEnabled) { return; }
+
+            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", UIMain.navStyle);
 		}
 
 		void drawMapManagerWindow(int windowID)

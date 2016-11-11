@@ -41,7 +41,7 @@ namespace KerbalKonstructs.UI
                 WindowManager.instance.OpenWindow(KKmain.GUI_FlightManager.drawManager);
             }
 
-            if ( (HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled || MapView.MapCamera != null) )
+            if ( (HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
                 WindowManager.instance.OpenWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
             }
@@ -65,7 +65,7 @@ namespace KerbalKonstructs.UI
                 WindowManager.instance.CloseWindow(KKmain.GUI_FlightManager.drawManager);
             }
 
-            if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled || MapView.MapCamera != null))
+            if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
             {
                 WindowManager.instance.CloseWindow(KerbalKonstructs.instance.GUI_MapIconManager.drawManager);
             }
