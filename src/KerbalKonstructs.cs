@@ -1075,8 +1075,8 @@ namespace KerbalKonstructs
 				Rect Marker7 = new Rect((float)(vTDL.x) - (50 * flgWscale), (float)(Screen.height - vTDL.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
 				Rect Marker8 = new Rect((float)(vTDR.x) - (50 * flgWscale), (float)(Screen.height - vTDR.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
 
-				GUI.DrawTexture(Marker7, tTGL, ScaleMode.ScaleToFit, true);
-				GUI.DrawTexture(Marker8, tTGR, ScaleMode.ScaleToFit, true);
+				GUI.DrawTexture(Marker7, tTGL, ScaleMode.StretchToFill, true);
+				GUI.DrawTexture(Marker8, tTGR, ScaleMode.StretchToFill, true);
 			}
 
 			if (vLineEnd != Vector3.zero && vLineStart != Vector3.zero)
@@ -1137,14 +1137,14 @@ namespace KerbalKonstructs
 
 				if (fDist < 15000)
 				{
-					GUI.DrawTexture(Marker1, tLGb, ScaleMode.ScaleToFit, true);
-					GUI.DrawTexture(Marker2, tLGm, ScaleMode.ScaleToFit, true);
-					GUI.DrawTexture(Marker3, tLGt, ScaleMode.ScaleToFit, true);
+					GUI.DrawTexture(Marker1, tLGb, ScaleMode.StretchToFill, true);
+					GUI.DrawTexture(Marker2, tLGm, ScaleMode.StretchToFill, true);
+					GUI.DrawTexture(Marker3, tLGt, ScaleMode.StretchToFill, true);
 				}
 
-				GUI.DrawTexture(Marker4, tLGb, ScaleMode.ScaleToFit, true);
-				GUI.DrawTexture(Marker5, tLGm, ScaleMode.ScaleToFit, true);
-				GUI.DrawTexture(Marker6, tLGt, ScaleMode.ScaleToFit, true);
+				GUI.DrawTexture(Marker4, tLGb, ScaleMode.StretchToFill, true);
+				GUI.DrawTexture(Marker5, tLGm, ScaleMode.StretchToFill, true);
+				GUI.DrawTexture(Marker6, tLGt, ScaleMode.StretchToFill, true);
 			}
 		}
 
