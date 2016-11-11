@@ -10,6 +10,12 @@ namespace KerbalKonstructs.Utilities
 {
     internal class Log
     {
+        internal static void Debug(string message)
+        {
+            if (KerbalKonstructs.instance.DebugMode)
+                UnityEngine.Debug.Log("KK: " + message);
+        }
+
         internal static void Normal (string message)
         {
 #if DEBUG

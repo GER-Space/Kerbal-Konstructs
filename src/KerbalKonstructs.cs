@@ -110,10 +110,6 @@ namespace KerbalKonstructs
 		public Boolean disableAllInstanceEditing = true;
 		[KSPField]
 		public Boolean enableATC = true;
-		//[KSPField]
-		//public Boolean enableNGS = true;
-		//[KSPField]
-		//public Boolean enableDownlink = true;
 		[KSPField]
 		public Double facilityUseRange = 100;
 		[KSPField]
@@ -1378,28 +1374,21 @@ namespace KerbalKonstructs
 				if (selectedObject != null)
 				{
 					playerPos = selectedObject.gameObject.transform.position;
-
-					if (DebugMode)
-						Debug.Log("KK: updateCache using selectedObject as playerPos");
+                    Log.Debug("updateCache using selectedObject as playerPos");
 				}
 				else if (FlightGlobals.ActiveVessel != null)
 				{
 					playerPos = FlightGlobals.ActiveVessel.transform.position;
-
-					if (DebugMode)
-						Debug.Log("KK: updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
+                    Log.Debug("updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
 				}
 				else if (Camera.main != null)
 				{
 					playerPos = Camera.main.transform.position;
-
-					if (DebugMode)
-						Debug.Log("KK: updateCache using Camera.main as playerPos");
+                    Log.Debug("updateCache using Camera.main as playerPos");
 				}
 				else
 				{
-					if (DebugMode)
-						Debug.Log("KK: KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
+                    Log.Debug("KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
 				}
 
 				staticDB.updateCache(playerPos);
@@ -1500,7 +1489,7 @@ namespace KerbalKonstructs
 
 					if (bSpaceOccupied)
 					{
-						Debug.Log("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
+						Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
 						continue;
 					}
 				}
@@ -1531,7 +1520,7 @@ namespace KerbalKonstructs
 							}
 							else
 							{
-								Debug.Log("KK: All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
+								Debug.LogError("KK: All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
 							}
 						}
 					}

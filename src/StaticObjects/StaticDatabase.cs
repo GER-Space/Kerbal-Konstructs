@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.StaticObjects
 {
@@ -53,8 +54,7 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void ToggleActiveAllStatics(bool bActive = true)
 		{
-			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: StaticDatabase.ToggleActiveAllStatics");
+            Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 			{
@@ -64,8 +64,7 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
 		{
-			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
+            Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 			{
@@ -79,8 +78,7 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
 		{
-			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: StaticDatabase.ToggleActiveStaticsInGroup");
+            Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 			{
@@ -96,21 +94,18 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			if (activeBodyName == "")
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.cacheAll() skipped. No activeBodyName.");
+                Log.Debug("StaticDatabase.cacheAll() skipped. No activeBodyName.");
 				
 				return;
 			}
 
 			if (groupList.ContainsKey(activeBodyName))
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.cacheAll(): groupList containsKey " + activeBodyName);
+                Log.Debug("StaticDatabase.cacheAll(): groupList containsKey " + activeBodyName);
 
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-					if (KerbalKonstructs.instance.DebugMode)
-						Debug.Log("KK: StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
+                    Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
 					
 					if (group.active)
 						group.cacheAll();
@@ -118,16 +113,13 @@ namespace KerbalKonstructs.StaticObjects
 					if (!group.alwaysActive)
 					{
 						group.active = false;
-
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.cacheAll(): group is not always active. group.active is set false for " + group.groupName);
+                        Log.Debug("StaticDatabase.cacheAll(): group is not always active. group.active is set false for " + group.groupName);
 					}
 				}
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.cacheAll(): groupList DOES NOT containsKey " + activeBodyName);
+                Log.Debug("StaticDatabase.cacheAll(): groupList DOES NOT containsKey " + activeBodyName);
 			}
 		}
 
@@ -148,16 +140,12 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			if (body != null)
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.onBodyChanged(): body is not null.");
+                Log.Debug("StaticDatabase.onBodyChanged(): body is not null.");
 
 				if (body.bodyName != activeBodyName)
 				{
-					if (KerbalKonstructs.instance.DebugMode)
-						Debug.Log("KK: StaticDatabase.onBodyChanged(): bodyName is not activeBodyName. cacheAll(). Load objects for body. Set activeBodyName to body.");
-
-					if (KerbalKonstructs.instance.DebugMode)
-						Debug.Log("KK: " + "bodyName " + body.bodyName + " activeBodyName " + activeBodyName);
+                    Log.Debug("StaticDatabase.onBodyChanged(): bodyName is not activeBodyName. cacheAll(). Load objects for body. Set activeBodyName to body.");
+                    Log.Debug("bodyName " + body.bodyName + " activeBodyName " + activeBodyName);
 
 					cacheAll();
 					loadObjectsForBody(body.bodyName);
@@ -166,9 +154,7 @@ namespace KerbalKonstructs.StaticObjects
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
-				
+                Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
 				cacheAll();
 				activeBodyName = "";
 			}
@@ -176,17 +162,14 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void updateCache(Vector3 playerPos)
 		{
-			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
+            Log.Debug("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
 
 			Vector3 vPlayerPos = Vector3.zero;
 
 			if (FlightGlobals.ActiveVessel != null)
 			{
 				vPlayerPos = FlightGlobals.ActiveVessel.GetTransform().position;
-
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
+                Log.Debug("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
 			}
 			else
 				vPlayerPos = playerPos;
@@ -203,8 +186,7 @@ namespace KerbalKonstructs.StaticObjects
 				{
 					if (!group.bLiveUpdate)
 					{
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
+                        Log.Debug("StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
 						
 						group.updateCacheSettings();
 						group.bLiveUpdate = true;
@@ -220,32 +202,25 @@ namespace KerbalKonstructs.StaticObjects
 						foreach (StaticObject obj in groupchildObjects)
 						{
 							dist = Vector3.Distance(vPlayerPos, obj.gameObject.transform.position);
-							
-							if (KerbalKonstructs.instance.DebugMode)
-								Debug.Log("KK: StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
+                            Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
 
 							break;
 						}
 
 						if (center == Vector3.zero)
 						{
-							if (KerbalKonstructs.instance.DebugMode)
-								Debug.Log("KK: StaticDatabase.updateCache(): center of group is still v3.zero " + group.groupName);
+                            Log.Debug("StaticDatabase.updateCache(): center of group is still v3.zero " + group.groupName);
 						}
 						
 						//if (KerbalKonstructs.instance.DebugMode)
 						//	Debug.Log("KK: StaticDatabase.updateCache(): dist is " + dist.ToString() + " to " + group.groupName);
 						
 						Boolean bGroupIsClose = dist < group.visibilityRange;
-
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.groupName);
+                        Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.groupName);
 						
 						if (!bGroupIsClose)
 						{
-							if (KerbalKonstructs.instance.DebugMode)
-								Debug.Log("KK: StaticDatabase.updateCache(): Group is not close. cacheAll()  " + group.groupName);
-							
+                            Log.Debug("StaticDatabase.updateCache(): Group is not close. cacheAll()  " + group.groupName);
 							group.cacheAll();
 						}
 						
@@ -253,23 +228,18 @@ namespace KerbalKonstructs.StaticObjects
 					}
 					else
 					{
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.updateCache(): Group is always active. Check if updateCache goes off. " + group.groupName);
-
+						Log.Debug("StaticDatabase.updateCache(): Group is always active. Check if updateCache goes off. " + group.groupName);
 						group.active = true;
 					}
 
 					if (group.active)
 					{
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.updateCache(): Group is active. group.updateCache() " + group.groupName);
-
+                        Log.Debug("StaticDatabase.updateCache(): Group is active. group.updateCache() " + group.groupName);
 						group.updateCache(vPlayerPos);
 					}
 					else
 					{
-						if (KerbalKonstructs.instance.DebugMode)
-							Debug.Log("KK: StaticDatabase.updateCache(): Group is not active " + group.groupName);
+                        Log.Debug("StaticDatabase.updateCache(): Group is not active " + group.groupName);
 					}
 				}
 			}
