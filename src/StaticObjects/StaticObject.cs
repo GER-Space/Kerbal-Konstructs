@@ -6,6 +6,7 @@ using KerbalKonstructs.API;
 using UnityEngine;
 using KSP.UI.Screens;
 using System.Reflection;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.StaticObjects
 {
@@ -57,8 +58,7 @@ namespace KerbalKonstructs.StaticObjects
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode) Debug.Log("KK: Setting " + setting + " not found in instance API. BUG BUG BUG.");
-				
+				Log.Debug("Setting " + setting + " not found in instance API. BUG BUG BUG.");
 				return null;
 			}
 		}

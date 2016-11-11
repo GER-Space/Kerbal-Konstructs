@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using KerbalKonstructs.API;
 using UnityEngine;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.StaticObjects
 {
@@ -16,9 +17,8 @@ namespace KerbalKonstructs.StaticObjects
 		{
 			if (settings.ContainsKey(setting))
 				return settings[setting];
-			
-			if (KerbalKonstructs.instance.DebugMode)
-				Debug.Log("KK: Setting " + setting + " not found in model " + config + ". This is harmless. Not a bug.");
+
+            Log.Debug("Setting " + setting + " not found in model " + config + ". This is harmless. Not a bug.");
 			
 			object defaultValue = KKAPI.getModelSettings()[setting].getDefaultValue();
 
@@ -29,8 +29,7 @@ namespace KerbalKonstructs.StaticObjects
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode) Debug.Log("KK: Setting " + setting + " not found in model API. It may be on purpose. Not a bug.");
-				
+                Log.Debug("Setting " + setting + " not found in model API. It may be on purpose. Not a bug.");
 				return null;
 			}
 		}

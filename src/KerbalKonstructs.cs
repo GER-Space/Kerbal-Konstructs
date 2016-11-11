@@ -415,7 +415,7 @@ namespace KerbalKonstructs
 			{}
 			else
 			{
-				if (DebugMode) Debug.Log("KK: LoadState");
+                Log.Debug("LoadState");
 				PersistenceUtils.loadPersistenceBackup();
 			}
 		}
@@ -427,22 +427,20 @@ namespace KerbalKonstructs
 			else
 			{
 				PersistenceUtils.savePersistenceBackup();
-				if (DebugMode) Debug.Log("KK: SaveState");
+                Log.Debug("SaveState");
 			}
 		}
 
 		void OnVesselLaunched(ShipConstruct vVessel)
 		{
-			if (DebugMode) Debug.Log("KK: OnVesselLaunched");
-
+            Log.Debug("OnVesselLaunched");
 			if (!MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 			{
 				return;
 			}
 			else
 			{
-				if (DebugMode) Debug.Log("KK: OnVesselLaunched is Career");
-
+                Log.Debug("OnVesselLaunched is Career");
 				PersistenceUtils.savePersistenceBackup();
 				string sitename = EditorLogic.fetch.launchSiteName;
 
@@ -538,8 +536,7 @@ namespace KerbalKonstructs
 				}
 				else
 				{
-					if (DebugMode) Debug.Log("KK: Flight scene load. No activevessel. Activating all statics.");
-
+                    Log.Debug("Flight scene load. No activevessel. Activating all statics.");
 					staticDB.ToggleActiveAllStatics(true);
 				}
 
@@ -557,8 +554,7 @@ namespace KerbalKonstructs
 				// Tighter control over what statics are active
 				bTreatBodyAsNullForStatics = false;
 				currentBody = KKAPI.getCelestialBody("HomeWorld");
-				if (DebugMode) Debug.Log("KK: Homeworld is " + currentBody.name);
-
+                Log.Debug("Homeworld is " + currentBody.name);
 				//staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
 				//staticDB.onBodyChanged(null);
 				staticDB.ToggleActiveStaticsInGroup("KSCUpgrades", true);
@@ -567,7 +563,7 @@ namespace KerbalKonstructs
 
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					if (DebugMode) Debug.Log("KK: Load launchsite openclose states for career game");
+                    Log.Debug("Load launchsite openclose states for career game");
 					PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
 				}
 			}
@@ -650,10 +646,10 @@ namespace KerbalKonstructs
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					if (DebugMode) Debug.Log("KK: OnProcessRecovery");
+                    Log.Debug("OnProcessRecovery");
 					if (vessel == null) return;
 					if (dialog == null) return;
-					if (DebugMode) Debug.Log("KK: OnProcessRecovery");
+                    Log.Debug("OnProcessRecovery");
 					dRecoveryValue = dialog.fundsEarned;
 					PersistenceUtils.savePersistenceBackup();
 				}
@@ -662,13 +658,13 @@ namespace KerbalKonstructs
 
 		void OnVesselRecoveryRequested(Vessel data)
 		{
-			if (DebugMode) Debug.Log("KK: OnVesselRecoveryRequested");
+            Log.Debug("OnVesselRecoveryRequested");
 			
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					if (DebugMode) Debug.Log("KK: OnVesselRecoveryRequested is career");
+                    Log.Debug("OnVesselRecoveryRequested is career");
 					// Change the Space Centre to the nearest open base
 					fRecovFactor = 0;
 					float fDist = 0f;
@@ -703,8 +699,7 @@ namespace KerbalKonstructs
 			{
 				if (vessel == null)
 				{
-					if (DebugMode) Debug.Log("KK: onVesselRecovered vessel was null");
-					
+                    Log.Debug("onVesselRecovered vessel was null");
 					if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 					{
 						SpaceCenter.Instance = SpaceCenterManager.KSC;
@@ -714,9 +709,8 @@ namespace KerbalKonstructs
 
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-					// Put the KSC back as the Space Centre
-					if (DebugMode) Debug.Log("KK: Resetting SpaceCenter to KSC");
-
+                    // Put the KSC back as the Space Centre
+                    Log.Debug("Resetting SpaceCenter to KSC");
 					SpaceCenter.Instance = SpaceCenterManager.KSC;
 
 					if (lastRecoveryBase != "")
@@ -779,8 +773,7 @@ namespace KerbalKonstructs
 				string saveConfigPath = string.Format("{0}saves/{1}/persistent.sfs", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
 				if (File.Exists(saveConfigPath))
 				{
-					if (DebugMode) Debug.Log("KK: Found persistent.sfs");
-
+                    Log.Debug("Found persistent.sfs");
 					ConfigNode rootNode = ConfigNode.Load(saveConfigPath);
 					ConfigNode rootrootNode = rootNode.GetNode("GAME");
 					foreach (ConfigNode ins in rootrootNode.GetNodes())
@@ -788,7 +781,7 @@ namespace KerbalKonstructs
 						// Debug.Log("KK: ConfigNode is " + ins);
 						if (ins.GetValue("name") == "ScenarioUpgradeableFacilities")
 						{
-							if (DebugMode) Debug.Log("KK: Found ScenarioUpgradeableFacilities in persistent.sfs");
+                            Log.Debug("Found ScenarioUpgradeableFacilities in persistent.sfs");
 
 							foreach (var s in new List<string> { 
 							"SpaceCenter/LaunchPad", 
@@ -805,8 +798,7 @@ namespace KerbalKonstructs
 								ConfigNode n = ins.GetNode(s);
 								if (n == null)
 								{
-									if (DebugMode) Debug.Log("KK: Could not find " + s + " node. Creating node.");
-
+                                    Log.Debug("Could not find " + s + " node. Creating node.");
 									n = ins.AddNode(s);
 									n.AddValue("lvl", 0);
 									rootNode.Save(saveConfigPath);
@@ -826,8 +818,7 @@ namespace KerbalKonstructs
 						}
 					}
 
-					if (DebugMode) Debug.Log("KK: loadCareerObjects");
-
+                    Log.Debug("loadCareerObjects");
 					loadCareerObjects();
 					InitialisedFacilities = true;
 				}
@@ -1252,9 +1243,8 @@ namespace KerbalKonstructs
 							bHangarHasStoredCraft1 = "InStorage";
 						else
 						{
-							// Craft no longer exists. Clear this hangar space.
-							if (DebugMode) Debug.Log("KK: Craft InStorage no longer exists. Emptying this hangar space.");
-							
+                            // Craft no longer exists. Clear this hangar space.
+                            Log.Debug("Craft InStorage no longer exists. Emptying this hangar space.");
 							obj.setSetting("InStorage", "None");
 							PersistenceUtils.saveStaticPersistence(obj);
 						}
@@ -1277,9 +1267,8 @@ namespace KerbalKonstructs
 							bHangarHasStoredCraft2 = "TargetID";
 						else
 						{
-							// Craft no longer exists. Clear this hangar space.
-							if (DebugMode) Debug.Log("KK: Craft TargetID no longer exists. Emptying this hangar space.");
-							
+                            // Craft no longer exists. Clear this hangar space.
+                            Log.Debug("Craft TargetID no longer exists. Emptying this hangar space.");
 							obj.setSetting("TargetID", "None");
 							PersistenceUtils.saveStaticPersistence(obj);
 						}
@@ -1303,7 +1292,7 @@ namespace KerbalKonstructs
 						else
 						{
 							// Craft no longer exists. Clear this hangar space.
-							if (DebugMode) Debug.Log("KK: Craft TargetType no longer exists. Emptying this hangar space.");
+							Log.Debug("Craft TargetType no longer exists. Emptying this hangar space.");
 							
 							obj.setSetting("TargetType", "None");
 							PersistenceUtils.saveStaticPersistence(obj);
@@ -1336,14 +1325,13 @@ namespace KerbalKonstructs
 								{
 									// Craft has been taken control
 									// Empty the hangar
-									if (DebugMode) Debug.Log("KK: Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
-									
+									Log.Debug("Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
 									obj.setSetting(sHangarSpace, "None");
 									PersistenceUtils.saveStaticPersistence(obj);
 								}
 								else
 								{
-									if (DebugMode) Debug.Log("KK: Hiding vessel " + vVesselStored.vesselName + ". It is in the hangar.");
+                                    Log.Debug("Hiding vessel " + vVesselStored.vesselName + ". It is in the hangar.");
 									// Hide the vessel - it is in the hangar
 									
 									foreach (Part p in vVesselStored.Parts)
@@ -1429,7 +1417,7 @@ namespace KerbalKonstructs
 					MeshCollider[] concave = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
 					foreach (MeshCollider collider in concave)
 					{
-						if (DebugMode) Debug.Log("KK: Making collider " + collider.name + " concave.");
+                        Log.Debug("Making collider " + collider.name + " concave.");
 						collider.convex = false;
 					}
 				}
@@ -1456,9 +1444,8 @@ namespace KerbalKonstructs
 							string sThisMesh = (string)soThis.model.getSetting("mesh");
 							string sThatMesh = (string)obj.model.getSetting("mesh");
 
-							if (DebugMode) 
-								Debug.Log("KK: Custom instance has a RadialPosition that already has an instance."
-								+ sThisMesh + ":"
+                            Log.Debug("Custom instance has a RadialPosition that already has an instance."
+                                + sThisMesh + ":"
 								+ (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
 								+ sThatMesh + ":"
 								+ (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
@@ -1477,12 +1464,12 @@ namespace KerbalKonstructs
 								}
 								else
 								{
-									if (DebugMode) Debug.Log("KK: Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
+                                    Log.Debug("Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
 								}
 							}
 							else
 							{
-								if (DebugMode) Debug.Log("KK: Different models. Allowing. Could be a terrain foundation or integrator.");
+                                Log.Debug("Different models. Allowing. Could be a terrain foundation or integrator.");
 							}
 						}
 					}
@@ -1887,7 +1874,7 @@ namespace KerbalKonstructs
 			if (snapTargetInstance == obj)
 				snapTargetInstance = null;
 
-			if (DebugMode) Debug.Log("KK: deleteObject");
+            Log.Debug("deleteObject");
 
 			staticDB.deleteObject(obj);
 		}
@@ -1919,13 +1906,11 @@ namespace KerbalKonstructs
 				if (selectedObject != null)
 					deselectObject(true, true);
 			}
-			
-			//obj.preview = bPreview;
-			if (DebugMode) Debug.Log("KK: obj.preview is " + obj.preview.ToString());
 
+            //obj.preview = bPreview;
+            Log.Debug("obj.preview is " + obj.preview.ToString());
 			selectedObject = obj;
-			if (DebugMode) Debug.Log("KK: selectedObject.preview is " + selectedObject.preview.ToString());
-			
+            Log.Debug("selectedObject.preview is " + selectedObject.preview.ToString());
 			if (isEditing)
 			{
 				selectedObject.editing = true;
@@ -1992,7 +1977,7 @@ namespace KerbalKonstructs
 					}
 					else
 					{
-						if (DebugMode) Debug.Log("KK: Attribute not defined as KSPField. This is harmless.");				
+                        Log.Debug("Attribute not defined as KSPField. This is harmless.");				
 						continue;
 					}
 				}

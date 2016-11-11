@@ -169,8 +169,7 @@ namespace KerbalKonstructs.StaticObjects
 			}
 			else
 			{
-				if (KerbalKonstructs.instance.DebugMode)
-					Debug.Log("KK: StaticGroup deleteObject tried to delete an object that doesn't exist in this group!");
+                Log.Debug("StaticGroup deleteObject tried to delete an object that doesn't exist in this group!");
 			}
 		}
 

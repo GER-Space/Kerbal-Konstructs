@@ -174,10 +174,9 @@ namespace KerbalKonstructs.StaticObjects
 			else
 				vPlayerPos = playerPos;
 
-			if (KerbalKonstructs.instance.DebugMode)
+			if (vPlayerPos == Vector3.zero)
 			{
-				if (vPlayerPos == Vector3.zero)
-					Debug.Log("KK: StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+                    Log.Debug("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
 			}
 			
 			if (groupList.ContainsKey(activeBodyName))
