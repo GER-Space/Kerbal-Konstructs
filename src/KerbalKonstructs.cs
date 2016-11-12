@@ -83,12 +83,9 @@ namespace KerbalKonstructs
 		#endregion
 
 		#region Show Toggles
-		public Boolean showEditor = false;
-		public Boolean showModelInfo = false;
+//		public GameObject go = null;
 
-		public GameObject go = null;
-
-		public Boolean bPreviewModel = false;
+//		public Boolean bPreviewModel = false;
 		#endregion
 
 
@@ -832,7 +829,7 @@ namespace KerbalKonstructs
 				float alt = 0;
 				bool changed = false;
 
-				if (showEditor)
+				if (GUI_Editor.IsOpen())
 				{
 					if (Input.GetKey(KeyCode.W))
 					{
@@ -918,24 +915,10 @@ namespace KerbalKonstructs
 
 			if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
 			{
-				ToggleEditor();
-			}
+				GUI_StaticsEditor.ToggleEditor();
+            }
 		}
 
-		public void ToggleEditor()
-		{
-			if (selectedObject != null)
-				deselectObject(true, true);
-
-			showEditor = !showEditor;
-
-			if (snapTargetInstance != null)
-			{
-				Color highlightColor = new Color(0, 0, 0, 0);
-				snapTargetInstance.HighlightObject(highlightColor);
-				snapTargetInstance = null;
-			}
-		}
 		#endregion
 
 		#region GUI Methods
@@ -949,34 +932,6 @@ namespace KerbalKonstructs
 				UIMain.setStyles();
 				bStylesSet = true;
 			}
-
-			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-			{
-				if (!MapView.MapIsEnabled)
-				{
-					if (showEditor)
-					{
-						GUI_StaticsEditor.drawEditor();
-
-						if (selectedObject != null)
-						{
-							if (selectedObject.preview)
-							{ }
-							else
-								GUI_Editor.drawEditor(selectedObject);
-						}
-
-						if (showModelInfo)
-						{
-							GUI_ModelInfo.drawModelInfoGUI(selectedModel);
-						}
-					}
-					else
-						DeletePreviewObject();
-				}
-
-			}
-
 
 				if (MapView.MapIsEnabled)
 				{

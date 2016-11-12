@@ -13,7 +13,7 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	class EditorGUI
+	class EditorGUI :KKWindow
 	{
 		#region Variable Declarations
 
@@ -129,11 +129,23 @@ namespace KerbalKonstructs.UI
 			Vector3 vDrift = new Vector3(0, 0, 0);
 			Vector3 vCurrpos = new Vector3(0, 0, 0);
 
-			#endregion
-		
-		#endregion
-		
-		public EditorGUI()
+        #endregion
+
+        #endregion
+
+        public override void Draw()
+        {
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
+            if ( (KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview) )
+            {
+                drawEditor(KerbalKonstructs.instance.selectedObject);
+            }
+        }
+
+        public EditorGUI()
 		{
 			listStyle.normal.textColor = Color.white;
 			listStyle.onHover.background =

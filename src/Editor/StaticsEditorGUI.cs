@@ -13,7 +13,7 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	class StaticsEditorGUI
+	class StaticsEditorGUI :KKWindow
 	{
 
 		Rect editorRect = new Rect(10, 25, 540, 540);
@@ -75,7 +75,49 @@ namespace KerbalKonstructs.UI
 
 		public List<StaticModel> lStaticModels;
 
-		public void drawEditor()
+
+        public void ToggleEditor()
+        {
+            if (KerbalKonstructs.instance.selectedObject != null)
+                KerbalKonstructs.instance.deselectObject(true, true);
+
+            this.Toggle();
+
+            if (snapTargetInstance != null)
+            {
+                Color highlightColor = new Color(0, 0, 0, 0);
+                snapTargetInstance.HighlightObject(highlightColor);
+                snapTargetInstance = null;
+            }
+        }
+
+
+        /// <summary>
+        /// Basic GUI drawing function
+        /// </summary>
+        public override void Draw()
+        {
+            if (MapView.MapIsEnabled)
+            {
+                return;
+            }
+            drawEditor();
+        }
+
+        public override void Open()
+        {
+            base.Open();
+            KerbalKonstructs.GUI_Editor.Open();
+        }
+
+        public override void Close()
+        {
+            KerbalKonstructs.GUI_Editor.Close();
+            KerbalKonstructs.instance.DeletePreviewObject();
+            base.Close();
+        }
+
+        public void drawEditor()
 		{
 			if (foldedIn)
 			{
@@ -170,7 +212,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
 				{
-					KerbalKonstructs.instance.ToggleEditor();
+					ToggleEditor();
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -366,7 +408,7 @@ namespace KerbalKonstructs.UI
 							if (GUILayout.Button(new GUIContent(" " + model.getSetting("mesh") + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
 							{
 								KerbalKonstructs.instance.selectedModel = model;
-								KerbalKonstructs.instance.showModelInfo = true;
+								KerbalKonstructs.GUI_ModelInfo.Open();
 							}
 						}
 

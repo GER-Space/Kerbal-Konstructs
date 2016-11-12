@@ -15,11 +15,11 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	public class ModelInfo
+	class ModelInfo : KKWindow
 	{
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
-		public PQSCity pqsCity;
+//		public PQSCity pqsCity;
 
 		public double dUpdater = 0;
 
@@ -75,8 +75,16 @@ namespace KerbalKonstructs.UI
 
 		public GameObject gModel = null;
 
-		public void drawModelInfoGUI(StaticModel mSelectedModel)
+        public override void Draw()
+        {
+            if (!MapView.MapIsEnabled)
+                drawModelInfoGUI(KerbalKonstructs.instance.selectedModel);
+        }
+
+
+        public void drawModelInfoGUI(StaticModel mSelectedModel)
 		{
+
 			if (mSelectedModel != null)
 			{
 				if (mModel != mSelectedModel)
@@ -186,7 +194,7 @@ namespace KerbalKonstructs.UI
 					if (currPreview != null)
 						DestroyPreviewInstance(currPreview);
 
-					KerbalKonstructs.instance.showModelInfo = false;
+                    KerbalKonstructs.GUI_ModelInfo.Close();
 					mModel = null;
 					KerbalKonstructs.instance.selectedModel = null;
 				}
@@ -450,7 +458,7 @@ namespace KerbalKonstructs.UI
 				if (currPreview != null)
 					DestroyPreviewInstance(currPreview);
 
-				KerbalKonstructs.instance.showModelInfo = false;
+				KerbalKonstructs.GUI_ModelInfo.Close();
 				mModel = null;
 				KerbalKonstructs.instance.selectedModel = null;
 			}
