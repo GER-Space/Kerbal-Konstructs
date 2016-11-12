@@ -73,7 +73,8 @@ namespace KerbalKonstructs
         internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();
         internal static FacilityManager GUI_FacilityManager = new FacilityManager();
         internal static LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
-        internal static MapIconManager GUI_MapIconManager = new MapIconManager();
+        internal static Modules.MapIcons.MapIconManager GUI_MapIconManager = new Modules.MapIcons.MapIconManager();
+        internal static Modules.MapIcons.MapIconDraw GUI_MapIcons = new Modules.MapIcons.MapIconDraw();
         internal static KSCManager GUI_KSCManager = new KSCManager();
         internal static AirRacing GUI_AirRacingApp = new AirRacing();
         internal static BaseManager GUI_BaseManager = new BaseManager();
@@ -179,10 +180,13 @@ namespace KerbalKonstructs
 			GameEvents.OnKSCFacilityUpgrading.Add(OnKSCFacilityUpgrading);
 			GameEvents.OnUpgradeableObjLevelChange.Add(OnUpgradeableObjLevelChange);
 			GameEvents.OnVesselRollout.Add(OnVesselLaunched);
-			#endregion
+            // draw map icons when needed
+            GameEvents.OnMapEntered.Add(GUI_MapIcons.Open);
+            GameEvents.OnMapExited.Add(GUI_MapIcons.Close);
+            #endregion
 
-			#region Other Mods Hooks
-			if (StageRecoveryWrapper.StageRecoveryAvailable)
+            #region Other Mods Hooks
+            if (StageRecoveryWrapper.StageRecoveryAvailable)
 			{
 				StageRecoveryWrapper.AddRecoveryProcessingStartListener(OnVesselRecoveryRequested);
 				StageRecoveryWrapper.AddRecoveryProcessingFinishListener(SRProcessingFinished);
@@ -925,19 +929,7 @@ namespace KerbalKonstructs
 
 		void OnGUI()
 		{
-			GUI.skin = HighLogic.Skin;
-
-			if (!bStylesSet)
-			{
-				UIMain.setStyles();
-				bStylesSet = true;
-			}
-
-				if (MapView.MapIsEnabled)
-				{
-					GUI_MapIconManager.drawIcons();
-				}
-			
+            	
 		}
 		#endregion
 

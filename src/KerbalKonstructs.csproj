@@ -88,6 +88,7 @@
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
     <Compile Include="LaunchSites\LaunchSite.cs" />
+    <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Modules\OnClick\GUIOnClick.cs" />
     <Compile Include="Modules\OnClick\AnimateOnClick.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="StaticObjects\StaticGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
-    <Compile Include="UI\MapIconManager.cs" />
+    <Compile Include="Modules\MapIcons\MapIconManager.cs" />
     <Compile Include="Utilities\PersistenceUtils.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Utilities\NavUtils.cs" />

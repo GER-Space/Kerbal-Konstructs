@@ -38,6 +38,7 @@ namespace KerbalKonstructs.UI
 
         public void drawTouchDownGuideL(StaticObject obj)
         {
+            if (!IsOpen()) { return; }
             if (obj == null)
             {
                 vTDL = Vector3.zero;
@@ -54,6 +55,7 @@ namespace KerbalKonstructs.UI
 
         public void drawTouchDownGuideR(StaticObject obj)
         {
+            if (!IsOpen()) { return; }
             if (obj == null)
             {
                 vTDR = Vector3.zero;
@@ -70,6 +72,7 @@ namespace KerbalKonstructs.UI
 
         public void drawLandingGuide(StaticObject obj)
         {
+            if (!IsOpen()) { return; }
             if (obj == null)
             {
                 vLineStart = Vector3.zero;
@@ -82,7 +85,7 @@ namespace KerbalKonstructs.UI
             Vessel vesCraft = FlightGlobals.ActiveVessel;
             if (vesCraft == null) return;
 
-            Debug.Log("KK: drawLandingGuide");
+            Log.Debug("KK: drawLandingGuide");
 
             vLineStart = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
             vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);

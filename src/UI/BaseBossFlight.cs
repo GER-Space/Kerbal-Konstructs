@@ -155,7 +155,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
                 {
                     KerbalKonstructs.instance.updateCache();
-
                     KerbalKonstructs.GUI_Landinguide.Toggle();
                 }
 
