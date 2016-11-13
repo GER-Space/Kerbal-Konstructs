@@ -400,7 +400,7 @@ namespace KerbalKonstructs
 			DontDestroyOnLoad(this);
 			loadObjects();
 			importCustomInstances();
-            Log.Write("Version is {0}.", sKKVersion);
+            Log.Normal("Version is " + sKKVersion + " .");
 
 			UIMain.setTextures();
 		}
@@ -1208,7 +1208,10 @@ namespace KerbalKonstructs
 								if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
 								{
 									bSpaceOccupied = true;
-									break;
+                                    Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: "
+                                    + sThisMesh + " : " + (string)soThis.getSetting("Group") + " : " + firstInstanceKey.ToString() + " | "
+                                    + sThatMesh + " : " + (string)obj.getSetting("Group") + " : " + secondInstanceKey.ToString());
+                                    break;
 								}
 								else
 								{
@@ -1225,7 +1228,7 @@ namespace KerbalKonstructs
 					if (bSpaceOccupied)
 					{
 						Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
-						continue;
+                        continue;
 					}
 				}
 
