@@ -27,6 +27,17 @@ namespace KerbalKonstructs.UI
         private Texture tTGL = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownL", false);
         private Texture tTGR = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownR", false);
 
+        private Vessel vesCraft = null;
+
+        private Rect Marker1;
+        private Rect Marker2;
+        private Rect Marker3;
+        private Rect Marker4;
+        private Rect Marker5;
+        private Rect Marker6;
+        private Rect Marker7;
+        private Rect Marker8;
+
         public override void Draw()
         {
             if (!MapView.MapIsEnabled)
@@ -45,8 +56,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (HighLogic.LoadedScene != GameScenes.FLIGHT) return;
-            Vessel vesCraft = FlightGlobals.ActiveVessel;
+            vesCraft = FlightGlobals.ActiveVessel;
             if (vesCraft == null) return;
 
             vTDL = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
@@ -62,8 +72,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (HighLogic.LoadedScene != GameScenes.FLIGHT) return;
-            Vessel vesCraft = FlightGlobals.ActiveVessel;
+            vesCraft = FlightGlobals.ActiveVessel;
             if (vesCraft == null) return;
 
             vTDR = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
@@ -80,9 +89,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (HighLogic.LoadedScene != GameScenes.FLIGHT) return;
-
-            Vessel vesCraft = FlightGlobals.ActiveVessel;
+            vesCraft = FlightGlobals.ActiveVessel;
             if (vesCraft == null) return;
 
             Log.Debug("KK: drawLandingGuide");
@@ -107,36 +114,41 @@ namespace KerbalKonstructs.UI
             if (fDist < 3) return;
 
             float flgWscale = 1f;
-
-            if (fDist > 10000) flgWscale = 250 / fDist;
-            else
-                if (fDist > 5000) flgWscale = 500 / fDist;
-            else
-                    if (fDist > 2500) flgWscale = 750 / fDist;
-            else
-                        if (fDist > 1000) flgWscale = 1000 / fDist;
-            else
-                flgWscale = 1f;
-
             float flgHscale = 1f;
 
-            if (fDist > 10000) flgHscale = 100 / fDist;
+            if (fDist > 10000)
+            {
+                flgWscale = 250 / fDist;
+                flgHscale = 100 / fDist;
+            }
+            else if (fDist > 5000)
+            {
+                flgWscale = 500 / fDist;
+                flgHscale = 250 / fDist;
+            }
+            else if (fDist > 2500)
+            {
+                flgWscale = 750 / fDist;
+                flgHscale = 500 / fDist;
+            }
+            else if (fDist > 1000)
+            {
+                flgWscale = 1000 / fDist;
+                flgHscale = 750 / fDist;
+            }
             else
-                if (fDist > 5000) flgHscale = 250 / fDist;
-            else
-                    if (fDist > 2500) flgHscale = 500 / fDist;
-            else
-                        if (fDist > 1000) flgHscale = 750 / fDist;
-            else
+            {
+                flgWscale = 1f;
                 flgHscale = 1f;
+            }
 
             if (vTDL != Vector3.zero && vTDR != Vector3.zero)
             {
                 vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
                 vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
 
-                Rect Marker7 = new Rect((float)(vTDL.x) - (50 * flgWscale), (float)(Screen.height - vTDL.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
-                Rect Marker8 = new Rect((float)(vTDR.x) - (50 * flgWscale), (float)(Screen.height - vTDR.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
+                Marker7 = new Rect((float)(vTDL.x) - (50 * flgWscale), (float)(Screen.height - vTDL.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
+                Marker8 = new Rect((float)(vTDR.x) - (50 * flgWscale), (float)(Screen.height - vTDR.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
 
                 GUI.DrawTexture(Marker7, tTGL, ScaleMode.StretchToFill, true);
                 GUI.DrawTexture(Marker8, tTGR, ScaleMode.StretchToFill, true);
@@ -147,8 +159,9 @@ namespace KerbalKonstructs.UI
                 vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
                 vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
 
-                Color clGood = new Color(0f, 1f, 0f, 0.8f);
-                Color clBad = new Color(1f, 0f, 0f, 0.8f);
+                // ToDo: Not implemented
+                //Color clGood = new Color(0f, 1f, 0f, 0.8f);
+                //Color clBad = new Color(1f, 0f, 0f, 0.8f);
                 Color clLandGuide = new Color(1f, 1f, 1f, 0.8f);
 
                 if (fDist < 8000)
@@ -190,13 +203,13 @@ namespace KerbalKonstructs.UI
                     GL.End();
                 }
 
-                Rect Marker1 = new Rect((float)(vLineStart.x) - (25 * flgWscale), (float)(Screen.height - vLineStart.y) - 10, 50 * flgWscale, 4);
-                Rect Marker2 = new Rect((float)(vLineStart.x) - (50 * flgWscale), (float)(Screen.height - vLineStart.y) - 25, 100 * flgWscale, 4);
-                Rect Marker3 = new Rect((float)(vLineStart.x) - (75 * flgWscale), (float)(Screen.height - vLineStart.y) - 40, 150 * flgWscale, 4);
+                Marker1 = new Rect((float)(vLineStart.x) - (25 * flgWscale), (float)(Screen.height - vLineStart.y) - 10, 50 * flgWscale, 4);
+                Marker2 = new Rect((float)(vLineStart.x) - (50 * flgWscale), (float)(Screen.height - vLineStart.y) - 25, 100 * flgWscale, 4);
+                Marker3 = new Rect((float)(vLineStart.x) - (75 * flgWscale), (float)(Screen.height - vLineStart.y) - 40, 150 * flgWscale, 4);
 
-                Rect Marker4 = new Rect((float)(Screen.width / 2) - (25 * flgWscale), (float)(Screen.height / 2) - 10, 50 * flgWscale, 4);
-                Rect Marker5 = new Rect((float)(Screen.width / 2) - (50 * flgWscale), (float)(Screen.height / 2) - 25, 100 * flgWscale, 4);
-                Rect Marker6 = new Rect((float)(Screen.width / 2) - (75 * flgWscale), (float)(Screen.height / 2) - 40, 150 * flgWscale, 4);
+                Marker4 = new Rect((float)(Screen.width / 2) - (25 * flgWscale), (float)(Screen.height / 2) - 10, 50 * flgWscale, 4);
+                Marker5 = new Rect((float)(Screen.width / 2) - (50 * flgWscale), (float)(Screen.height / 2) - 25, 100 * flgWscale, 4);
+                Marker6 = new Rect((float)(Screen.width / 2) - (75 * flgWscale), (float)(Screen.height / 2) - 40, 150 * flgWscale, 4);
 
                 if (fDist < 15000)
                 {

@@ -94,12 +94,20 @@ namespace KerbalKonstructs.StaticObjects
 			}
 		}
 
+        /// <summary>
+        /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating)
+        /// </summary>
+        /// <param name="playerPos"></param>
 		public void updateCache(Vector3 playerPos)
 		{
-			foreach (StaticObject obj in childObjects)
+            float dist = 0f;
+            bool visible = false;
+
+
+            foreach (StaticObject obj in childObjects)
 			{
-				float dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
-				bool visible = (dist < (float) obj.getSetting("VisibilityRange"));
+				dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
+				visible = (dist < (float) obj.getSetting("VisibilityRange"));
 
 				string sFacType = (string)obj.getSetting("FacilityType");
 
