@@ -254,3 +254,6 @@ ModelManifest.xml
 
 #zip
 *.zip
+
+#Visual Studio
+.suo
