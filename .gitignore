@@ -7,6 +7,7 @@
 *.userosscache
 *.sln.docstates
 
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -254,6 +255,3 @@ ModelManifest.xml
 
 #zip
 *.zip
-
-#Visual Studio
-.suo
