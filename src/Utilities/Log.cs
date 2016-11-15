@@ -10,6 +10,9 @@ namespace KerbalKonstructs.Utilities
 {
     internal class Log
     {
+        internal static Dictionary<string, Stopwatch> alltimers = new Dictionary<string, Stopwatch>();
+        internal static Stopwatch myWatch = null;
+
         /// <summary>
         /// log a normal message, if dbug is aktivated
         /// </summary>
@@ -60,5 +63,50 @@ namespace KerbalKonstructs.Utilities
         {
             StackTrace t = new StackTrace(); Log.Normal(t.ToString());
         }
+
+        /// <summary>
+        /// Starts a Stopwatch timer with the id = string
+        /// </summary>
+        /// <param name="id"></param>
+        internal static void PerfStart(string id = "default")
+        {
+            myWatch = new Stopwatch();
+            alltimers.Add(id, myWatch);
+            myWatch.Start();
+        }
+
+        /// <summary>
+        /// resets the Stopwatchtimer with the (string)id and prints the result.
+        /// </summary>
+        /// <param name="id"></param>
+        internal static void PerfStop(string id = "default")
+        {
+            alltimers.TryGetValue(id, out myWatch);
+            myWatch.Stop();
+            Log.Normal("Stopwatch: \"" + id + "\" elapsed time: " + myWatch.Elapsed );
+            myWatch.Reset();
+            alltimers.Remove(id);
+        }
+
+        /// <summary>
+        /// Pauses the timer with the id
+        /// </summary>
+        /// <param name="id"></param>
+        internal static void PerfPause(string id = "default")
+        {
+            alltimers.TryGetValue(id, out myWatch);
+            myWatch.Stop();
+        }
+
+        /// <summary>
+        /// resumes the timer
+        /// </summary>
+        /// <param name="id"></param>
+        internal static void PerfContinue(string id = "default")
+        {
+            alltimers.TryGetValue(id, out myWatch);
+            myWatch.Start();
+        }
+
     }
 }
