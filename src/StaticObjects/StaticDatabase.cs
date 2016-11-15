@@ -10,7 +10,8 @@ namespace KerbalKonstructs.StaticObjects
 	{
 		//Groups are stored by name within the body name
 		private Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
-		private List<StaticModel> modelList = new List<StaticModel>();
+        //	private List<StaticModel> modelList = new List<StaticModel>();
+        private Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
 		private string activeBodyName = "";
 
 		public void changeGroup(StaticObject obj, string newGroup)
@@ -278,15 +279,23 @@ namespace KerbalKonstructs.StaticObjects
 
 		public void registerModel(StaticModel model)
 		{
-			modelList.Add(model);
+			modelList.Add(GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"),model);
 		}
 
 		public List<StaticModel> getModels()
 		{
-			return modelList;
+			return modelList.Values.ToList();
 		}
 
-		public List<StaticObject> getObjectsFromModel(StaticModel model)
+        public StaticModel GetModel(string name)
+        {
+            StaticModel myModel = null;
+            modelList.TryGetValue(name, out myModel);
+            return myModel;
+        }
+
+
+        public List<StaticObject> getObjectsFromModel(StaticModel model)
 		{
 			return (from obj in getAllStatics() where obj.model == model select obj).ToList();
 		}
