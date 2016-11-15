@@ -52,7 +52,6 @@ namespace KerbalKonstructs
 		public Double dRecoveryValue = 0;
 		public Double dActualRecoveryValue = 0;
 
-        public WindowManager WindowManager = null;
 		#endregion
 
 		#region Switches
@@ -393,16 +392,30 @@ namespace KerbalKonstructs
 			#endregion
 
 			SpaceCenterManager.setKSC();
-
 			loadConfig();
 			saveConfig();
-			
-			DontDestroyOnLoad(this);
-			loadObjects();
-			importCustomInstances();
+
+            DontDestroyOnLoad(this);
+            Log.PerfStart("Object loading1");
+            Log.PerfStart("Object loading2");
+
+
+            LoadModels();
+            Log.PerfStop("Object loading1");
+
+            Log.PerfStart("Instances");
+            Log.PerfPause("Instances");
+
+            LoadModelInstances();
+
+            Log.PerfStop("Instances");
+
+            Log.PerfStop("Object loading2");
+
             Log.Normal("Version is " + sKKVersion + " .");
 
-			UIMain.setTextures();
+            Log.Normal("StaticDB has: " + staticDB.getAllStatics().Count() + "Entries");
+            UIMain.setTextures();
 		}
 
 		#region Game Events
@@ -431,18 +444,17 @@ namespace KerbalKonstructs
 
 		void OnVesselLaunched(ShipConstruct vVessel)
 		{
-            Log.Debug("OnVesselLaunched");
+            Log.Normal("OnVesselLaunched");
 			if (!MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 			{
 				return;
 			}
 			else
 			{
-                Log.Debug("OnVesselLaunched is Career");
+                Log.Normal("OnVesselLaunched is Career");
 				PersistenceUtils.savePersistenceBackup();
-				string sitename = EditorLogic.fetch.launchSiteName;
-
-				if (sitename == "Runway") return;
+                string sitename = LaunchSiteManager.getCurrentLaunchSite();
+                if (sitename == "Runway") return;
 				if (sitename == "LaunchPad") return;
 				if (sitename == "KSC") return;
 				if (sitename == "") return;
@@ -450,8 +462,7 @@ namespace KerbalKonstructs
 				LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
 				float fMissionCount = lsSite.missioncount;
 				lsSite.missioncount = fMissionCount + 1;
-
-				double dSecs = HighLogic.CurrentGame.UniversalTime;
+                double dSecs = HighLogic.CurrentGame.UniversalTime;
 
 				double hours = dSecs / 60.0 / 60.0;
 				double kHours = Math.Floor(hours % 6.0);
@@ -469,8 +480,8 @@ namespace KerbalKonstructs
 
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
-				
-				VesselLaunched = true;
+
+                VesselLaunched = true;
 
 				float dryCost = 0f;
 				float fuelCost = 0f;
@@ -478,12 +489,11 @@ namespace KerbalKonstructs
 
 				var cm = CurrencyModifierQuery.RunQuery(TransactionReasons.VesselRollout, total, 0f, 0f);
 				total += cm.GetEffectDelta(Currency.Funds);
-
-				double launchcost = total;
+                double launchcost = total;
 				float fRefund = 0f;
-				LaunchSiteManager.getSiteLaunchRefund((string)EditorLogic.fetch.launchSiteName, out fRefund);
-
-				if (fRefund < 1) return;
+				LaunchSiteManager.getSiteLaunchRefund(sitename, out fRefund);
+                Log.Normal("Launch Refund: " + fRefund);
+                if (fRefund < 1) return;
 
 				RefundAmount = (launchcost / 100) * fRefund;
 				VesselCost = launchcost - (RefundAmount);
@@ -493,10 +503,10 @@ namespace KerbalKonstructs
 						" but " + sitename + " provides a " + fRefund + "% refund. \n\nSo " + RefundAmount.ToString("#0") + " funds has been credited to you. \n\nEnjoy and thanks for using " +
 						sitename + ". Have a safe flight.";
 					MiscUtils.PostMessage("Launch Refund", sMessage, MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.ALERT);
-					Funding.Instance.AddFunds(RefundAmount, TransactionReasons.Cheating);
+                    Funding.Instance.AddFunds(RefundAmount, TransactionReasons.VesselRollout);
 				}
 			}
-		}
+        }
 
 		void onLevelWasLoaded(GameScenes data)
 		{
@@ -657,14 +667,13 @@ namespace KerbalKonstructs
 		void OnVesselRecoveryRequested(Vessel data)
 		{
             Log.Debug("OnVesselRecoveryRequested");
-			
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
                     Log.Debug("OnVesselRecoveryRequested is career");
 					// Change the Space Centre to the nearest open base
-					fRecovFactor = 0;
+					fRecovFactor = 0f;
 					float fDist = 0f;
 					float fRecovFact = 0f;
 					float fRecovRng = 0f;
@@ -673,12 +682,15 @@ namespace KerbalKonstructs
 					SpaceCenter csc;
 					SpaceCenterManager.getClosestSpaceCenter(data.gameObject.transform.position, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
 
-					SpaceCenter.Instance = csc;
 
-					if (SpaceCenter.Instance == null)
-					{
-						SpaceCenter.Instance = SpaceCenterManager.KSC;
-					}
+                    // no needed and buggy: What was the purpose of this??? Should we switch the spacecenter with this?
+				//	SpaceCenter.Instance = csc;
+
+				//	if (SpaceCenter.Instance == null)
+				//	{
+                 //       Log.Normal("no Spacecenter for recovery found");
+				//		SpaceCenter.Instance = SpaceCenterManager.KSC;
+				//	}
 
 					lastRecoveryBase = sBaseName;
 					if (sBaseName == "Runway" || sBaseName == "LaunchPad") lastRecoveryBase = "KSC";
@@ -687,31 +699,34 @@ namespace KerbalKonstructs
 					lastRecoveryDistance = fDist;
 					fRecovFactor = fRecovFact;
 					fRecovRange = fRecovRng;
-				}
+                    Log.Normal("Recovery stats: " + lastRecoveryBase + " " + lastRecoveryDistance);
+                }
 			}
+            return;
 		}
 
-		void OnVesselRecovered(ProtoVessel vessel, Boolean bHuhWTFIDK)
+		public void OnVesselRecovered(ProtoVessel vessel, Boolean quick)
 		{
-			if (!disableRemoteRecovery)
+            if (!disableRemoteRecovery)
 			{
 				if (vessel == null)
 				{
-                    Log.Debug("onVesselRecovered vessel was null");
+                    Log.Normal("onVesselRecovered vessel was null");
 					if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 					{
 						SpaceCenter.Instance = SpaceCenterManager.KSC;
 					}
 					return;
 				}
-
-				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+                if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
                     // Put the KSC back as the Space Centre
-                    Log.Debug("Resetting SpaceCenter to KSC");
+                    // Not needed as it is buggy in the moment
+                    //Log.Debug("Resetting SpaceCenter to KSC");
 					SpaceCenter.Instance = SpaceCenterManager.KSC;
 
-					if (lastRecoveryBase != "")
+
+                    if (lastRecoveryBase != "")
 					{
 						float fRecoveryDistance = lastRecoveryDistance / 1000;
 						float fBaseRecRange = fRecovRange;
@@ -729,14 +744,14 @@ namespace KerbalKonstructs
 
 							if (lastRecoveryBase == "KSC") fRecovFactor = 100;
 
-							string sMessage = "";
+                            string sMessage = "";
 							if (fRecovFactor == 100)
 							{
 								sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is paid in full.";
 								dActualRecoveryValue = dRecoveryValue;
-							}
-							else
-							{
+
+							} else {
+
 								dActualRecoveryValue = (dRecoveryValue / 100) * fRecovFactor;
 								sMessage = "\n\nRecovery value of " + dRecoveryValue.ToString("#0") + " funds is reduced to " + dActualRecoveryValue.ToString("#0") + " funds.";
 
@@ -744,7 +759,7 @@ namespace KerbalKonstructs
 								Funding.Instance.AddFunds(-dDeduct, TransactionReasons.Cheating);
 							}
 
-							if (!vessel.vesselName.Contains(" Debris"))
+                            if (!vessel.vesselName.Contains(" Debris"))
 							{
 								MiscUtils.PostMessage("Recovery Complete", vessel.vesselName +
 									" was recovered by " + lastRecoveryBase + ".\n\nDistance to vessel was " +
@@ -753,7 +768,7 @@ namespace KerbalKonstructs
 									+ fRecovFactor + "%" + sMessage, color, MessageSystemButton.ButtonIcons.ALERT);
 							}
 
-							lastRecoveryBase = "";
+                            lastRecoveryBase = "";
 							fRecovFactor = 0;
 							fRecovRange = 0;
 							dRecoveryValue = 0;
@@ -762,7 +777,7 @@ namespace KerbalKonstructs
 					}
 				}
 			}
-		}
+        }
 
 		void LateUpdate()
 		{
@@ -816,7 +831,7 @@ namespace KerbalKonstructs
 						}
 					}
 
-                    Log.Debug("loadCareerObjects");
+                    Log.Normal("loadCareerObjects");
 					loadCareerObjects();
 					InitialisedFacilities = true;
 				}
@@ -1131,9 +1146,16 @@ namespace KerbalKonstructs
 			}
 		}
 
+
+        /// <summary>
+        /// Loads and places all model instances from the confignode.
+        /// </summary>
+        /// <param name="confconfig"></param>
+        /// <param name="model"></param>
+        /// <param name="bSecondPass"></param>
 		public void loadInstances(ConfigNode confconfig, StaticModel model, bool bSecondPass = false)
 		{
-			if (model == null)
+            if (model == null)
 			{
 				Debug.Log("KK: Attempting to loadInstances for a null model. Check your model and config.");
 				return;
@@ -1145,132 +1167,123 @@ namespace KerbalKonstructs
 				return;
 			}
 
-			foreach (ConfigNode ins in confconfig.GetNodes("Instances"))
-			{
-				StaticObject obj = new StaticObject();
-				obj.model = model;
-				
-				obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+            foreach (ConfigNode instance in confconfig.GetNodes("Instances"))
+            {
+                StaticObject obj = new StaticObject();
+                obj.model = model;
+                //		obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+                obj.gameObject = Instantiate(model.prefab);
+                if (obj.gameObject == null)
+                {
+                    Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
+                    continue;
+                }
+                Log.PerfContinue("Instances");
 
-				if (obj.gameObject == null)
-				{
-					Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
-					continue;
-				}
+                obj.settings = KKAPI.loadConfig(instance, KKAPI.getInstanceSettings());
 
-				if ((string)model.getSetting("keepConvex") == "true" || (string)model.getSetting("keepConvex") == "True" || (string)model.getSetting("keepConvex") == "TRUE")
-				{ }
-				else
-				{
-					MeshCollider[] concave = obj.gameObject.GetComponentsInChildren<MeshCollider>(true);
-					foreach (MeshCollider collider in concave)
-					{
-                        Log.Debug("Making collider " + collider.name + " concave.");
-						collider.convex = false;
-					}
-				}
+                Log.PerfPause("Instances");
+                if (obj.settings == null)
+                {
+                    Debug.Log("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
+                    continue;
+                }
+                // sometimes we need a second pass.. (do we???)
+                // 
 
-				obj.settings = KKAPI.loadConfig(ins, KKAPI.getInstanceSettings());
+                if (bSecondPass)
+                {
+                    Vector3 secondInstanceKey = (Vector3)obj.getSetting("RadialPosition");
+                    bool bSpaceOccupied = false;
 
-				if (obj.settings == null)
-				{
-					Debug.Log("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
-					continue;
-				}
+                    foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+                    {
+                        Vector3 firstInstanceKey = (Vector3)soThis.getSetting("RadialPosition");
 
-				if (bSecondPass)
-				{
-					Vector3 secondInstanceKey = (Vector3)obj.getSetting("RadialPosition");
-					bool bSpaceOccupied = false;
-
-					foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-					{
-						Vector3 firstInstanceKey = (Vector3)soThis.getSetting("RadialPosition");
-
-						if (firstInstanceKey == secondInstanceKey)
-						{
-							string sThisMesh = (string)soThis.model.getSetting("mesh");
-							string sThatMesh = (string)obj.model.getSetting("mesh");
+                        if (firstInstanceKey == secondInstanceKey)
+                        {
+                            string sThisMesh = (string)soThis.model.getSetting("mesh");
+                            string sThatMesh = (string)obj.model.getSetting("mesh");
 
                             Log.Debug("Custom instance has a RadialPosition that already has an instance."
                                 + sThisMesh + ":"
-								+ (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
-								+ sThatMesh + ":"
-								+ (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
+                                + (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
+                                + sThatMesh + ":"
+                                + (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
 
-							if (sThisMesh == sThatMesh)
-							{
-								float fThisOffset = (float)soThis.getSetting("RadiusOffset");
-								float fThatOffset = (float)obj.getSetting("RadiusOffset");
-								float fThisRotation = (float)soThis.getSetting("RotationAngle");
-								float fThatRotation = (float)obj.getSetting("RotationAngle");
+                            if (sThisMesh == sThatMesh)
+                            {
+                                float fThisOffset = (float)soThis.getSetting("RadiusOffset");
+                                float fThatOffset = (float)obj.getSetting("RadiusOffset");
+                                float fThisRotation = (float)soThis.getSetting("RotationAngle");
+                                float fThatRotation = (float)obj.getSetting("RotationAngle");
 
-								if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
-								{
-									bSpaceOccupied = true;
-                                    Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: "
+                                if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
+                                {
+                                    bSpaceOccupied = true;
+                                    Log.Debug("KK: Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
                                     + sThisMesh + " : " + (string)soThis.getSetting("Group") + " : " + firstInstanceKey.ToString() + " | "
                                     + sThatMesh + " : " + (string)obj.getSetting("Group") + " : " + secondInstanceKey.ToString());
                                     break;
-								}
-								else
-								{
+                                }
+                                else
+                                {
                                     Log.Debug("Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
-								}
-							}
-							else
-							{
+                                }
+                            }
+                            else
+                            {
                                 Log.Debug("Different models. Allowing. Could be a terrain foundation or integrator.");
-							}
-						}
-					}
+                            }
+                        }
+                    }
 
-					if (bSpaceOccupied)
-					{
-						Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
+                    if (bSpaceOccupied)
+                    {
+                        //Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
                         continue;
-					}
-				}
+                    }
+                }
 
-				if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
-				{
-					if (model.settings.Keys.Contains("DefaultLaunchPadTransform"))
-					{
-						obj.settings.Add("LaunchPadTransform", model.getSetting("DefaultLaunchPadTransform"));
-					}
-					else
-					{
-						Debug.Log("KK: Launch site is missing a transform. Defaulting to " + obj.getSetting("LaunchSiteName") + "_spawn...");
+                if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
+                {
+                    if (model.settings.Keys.Contains("DefaultLaunchPadTransform"))
+                    {
+                        obj.settings.Add("LaunchPadTransform", model.getSetting("DefaultLaunchPadTransform"));
+                    }
+                    else
+                    {
+                        Log.Normal("Launch site is missing a transform. Defaulting to " + obj.getSetting("LaunchSiteName") + "_spawn...");
 
-						if (obj.gameObject.transform.Find(obj.getSetting("LaunchSiteName") + "_spawn") != null)
-						{
-							obj.settings.Add("LaunchPadTransform", obj.getSetting("LaunchSiteName") + "_spawn");
-						}
-						else
-						{
-							Debug.Log("KK: FAILED: " + obj.getSetting("LaunchSiteName") + "_spawn does not exist! Attempting to use any transform with _spawn in the name.");
-							Transform lastResort = obj.gameObject.transform.Cast<Transform>().FirstOrDefault(trans => trans.name.EndsWith("_spawn"));
+                        if (obj.gameObject.transform.Find(obj.getSetting("LaunchSiteName") + "_spawn") != null)
+                        {
+                            obj.settings.Add("LaunchPadTransform", obj.getSetting("LaunchSiteName") + "_spawn");
+                        }
+                        else
+                        {
+                            Log.Normal("FAILED: " + obj.getSetting("LaunchSiteName") + "_spawn does not exist! Attempting to use any transform with _spawn in the name.");
+                            Transform lastResort = obj.gameObject.transform.Cast<Transform>().FirstOrDefault(trans => trans.name.EndsWith("_spawn"));
 
-							if (lastResort != null)
-							{
-								Debug.Log("KK: Using " + lastResort.name + " as launchpad transform");
-								obj.settings.Add("LaunchPadTransform", lastResort.name);
-							}
-							else
-							{
-								Debug.LogError("KK: All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
-							}
-						}
-					}
-				}
+                            if (lastResort != null)
+                            {
+                                Log.Normal("Using " + lastResort.name + " as launchpad transform");
+                                obj.settings.Add("LaunchPadTransform", lastResort.name);
+                            }
+                            else
+                            {
+                                Log.Error("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
+                            }
+                        }
+                    }
+                }
+                staticDB.addStatic(obj);
+                obj.spawnObject(false, false);
 
-				staticDB.addStatic(obj);
-				obj.spawnObject(false, false);
-
-				if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
-					LaunchSiteManager.createLaunchSite(obj);
-			}
-		}
+                if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
+                    LaunchSiteManager.createLaunchSite(obj);
+            }
+            
+        }
 
 		public void loadCareerObjects()
 		{
@@ -1298,35 +1311,6 @@ namespace KerbalKonstructs
 			}
 		}
 
-		public void importCustomInstances()
-		{
-			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
-
-			foreach (UrlDir.UrlConfig conf in configs)
-			{
-				StaticModel model = new StaticModel();
-				model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-				model.config = conf.url;
-				model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
-				model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
-
-				if (!model.settings.ContainsKey("pointername"))
-					continue;
-
-				string sPointerName = (string)model.getSetting("pointername");
-
-				foreach (StaticModel model2 in staticDB.getModels())
-				{
-					ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model2.config);
-
-					if ((string)modelConfig.GetValue("name") == sPointerName)
-					{
-						loadInstances(conf.config, model2, true);
-						break;
-					}
-				}
-			}
-		}
 
 		public void loadNations()
 		{
@@ -1338,44 +1322,30 @@ namespace KerbalKonstructs
 			}
 		}
 
-		public void loadObjects()
+
+        /// <summary>
+        /// Loads the models and creates the prefab objects, which are referenced by the instance loader
+        /// </summary>
+		public void LoadModels()
 		{
 			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
-			
-			foreach(UrlDir.UrlConfig conf in configs)
+
+            foreach (UrlDir.UrlConfig conf in configs)
 			{
-				StaticModel model = new StaticModel();
+                // ignore referenced objects
+                if (conf.config.HasValue("pointername"))
+                {
+                    if (!conf.config.GetValue("pointername").Equals("none",StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        continue;
+                    }
+                }
+                StaticModel model = new StaticModel();
 				model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
 				model.config = conf.url;
 				model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
 				model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
 
-				if (model.settings.ContainsKey("LocalToSave"))
-				{
-					if ((string)model.getSetting("LocalToSave") == "True")
-						continue;
-					// Ignore it for second pass
-				}
-
-				/* if (model.settings.ContainsKey("mesh"))
-				{
-					string sMesh = (string)model.getSetting("mesh");
-					if (sMesh.Contains(".mu"))
-					{}
-					else
-					{
-						Debug.Log("KK: mesh name missing suffix. Adding it.");
-						sMesh = sMesh + ".mu";
-						model.setSetting("mesh", sMesh);
-					}
-				} */
-
-				if (model.settings.ContainsKey("pointername"))
-				{
-					if ((string)model.getSetting("pointername") != "None")
-						continue;
-					// Ignore it for second pass
-				}
 
 				foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
 				{
@@ -1397,14 +1367,63 @@ namespace KerbalKonstructs
 					}
 					model.modules.Add(module);
 				}
+                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.getSetting("mesh"));
 
-				loadInstances(conf.config, model);
-				
-				staticDB.registerModel(model);
-			}
-		}
+                if (model.prefab == null)
+                {
+                    Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
+                }
+                if (((string)model.getSetting("keepConvex")).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                { }
+                else
+                {
+                    MeshCollider[] concave = model.prefab.GetComponentsInChildren<MeshCollider>(true);
+                    foreach (MeshCollider collider in concave)
+                    {
+                        Log.Debug("Making collider " + collider.name + " concave.");
+                        collider.convex = false;
+                    }
+                }
 
-		public void saveModelConfig(StaticModel mModelToSave)
+                staticDB.registerModel(model);
+            }
+        }
+
+        /// <summary>
+        /// loads all statics with a pointername?!?
+        /// </summary>
+        public void LoadModelInstances()
+        {
+            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
+            string modelname = null;
+            foreach (UrlDir.UrlConfig conf in configs)
+            {
+                StaticModel model = new StaticModel();
+                model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
+                model.config = conf.url;
+                model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
+                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+
+
+                if (conf.config.HasValue("pointername"))
+                {
+                    modelname = (string)model.getSetting("pointername");
+                }
+                else
+                {
+                    modelname = (string)model.getSetting("name");
+                }
+
+                StaticModel model2 = staticDB.GetModel(modelname);
+                if (model2 != null)
+                {
+                    loadInstances(conf.config, model2, true);
+                } else { Log.Error("No Model found") ; }
+
+            }
+        }
+
+        public void saveModelConfig(StaticModel mModelToSave)
 		{
 			foreach (StaticModel model in staticDB.getModels())
 			{

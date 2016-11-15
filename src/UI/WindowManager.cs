@@ -29,7 +29,6 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public void Awake()
         {
-            Log.Warning("WindowManager Awake");
             if (instance != null)
             {
                 Destroy(this);
@@ -46,9 +45,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public void Start()
         {
-            Log.Warning("WindowManager Start");
             KKmain = KerbalKonstructs.instance;
-            KKmain.WindowManager = this;
             
         }
 
@@ -57,8 +54,6 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public void OnDestroy()
         {
-            KKmain.WindowManager = null;
-            Log.Warning("WindowManager Destroyed");
 
         }
 

@@ -15,6 +15,7 @@ namespace KerbalKonstructs.LaunchSites
 	public class LaunchSiteManager
 	{
 		private static List<LaunchSite> launchSites = new List<LaunchSite>();
+        private static string lastLaunchSite = "Runway";
 		public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
 		public static float RangeNearestOpenBase = 0f;
 		public static string NearestOpenBase = "";
@@ -36,9 +37,12 @@ namespace KerbalKonstructs.LaunchSites
 			launchSites.Add(launchpad);
 		}
 
-		// Add a launchsite to the KK launchsite and custom space centre database
-		// Please note there's some near hackery here to get KSP to recognise additional launchsites and space centres
-		public static void createLaunchSite(StaticObject obj)
+        /// <summary>
+        /// Add a launchsite to the KK launchsite and custom space centre database
+		/// Please note there's some near hackery here to get KSP to recognise additional launchsites and space centres
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void createLaunchSite(StaticObject obj)
 		{
 			if (obj.settings.ContainsKey("LaunchSiteName") && obj.gameObject.transform.Find((string) obj.getSetting("LaunchPadTransform")) != null)
 			{
@@ -615,14 +619,16 @@ namespace KerbalKonstructs.LaunchSites
 					site.facility.name = "LaunchPad";
 				}
 			}
+            lastLaunchSite = site.name;
 			EditorLogic.fetch.launchSiteName = site.name;
 		}
 
 		// Returns the internal launchSite that KSP has been told is the launchsite
 		public static string getCurrentLaunchSite()
 		{
-			return EditorLogic.fetch.launchSiteName;
-		}
+            return lastLaunchSite;
+
+        }
 
 		// Handy get of all launchSites
 		public static List<LaunchSite> AllLaunchSites { get { return launchSites; } }
