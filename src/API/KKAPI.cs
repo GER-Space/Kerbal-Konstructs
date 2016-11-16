@@ -13,7 +13,11 @@ namespace KerbalKonstructs.API
 		private static Dictionary<string, IConfigItem> launchsiteSettings = new Dictionary<string, IConfigItem>();
 		private static Dictionary<string, IConfigItem> nationSettings = new Dictionary<string, IConfigItem>();
 
-		public static void addInstanceSetting(string name, IConfigItem conf)
+        private static bool bodiesInitialized = false;
+        private static Dictionary<string,CelestialBody> knownBodies = new Dictionary<string, CelestialBody>();
+
+
+        public static void addInstanceSetting(string name, IConfigItem conf)
 		{
 			instanceSettings.Add(name, conf);
 		}
@@ -56,11 +60,12 @@ namespace KerbalKonstructs.API
 		public static Dictionary<string, object> loadConfig(ConfigNode cfgNode, Dictionary<string, IConfigItem> kkConfig)
 		{
 			Dictionary<string, object> settings = new Dictionary<string, object>();
-			foreach (KeyValuePair<string, IConfigItem> configValue in kkConfig)
+            IConfigItem item = null;
+            foreach (KeyValuePair<string, IConfigItem> configValue in kkConfig)
 			{
 				if (cfgNode.GetValue(configValue.Key) != null && cfgNode.GetValue(configValue.Key) != "")
 				{
-					IConfigItem item = configValue.Value;
+					item = configValue.Value;
 					item.setValue(cfgNode.GetValue(configValue.Key));
 					settings.Add(configValue.Key, item.getValue());
 				}
@@ -69,27 +74,34 @@ namespace KerbalKonstructs.API
 			return settings;
 		}
 
-		//Utility
-		public static CelestialBody getCelestialBody(String name)
-		{
-			CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
-			
-			if (name == "HomeWorld")
-			{
-				foreach (CelestialBody body in bodies)
-				{
-					if (body.isHomeWorld)
-						return body;
-				}
-			}
-			
-			foreach (CelestialBody body in bodies)
-			{
-				if (body.bodyName == name)
-					return body;
-			}
-			Debug.LogError("KK: Couldn't find body \"" + name + "\"");
-			return null;
-		}
-	}
+        //Utility
+        public static CelestialBody getCelestialBody(String name)
+        {
+            if (!bodiesInitialized)
+            {
+                CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
+                foreach (CelestialBody body in bodies)
+                {
+                    knownBodies.Add(body.name, body);
+                    if (body.isHomeWorld)
+                    {
+                        knownBodies.Add("HomeWorld", body);
+                    }
+
+                }
+                bodiesInitialized = true;
+            }
+            CelestialBody returnValue = null;
+
+            if (knownBodies.TryGetValue(name, out returnValue))
+            {
+                return returnValue;
+            }
+            else
+            {
+                Debug.LogError("KK: Couldn't find body \"" + name + "\"");
+                return null;
+            }
+        }
+    }
 }

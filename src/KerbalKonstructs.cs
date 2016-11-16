@@ -1398,28 +1398,20 @@ namespace KerbalKonstructs
             string modelname = null;
             foreach (UrlDir.UrlConfig conf in configs)
             {
-                StaticModel model = new StaticModel();
-                model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-                model.config = conf.url;
-                model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
-                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
-
-
                 if (conf.config.HasValue("pointername"))
                 {
-                    modelname = (string)model.getSetting("pointername");
+                    modelname = conf.config.GetValue("pointername");
                 }
                 else
                 {
-                    modelname = (string)model.getSetting("name");
+                    modelname = conf.config.GetValue("name");
                 }
 
-                StaticModel model2 = staticDB.GetModel(modelname);
-                if (model2 != null)
+                StaticModel model = staticDB.GetModel(modelname);
+                if (model != null)
                 {
-                    loadInstances(conf.config, model2, true);
+                    loadInstances(conf.config, model, true);
                 } else { Log.Error("No Model found") ; }
-
             }
         }
 
