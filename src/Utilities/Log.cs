@@ -81,11 +81,13 @@ namespace KerbalKonstructs.Utilities
         /// <param name="id"></param>
         internal static void PerfStop(string id = "default")
         {
-            alltimers.TryGetValue(id, out myWatch);
-            myWatch.Stop();
-            Log.Normal("Stopwatch: \"" + id + "\" elapsed time: " + myWatch.Elapsed );
-            myWatch.Reset();
-            alltimers.Remove(id);
+            if (alltimers.TryGetValue(id, out myWatch))
+            {
+                myWatch.Stop();
+                Log.Normal("Stopwatch: \"" + id + "\" elapsed time: " + myWatch.Elapsed);
+                myWatch.Reset();
+                alltimers.Remove(id);
+            }
         }
 
         /// <summary>
@@ -94,8 +96,8 @@ namespace KerbalKonstructs.Utilities
         /// <param name="id"></param>
         internal static void PerfPause(string id = "default")
         {
-            alltimers.TryGetValue(id, out myWatch);
-            myWatch.Stop();
+            if (alltimers.TryGetValue(id, out myWatch))
+                myWatch.Stop();
         }
 
         /// <summary>
@@ -104,8 +106,8 @@ namespace KerbalKonstructs.Utilities
         /// <param name="id"></param>
         internal static void PerfContinue(string id = "default")
         {
-            alltimers.TryGetValue(id, out myWatch);
-            myWatch.Start();
+            if (alltimers.TryGetValue(id, out myWatch))
+                myWatch.Start();
         }
 
     }
