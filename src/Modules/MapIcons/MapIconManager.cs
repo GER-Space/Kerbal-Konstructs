@@ -226,15 +226,15 @@ namespace KerbalKonstructs.Modules
 
             GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
 
-            if (KerbalKonstructs.instance.mapHideIconsBehindBody)
+            if (MapIconDraw.mapHideIconsBehindBody)
             {
                 if (GUILayout.Button(new GUIContent(UIMain.tHideOn, "Occlude"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                    KerbalKonstructs.instance.mapHideIconsBehindBody = false;
+                    MapIconDraw.mapHideIconsBehindBody = false;
             }
             else
             {
                 if (GUILayout.Button(new GUIContent(UIMain.tHideOff, "Occlude"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                    KerbalKonstructs.instance.mapHideIconsBehindBody = true;
+                    MapIconDraw.mapHideIconsBehindBody = true;
             }
 
             GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));

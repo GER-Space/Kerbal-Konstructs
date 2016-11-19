@@ -20,6 +20,9 @@ namespace KerbalKonstructs.Modules
 
         static LaunchSite selectedSite = null;
         static StaticObject selectedFacility = null;
+
+        internal static bool mapHideIconsBehindBody = true;
+
         private int iRadarCounter;
 
         public override void Draw()
@@ -121,6 +124,7 @@ namespace KerbalKonstructs.Modules
 
         public void drawTrackingStations()
         {
+            if (!KerbalKonstructs.instance.mapShowOpenT) { return;  }
             displayingTooltip2 = false;
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
 
@@ -135,9 +139,8 @@ namespace KerbalKonstructs.Modules
                 if ((string)obj.getSetting("FacilityType") != "TrackingStation")
                     continue;
 
-                if (isOccluded(obj.gameObject.transform.position, body))
+                if ((mapHideIconsBehindBody) && (isOccluded(obj.gameObject.transform.position, body)))
                 {
-                    if (KerbalKonstructs.instance.mapHideIconsBehindBody)
                         continue;
                 }
 
@@ -155,7 +158,8 @@ namespace KerbalKonstructs.Modules
                 if (!display2)
                     continue;
 
-                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
+                Vector3  pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
+  
                 Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
                 // Distance between camera and spawnpoint sort of
                 float fPosZ = pos.z;
@@ -164,8 +168,11 @@ namespace KerbalKonstructs.Modules
                 if (fRadarRadius > 15) GUI.DrawTexture(screenRect6, UIMain.TrackingStationIcon, ScaleMode.ScaleToFit, true);
 
                 string sTarget = (string)obj.getSetting("TargetID");
-                float fStRange = (float)obj.getSetting("TrackingShort");
-                float fStAngle = (float)obj.getSetting("TrackingAngle");
+                //    float fStRange = (obj.getSetting("TrackingShort") != null ) ? (float)obj.getSetting("TrackingShort") : 10000f;
+                //   float fStAngle = (obj.getSetting("TrackingAngle") != null) ? (float)obj.getSetting("TrackingAngle") : 60f;
+                float fStRange = 200000f;
+                float fStAngle = 90f;
+
 
                 if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
                     drawGroundComms(obj);
@@ -232,7 +239,7 @@ namespace KerbalKonstructs.Modules
                             }
                         }
                     }
-                }
+                } 
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
                 {
@@ -263,8 +270,8 @@ namespace KerbalKonstructs.Modules
                         FacilityManager.setSelectedFacility(obj);
                         KerbalKonstructs.GUI_FacilityManager.Open();
                     }
-                }
-            }
+                }  
+            } 
         }
 
         public void drawRadar(Vector3 pos, string category, string openclosed)
@@ -312,6 +319,7 @@ namespace KerbalKonstructs.Modules
         {
             displayingTooltip = false;
             int iPulseRate = 180;
+            LaunchSite launchSite;
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
 
             iRadarCounter = iRadarCounter + 1;
@@ -322,17 +330,10 @@ namespace KerbalKonstructs.Modules
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             for (int index = 0; index < sites.Count; index++)
             {
-                LaunchSite site = sites[index];
-
-                // don't spam the logfile for the KSC. doesn't work roght now.
-                if (site.name == "Runway" || site.name == "LaunchPad")
-                {
-                    continue;
-                }
-
+                launchSite = sites[index];
                 // check if we should display the site or not this is the fastst check, so it shoud be first
-                string openclosed = site.openclosestate;
-                string category = site.category;
+                string openclosed = launchSite.openclosestate;
+                string category = launchSite.category;
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
                     continue;
@@ -355,38 +356,14 @@ namespace KerbalKonstructs.Modules
                         continue;
                 }
 
+                Vector3 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.reflat, launchSite.reflon,launchSite.refalt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
-                PSystemSetup.SpaceCenterFacility facility = PSystemSetup.Instance.GetSpaceCenterFacility(site.name);
-                if (facility == null)
-                    continue;
-
-                PSystemSetup.SpaceCenterFacility.SpawnPoint sp = facility.GetSpawnPoint(site.name);
-                if (sp == null)
+                if (mapHideIconsBehindBody && isOccluded(launchSitePosition, body))
                 {
-                    Log.Error("No Spawn Point found for: " + site.name);
-                    continue;
-                }
-
-                if (facility.facilityPQS != body.pqsController)
-                {
-                    Log.Error("No PQS found for: " + site.name);
-                    continue;
-                };
-
-                Transform spawnPointTransform = sp.GetSpawnPointTransform();
-                if (spawnPointTransform == null)
-                {
-                    Log.Error("No Spawn PointTransform found for: " + site.name);
-                    continue;
-                }
-
-                if (isOccluded((spawnPointTransform.position), body))
-                {
-                    if (KerbalKonstructs.instance.mapHideIconsBehindBody)
                         continue;
                 }
-
-                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(spawnPointTransform.position));
+                
+               Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(launchSitePosition));
 
                 Rect screenRect = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
 
@@ -394,35 +371,35 @@ namespace KerbalKonstructs.Modules
                 float fPosZ = pos.z;
 
                 float fRadarRadius = 12800 / fPosZ;
-                //      Log.Warning("fRadarRadius = " + Math.Round(fRadarRadius,2));
                 float fRadarOffset = fRadarRadius / 2;
-
-
 
                 if (KerbalKonstructs.instance.mapShowRadar)
                     drawRadar(pos, category, openclosed);
 
                 if (openclosed == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
                 {
-                    drawGroundComms(null, site);
+                    drawGroundComms(null, launchSite);
                 }
 
-                if (site.icon != null)
+                if (launchSite.icon != null)
                 {
                     if (fRadarRadius > 15)
-                        GUI.DrawTexture(screenRect, site.icon, ScaleMode.ScaleToFit, true);
+                        GUI.DrawTexture(screenRect, launchSite.icon, ScaleMode.ScaleToFit, true);
                 }
                 else
                 {
                     if (fRadarRadius > 15)
                     {
-                        switch (site.type)
+                        switch (category)
                         {
-                            case SiteType.VAB:
+                            case "RocketPad":
                                 GUI.DrawTexture(screenRect, UIMain.VABIcon, ScaleMode.ScaleToFit, true);
                                 break;
-                            case SiteType.SPH:
-                                GUI.DrawTexture(screenRect, UIMain.SPHIcon, ScaleMode.ScaleToFit, true);
+                            case "Runway":
+                                GUI.DrawTexture(screenRect, UIMain.runWayIcon, ScaleMode.ScaleToFit, true);
+                                break;
+                            case "Helipad":
+                                GUI.DrawTexture(screenRect, UIMain.heliPadIcon, ScaleMode.ScaleToFit, true);
                                 break;
                             default:
                                 GUI.DrawTexture(screenRect, UIMain.ANYIcon, ScaleMode.ScaleToFit, true);
@@ -436,17 +413,17 @@ namespace KerbalKonstructs.Modules
                 {
                     //Only display one tooltip at a time
                     string sToolTip = "";
-                    sToolTip = site.name;
-                    if (site.name == "Runway") sToolTip = "KSC Runway";
-                    if (site.name == "LaunchPad") sToolTip = "KSC LaunchPad";
+                    sToolTip = launchSite.name;
+                    if (launchSite.name == "Runway") sToolTip = "KSC Runway";
+                    if (launchSite.name == "LaunchPad") sToolTip = "KSC LaunchPad";
                     displayMapIconToolTip(sToolTip, pos);
 
                     // Select a base by clicking on the icon
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
                         MiscUtils.HUDMessage("Selected base is " + sToolTip + ".", 5f, 3);
-                        BaseManager.setSelectedSite(site);
-                        selectedSite = site;
+                        BaseManager.setSelectedSite(launchSite);
+                        selectedSite = launchSite;
                         NavGuidanceSystem.setTargetSite(selectedSite);
                         KerbalKonstructs.GUI_BaseManager.Open();
                     }
