@@ -137,7 +137,6 @@
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Utilities\NavUtils.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj</PostBuildEvent>
