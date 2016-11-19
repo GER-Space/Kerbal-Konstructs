@@ -39,6 +39,7 @@ namespace KerbalKonstructs.Core
 		public float launchrefund;
 		public float recoveryfactor;
 		public float recoveryrange;
+        public CelestialBody body;
 
 		public string nation;
 
@@ -46,7 +47,7 @@ namespace KerbalKonstructs.Core
 		public PSystemSetup.SpaceCenterFacility facility;
 
 		public LaunchSite(string sName, string sAuthor, SiteType sType, Texture sLogo, Texture sIcon,
-			string sDescription, string sDevice, float fOpenCost, float fCloseValue, string sOpenCloseState, float fRefLon, 
+			string sDescription, string sDevice, float fOpenCost, float fCloseValue, string sOpenCloseState, CelestialBody vbody, float fRefLon, 
 			float fRefLat, float fRefAlt, float fLength, float fWidth, float fRefund, float fRecoveryFactor, float fRecoveryRange,
 			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null, 
 			string sMissionLog = "Too busy to keep this log. Signed Gene Kerman.", 
@@ -65,7 +66,8 @@ namespace KerbalKonstructs.Core
 			GameObject = gameObject;
 			facility = newFacility;
 			reflon = fRefLon;
-			reflat = fRefLat;
+            body = vbody;
+            reflat = fRefLat;
 			refalt = fRefAlt;
 			sitelength = fLength;
 			sitewidth = fWidth;
