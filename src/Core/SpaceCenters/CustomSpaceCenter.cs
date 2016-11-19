@@ -38,7 +38,6 @@ namespace KerbalKonstructs.Core
 				spaceCenter = gameObject.AddComponent<SpaceCenter>();
 				spaceCenter.cb = (CelestialBody)staticObject.getSetting("CelestialBody");
 				spaceCenter.name = SpaceCenterName;
-                spaceCenter.SpaceCenterTransform = SpaceCenterManager.KSC.SpaceCenterTransform;
 
                 // Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
 
