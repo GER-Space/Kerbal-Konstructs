@@ -5,11 +5,12 @@ namespace KerbalKonstructs.UI
 	public static class UIMain
 	{
 		public static Texture VABIcon;
-		public static Texture SPHIcon;
 		public static Texture ANYIcon;
 		public static Texture TrackingStationIcon;
+        public static Texture heliPadIcon;
+        public static Texture runWayIcon;
 
-		public static Texture2D tNormalButton;
+        public static Texture2D tNormalButton;
 		public static Texture2D tHoverButton;
 
 		public static Texture tOpenBasesOn;
@@ -114,11 +115,12 @@ namespace KerbalKonstructs.UI
 		public static void setTextures()
 		{
 			VABIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-			SPHIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+            heliPadIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscHelipadIcon", false);
 			ANYIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
 			TrackingStationIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/TrackingMapIcon", false);
+            runWayIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscRunwayIcon", false);
 
-			tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
+            tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
 			tHoverButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonHover", false);
 
 			tOpenBasesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOpenBasesOn", false);
