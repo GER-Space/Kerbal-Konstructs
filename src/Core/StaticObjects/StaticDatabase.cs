@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using KerbalKonstructs.Utilities;
 
-namespace KerbalKonstructs.StaticObjects
+namespace KerbalKonstructs.Core
 {
 	public class StaticDatabase
 	{

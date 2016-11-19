@@ -4,17 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using UnityEngine;
-using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.KerbinNations;
-using KerbalKonstructs.LaunchSites;
 using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
 using System.Reflection;
-using KerbalKonstructs.SpaceCenters;
 using KerbalKonstructs.API;
 using KerbalKonstructs.API.Config;
 using KSP.UI.Screens;
 using Upgradeables;
+using KerbalKonstructs.Addons;
 
 using Debug = UnityEngine.Debug;
 
@@ -72,8 +71,8 @@ namespace KerbalKonstructs
         internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();
         internal static FacilityManager GUI_FacilityManager = new FacilityManager();
         internal static LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
-        internal static Modules.MapIcons.MapIconManager GUI_MapIconManager = new Modules.MapIcons.MapIconManager();
-        internal static Modules.MapIcons.MapIconDraw GUI_MapIcons = new Modules.MapIcons.MapIconDraw();
+        internal static Modules.MapIconManager GUI_MapIconManager = new Modules.MapIconManager();
+        internal static Modules.MapIconDraw GUI_MapIcons = new Modules.MapIconDraw();
         internal static KSCManager GUI_KSCManager = new KSCManager();
         internal static AirRacing GUI_AirRacingApp = new AirRacing();
         internal static BaseManager GUI_BaseManager = new BaseManager();
@@ -152,13 +151,6 @@ namespace KerbalKonstructs
 		public Boolean enableRTsupport = false;
 		#endregion
 
-		#region Other Mods Wrappers
-		// StageRecovery Wrapping
-		void SRProcessingFinished(Vessel vessel)
-		{
-			OnVesselRecovered(vessel.protoVessel, true);
-		}
-		#endregion
 
 		void Awake()
 		{
@@ -185,15 +177,11 @@ namespace KerbalKonstructs
             #endregion
 
             #region Other Mods Hooks
-            if (StageRecoveryWrapper.StageRecoveryAvailable)
-			{
-				StageRecoveryWrapper.AddRecoveryProcessingStartListener(OnVesselRecoveryRequested);
-				StageRecoveryWrapper.AddRecoveryProcessingFinishListener(SRProcessingFinished);
-			}
-			#endregion
+            StageRecovery.AttachStageRecovery();
+            #endregion
 
-			#region Model API
-			KKAPI.addModelSetting("mesh", new ConfigFile());
+            #region Model API
+            KKAPI.addModelSetting("mesh", new ConfigFile());
 			ConfigGenericString authorConfig = new ConfigGenericString();
 			authorConfig.setDefaultValue("Unknown");
 			KKAPI.addModelSetting("author", authorConfig);
@@ -654,24 +642,28 @@ namespace KerbalKonstructs
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-                    Log.Debug("OnProcessRecovery");
+                    Log.Normal("OnProcessRecovery");
 					if (vessel == null) return;
 					if (dialog == null) return;
-                    Log.Debug("OnProcessRecovery");
+                    Log.Normal("OnProcessRecovery");
 					dRecoveryValue = dialog.fundsEarned;
 					PersistenceUtils.savePersistenceBackup();
 				}
 			}
 		}
 
-		void OnVesselRecoveryRequested(Vessel data)
+        /// <summary>
+        /// GameEvent handle. This is called first.
+        /// </summary>
+        /// <param name="data"></param>
+		void OnVesselRecoveryRequested(Vessel vessel)
 		{
-            Log.Debug("OnVesselRecoveryRequested");
+            Log.Normal("OnVesselRecoveryRequested");
 			if (!disableRemoteRecovery)
 			{
 				if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
-                    Log.Debug("OnVesselRecoveryRequested is career");
+                    Log.Normal("OnVesselRecoveryRequested is career");
 					// Change the Space Centre to the nearest open base
 					fRecovFactor = 0f;
 					float fDist = 0f;
@@ -679,20 +671,22 @@ namespace KerbalKonstructs
 					float fRecovRng = 0f;
 					string sBaseName = "";
 
-					SpaceCenter csc;
-					SpaceCenterManager.getClosestSpaceCenter(data.gameObject.transform.position, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
+                    SpaceCenter csc = SpaceCenter.Instance;
+					SpaceCenterManager.getClosestSpaceCenter(vessel, out csc, out fDist, out fRecovFact, out fRecovRng, out sBaseName);
 
+                   
 
                     // no needed and buggy: What was the purpose of this??? Should we switch the spacecenter with this?
 				//	SpaceCenter.Instance = csc;
-
-				//	if (SpaceCenter.Instance == null)
+                //    Log.Normal("SpaceCenter set to: " + csc.name);
+                    
+                //    if (SpaceCenter.Instance == null)
 				//	{
-                 //       Log.Normal("no Spacecenter for recovery found");
+                //        Log.Normal("no Spacecenter for recovery found");
 				//		SpaceCenter.Instance = SpaceCenterManager.KSC;
 				//	}
 
-					lastRecoveryBase = sBaseName;
+                    lastRecoveryBase = sBaseName;
 					if (sBaseName == "Runway" || sBaseName == "LaunchPad") lastRecoveryBase = "KSC";
 					if (sBaseName == "KSC") lastRecoveryBase = "KSC";
 
@@ -705,24 +699,31 @@ namespace KerbalKonstructs
             return;
 		}
 
+
+        /// <summary>
+        /// Gameevent handle. This is called after OnVesselRecoveryRequested
+        /// </summary>
+        /// <param name="vessel"></param>
+        /// <param name="quick"></param>
 		public void OnVesselRecovered(ProtoVessel vessel, Boolean quick)
 		{
+            Log.Normal("onVesselRecovered called");
             if (!disableRemoteRecovery)
 			{
 				if (vessel == null)
 				{
-                    Log.Normal("onVesselRecovered vessel was null");
+                    Log.Warning("onVesselRecovered vessel was null");
 					if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 					{
 						SpaceCenter.Instance = SpaceCenterManager.KSC;
 					}
 					return;
 				}
-                if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+              //  if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
 				{
                     // Put the KSC back as the Space Centre
                     // Not needed as it is buggy in the moment
-                    //Log.Debug("Resetting SpaceCenter to KSC");
+                    Log.Debug("Resetting SpaceCenter to KSC");
 					SpaceCenter.Instance = SpaceCenterManager.KSC;
 
 

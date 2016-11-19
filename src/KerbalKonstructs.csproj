@@ -76,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="API\Config\ConfigCelestialBody.cs" />
     <Compile Include="API\Config\ConfigFile.cs" />
     <Compile Include="API\Config\ConfigFloat.cs" />
@@ -85,27 +86,28 @@
     <Compile Include="API\Config\IConfigItem.cs" />
     <Compile Include="API\KKAPI.cs" />
     <Compile Include="API\PersistenceFile.cs" />
+    <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
-    <Compile Include="LaunchSites\LaunchSite.cs" />
+    <Compile Include="Core\LaunchSites\LaunchSite.cs" />
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Modules\OnClick\GUIOnClick.cs" />
     <Compile Include="Modules\OnClick\AnimateOnClick.cs" />
     <Compile Include="Modules\Compat\AnimateOnClick.cs" />
-    <Compile Include="SpaceCenters\CustomSpaceCenter.cs" />
-    <Compile Include="SpaceCenters\SpaceCenterManager.cs" />
-    <Compile Include="StaticObjects\StaticUtils.cs" />
+    <Compile Include="Core\SpaceCenters\CustomSpaceCenter.cs" />
+    <Compile Include="Core\SpaceCenters\SpaceCenterManager.cs" />
+    <Compile Include="Core\StaticObjects\StaticUtils.cs" />
     <Compile Include="UI\KKWindow.cs" />
     <Compile Include="UI\ToolbarController.cs" />
     <Compile Include="UI\UIMain.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="UI\WindowManager.cs" />
-    <Compile Include="Wrappers\StageRecoveryWrapper.cs" />
+    <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
     <Compile Include="Nations\KerbinNation.cs" />
-    <Compile Include="StaticObjects\StaticModel.cs" />
-    <Compile Include="StaticObjects\StaticModule.cs" />
+    <Compile Include="Core\StaticObjects\StaticModel.cs" />
+    <Compile Include="Core\StaticObjects\StaticModule.cs" />
     <Compile Include="Utilities\CameraController.cs" />
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />
@@ -123,11 +125,11 @@
     <Compile Include="Facilities\FacilityManager.cs" />
     <Compile Include="Editor\EditorGUI.cs" />
     <Compile Include="KerbalKonstructs.cs" />
-    <Compile Include="LaunchSites\LaunchSiteManager.cs" />
-    <Compile Include="StaticObjects\StaticObject.cs" />
+    <Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
+    <Compile Include="Core\StaticObjects\StaticObject.cs" />
     <Compile Include="Utilities\KSPAddonFixed.cs" />
-    <Compile Include="StaticObjects\StaticDatabase.cs" />
-    <Compile Include="StaticObjects\StaticGroup.cs" />
+    <Compile Include="Core\StaticObjects\StaticDatabase.cs" />
+    <Compile Include="Core\StaticObjects\StaticGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />

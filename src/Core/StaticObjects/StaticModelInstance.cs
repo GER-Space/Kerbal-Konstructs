@@ -6,17 +6,20 @@ using KerbalKonstructs.API;
 using UnityEngine;
 using KSP.UI.Screens;
 using System.Reflection;
+using KerbalKonstructs;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.LaunchSites;
+using KerbalKonstructs.API.Config;
 
 namespace KerbalKonstructs.StaticObjects
 {
-	public class StaticObject
+	public class StaticModelInstance
 	{
 		[PersistentKey]
-		public Vector3 RadialPosition;
+        public Vector3 RadialPosition;
 
 		[PersistentField]
-		public CelestialBody CelestialBody;
+        public CelestialBody CelestialBody;
 		[PersistentField]
 		public float StaffCurrent;
 
@@ -30,9 +33,142 @@ namespace KerbalKonstructs.StaticObjects
 		public Boolean editing;
 		public Boolean preview;
 
-		private List<Renderer> _rendererComponents; 
+		private List<Renderer> _rendererComponents;
 
-		public void update()
+
+/*
+        // new configuration system
+        // Static opjects don't get inheritanced
+        private static bool isInitialized = false;
+        private static Dictionary<string, Type> configTypes = null;
+
+        // Position
+        internal Vector3 Orientation = Vector3.zero;
+        internal float RadiusOffset = 0f;
+        internal float RotationAngle = 0f;
+        // Calculated References - do not set, it will not work
+        internal float RefLatitude = 0f;
+        internal float RefLongitude = 0f;
+
+        // Visibility and Grouping
+        internal float VisibilityRange = 25000f;
+        internal string Group = "Ungrouped";
+        internal string GroupCenter = "false";
+        internal Vector3 RefCenter = Vector3.zero;
+
+        // Launchsite
+        internal string LaunchSiteName = "";
+        internal string LaunchPadTransform = "";
+        internal string LaunchSiteAuthor = "";
+        internal string LaunchSiteDescription = "No description available.";
+        internal string LaunchSiteLogo = "";
+        internal string LaunchSiteIcon = "";
+        internal SiteType LaunchSiteType = SiteType.Any;
+        internal string Category = "Other";
+        internal float LaunchSiteLength = 0f;
+        internal float LaunchSiteWidth = 0f;
+        internal string LaunchSiteNation = "";
+
+        // Career Mode Strategy Instances
+        internal float OpenCost = 0f;
+        internal float CloseValue = 0f;
+        internal string OpenCloseState = "Closed";
+        internal string FavouriteSite = "No";
+        internal float MissionCount = 0f;
+        internal string MissionLog = "No missions logged";
+
+        // Facility Types
+        internal string FacilityType = "None";
+        internal float FacilityLengthUsed = 0f;
+        internal float FacilityWidthUsed = 0f;
+        internal float FacilityHeightUsed = 0f;
+        internal float FacilityMassUsed = 0f;
+        internal string InStorage = "";
+
+
+        
+
+        void test()
+        {
+
+            // Facility Ratings
+
+            // Tracking station max short range in m
+            KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
+            // Max tracking angle
+            KKAPI.addInstanceSetting("TrackingAngle", new ConfigFloat());
+
+            // Target Type and ID
+            KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
+            KKAPI.addInstanceSetting("TargetID", new ConfigGenericString());
+
+            //XP
+            KKAPI.addInstanceSetting("FacilityXP", new ConfigFloat());
+
+            // Staff
+            KKAPI.addInstanceSetting("StaffMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("StaffCurrent", new ConfigFloat());
+
+            // Fueling
+            KKAPI.addInstanceSetting("LqFCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("OxFCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
+
+            KKAPI.addInstanceSetting("LqFAlt", new ConfigGenericString());
+            KKAPI.addInstanceSetting("OxFAlt", new ConfigGenericString());
+            KKAPI.addInstanceSetting("MoFAlt", new ConfigGenericString());
+
+            KKAPI.addInstanceSetting("ECCurrent", new ConfigFloat());
+
+            // Industry
+            KKAPI.addInstanceSetting("ProductionRateMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("ProductionRateCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("Producing", new ConfigGenericString());
+
+            KKAPI.addInstanceSetting("OreCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("PrOreCurrent", new ConfigFloat());
+
+            // Science Rep Funds generation
+            KKAPI.addInstanceSetting("ScienceOMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("ScienceOCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("RepOMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("RepOCurrent", new ConfigFloat());
+            KKAPI.addInstanceSetting("FundsOMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("FundsOCurrent", new ConfigFloat());
+
+            // Local to a specific save - constructed in a specific save-game
+            // WIP for founding
+            ConfigGenericString LocalToSave = new ConfigGenericString();
+            LocalToSave.setDefaultValue("False");
+            KKAPI.addInstanceSetting("LocalToSave", LocalToSave);
+
+            // Custom instances - added or modified by player with the editor
+            ConfigGenericString CustomInstance = new ConfigGenericString();
+            CustomInstance.setDefaultValue("False");
+            KKAPI.addInstanceSetting("CustomInstance", CustomInstance);
+
+            // Launch and Recovery
+            ConfigFloat flaunchrefund = new ConfigFloat();
+            flaunchrefund.setDefaultValue(0f);
+            KKAPI.addInstanceSetting("LaunchRefund", flaunchrefund);
+            ConfigFloat frecoveryfactor = new ConfigFloat();
+          //  frecoveryfactor.setDefaultValue((float)KerbalKonstructs.instance.defaultRecoveryFactor);
+            KKAPI.addInstanceSetting("RecoveryFactor", frecoveryfactor);
+            ConfigFloat frecoveryrange = new ConfigFloat();
+            //  frecoveryrange.setDefaultValue((float)KerbalKonstructs.instance.defaultEffectiveRange);
+            KKAPI.addInstanceSetting("RecoveryRange", frecoveryrange);
+
+            // Activity logging
+            KKAPI.addInstanceSetting("LastCheck", new ConfigFloat());
+
+        }
+
+        // end new config system
+
+        */
+
+
+        public void update()
 		{
 			if (pqsCity != null)
 			{

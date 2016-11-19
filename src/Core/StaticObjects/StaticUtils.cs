@@ -5,9 +5,8 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using KSP.UI.Screens;
-using KerbalKonstructs.StaticObjects;
 
-namespace KerbalKonstructs.Utilities
+namespace KerbalKonstructs.Core
 {
 	public class StaticUtils
 	{

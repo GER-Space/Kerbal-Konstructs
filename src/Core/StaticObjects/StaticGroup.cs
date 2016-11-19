@@ -5,7 +5,7 @@ using System.Linq;
 using KerbalKonstructs.Utilities;
 using KerbalKonstructs.UI;
 
-namespace KerbalKonstructs.StaticObjects
+namespace KerbalKonstructs.Core
 {
 	class StaticGroup
 	{

@@ -6,13 +6,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using KerbalKonstructs;
 using KerbalKonstructs.UI;
-using KerbalKonstructs.LaunchSites;
-using KerbalKonstructs.SpaceCenters;
-using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 
 
-namespace KerbalKonstructs.Modules.MapIcons
+namespace KerbalKonstructs.Modules
 {
     class MapIconDraw :KKWindow
     {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 
 //Change this to your mod's namespace!
-namespace KerbalKonstructs
+namespace KerbalKonstructs.Addons
 {
     /////////////////////////////////////
     // DO NOT EDIT BEYOND THIS POINT!  //
@@ -24,7 +24,7 @@ namespace KerbalKonstructs
         /// Call this to see if the addon is loaded. If this returns false, no additional API calls should be made!
         /// Also initializes SRType var, so it can by used later on. 
         /// </summary>
-        public static bool StageRecoveryAvailable
+        public static bool isAvailable
         {
             get
             {
@@ -42,11 +42,11 @@ namespace KerbalKonstructs
         }
 
         /* Check to see if StageRecovery is enabled. Returns false if unavailable or if user settings prevent SR from activating. */
-        public static bool StageRecoveryEnabled
+        public static bool stageRecoveryEnabled
         {
             get
             {
-                if (StageRecoveryAvailable)
+                if (isAvailable)
                 {
                     object SREnabledObject = GetMemberInfoValue(SRType.GetMember("SREnabled")[0], Instance);
                     return (bool)SREnabledObject;
@@ -144,7 +144,7 @@ namespace KerbalKonstructs
         {
             get
             {
-                if (StageRecoveryAvailable && instance_ == null)
+                if (isAvailable && instance_ == null)
                 {
                     instance_ = SRType.GetProperty("instance").GetValue(null, null);
                 }

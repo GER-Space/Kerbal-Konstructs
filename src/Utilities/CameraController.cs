@@ -1,7 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using KerbalKonstructs.LaunchSites;
-using KerbalKonstructs.StaticObjects;
 using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using System.Collections.Generic;

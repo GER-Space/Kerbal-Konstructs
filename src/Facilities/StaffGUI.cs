@@ -1,5 +1,4 @@
-﻿using KerbalKonstructs.LaunchSites;
-using KerbalKonstructs.StaticObjects;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;

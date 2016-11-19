@@ -1,4 +1,4 @@
-﻿using KerbalKonstructs.LaunchSites;
+﻿using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.API.Config
 {

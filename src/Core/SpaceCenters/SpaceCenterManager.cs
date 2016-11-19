@@ -1,11 +1,10 @@
-﻿using KerbalKonstructs.StaticObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using KerbalKonstructs.API;
-using KerbalKonstructs.LaunchSites;
+using KerbalKonstructs.Utilities;
 
-namespace KerbalKonstructs.SpaceCenters
+namespace KerbalKonstructs.Core
 {
 	public class SpaceCenterManager
 	{
@@ -24,13 +23,14 @@ namespace KerbalKonstructs.SpaceCenters
 
 
 
-		public static void getClosestSpaceCenter(Vector3 position, out SpaceCenter ClosestCenter, out float ClosestDistance, 
+		public static void getClosestSpaceCenter(Vessel vessel, out SpaceCenter ClosestCenter, out float ClosestDistance, 
 			out float RecoveryFactor, out float RecoveryRange, out string BaseName)
 		{
 			CustomSpaceCenter closest = null;
+            SpaceCenter sc = null;
 
-			float smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
-			// Debug.Log("KK: Distance to KSC is " + smallestDist);
+            var smallestDist = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+            Log.Normal("Distance to KSC is " + smallestDist);
 
 			bool isCareer = false;
 
@@ -61,8 +61,9 @@ namespace KerbalKonstructs.SpaceCenters
 
 				StaticObject myBase = csc.getStaticObject();
 				if ((float)myBase.getSetting("RecoveryFactor") == 0) continue;
-
-				float dist = Vector3.Distance(position, csc.getStaticObject().gameObject.transform.position);
+                sc = csc.getSpaceCenter();
+                //float dist = Vector3.Distance(position, csc.getStaticObject().gameObject.transform.position);
+                var dist = (float)sc.GreatCircleDistance(sc.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
 				if (dist < smallestDist)
 				{
@@ -83,18 +84,18 @@ namespace KerbalKonstructs.SpaceCenters
 				}
 			}
 
-			SpaceCenter sc;
+			
 
 			if (closest == null) 
 				sc = null;
 			else
 			{
-				// Debug.Log("KK: closest is " + closest.SpaceCenterName);
+			    Log.Normal("closest Spacecenter is " + closest.SpaceCenterName);
 				sc = closest.getSpaceCenter();
 			}
 
-			// Debug.Log("KK: smallestDist is " + smallestDist);
-			// Debug.Log("KK: returning closest space centre: " + sc.name);
+            Log.Normal("smallestDist is " + smallestDist);
+            Log.Normal("returning closest space centre: " + sc.name);
 
 
 			if (smallestDist < 1) smallestDist = 0;

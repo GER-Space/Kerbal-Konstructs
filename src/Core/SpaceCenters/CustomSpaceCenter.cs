@@ -1,10 +1,8 @@
-﻿using KerbalKonstructs.SpaceCenters;
-using KerbalKonstructs.StaticObjects;
+﻿using KerbalKonstructs.Core;
 using System.Reflection;
 using UnityEngine;
-using KerbalKonstructs.LaunchSites;
 
-namespace KerbalKonstructs
+namespace KerbalKonstructs.Core
 {
 	public class CustomSpaceCenter
 	{
@@ -16,7 +14,7 @@ namespace KerbalKonstructs
 		
 		public static void CreateFromLaunchsite(string name, GameObject go)
 		{
-			StaticObject staticObject = Utilities.StaticUtils.getStaticFromGameObject(go);
+			StaticObject staticObject = StaticUtils.getStaticFromGameObject(go);
 			if (staticObject != null)
 			{
 				var csc = new CustomSpaceCenter();
@@ -40,15 +38,17 @@ namespace KerbalKonstructs
 				spaceCenter = gameObject.AddComponent<SpaceCenter>();
 				spaceCenter.cb = (CelestialBody)staticObject.getSetting("CelestialBody");
 				spaceCenter.name = SpaceCenterName;
+                spaceCenter.SpaceCenterTransform = SpaceCenterManager.KSC.SpaceCenterTransform;
 
-				// Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
+                // Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
 
-				FieldInfo Latitude = spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo Latitude = spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
 				Latitude.SetValue(spaceCenter, spaceCenter.cb.GetLatitude(gameObject.transform.position));
 				FieldInfo Longitude = spaceCenter.GetType().GetField("longitude", BindingFlags.NonPublic | BindingFlags.Instance);
 				Longitude.SetValue(spaceCenter, spaceCenter.cb.GetLongitude(gameObject.transform.position));
 				FieldInfo SrfNVector = spaceCenter.GetType().GetField("srfNVector", BindingFlags.NonPublic | BindingFlags.Instance);
 				SrfNVector.SetValue(spaceCenter, spaceCenter.cb.GetRelSurfaceNVector(spaceCenter.Latitude, spaceCenter.Longitude));
+
 			}
 			else
 			{

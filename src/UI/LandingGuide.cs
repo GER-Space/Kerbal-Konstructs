@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine.UI;
 using UnityEngine;
 using KerbalKonstructs;
-using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.UI

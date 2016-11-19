@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using KerbalKonstructs.API;
-using KerbalKonstructs.LaunchSites;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.UI
@@ -41,7 +40,7 @@ namespace KerbalKonstructs.UI
 		GUIStyle ButtonKK;
 		GUIStyle KKToolTip;
 
-		LaunchSite selectedSite;
+		private LaunchSite selectedSite;
 		public List<LaunchSite> sites;
 		private SiteType editorType = SiteType.Any;
 

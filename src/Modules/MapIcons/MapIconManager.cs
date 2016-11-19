@@ -1,6 +1,4 @@
-﻿using KerbalKonstructs.LaunchSites;
-using KerbalKonstructs.SpaceCenters;
-using KerbalKonstructs.StaticObjects;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,7 +7,7 @@ using KerbalKonstructs.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KerbalKonstructs.Modules.MapIcons
+namespace KerbalKonstructs.Modules
 {
     class MapIconManager : KKWindow
     {

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KerbalKonstructs.LaunchSites;
-using KerbalKonstructs.StaticObjects;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.API;
 using UnityEngine;
 

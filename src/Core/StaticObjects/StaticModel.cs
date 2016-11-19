@@ -3,7 +3,7 @@ using KerbalKonstructs.API;
 using UnityEngine;
 using KerbalKonstructs.Utilities;
 
-namespace KerbalKonstructs.StaticObjects
+namespace KerbalKonstructs.Core
 {
 	public class StaticModel
 	{

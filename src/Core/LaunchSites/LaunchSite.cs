@@ -2,7 +2,7 @@
 using UnityEngine;
 using KerbalKonstructs.API;
 
-namespace KerbalKonstructs.LaunchSites
+namespace KerbalKonstructs.Core
 {
 	public class LaunchSite
 	{

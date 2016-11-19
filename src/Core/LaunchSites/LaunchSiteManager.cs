@@ -1,4 +1,4 @@
-﻿using KerbalKonstructs.StaticObjects;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using System;
@@ -7,10 +7,9 @@ using System.Reflection;
 using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
-using Upgradeables;
-using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
-namespace KerbalKonstructs.LaunchSites
+
+namespace KerbalKonstructs.Core
 {
 	public class LaunchSiteManager
 	{
@@ -355,7 +354,7 @@ namespace KerbalKonstructs.LaunchSites
 			StaticObject soSite = null;
 			if (go != null)
 			{
-				soSite = Utilities.StaticUtils.getStaticFromGameObject(go);
+				soSite = StaticUtils.getStaticFromGameObject(go);
 
 				if (soSite == null) return null;
 				return soSite;
