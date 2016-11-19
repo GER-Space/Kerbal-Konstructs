@@ -37,6 +37,7 @@ namespace KerbalKonstructs.Core
 
 		public void setSetting(string setting, object value)
 		{
+
 			if (settings.ContainsKey(setting))
 			{
 				settings[setting] = value;

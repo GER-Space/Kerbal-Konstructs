@@ -279,7 +279,17 @@ namespace KerbalKonstructs.Core
 
 		public void registerModel(StaticModel model)
 		{
-			modelList.Add(GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"),model);
+            var myconfig = GameDatabase.Instance.GetConfigNode(model.config);
+            string name = myconfig.GetValue("name");
+            if (modelList.ContainsKey(name))
+            {
+                Log.Error("duplicate name : " + GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"));
+                return;
+            }
+            else
+            {
+                modelList.Add(name, model);
+            }
 		}
 
 		public List<StaticModel> getModels()
