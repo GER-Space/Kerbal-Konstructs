@@ -73,8 +73,19 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		public override void Draw()
+        public override void Close()
+        {
+            KerbalKonstructs.instance.deselectObject(true,true);
+            base.Close();
+        }
+
+        public override void Draw()
 		{
+            if (MapView.MapIsEnabled) {
+                this.Close();
+            }
+
+
             StaticObject soObject = KerbalKonstructs.instance.selectedObject;
             KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3, 3, 5, 5);

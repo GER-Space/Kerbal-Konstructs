@@ -65,7 +65,13 @@ namespace KerbalKonstructs.UI
 			managerRect = GUI.Window(0xB00B1E2, managerRect, drawBaseManagerWindow, "", KKWindow);
 		}
 
-		void drawBaseManagerWindow(int windowID)
+        public override void Close()
+        {
+            KerbalKonstructs.GUI_FacilityManager.Close();
+            base.Close();
+        }
+
+        void drawBaseManagerWindow(int windowID)
 		{
 			string Base;
 			string Base2;
