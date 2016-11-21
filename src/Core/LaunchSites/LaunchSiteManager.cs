@@ -296,8 +296,8 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					if (site.openclosestate == "Open")
-						return true;
+					if ( (site.openclosestate == "Open") || (site.openclosestate == "OpenLocked") ) 
+                        return true;
 				}
 			}
 			return false;
@@ -623,8 +623,8 @@ namespace KerbalKonstructs.Core
 			EditorLogic.fetch.launchSiteName = site.name;
 		}
 
-		// Returns the internal launchSite that KSP has been told is the launchsite
-		public static string getCurrentLaunchSite()
+        // Returns the internal launchSite that KSP has been told is the launchsite
+        public static string getCurrentLaunchSite()
 		{
             return lastLaunchSite;
 
