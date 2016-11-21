@@ -391,7 +391,19 @@ namespace KerbalKonstructs.UI
 						GUILayout.Box("Current Launchsite: " + sCurrentSite);
 			}
 
-			GUILayout.BeginHorizontal();
+            GUI.enabled =  (selectedSite != null && !(selectedSite.name == sCurrentSite) && LaunchSiteManager.getIsSiteOpen(selectedSite.name)) ;
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
+            {
+                    LaunchSiteManager.setLaunchSite(selectedSite);
+                    MiscUtils.HUDMessage(selectedSite.name + " has been set as the launchsite", 10, 0);
+            }
+
+            GUILayout.EndHorizontal();
+            GUI.enabled = true;
+
+            GUILayout.BeginHorizontal();
 			{
 				if (editorType == SiteType.SPH)
 					GUI.enabled = (KerbalKonstructs.instance.defaultSPHlaunchsite != sCurrentSite);
