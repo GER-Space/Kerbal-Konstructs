@@ -359,9 +359,38 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 				if (!foldedIn)
 				{
-					GUILayout.Label("Increment");
-					increment = GUILayout.TextField(increment, 3, GUILayout.Width(30));
-				}
+                    GUILayout.Label("Increment");
+                    increment = GUILayout.TextField(increment, 4, GUILayout.Width(45));
+
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("0.01", GUILayout.Height(18)))
+                    {
+                        increment = "0.01";
+                    }
+                    if (GUILayout.Button("0.1", GUILayout.Height(18)))
+                    {
+                        increment = "0.1";
+                    }
+                    if (GUILayout.Button("1", GUILayout.Height(18)))
+                    {
+                        increment = "1";
+                    }
+                    if (GUILayout.Button("5", GUILayout.Height(18)))
+                    {
+                        increment = "5";
+                    }
+                    if (GUILayout.Button("10", GUILayout.Height(18)))
+                    {
+                        increment = "10";
+                    }
+                    if (GUILayout.Button("25", GUILayout.Height(16)))
+                    {
+                        increment = "25";
+                    }
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                }
 				else
 				{
 					GUILayout.Label("i");
