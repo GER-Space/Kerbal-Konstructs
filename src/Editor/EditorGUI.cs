@@ -1553,8 +1553,8 @@ namespace KerbalKonstructs.UI
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
-				GUILayout.Label("Site Category: ", GUILayout.Width(120));
-				GUILayout.Label(siteCategory, GUILayout.Width(80));
+				GUILayout.Label("Site Category: ", GUILayout.Width(115));
+				GUILayout.Label(siteCategory, GUILayout.Width(85));
 				GUILayout.FlexibleSpace();
 				GUI.enabled = !(siteCategory == "RocketPad");
 				if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
@@ -1565,31 +1565,34 @@ namespace KerbalKonstructs.UI
 				GUI.enabled = !(siteCategory == "Helipad");
 				if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
 					siteCategory = "Helipad";
-				GUI.enabled = !(siteCategory == "Other");
-				if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
+				GUI.enabled = !(siteCategory == "Waterlaunch");
+                if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
+                    siteCategory = "Waterlaunch";
+                GUI.enabled = !(siteCategory == "Other");
+                if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
 					siteCategory = "Other";
-			GUILayout.EndHorizontal();
+		    GUILayout.EndHorizontal();
 
 			GUI.enabled = true;
 
 			GUILayout.BeginHorizontal();
 				GUILayout.Label("Site Type: ", GUILayout.Width(120));
-				if (siteType == (SiteType)0)
+				if (siteType == SiteType.VAB)
 					GUILayout.Label("VAB", GUILayout.Width(40));
-				if (siteType == (SiteType)1)
+				if (siteType == SiteType.SPH)
 					GUILayout.Label("SPH", GUILayout.Width(40));
-				if (siteType == (SiteType)2)
+				if (siteType == SiteType.Any)
 					GUILayout.Label("Any", GUILayout.Width(40));
 				GUILayout.FlexibleSpace();
 				GUI.enabled = !(siteType == (SiteType)0);
 				if (GUILayout.Button("VAB", GUILayout.Height(23)))
-					siteType = ((SiteType)0);
+					siteType = SiteType.VAB;
 				GUI.enabled = !(siteType == (SiteType)1);
 				if (GUILayout.Button("SPH", GUILayout.Height(23)))
-					siteType = ((SiteType)1);
+					siteType = SiteType.SPH;
 				GUI.enabled = !(siteType == (SiteType)2);
 				if (GUILayout.Button("Any", GUILayout.Height(23)))
-					siteType = ((SiteType)2);
+					siteType = SiteType.Any;
 			GUILayout.EndHorizontal();
 
 			GUI.enabled = true;

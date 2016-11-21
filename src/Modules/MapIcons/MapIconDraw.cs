@@ -401,6 +401,9 @@ namespace KerbalKonstructs.Modules
                             case "Helipad":
                                 GUI.DrawTexture(screenRect, UIMain.heliPadIcon, ScaleMode.ScaleToFit, true);
                                 break;
+                            case "Waterlaunch":
+                                GUI.DrawTexture(screenRect, UIMain.waterLaunchIcon, ScaleMode.ScaleToFit, true);
+                                break;
                             default:
                                 GUI.DrawTexture(screenRect, UIMain.ANYIcon, ScaleMode.ScaleToFit, true);
                                 break;
