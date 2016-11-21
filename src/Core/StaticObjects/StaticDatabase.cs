@@ -10,7 +10,6 @@ namespace KerbalKonstructs.Core
 	{
 		//Groups are stored by name within the body name
 		private Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
-        //	private List<StaticModel> modelList = new List<StaticModel>();
         private Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
 		private string activeBodyName = "";
 
@@ -283,7 +282,7 @@ namespace KerbalKonstructs.Core
             string name = myconfig.GetValue("name");
             if (modelList.ContainsKey(name))
             {
-                Log.Error("duplicate name : " + GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"));
+                Log.Normal("duplicate name : " + GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"));
                 return;
             }
             else
