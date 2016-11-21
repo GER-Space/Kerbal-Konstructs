@@ -337,7 +337,7 @@ namespace KerbalKonstructs.Modules
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
                     continue;
-                if (!KerbalKonstructs.instance.mapShowOther && category == "Other")
+                if (!KerbalKonstructs.instance.mapShowOther && (( category == "Other" ) || (category == "Waterlaunch") ) )
                     continue;
                 if (!KerbalKonstructs.instance.mapShowRocketbases && category == "RocketPad")
                     continue;
