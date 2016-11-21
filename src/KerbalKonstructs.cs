@@ -787,7 +787,7 @@ namespace KerbalKonstructs
                                 ConfigNode n = ins.GetNode(s);
                                 if (n == null)
                                 {
-                                    Log.Debug("Could not find " + s + " node. Creating node.");
+                                    Log.Normal("Could not find " + s + " node. Creating node.");
                                     n = ins.AddNode(s);
                                     n.AddValue("lvl", 0);
                                     rootNode.Save(saveConfigPath);
@@ -1311,16 +1311,21 @@ namespace KerbalKonstructs
                 // ignore referenced objects
                 if (conf.config.HasValue("pointername"))
                 {
-                    if (!conf.config.GetValue("pointername").Equals("none", StringComparison.CurrentCultureIgnoreCase))
+                    if ( (!String.IsNullOrEmpty(conf.config.GetValue("pointername")) && !conf.config.GetValue("pointername").Equals("none", StringComparison.CurrentCultureIgnoreCase)) )
                     {
                         continue;
                     }
                 }
+                // Check if an modelname is set we can use, else set one
                 string modelName = conf.config.GetValue("name");
                 if (String.IsNullOrEmpty(modelName))
                 {
                     Log.Error("No Name Found in configuration : " + conf.config.GetValue("title"));
                     modelName = conf.config.GetValue("title");
+                    if (String.IsNullOrEmpty(modelName))
+                    {
+                        modelName = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
+                    }
                     if (!String.IsNullOrEmpty(modelName))
                     {
                         conf.config.AddValue("name", modelName);
@@ -1375,7 +1380,8 @@ namespace KerbalKonstructs
                         collider.convex = false;
                     }
                 }
-
+                // most mods will not load without beeing loaded here
+                loadInstances(conf.config, model, false);
                 staticDB.registerModel(model);
             }
         }
@@ -1389,13 +1395,14 @@ namespace KerbalKonstructs
             string modelname = null;
             foreach (UrlDir.UrlConfig conf in configs)
             {
-                if (conf.config.HasValue("pointername"))
+                if (conf.config.HasValue("pointername") && !String.IsNullOrEmpty(conf.config.GetValue("pointername")) )
                 {
                     modelname = conf.config.GetValue("pointername");
                 }
                 else
                 {
-                    modelname = conf.config.GetValue("name");
+                    continue;
+                    //modelname = conf.config.GetValue("name");
                 }
 
                 StaticModel model = staticDB.GetModel(modelname);
@@ -1403,7 +1410,7 @@ namespace KerbalKonstructs
                 {
                     loadInstances(conf.config, model, true);
                 }
-                else { Log.Error("No Model found"); }
+                else { Log.Error("No Model found for: "  + model.configPath); }
             }
         }
 
