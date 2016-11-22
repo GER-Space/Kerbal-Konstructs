@@ -24,6 +24,33 @@ namespace KerbalKonstructs.Utilities
         }
 
         /// <summary>
+        /// Logs a unity debug message to the User
+        /// </summary>
+        /// <param name="message"></param>
+        internal static void UserInfo(string message)
+        {
+            UnityEngine.Debug.Log("KK: " + message);
+        }
+
+        /// <summary>
+        /// Logs a unity Warning message to the User
+        /// </summary>
+        /// <param name="message"></param>
+        internal static void UserWarning(string message)
+        {
+            UnityEngine.Debug.LogWarning("KK: " + message);
+        }
+
+        /// <summary>
+        /// Logs a unity Error message to the User
+        /// </summary>
+        /// <param name="message"></param>
+        internal static void UserError(string message)
+        {
+            UnityEngine.Debug.LogError("KK: " + message);
+        }
+
+        /// <summary>
         /// Logs a unity debug message
         /// </summary>
         /// <param name="message"></param>
