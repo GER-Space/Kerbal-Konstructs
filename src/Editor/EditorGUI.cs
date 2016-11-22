@@ -360,10 +360,14 @@ namespace KerbalKonstructs.UI
 				if (!foldedIn)
 				{
                     GUILayout.Label("Increment");
-                    increment = GUILayout.TextField(increment, 4, GUILayout.Width(45));
+                    increment = GUILayout.TextField(increment, 5, GUILayout.Width(48));
 
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("0.001", GUILayout.Height(18)))
+                    {
+                        increment = "0.001";
+                    }
                     if (GUILayout.Button("0.01", GUILayout.Height(18)))
                     {
                         increment = "0.01";
@@ -375,10 +379,6 @@ namespace KerbalKonstructs.UI
                     if (GUILayout.Button("1", GUILayout.Height(18)))
                     {
                         increment = "1";
-                    }
-                    if (GUILayout.Button("5", GUILayout.Height(18)))
-                    {
-                        increment = "5";
                     }
                     if (GUILayout.Button("10", GUILayout.Height(18)))
                     {
