@@ -29,9 +29,6 @@ namespace KerbalKonstructs.UI
 		public Texture tCross = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingscross", false);
 		public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
 		public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-		public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-		public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-		public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
 		public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
 		public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
 		public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
@@ -455,31 +452,31 @@ namespace KerbalKonstructs.UI
 						if (!foldedIn)
 						{
 							GUILayout.Button("" + obj.getSetting("Group"), DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
-
-							sLaunchType = (string)obj.getSetting("Category");
-
-							if (sLaunchType == "Runway" || sLaunchType == "Helipad")
-							{
-								GUILayout.Button(tSPH, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-							}
-							else
-							{
-								if (sLaunchType == "RocketPad")
-								{
-									GUILayout.Button(tVAB, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-								}
-								else
-								{
-									if (sLaunchType == "Other" && obj.settings.ContainsKey("LaunchSiteName"))
-									{
-										GUILayout.Button(tANY, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-									}
-									else
-									{
-										GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-									}
-								}
-							}
+                            if (obj.settings.ContainsKey("LaunchSiteName"))
+                            {
+                                sLaunchType = (string)obj.getSetting("Category");
+                            }
+                            switch (sLaunchType)
+                            {
+                                case "Runway":
+                                    GUILayout.Button(UIMain.runWayIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                                case "Helipad":
+                                    GUILayout.Button(UIMain.heliPadIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                                case "RocketPad":
+                                    GUILayout.Button(UIMain.VABIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                                case "Waterlaunch":
+                                    GUILayout.Button(UIMain.waterLaunchIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                                case "Other":
+                                    GUILayout.Button(UIMain.ANYIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                                default:
+                                    GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                    break;
+                            }
 						}
 
 						//GUI.enabled = (obj != selectedObject);
