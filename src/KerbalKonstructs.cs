@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KerbalKonstructs.Core;
 using KerbalKonstructs.KerbinNations;
@@ -149,6 +150,7 @@ namespace KerbalKonstructs
         {
             instance = this;
             var TbController = new ToolbarController();
+            Log.PerfStart("Awake Function");
 
             #region Game Event Hooks
             GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
@@ -378,18 +380,13 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
             Log.PerfStart("Object loading1");
-            Log.PerfStart("Object loading2");
 
 
             LoadModels();
             Log.PerfStop("Object loading1");
-
-            Log.PerfStart("Instances");
-            Log.PerfPause("Instances");
+            Log.PerfStart("Object loading2");
 
             LoadModelInstances();
-
-            Log.PerfStop("Instances");
 
             Log.PerfStop("Object loading2");
 
@@ -397,6 +394,7 @@ namespace KerbalKonstructs
 
             Log.Normal("StaticDB has: " + staticDB.getAllStatics().Count() + "Entries");
             UIMain.setTextures();
+            Log.PerfStop("Awake Function");
         }
 
         #region Game Events
@@ -1154,11 +1152,9 @@ namespace KerbalKonstructs
                     Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
-                Log.PerfContinue("Instances");
 
                 obj.settings = KKAPI.loadConfig(instance, KKAPI.getInstanceSettings());
 
-                Log.PerfPause("Instances");
                 if (obj.settings == null)
                 {
                     Debug.Log("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
@@ -1320,8 +1316,8 @@ namespace KerbalKonstructs
                 string modelName = conf.config.GetValue("name");
                 if (String.IsNullOrEmpty(modelName))
                 {
-                    Log.Error("No Name Found in configuration : " + conf.config.GetValue("title"));
-                    modelName = conf.config.GetValue("title");
+                    Log.UserWarning("No Name Found in configuration : " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg");
+                    modelName = Regex.Replace(conf.config.GetValue("title"), @"\s+", "");
                     if (String.IsNullOrEmpty(modelName))
                     {
                         modelName = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
@@ -1332,6 +1328,7 @@ namespace KerbalKonstructs
                     }
                     else
                     {
+                        Log.Error("No Name Found in configuration : " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg");
                         continue;
                     }
                 }
@@ -1382,7 +1379,7 @@ namespace KerbalKonstructs
                 }
                 // most mods will not load without beeing loaded here
                 loadInstances(conf.config, model, false);
-                staticDB.registerModel(model);
+                staticDB.registerModel(model, modelName);
             }
         }
 

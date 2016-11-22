@@ -11,6 +11,8 @@ namespace KerbalKonstructs.Core
 		//Groups are stored by name within the body name
 		private Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
         private Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
+        private List<StaticModel> allStaticModels = new List<StaticModel>();
+
 		private string activeBodyName = "";
 
 		public void changeGroup(StaticObject obj, string newGroup)
@@ -276,13 +278,12 @@ namespace KerbalKonstructs.Core
 			return objects;
 		}
 
-		public void registerModel(StaticModel model)
+		public void registerModel(StaticModel model, string name)
 		{
-            var myconfig = GameDatabase.Instance.GetConfigNode(model.config);
-            string name = myconfig.GetValue("name");
+            allStaticModels.Add(model);
             if (modelList.ContainsKey(name))
             {
-                Log.Normal("duplicate name : " + GameDatabase.Instance.GetConfigNode(model.config).GetValue("name"));
+                Log.UserInfo("duplicate model name: " + name + " ,found in: "  + model.configPath + " . This might be OK.");
                 return;
             }
             else
@@ -293,14 +294,20 @@ namespace KerbalKonstructs.Core
 
 		public List<StaticModel> getModels()
 		{
-			return modelList.Values.ToList();
+			return allStaticModels;
 		}
 
         public StaticModel GetModel(string name)
         {
-            StaticModel myModel = null;
-            modelList.TryGetValue(name, out myModel);
-            return myModel;
+            if (!modelList.ContainsKey(name))
+            {
+                Log.UserError("No StaticModel found with name: " + name);
+                return null;
+            }
+            else
+            {
+                return modelList[name];   
+            }
         }
 
 
