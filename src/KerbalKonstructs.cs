@@ -811,10 +811,6 @@ namespace KerbalKonstructs
                 }
             }
 
-            if (camControl.active)
-            {
-                camControl.updateCamera();
-            }
 
             if (selectedObject != null)
             {
@@ -1648,7 +1644,6 @@ namespace KerbalKonstructs
             {
                 InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
                 InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
-                InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "KKCamControls");
                 InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
 
                 if (selectedObject != null)
@@ -1692,7 +1687,6 @@ namespace KerbalKonstructs
 
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
-            InputLockManager.RemoveControlLock("KKCamControls");
             InputLockManager.RemoveControlLock("KKCamModes");
 
             if (disableCam)
