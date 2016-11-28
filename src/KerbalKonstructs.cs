@@ -202,8 +202,8 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
 
             // Calculated References - do not set, it will not work
-            KKAPI.addInstanceSetting("RefLatitude", new ConfigFloat());
-            KKAPI.addInstanceSetting("RefLongitude", new ConfigFloat());
+            KKAPI.addInstanceSetting("RefLatitude", new ConfigDouble());
+            KKAPI.addInstanceSetting("RefLongitude", new ConfigDouble());
 
             // Visibility and Grouping
             ConfigFloat visibilityConfig = new ConfigFloat();
