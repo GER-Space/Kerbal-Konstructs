@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using KerbalKonstructs.API;
-using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Core;
 using UnityEngine;
 
 namespace KerbalKonstructs.KerbinNations
