@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\GameData\KerbalKonstructs\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -79,6 +79,7 @@
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="API\Config\ConfigCelestialBody.cs" />
     <Compile Include="API\Config\ConfigFile.cs" />
+    <Compile Include="API\Config\ConfigDouble.cs" />
     <Compile Include="API\Config\ConfigFloat.cs" />
     <Compile Include="API\Config\ConfigGenericString.cs" />
     <Compile Include="API\Config\ConfigSiteType.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="API\Config\IConfigItem.cs" />
     <Compile Include="API\KKAPI.cs" />
     <Compile Include="API\PersistenceFile.cs" />
+    <Compile Include="Core\KKMath.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
@@ -102,7 +104,7 @@
     <Compile Include="UI\KKWindow.cs" />
     <Compile Include="UI\ToolbarController.cs" />
     <Compile Include="UI\UIMain.cs" />
-    <Compile Include="Utilities\Log.cs" />
+    <Compile Include="Core\Log.cs" />
     <Compile Include="UI\WindowManager.cs" />
     <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
     <Compile Include="Nations\KerbinNation.cs" />
