@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace KerbalKonstructs.Utilities
+namespace KerbalKonstructs.Core
 {
     internal class Log
     {
