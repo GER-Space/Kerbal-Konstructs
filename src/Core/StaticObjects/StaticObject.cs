@@ -16,7 +16,7 @@ namespace KerbalKonstructs.Core
 		public Vector3 RadialPosition;
 
 		[PersistentField]
-		public CelestialBody CelestialBody;
+		public CelestialBody body;
 		[PersistentField]
 		public float StaffCurrent;
 
@@ -32,6 +32,10 @@ namespace KerbalKonstructs.Core
 
 		private List<Renderer> _rendererComponents; 
 
+
+        /// <summary>
+        /// Updates the static instance with new settings
+        /// </summary>
 		public void update()
 		{
 			if (pqsCity != null)
@@ -40,7 +44,8 @@ namespace KerbalKonstructs.Core
 				pqsCity.repositionRadiusOffset = (float) settings["RadiusOffset"];
 				pqsCity.reorientInitialUp = (Vector3) settings["Orientation"];
 				pqsCity.reorientFinalAngle = (float) settings["RotationAngle"];
-				pqsCity.Orientate();
+                pqsCity.transform.localScale = pqsCity.transform.localScale.normalized * (float)settings["ModelScale"];
+                pqsCity.Orientate();
 			}
 		}
 
@@ -145,12 +150,23 @@ namespace KerbalKonstructs.Core
 			pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
 			gameObject.transform.parent = ((CelestialBody)getSetting("CelestialBody")).pqsController.transform;
 			pqsCity.sphere = ((CelestialBody)getSetting("CelestialBody")).pqsController;
-			pqsCity.order = 100;
+            pqsCity.transform.localScale *= (float)getSetting("ModelScale");
+            pqsCity.order = 100;
 			pqsCity.modEnabled = true;
-			pqsCity.OnSetup();
+            pqsCity.OnSetup();
 			pqsCity.Orientate();
 
-			foreach (StaticModule module in model.modules)
+            body = (CelestialBody)getSetting("CelestialBody");
+
+      /*      // Add them to the bodys objectlist, so SigmaDimension can find it. 
+            PQSSurfaceObject pqsSrfObj = new PQSSurfaceObject();
+            pqsSrfObj = (PQSSurfaceObject)pqsCity;
+            var pqsObjectList = body.pqsSurfaceObjects.ToList();
+            pqsObjectList.Add(pqsSrfObj);
+            body.pqsSurfaceObjects = pqsObjectList.ToArray();
+            */
+
+            foreach (StaticModule module in model.modules)
 			{
 				Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
 				MonoBehaviour mod = gameObject.AddComponent(moduleType) as MonoBehaviour;
