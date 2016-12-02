@@ -355,6 +355,11 @@ namespace KerbalKonstructs
             // Activity logging
             KKAPI.addInstanceSetting("LastCheck", new ConfigFloat());
 
+            // Model Scale
+            ConfigFloat modelScale = new ConfigFloat();
+            modelScale.setDefaultValue(1f);
+            KKAPI.addInstanceSetting("ModelScale", modelScale);
+
             // Nation API
             KKAPI.addNationSetting("nationName", new ConfigGenericString());
             KKAPI.addNationSetting("shortname", new ConfigGenericString());
@@ -381,7 +386,6 @@ namespace KerbalKonstructs
             DontDestroyOnLoad(this);
             Log.PerfStart("Object loading1");
 
-
             LoadModels();
             Log.PerfStop("Object loading1");
             Log.PerfStart("Object loading2");
@@ -390,11 +394,13 @@ namespace KerbalKonstructs
 
             Log.PerfStop("Object loading2");
 
-            Log.Normal("Version is " + sKKVersion + " .");
+            Log.UserInfo("Version is " + sKKVersion + " .");
 
-            Log.Normal("StaticDB has: " + staticDB.getAllStatics().Count() + "Entries");
+            Log.UserInfo("StaticDB has: " + staticDB.getAllStatics().Count() + "Entries");
             UIMain.setTextures();
             Log.PerfStop("Awake Function");
+
+
         }
 
         #region Game Events
@@ -1127,13 +1133,13 @@ namespace KerbalKonstructs
         {
             if (model == null)
             {
-                Debug.Log("KK: Attempting to loadInstances for a null model. Check your model and config.");
+                Log.UserError("KK: Attempting to loadInstances for a null model. Check your model and config.");
                 return;
             }
 
             if (confconfig == null)
             {
-                Debug.Log("KK: Attempting to loadInstances for a null ConfigNode. Check your model and config.");
+                Log.UserError("KK: Attempting to loadInstances for a null ConfigNode. Check your model and config.");
                 return;
             }
 
@@ -1145,7 +1151,7 @@ namespace KerbalKonstructs
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
                 {
-                    Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
+                    Log.UserError("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
 
@@ -1153,7 +1159,7 @@ namespace KerbalKonstructs
 
                 if (obj.settings == null)
                 {
-                    Debug.Log("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
+                    Log.UserError("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
                     continue;
                 }
                 // sometimes we need a second pass.. (do we???)
