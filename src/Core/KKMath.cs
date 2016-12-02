@@ -23,14 +23,26 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         internal static Vector3d Spheric2Cubic(double lat, double lon, CelestialBody body, double alt=0d)
         {
-            lat = (lat-90) * deg2rad;
-            lon *= deg2rad;
             double n = body.Radius;
-            double x, y, z;
-            x = (n + alt) * -1.0 * Math.Sin(lat) * Math.Cos(lon);
-            y = (n + alt) * Math.Cos(lat); // for now, it's still a sphere, so no eccentricity
-            z = (n + alt) * -1.0 * Math.Sin(lat) * Math.Sin(lon);
-            return new Vector3d((float)x, (float)y, (float)z);
+            double rlon = Mathf.Deg2Rad * lon;
+            double rlat = Mathf.Deg2Rad * lat;
+
+            Vector3d rad = new Vector3d(Math.Cos(rlat) * Math.Cos(rlon), Math.Sin(rlat), Math.Cos(rlat) * Math.Sin(rlon));
+            return rad* n;
         }
+
+        /// <summary>
+        /// simple vector rotation. Best used with 90° seperated vectors
+        /// </summary>
+        /// <param name="vec_from"></param>
+        /// <param name="vec_to"></param>
+        /// <param name="deg"></param>
+        /// <returns></returns>
+        internal static Vector3d RotateVector(Vector3d vec_from, Vector3d vec_to, double deg)
+        {
+            double deginrad = deg2rad * deg;
+            return ((Math.Cos(deginrad) * vec_from) + (Math.Sin(deginrad) * vec_to));
+        }
+
     }
 }

@@ -1,7 +1,7 @@
-﻿using KerbalKonstructs.Core;
+﻿using System;
+using KerbalKonstructs.Core;
 using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
-using System;
 using System.Collections.Generic;
 using LibNoise.Unity.Operator;
 using UnityEngine;
@@ -12,118 +12,152 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-	class EditorGUI :KKWindow
-	{
-		#region Variable Declarations
+    class EditorGUI : KKWindow
+    {
+        #region Variable Declarations
 
-			private List<Transform> transformList = new List<Transform>();
+        private List<Transform> transformList = new List<Transform>();
 
-			public Boolean foldedIn = false;
-			public Boolean doneFold = false;
+        private CelestialBody body;
 
-			#region Texture Definitions
-			// Texture definitions
-			public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-			public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
-			public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-			public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-			public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-			public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-			public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-			public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-			public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-			public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-			public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-			public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
-			public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
-			public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-			public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-			public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 
-			#endregion
+        public Boolean foldedIn = false;
+        public Boolean doneFold = false;
 
-			#region Switches
-			// Switches
-			public Boolean enableColliders = false;
-			public static Boolean editingSite = false;
+        #region Texture Definitions
+        // Texture definitions
+        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+        public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+        public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
+        public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
+        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
+        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
+        public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
+        public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+        public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
+        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
+        public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
+        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
+        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
+        public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
 
-			public static Boolean editingFacility = false;
+        #endregion
 
-			public Boolean creatingInstance = false;
-			public Boolean showLocal = false;
-			public Boolean onNGS = false;
-			public Boolean displayingInfo = false;
-			public Boolean SnapRotateMode = false;
+        #region Switches
+        // Switches
+        public Boolean enableColliders = false;
+        public static Boolean editingSite = false;
 
-			public Boolean bChangeFacilityType = false;
-			#endregion
+        public static Boolean editingFacility = false;
 
-			#region GUI Windows
-			// GUI Windows
-			Rect toolRect = new Rect(300, 35, 330, 590);
-			Rect siteEditorRect = new Rect(400, 45, 360, 590);
-			Rect facilityEditorRect = new Rect(400, 45, 360, 370);
+        public Boolean creatingInstance = false;
+        public Boolean showLocal = false;
+        public Boolean onNGS = false;
+        public Boolean displayingInfo = false;
+        public Boolean SnapRotateMode = false;
 
-			#endregion
+        public Boolean bChangeFacilityType = false;
 
-			#region GUI elements
-			// GUI elements
-			Vector2 descScroll;
-			Vector2 facilityscroll;
-			GUIStyle listStyle = new GUIStyle();
-			GUIStyle navStyle = new GUIStyle();
+        #endregion
 
-			GUIStyle LabelGreen;
-			GUIStyle LabelWhite;
+        #region GUI Windows
+        // GUI Windows
+        Rect toolRect = new Rect(300, 35, 330, 680);
+        Rect siteEditorRect = new Rect(400, 45, 360, 590);
+        Rect facilityEditorRect = new Rect(400, 45, 360, 370);
 
-			GUIStyle DeadButton;
-			GUIStyle DeadButtonRed;
-			GUIStyle KKWindow;
-			GUIStyle BoxNoBorder;
+        #endregion
 
-			SiteType siteType;
-			GUIContent[] siteTypeOptions = {
-											new GUIContent("VAB"),
-											new GUIContent("SPH"),
-											new GUIContent("ANY")
-										};
-			// ComboBox siteTypeMenu;
-			#endregion
+        #region GUI elements
+        // GUI elements
+        Vector2 descScroll;
+        Vector2 facilityscroll;
+        GUIStyle listStyle = new GUIStyle();
+        GUIStyle navStyle = new GUIStyle();
 
-			#region Holders
-			// Holders
+        GUIStyle LabelGreen;
+        GUIStyle LabelWhite;
 
-			public static StaticObject selectedObject = null;
-			public StaticObject selectedObjectPrevious = null;
-			static LaunchSite lTargetSite = null;
+        GUIStyle DeadButton;
+        GUIStyle DeadButtonRed;
+        GUIStyle KKWindow;
+        GUIStyle BoxNoBorder;
 
-			public static String facType = "None";
-			public static String sGroup = "Ungrouped";
-			public static String visrange = "";
-			String increment = "1";
-			String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
-			float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
+        SiteType siteType;
+        GUIContent[] siteTypeOptions = {
+                                            new GUIContent("VAB"),
+                                            new GUIContent("SPH"),
+                                            new GUIContent("ANY")
+                                        };
+        // ComboBox siteTypeMenu;
+        #endregion
 
-			string infFacType;
-			string infTrackingShort, infTrackingAngle, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax;
+        #region Holders
+        // Holders
 
-			Vector3 vbsnapangle1 = new Vector3(0,0,0);
-			Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
+        public static StaticObject selectedObject = null;
+        public StaticObject selectedObjectPrevious = null;
+        static LaunchSite lTargetSite = null;
 
-			Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
-			Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
+        public static String facType = "None";
+        public static String sGroup = "Ungrouped";
+        public static String visrange = "";
+        String increment = "0.1";
+        String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
+        float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
-			String sSTROT = "";
+        string infFacType;
+        string infTrackingShort, infTrackingAngle, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax;
 
-			GameObject selectedSnapPoint = null;
-			GameObject selectedSnapPoint2 = null;
-			public StaticObject snapTargetInstance = null;
-			StaticObject snapTargetInstancePrevious = null;
+        Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
+        Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
 
-			Vector3 snpspos = new Vector3(0,0,0);
-			Vector3 snptpos = new Vector3(0, 0, 0);
-			Vector3 vDrift = new Vector3(0, 0, 0);
-			Vector3 vCurrpos = new Vector3(0, 0, 0);
+        Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
+        Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
+
+        String sSTROT = "";
+
+        GameObject selectedSnapPoint = null;
+        GameObject selectedSnapPoint2 = null;
+        public StaticObject snapTargetInstance = null;
+        StaticObject snapTargetInstancePrevious = null;
+
+        private Vector3 snpspos = new Vector3(0, 0, 0);
+        private Vector3 snptpos = new Vector3(0, 0, 0);
+        private Vector3 vDrift = new Vector3(0, 0, 0);
+        private Vector3 vCurrpos = new Vector3(0, 0, 0);
+
+        private VectorRenderer upVR = new VectorRenderer();
+        private VectorRenderer fwdVR = new VectorRenderer();
+        private VectorRenderer rightVR = new VectorRenderer();
+
+        private VectorRenderer northVR = new VectorRenderer();
+        private VectorRenderer eastVR = new VectorRenderer();
+
+        private Vector3d savedposition;
+        private double savedalt;
+        private double savedrot;
+        private bool savedpos = false;
+
+        private static Space referenceSystem = Space.Self;
+
+        private static Vector3d position = Vector3d.zero;
+        private Vector3d referenceVector = Vector3d.zero;
+        private Vector3 orientation = Vector3.zero;
+
+        private static double altitude;
+        private static double latitude, longitude;
+
+        private double rotation = 0d;
+
+        float vis = 0;
+
+
+        float modelScale = 1f;
 
         #endregion
 
@@ -135,123 +169,125 @@ namespace KerbalKonstructs.UI
             {
                 return;
             }
-            if ( (KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview) )
+            if (KerbalKonstructs.instance.selectedObject == null)
+            {
+                CloseEditors();
+                CloseVectors();
+            }
+
+            if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
             {
                 drawEditor(KerbalKonstructs.instance.selectedObject);
             }
         }
 
 
+        public override void Close()
+        {
+            CloseVectors();
+            CloseEditors();
+            base.Close();
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
         public EditorGUI()
-		{
-			listStyle.normal.textColor = Color.white;
-			listStyle.onHover.background =
-			listStyle.hover.background = new Texture2D(2, 2);
-			listStyle.padding.left =
-			listStyle.padding.right =
-			listStyle.padding.top =
-			listStyle.padding.bottom = 4;
+        {
+            listStyle.normal.textColor = Color.white;
+            listStyle.onHover.background =
+            listStyle.hover.background = new Texture2D(2, 2);
+            listStyle.padding.left =
+            listStyle.padding.right =
+            listStyle.padding.top =
+            listStyle.padding.bottom = 4;
 
-			navStyle.padding.left = 0;
-			navStyle.padding.right = 0;
-			navStyle.padding.top = 1;
-			navStyle.padding.bottom = 3;
+            navStyle.padding.left = 0;
+            navStyle.padding.right = 0;
+            navStyle.padding.top = 1;
+            navStyle.padding.bottom = 3;
 
             // siteTypeMenu = new ComboBox(siteTypeOptions[0], siteTypeOptions, "button", "box", null, listStyle);
         }
 
-		#region draw Methods
+        #region draw Methods
 
         /// <summary>
         /// Wrapper to draw editors
         /// </summary>
         /// <param name="obj"></param>
-		public void drawEditor(StaticObject obj)
-		{
-			if (obj != null)
-			{
-				if (selectedObject != obj)
-					updateSelection(obj);
+        public void drawEditor(StaticObject obj)
+        {
+            if (obj != null)
+            {
+                if (selectedObject != obj)
+                {
+                    updateSelection(obj);
+                    position = selectedObject.gameObject.transform.position;
+                    Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+                    SetupVectors();
+                }
 
-				KKWindow = new GUIStyle(GUI.skin.window);
-				KKWindow.padding = new RectOffset(8, 8, 3, 3);
+                KKWindow = new GUIStyle(GUI.skin.window);
+                KKWindow.padding = new RectOffset(8, 8, 3, 3);
 
-				if (foldedIn)
-				{
-					if (!doneFold)
-						toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width - 45, toolRect.height - 250);
+                if (foldedIn)
+                {
+                    if (!doneFold)
+                        toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width - 45, toolRect.height - 250);
 
-					doneFold = true;
-				}
+                    doneFold = true;
+                }
 
-				if (!foldedIn)
-				{
-					if (doneFold)
-						toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width + 45, toolRect.height + 250);
+                if (!foldedIn)
+                {
+                    if (doneFold)
+                        toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width + 45, toolRect.height + 250);
 
-					doneFold = false;
-				}
+                    doneFold = false;
+                }
 
-				toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEdtorWindow, "", KKWindow);
+                toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindow);
 
-				if (editingSite)
-				{
-						siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindow);
-				}
+                if (editingSite)
+                {
+                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindow);
+                }
 
-				if (editingFacility)
-				{
-					facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindow);
-				}
-			}
-		}
+                if (editingFacility)
+                {
+                    facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindow);
+                }
+            }
+        }
 
         #endregion
 
         #region Editors
 
         #region Instance Editor
-        Vector3d savedposition;
-        double savedalt;
-        double savedrot;
-		bool savedpos = false;
-		bool pospasted = false;
-
-        private Vector3d position = Vector3d.zero;
-        private Vector3d referenceVector = Vector3d.zero;
-        private Vector3 orientation = Vector3.zero;
-
-        private double altitude;
-        private double latitude , longitude;
-
-        private double rotation = 0d;
-        private static String xOri, yOri, zOri = "";
-
-        float vis = 0;
-
-        bool shouldUpdateSelection = false;
-        bool manuallySet = false;
-
 
         /// <summary>
         /// Instance Editor window
         /// </summary>
         /// <param name="windowID"></param>
-        void InstanceEdtorWindow(int windowID)
-		{
-
+        void InstanceEditorWindow(int windowID)
+        {
             //initialize values
             rotation = (double)(float)selectedObject.getSetting("RotationAngle");
             referenceVector = (Vector3d)(Vector3)selectedObject.getSetting("RadialPosition");
             orientation = (Vector3)selectedObject.getSetting("Orientation");
+            modelScale = (float)selectedObject.getSetting("ModelScale");
 
             // make this new when converted to PQSCity2
             // fill the variables here for later use
-            position = selectedObject.gameObject.transform.position;
-            Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position,out latitude, out longitude, out altitude);
+            if (position == Vector3d.zero)
+            {
+                position = selectedObject.gameObject.transform.position;
+                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+            }
+
+            UpdateVectors();
 
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
@@ -286,103 +322,103 @@ namespace KerbalKonstructs.UI
             string smessage = "";
 
 
-			GUILayout.BeginHorizontal();
-			{
-				GUI.enabled = false;
-				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+            GUILayout.BeginHorizontal();
+            {
+                GUI.enabled = false;
+                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUILayout.Button("Instance Editor", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Instance Editor", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUI.enabled = true;
+                GUI.enabled = true;
 
-				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					KerbalKonstructs.instance.deselectObject(true, true);
-				}
-			}
-			GUILayout.EndHorizontal();
+                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+                {
+                    KerbalKonstructs.instance.saveObjects();
+                    KerbalKonstructs.instance.deselectObject(true, true);
+                }
+            }
+            GUILayout.EndHorizontal();
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Space(2);
+            GUILayout.Space(2);
 
-			GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal();
 
-			if (foldedIn) tFolded = tFoldOut;
-			if (!foldedIn) tFolded = tFoldIn;
+            if (foldedIn) tFolded = tFoldOut;
+            if (!foldedIn) tFolded = tFoldIn;
 
-			if (GUILayout.Button(tFolded, GUILayout.Height(23), GUILayout.Width(23)))
-			{
-				if (foldedIn) foldedIn = false;
-				else
-					foldedIn = true;
-			}
+            if (GUILayout.Button(tFolded, GUILayout.Height(23), GUILayout.Width(23)))
+            {
+                if (foldedIn) foldedIn = false;
+                else
+                    foldedIn = true;
+            }
 
-			GUILayout.Button((string)selectedObject.model.getSetting("title"), GUILayout.Height(23));
+            GUILayout.Button((string)selectedObject.model.getSetting("title"), GUILayout.Height(23));
 
-			GUILayout.EndHorizontal();
+            GUILayout.EndHorizontal();
 
-			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Label("Position");
-				GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Position");
+                GUILayout.FlexibleSpace();
 
-				if (GUILayout.Button(new GUIContent(tCopyPos, "Copy Position"), GUILayout.Width(23), GUILayout.Height(23)))
-				{
-					savedpos = true;
-					savedposition = position;
-					
-					savedalt = altitude;
-					savedrot = rotation;
-					// Debug.Log("KK: Instance position copied");
-				}
-				if (GUILayout.Button(new GUIContent(tPastePos, "Paste Position"), GUILayout.Width(23), GUILayout.Height(23)))
-				{
-					if (savedpos)
-					{
-						pospasted = true;
-						position = savedposition;
-						altitude = savedalt;
-						rotation = savedrot;
-						// Debug.Log("KK: Instance position pasted");
-					}
-				}
+                if (GUILayout.Button(new GUIContent(tCopyPos, "Copy Position"), GUILayout.Width(23), GUILayout.Height(23)))
+                {
+                    savedpos = true;
+                    savedposition = position;
 
-				if (!foldedIn)
-				{
-					if (GUILayout.Button(new GUIContent(tSnap, "Snap to Target"), GUILayout.Width(23), GUILayout.Height(23)))
-					{
-						if (snapTargetInstance == null)
-						{
+                    savedalt = altitude;
+                    savedrot = rotation;
+                    // Debug.Log("KK: Instance position copied");
+                }
+                if (GUILayout.Button(new GUIContent(tPastePos, "Paste Position"), GUILayout.Width(23), GUILayout.Height(23)))
+                {
+                    if (savedpos)
+                    {
+                        position = savedposition;
+                        altitude = savedalt;
+                        rotation = savedrot;
+                        saveSettings();
+                        // Debug.Log("KK: Instance position pasted");
+                    }
+                }
 
-						}
-						else
-						{
-							Vector3 snapTargetPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
-							float snapTargetAlt = (float)snapTargetInstance.getSetting("RadiusOffset");
-							selectedObject.setSetting("RadialPosition", snapTargetPos);
-							selectedObject.setSetting("RadiusOffset", snapTargetAlt);
-						}
+                if (!foldedIn)
+                {
+                    if (GUILayout.Button(new GUIContent(tSnap, "Snap to Target"), GUILayout.Width(23), GUILayout.Height(23)))
+                    {
+                        if (snapTargetInstance == null)
+                        {
 
-						if (!KerbalKonstructs.instance.DevMode)
-						{
-							selectedObject.setSetting("CustomInstance", "True");
-						}
-						updateSelection(selectedObject);
-					}
-				}
+                        }
+                        else
+                        {
+                            Vector3 snapTargetPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
+                            float snapTargetAlt = (float)snapTargetInstance.getSetting("RadiusOffset");
+                            selectedObject.setSetting("RadialPosition", snapTargetPos);
+                            selectedObject.setSetting("RadiusOffset", snapTargetAlt);
+                        }
 
-				GUILayout.FlexibleSpace();
-				if (!foldedIn)
-				{
+                        if (!KerbalKonstructs.instance.DevMode)
+                        {
+                            selectedObject.setSetting("CustomInstance", "True");
+                        }
+                        updateSelection(selectedObject);
+                    }
+                }
+
+                GUILayout.FlexibleSpace();
+                if (!foldedIn)
+                {
                     GUILayout.Label("Increment");
                     increment = GUILayout.TextField(increment, 5, GUILayout.Width(48));
 
@@ -415,290 +451,349 @@ namespace KerbalKonstructs.UI
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
                 }
-				else
-				{
-					GUILayout.Label("i");
-					increment = GUILayout.TextField(increment, 3, GUILayout.Width(25));
+                else
+                {
+                    GUILayout.Label("i");
+                    increment = GUILayout.TextField(increment, 3, GUILayout.Width(25));
 
-					if (GUILayout.Button("0.1", GUILayout.Height(23)))
-					{
-						increment = "0.1";
-					}
-					if (GUILayout.Button("1", GUILayout.Height(23)))
-					{
-						increment = "1";
-					}
-					if (GUILayout.Button("10", GUILayout.Height(23)))
-					{
-						increment = "10";
-					}
-				}
-			}
-			GUILayout.EndHorizontal();
+                    if (GUILayout.Button("0.1", GUILayout.Height(23)))
+                    {
+                        increment = "0.1";
+                    }
+                    if (GUILayout.Button("1", GUILayout.Height(23)))
+                    {
+                        increment = "1";
+                    }
+                    if (GUILayout.Button("10", GUILayout.Height(23)))
+                    {
+                        increment = "10";
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
+
+            //
+            // Set reference butons
+            //
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Reference System: ");
+            GUILayout.FlexibleSpace();
+            GUI.enabled = (referenceSystem == Space.World);
+
+            if (GUILayout.Button(new GUIContent(textureCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
+            {
+                referenceSystem = Space.Self;
+                UpdateVectors();
+            }
+
+            GUI.enabled = (referenceSystem == Space.Self);
+            if (GUILayout.Button(new GUIContent(textureWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
+            {
+                referenceSystem = Space.World;
+                UpdateVectors();
+            }
+            GUI.enabled = true;
+
+            GUILayout.Label(referenceSystem.ToString());
+
+            GUILayout.EndHorizontal();
+            float fTempWidth = 80f;
             //
             // Position editing
             //
             GUILayout.BeginHorizontal();
 
-			GUILayout.Label("Forward:");
-			GUILayout.FlexibleSpace();
+            if (referenceSystem == Space.Self)
+            {
+                GUILayout.Label("Back / Forward:");
+                GUILayout.FlexibleSpace();
 
-			float fTempWidth = 80f;
+                if (foldedIn) fTempWidth = 40f;
 
-			if (foldedIn) fTempWidth = 40f;
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.back * float.Parse(increment));
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.forward * float.Parse(increment));
+                }
+                GUILayout.EndHorizontal();
 
-			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(-selectedObject.gameObject.transform.forward);
-			}
-			if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(selectedObject.gameObject.transform.forward);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Left / Right:");
+                GUILayout.FlexibleSpace();
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.left * float.Parse(increment));
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.right * float.Parse(increment));
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Down / Up:");
+                GUILayout.FlexibleSpace();
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.down * float.Parse(increment));
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setTransform(Vector3.up * float.Parse(increment));
+                }
+
             }
-			GUILayout.EndHorizontal();
+            else
+            {
+                GUILayout.Label("West / East :");
+                GUILayout.FlexibleSpace();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Right:");
-			GUILayout.FlexibleSpace();
-			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(-selectedObject.gameObject.transform.right);
+                if (foldedIn) fTempWidth = 40f;
+
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setlatlng(0d, -double.Parse(increment));
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setlatlng(0d, double.Parse(increment));
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("South / North:");
+                GUILayout.FlexibleSpace();
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setlatlng(-double.Parse(increment), 0d);
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
+                    setlatlng(double.Parse(increment), 0d);
+                }
+
             }
-			if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(selectedObject.gameObject.transform.right);
+
+            GUILayout.EndHorizontal();
+
+            GUI.enabled = true;
+
+            if (!foldedIn)
+            {
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Box("Latitude");
+                    GUILayout.Box(latitude.ToString("#0.0000000"));
+                    GUILayout.Box("Longitude");
+                    GUILayout.Box(longitude.ToString("#0.0000000"));
+                }
+                GUILayout.EndHorizontal();
             }
-			GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Up:");
-			GUILayout.FlexibleSpace();
-			if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(-selectedObject.gameObject.transform.up);
-            }
-			if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-			{
-                setTransform(selectedObject.gameObject.transform.up);
-            }
-			GUILayout.EndHorizontal();
-
-			GUI.enabled = true;
-
-			if (!foldedIn)
-			{
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Box("Latitude");
-					GUILayout.Box(latitude.ToString("#0.0000000"));
-					GUILayout.Box("Longitude");
-					GUILayout.Box(longitude.ToString("#0.0000000"));
-				}
-				GUILayout.EndHorizontal();
-			}
-
-			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
             // 
             // Altitude editing
             //
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Label("Alt.");
-				GUILayout.FlexibleSpace();
-                altitude = double.Parse( GUILayout.TextField(altitude.ToString(), 25, GUILayout.Width(fTempWidth)) );
-				if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-				{
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Alt.");
+                GUILayout.FlexibleSpace();
+                double.Parse(GUILayout.TextField(altitude.ToString(), 25, GUILayout.Width(fTempWidth)));
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+                {
                     altitude -= double.Parse(increment);
                     saveSettings();
-				}
-				if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-				{
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+                {
                     altitude += double.Parse(increment);
                     saveSettings();
                 }
-			}
-			GUILayout.EndHorizontal();
+            }
+            GUILayout.EndHorizontal();
 
-			var pqsc = ((CelestialBody)selectedObject.getSetting("CelestialBody")).pqsController;
+            var pqsc = ((CelestialBody)selectedObject.getSetting("CelestialBody")).pqsController;
 
-			if (!foldedIn)
-			{
-				if (GUILayout.Button("Snap to Terrain", GUILayout.Height(21)))
-				{
+            if (!foldedIn)
+            {
+                if (GUILayout.Button("Snap to Terrain", GUILayout.Height(21)))
+                {
                     altitude = 1.0d + ((double)(pqsc.GetSurfaceHeight((Vector3)selectedObject.getSetting("RadialPosition")) - pqsc.radius - (double)(float)selectedObject.getSetting("RadiusOffset")));
                     saveSettings();
                 }
-			}
+            }
 
-			GUI.enabled = true;
+            GUI.enabled = true;
 
-			bool isDevMode = KerbalKonstructs.instance.DevMode;
+            bool isDevMode = KerbalKonstructs.instance.DevMode;
 
-			if (!foldedIn)
-			{
-				if (isDevMode && selectedObject != null)
-				{
-					GUILayout.Space(10);
-					GUILayout.Box("SNAP-POINTS");
+            if (!foldedIn)
+            {
+                if (isDevMode && selectedObject != null)
+                {
+                    GUILayout.Space(10);
+                    GUILayout.Box("SNAP-POINTS");
 
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.Label("Source ");
-						GUILayout.Box("" + vbsnapangle1.ToString() + "d");
-						GUILayout.Box("Wpos " + snapSourceWorldPos.ToString());
-						GUILayout.FlexibleSpace();
-						Transform[] transformList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
-						List<GameObject> snappointList = (from t in transformList where t.gameObject.name == "snappoint" select t.gameObject).ToList();
+                    GUILayout.BeginHorizontal();
+                    {
+                        GUILayout.Label("Source ");
+                        GUILayout.Box("" + vbsnapangle1.ToString() + "d");
+                        GUILayout.Box("Wpos " + snapSourceWorldPos.ToString());
+                        GUILayout.FlexibleSpace();
+                        Transform[] transformList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
+                        List<GameObject> snappointList = (from t in transformList where t.gameObject.name == "snappoint" select t.gameObject).ToList();
 
-						foreach (GameObject tSnapPoint in snappointList)
-						{
-							GUI.enabled = (tSnapPoint != selectedSnapPoint);
-							if (GUILayout.Button("*", GUILayout.Width(23), GUILayout.Height(23)))
-							{
-								selectedSnapPoint = tSnapPoint;
-								SnapToTarget();
-								updateSelection(selectedObject);
-							}
-							GUI.enabled = true;
-						}
-					}
-					GUILayout.EndHorizontal();
-				}
+                        foreach (GameObject tSnapPoint in snappointList)
+                        {
+                            GUI.enabled = (tSnapPoint != selectedSnapPoint);
+                            if (GUILayout.Button("*", GUILayout.Width(23), GUILayout.Height(23)))
+                            {
+                                selectedSnapPoint = tSnapPoint;
+                                SnapToTarget();
+                                updateSelection(selectedObject);
+                            }
+                            GUI.enabled = true;
+                        }
+                    }
+                    GUILayout.EndHorizontal();
+                }
 
-				if (isDevMode && snapTargetInstance != null)
-				{
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.Label("Target ");
-						GUILayout.Box("" + vbsnapangle2.ToString() + "d");
-						GUILayout.Box("Wpos " + snapTargetWorldPos.ToString());
-						GUILayout.FlexibleSpace();
-						Transform[] transformList2 = snapTargetInstance.gameObject.GetComponentsInChildren<Transform>();
-						List<GameObject> snappointList2 = (from t2 in transformList2 where t2.gameObject.name == "snappoint" select t2.gameObject).ToList();
+                if (isDevMode && snapTargetInstance != null)
+                {
+                    GUILayout.BeginHorizontal();
+                    {
+                        GUILayout.Label("Target ");
+                        GUILayout.Box("" + vbsnapangle2.ToString() + "d");
+                        GUILayout.Box("Wpos " + snapTargetWorldPos.ToString());
+                        GUILayout.FlexibleSpace();
+                        Transform[] transformList2 = snapTargetInstance.gameObject.GetComponentsInChildren<Transform>();
+                        List<GameObject> snappointList2 = (from t2 in transformList2 where t2.gameObject.name == "snappoint" select t2.gameObject).ToList();
 
-						foreach (GameObject tSnapPoint2 in snappointList2)
-						{
-							GUI.enabled = (tSnapPoint2 != selectedSnapPoint2);
-							if (GUILayout.Button("*", GUILayout.Width(23), GUILayout.Height(23)))
-							{
-								selectedSnapPoint2 = tSnapPoint2;
-								SnapToTarget(SnapRotateMode);
-								updateSelection(selectedObject);
-							}
-							GUI.enabled = true;
-						}
-					}
-					GUILayout.EndHorizontal();
+                        foreach (GameObject tSnapPoint2 in snappointList2)
+                        {
+                            GUI.enabled = (tSnapPoint2 != selectedSnapPoint2);
+                            if (GUILayout.Button("*", GUILayout.Width(23), GUILayout.Height(23)))
+                            {
+                                selectedSnapPoint2 = tSnapPoint2;
+                                SnapToTarget(SnapRotateMode);
+                                updateSelection(selectedObject);
+                            }
+                            GUI.enabled = true;
+                        }
+                    }
+                    GUILayout.EndHorizontal();
 
-					GUILayout.BeginHorizontal();
-					{
-						sSTROT = snapTargetInstance.pqsCity.reorientFinalAngle.ToString();
-						GUILayout.Box("Rot " + sSTROT);
-					}
-					GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    {
+                        sSTROT = snapTargetInstance.pqsCity.reorientFinalAngle.ToString();
+                        GUILayout.Box("Rot " + sSTROT);
+                    }
+                    GUILayout.EndHorizontal();
 
-					GUILayout.BeginHorizontal();
-					{
-						if (GUILayout.Button("Snap", GUILayout.Height(23)))
-						{
-							SnapToTarget(SnapRotateMode);
-						}
-						GUILayout.Space(10);
+                    GUILayout.BeginHorizontal();
+                    {
+                        if (GUILayout.Button("Snap", GUILayout.Height(23)))
+                        {
+                            SnapToTarget(SnapRotateMode);
+                        }
+                        GUILayout.Space(10);
 
-						SnapRotateMode = GUILayout.Toggle(SnapRotateMode, "SnapRot Mode", GUILayout.Height(23));
+                        SnapRotateMode = GUILayout.Toggle(SnapRotateMode, "SnapRot Mode", GUILayout.Height(23));
 
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("DriftFix", GUILayout.Height(23)))
-						{
-							if (selectedSnapPoint == null || selectedSnapPoint2 == null)
-							{
-							}
-							else
-							{
-								FixDrift(SnapRotateMode);
-							}
-						}
-					}
-					GUILayout.EndHorizontal();
-				}
-			}
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("DriftFix", GUILayout.Height(23)))
+                        {
+                            if (selectedSnapPoint == null || selectedSnapPoint2 == null)
+                            {
+                            }
+                            else
+                            {
+                                FixDrift(SnapRotateMode);
+                            }
+                        }
+                    }
+                    GUILayout.EndHorizontal();
+                }
+            }
 
-			if (!foldedIn)
-				GUILayout.Space(5);
+            if (!foldedIn)
+                GUILayout.Space(5);
 
-			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
-			fTempWidth = 80f;
+            fTempWidth = 80f;
 
-			GUI.enabled = true;
+            GUI.enabled = true;
 
-			if (!foldedIn)
-			{
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Vis.");
-					GUILayout.FlexibleSpace();
-					vis = float.Parse( GUILayout.TextField(vis.ToString(), 6, GUILayout.Width(80)));
-					if (GUILayout.Button("Min", GUILayout.Width(30), GUILayout.Height(23)))
-					{
-						vis -= 1000000000f;
+            if (!foldedIn)
+            {
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Vis.");
+                    GUILayout.FlexibleSpace();
+                    vis = float.Parse(GUILayout.TextField(vis.ToString(), 6, GUILayout.Width(80)));
+                    if (GUILayout.Button("Min", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        vis -= 1000000000f;
                         //vis = "2500f";
                         saveSettings();
                     }
-					if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(23)))
-					{
-						vis -= 2500f;
+                    if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        vis -= 2500f;
                         saveSettings();
                     }
-					if (GUILayout.Button("+", GUILayout.Width(30), GUILayout.Height(23)))
-					{
-						vis += 2500f;
+                    if (GUILayout.Button("+", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        vis += 2500f;
                         saveSettings();
                     }
-					if (GUILayout.Button("Max", GUILayout.Width(30), GUILayout.Height(23)))
-					{
-						vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
+                    if (GUILayout.Button("Max", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
                         saveSettings();
                     }
-				}
-				GUILayout.EndHorizontal();
-				GUILayout.Space(5);
-			}
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(5);
+            }
 
-			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
-			if (!foldedIn)
-			{
+            if (!foldedIn)
+            {
                 //
                 // Orientation quick preset
                 //
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Orientation");
-					GUILayout.FlexibleSpace();
-					if (GUILayout.Button(new GUIContent("U", "Top Up"), GUILayout.Height(21), GUILayout.Width(18)))
-					{
+                GUILayout.Space(1);
+                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Space(2);
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Orientation");
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(new GUIContent("U", "Top Up"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
                         orientation = new Vector3(0, 1, 0); saveSettings();
-                        //xOri = "0"; yOri = "1"; zOri = "0"; pospasted = true; saveSettings();
                     }
-					if (GUILayout.Button(new GUIContent("D", "Bottom Up"), GUILayout.Height(21), GUILayout.Width(18)))
-					{
+                    if (GUILayout.Button(new GUIContent("D", "Bottom Up"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
                         orientation = new Vector3(0, -1, 0); saveSettings();
-                        //xOri = "0"; yOri = "-1"; zOri = "0"; pospasted = true; saveSettings();
                     }
-					if (GUILayout.Button(new GUIContent("L", "On Left"), GUILayout.Height(21), GUILayout.Width(18)))
-					{
+                    if (GUILayout.Button(new GUIContent("L", "On Left"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
                         orientation = new Vector3(1, 0, 0); saveSettings();
-                        //xOri = "1"; yOri = "0"; zOri = "0"; pospasted = true; saveSettings();
                     }
-					if (GUILayout.Button(new GUIContent("R", "On Right"), GUILayout.Height(21), GUILayout.Width(18)))
-					{
+                    if (GUILayout.Button(new GUIContent("R", "On Right"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
                         orientation = new Vector3(-1, 0, 0); saveSettings();
-                        //xOri = "-1"; yOri = "0"; zOri = "0"; pospasted = true; saveSettings();
                     }
-				}
-				GUILayout.EndHorizontal();
+                }
+                GUILayout.EndHorizontal();
 
                 //
                 // Orientation adjustment
@@ -714,11 +809,11 @@ namespace KerbalKonstructs.UI
 
                     if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                     {
-                        setOrientation(Vector3.right, float.Parse(increment));
+                        SetPitch(float.Parse(increment));
                     }
                     if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                     {
-                        setOrientation(-Vector3.right, float.Parse(increment));
+                        SetPitch(-float.Parse(increment));
                     }
                     GUILayout.EndHorizontal();
 
@@ -727,15 +822,15 @@ namespace KerbalKonstructs.UI
                     GUILayout.FlexibleSpace();
                     if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                     {
-                        setOrientation(Vector3.forward, float.Parse(increment));
+                        SetRoll(float.Parse(increment));
                     }
                     if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                     {
-                        setOrientation(-Vector3.forward, float.Parse(increment));
+                        SetRoll(-float.Parse(increment));
                     }
 
                 }
-				GUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
 
 
                 //
@@ -766,843 +861,860 @@ namespace KerbalKonstructs.UI
                 }
                 GUILayout.EndHorizontal();
 
+                GUILayout.Space(1);
+                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Space(2);
+                //
+                // Scale
+                //
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Model Scale: ");
+                    GUILayout.FlexibleSpace();
+                    modelScale = float.Parse(GUILayout.TextField(modelScale.ToString(), 4, GUILayout.Width(fTempWidth)));
 
+                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        modelScale -= float.Parse(increment); saveSettings();
+                    }
+                    if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        modelScale -= float.Parse(increment); saveSettings();
+                    }
+                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        modelScale += float.Parse(increment); saveSettings();
+                    }
+                    if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
+                    {
+                        modelScale += float.Parse(increment); saveSettings();
+                    }
+                }
+                GUILayout.EndHorizontal();
                 GUILayout.Space(5);
-			}
 
-			GUI.enabled = true;
+            }
 
-			if (!foldedIn)
-			{
+            GUI.enabled = true;
 
-				if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
-				{
-					infFacType = facType;
-					infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
-					infTrackingAngle = selectedObject.getSetting("TrackingAngle").ToString();
+            if (!foldedIn)
+            {
 
-					infOpenCost = selectedObject.getSetting("OpenCost").ToString();
-					if (infOpenCost == "0" || infOpenCost == "")
-						infOpenCost = selectedObject.model.getSetting("cost").ToString();
+                if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
+                {
+                    infFacType = facType;
+                    infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
+                    infTrackingAngle = selectedObject.getSetting("TrackingAngle").ToString();
 
-					infStaffMax = selectedObject.getSetting("StaffMax").ToString();
-					if (infStaffMax == "0" || infStaffMax == "")
-						infStaffMax = selectedObject.model.getSetting("DefaultStaffMax").ToString();
+                    infOpenCost = selectedObject.getSetting("OpenCost").ToString();
+                    if (infOpenCost == "0" || infOpenCost == "")
+                        infOpenCost = selectedObject.model.getSetting("cost").ToString();
 
-					infProdRateMax = selectedObject.getSetting("ProductionRateMax").ToString();
-					if (infProdRateMax == "0" || infProdRateMax == "")
-						infProdRateMax = selectedObject.model.getSetting("DefaultProductionRateMax").ToString();
+                    infStaffMax = selectedObject.getSetting("StaffMax").ToString();
+                    if (infStaffMax == "0" || infStaffMax == "")
+                        infStaffMax = selectedObject.model.getSetting("DefaultStaffMax").ToString();
 
-					infScienceMax = selectedObject.getSetting("ScienceOMax").ToString();
-					if (infScienceMax == "0" || infScienceMax == "")
-						infScienceMax = selectedObject.model.getSetting("DefaultScienceOMax").ToString();
+                    infProdRateMax = selectedObject.getSetting("ProductionRateMax").ToString();
+                    if (infProdRateMax == "0" || infProdRateMax == "")
+                        infProdRateMax = selectedObject.model.getSetting("DefaultProductionRateMax").ToString();
 
-					infFundsMax = selectedObject.getSetting("FundsOMax").ToString();
-					if (infFundsMax == "0" || infFundsMax == "")
-						infFundsMax = selectedObject.model.getSetting("DefaultFundsOMax").ToString();
+                    infScienceMax = selectedObject.getSetting("ScienceOMax").ToString();
+                    if (infScienceMax == "0" || infScienceMax == "")
+                        infScienceMax = selectedObject.model.getSetting("DefaultScienceOMax").ToString();
 
-					editingFacility = true;
-				}
-			}
+                    infFundsMax = selectedObject.getSetting("FundsOMax").ToString();
+                    if (infFundsMax == "0" || infFundsMax == "")
+                        infFundsMax = selectedObject.model.getSetting("DefaultFundsOMax").ToString();
 
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.Label("Group: ", GUILayout.Height(23));
-				GUILayout.FlexibleSpace();
+                    editingFacility = true;
+                }
+            }
 
-				if (!foldedIn)
-					sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(185), GUILayout.Height(23));
-				else
-					sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(135), GUILayout.Height(23));
-			}
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Group: ", GUILayout.Height(23));
+                GUILayout.FlexibleSpace();
 
-			GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+                if (!foldedIn)
+                    sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(185), GUILayout.Height(23));
+                else
+                    sGroup = GUILayout.TextField(sGroup, 30, GUILayout.Width(135), GUILayout.Height(23));
+            }
+            GUILayout.EndHorizontal();
 
-			if (!foldedIn)
-			{
-				GUILayout.Space(5);
-				
-				GUILayout.BeginHorizontal();
-				{
-					enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140), GUILayout.Height(23));
+            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
-					Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
-					List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
+            if (!foldedIn)
+            {
+                GUILayout.Space(5);
 
-					if (enableColliders)
-					{
-						foreach (GameObject collider in colliderList)
-						{
-							collider.GetComponent<Collider>().enabled = true;
-						}
-					}
-					if (!enableColliders)
-					{
-						foreach (GameObject collider in colliderList)
-						{
-							collider.GetComponent<Collider>().enabled = false;
-						}
-					}
+                GUILayout.BeginHorizontal();
+                {
+                    enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140), GUILayout.Height(23));
 
-					GUILayout.FlexibleSpace();
+                    Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
+                    List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
 
-					if (GUILayout.Button("Duplicate", GUILayout.Width(130), GUILayout.Height(23)))
-					{
-						KerbalKonstructs.instance.saveObjects();
-						StaticModel oModel = selectedObject.model;
-						float fOffset = (float)selectedObject.getSetting("RadiusOffset");
-						Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
-						float fAngle = (float)selectedObject.getSetting("RotationAngle");
-						smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
-						KerbalKonstructs.instance.deselectObject(true, true);
-						spawnInstance(oModel, fOffset, vPosition, fAngle);
-						MiscUtils.HUDMessage(smessage, 10, 2);
-					}
-				}
-				GUILayout.EndHorizontal();
+                    if (enableColliders)
+                    {
+                        foreach (GameObject collider in colliderList)
+                        {
+                            collider.GetComponent<Collider>().enabled = true;
+                        }
+                    }
+                    if (!enableColliders)
+                    {
+                        foreach (GameObject collider in colliderList)
+                        {
+                            collider.GetComponent<Collider>().enabled = false;
+                        }
+                    }
 
-				GUILayout.Space(10);
+                    GUILayout.FlexibleSpace();
 
-			}
+                    if (GUILayout.Button("Duplicate", GUILayout.Width(130), GUILayout.Height(23)))
+                    {
+                        KerbalKonstructs.instance.saveObjects();
+                        StaticModel oModel = selectedObject.model;
+                        float fOffset = (float)selectedObject.getSetting("RadiusOffset");
+                        Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
+                        float fAngle = (float)selectedObject.getSetting("RotationAngle");
+                        smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
+                        KerbalKonstructs.instance.deselectObject(true, true);
+                        spawnInstance(oModel, fOffset, vPosition, fAngle);
+                        MiscUtils.HUDMessage(smessage, 10, 2);
+                    }
+                }
+                GUILayout.EndHorizontal();
 
-			if (foldedIn)
-			{
-				if (GUILayout.Button("Duplicate", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					StaticModel oModel = selectedObject.model;
-					float fOffset = (float)selectedObject.getSetting("RadiusOffset");
-					Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
-					float fAngle = (float)selectedObject.getSetting("RotationAngle");
-					smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
-					KerbalKonstructs.instance.deselectObject(true, true);
-					spawnInstance(oModel, fOffset, vPosition, fAngle);
-					MiscUtils.HUDMessage(smessage, 10, 2);
-				}
-			}
+                GUILayout.Space(10);
 
-			GUI.enabled = true;
+            }
 
-			GUI.enabled = !editingSite;
+            if (foldedIn)
+            {
+                if (GUILayout.Button("Duplicate", GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.saveObjects();
+                    StaticModel oModel = selectedObject.model;
+                    float fOffset = (float)selectedObject.getSetting("RadiusOffset");
+                    Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
+                    float fAngle = (float)selectedObject.getSetting("RotationAngle");
+                    smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
+                    KerbalKonstructs.instance.deselectObject(true, true);
+                    spawnInstance(oModel, fOffset, vPosition, fAngle);
+                    MiscUtils.HUDMessage(smessage, 10, 2);
+                }
+            }
 
-			if (!foldedIn)
-			{
-				string sLaunchPadTransform = (string)selectedObject.getSetting("LaunchPadTransform");
-				string sDefaultPadTransform = (string)selectedObject.model.getSetting("DefaultLaunchPadTransform");
-				string sLaunchsiteDesc = (string)selectedObject.getSetting("LaunchSiteDescription");
-				string sModelDesc = (string)selectedObject.model.getSetting("description");
+            GUI.enabled = true;
 
-				if (sLaunchPadTransform == "" && sDefaultPadTransform == "")
-					GUI.enabled = false;
+            GUI.enabled = !editingSite;
 
-				if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
-				{
-					// Edit or make a launchsite
-					siteName = (string)selectedObject.getSetting("LaunchSiteName");
-					siteTrans = (selectedObject.settings.ContainsKey("LaunchPadTransform")) ? sLaunchPadTransform : sDefaultPadTransform;
+            if (!foldedIn)
+            {
+                string sLaunchPadTransform = (string)selectedObject.getSetting("LaunchPadTransform");
+                string sDefaultPadTransform = (string)selectedObject.model.getSetting("DefaultLaunchPadTransform");
+                string sLaunchsiteDesc = (string)selectedObject.getSetting("LaunchSiteDescription");
+                string sModelDesc = (string)selectedObject.model.getSetting("description");
 
-					if (sLaunchsiteDesc != "")
-						siteDesc = sLaunchsiteDesc;
-					else
-						siteDesc = sModelDesc;
+                if (sLaunchPadTransform == "" && sDefaultPadTransform == "")
+                    GUI.enabled = false;
 
-					siteCategory = (string)selectedObject.getSetting("Category");
-					siteType = (SiteType)selectedObject.getSetting("LaunchSiteType");
-					flOpenCost = (float)selectedObject.getSetting("OpenCost");
-					flCloseValue = (float)selectedObject.getSetting("CloseValue");
-					stOpenCost = string.Format("{0}", flOpenCost);
-					stCloseValue = string.Format("{0}", flCloseValue);
+                if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
+                {
+                    // Edit or make a launchsite
+                    siteName = (string)selectedObject.getSetting("LaunchSiteName");
+                    siteTrans = (selectedObject.settings.ContainsKey("LaunchPadTransform")) ? sLaunchPadTransform : sDefaultPadTransform;
 
-					flRecoveryFactor = (float)selectedObject.getSetting("RecoveryFactor");
-					flRecoveryRange = (float)selectedObject.getSetting("RecoveryRange");
-					flLaunchRefund = (float)selectedObject.getSetting("LaunchRefund");
+                    if (sLaunchsiteDesc != "")
+                        siteDesc = sLaunchsiteDesc;
+                    else
+                        siteDesc = sModelDesc;
 
-					flLength = (float)selectedObject.getSetting("LaunchSiteLength");
+                    siteCategory = (string)selectedObject.getSetting("Category");
+                    siteType = (SiteType)selectedObject.getSetting("LaunchSiteType");
+                    flOpenCost = (float)selectedObject.getSetting("OpenCost");
+                    flCloseValue = (float)selectedObject.getSetting("CloseValue");
+                    stOpenCost = string.Format("{0}", flOpenCost);
+                    stCloseValue = string.Format("{0}", flCloseValue);
 
-					if (flLength < 1)
-						flLength = (float)selectedObject.model.getSetting("DefaultLaunchSiteLength");
+                    flRecoveryFactor = (float)selectedObject.getSetting("RecoveryFactor");
+                    flRecoveryRange = (float)selectedObject.getSetting("RecoveryRange");
+                    flLaunchRefund = (float)selectedObject.getSetting("LaunchRefund");
 
-					flWidth = (float)selectedObject.getSetting("LaunchSiteWidth");
+                    flLength = (float)selectedObject.getSetting("LaunchSiteLength");
 
-					if (flWidth < 1)
-						flWidth = (float)selectedObject.model.getSetting("DefaultLaunchSiteWidth");
+                    if (flLength < 1)
+                        flLength = (float)selectedObject.model.getSetting("DefaultLaunchSiteLength");
 
-					stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
-					stRecoveryRange = string.Format("{0}", flRecoveryRange);
-					stLaunchRefund = string.Format("{0}", flLaunchRefund);
+                    flWidth = (float)selectedObject.getSetting("LaunchSiteWidth");
 
-					stLength = string.Format("{0}", flLength);
-					stWidth = string.Format("{0}", flWidth);
+                    if (flWidth < 1)
+                        flWidth = (float)selectedObject.model.getSetting("DefaultLaunchSiteWidth");
 
-					siteAuthor = (selectedObject.settings.ContainsKey("author")) ? (string)selectedObject.getSetting("author") : (string)selectedObject.model.getSetting("author");
-					// Debug.Log("KK: Making or editing a launchsite");
-					editingSite = true;
-				}
-			}
+                    stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
+                    stRecoveryRange = string.Format("{0}", flRecoveryRange);
+                    stLaunchRefund = string.Format("{0}", flLaunchRefund);
 
-			GUI.enabled = true;
+                    stLength = string.Format("{0}", flLength);
+                    stWidth = string.Format("{0}", flWidth);
 
-			GUILayout.BeginHorizontal();
-			{
-				if (GUILayout.Button("Save", GUILayout.Width(110), GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					smessage = "Saved all changes to all objects.";
-					MiscUtils.HUDMessage(smessage, 10, 2);
-				}
-				GUILayout.FlexibleSpace();
-				if (GUILayout.Button("Deselect", GUILayout.Width(110), GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					KerbalKonstructs.instance.deselectObject(true, true);
-				}
-			}
-			GUILayout.EndHorizontal();
+                    siteAuthor = (selectedObject.settings.ContainsKey("author")) ? (string)selectedObject.getSetting("author") : (string)selectedObject.model.getSetting("author");
+                    // Debug.Log("KK: Making or editing a launchsite");
+                    editingSite = true;
+                }
+            }
 
-			if (!foldedIn)
-			{
-				GUILayout.FlexibleSpace();
+            GUI.enabled = true;
 
-				if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
-				{
-					if (snapTargetInstance == selectedObject) snapTargetInstance = null;
-					if (snapTargetInstancePrevious == selectedObject) snapTargetInstancePrevious = null;
-					if (selectedObjectPrevious == selectedObject) selectedObjectPrevious = null;
-					KerbalKonstructs.instance.deleteObject(selectedObject);
-					selectedObject = null;
-				}
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Save", GUILayout.Width(110), GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.saveObjects();
+                    smessage = "Saved all changes to all objects.";
+                    MiscUtils.HUDMessage(smessage, 10, 2);
+                }
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Deselect", GUILayout.Width(110), GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.saveObjects();
+                    KerbalKonstructs.instance.deselectObject(true, true);
+                }
+            }
+            GUILayout.EndHorizontal();
 
-				GUILayout.Space(15);
-			}
+            if (!foldedIn)
+            {
+                GUILayout.FlexibleSpace();
 
-			if (Event.current.keyCode == KeyCode.Return || (pospasted))
-			{
-				MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
-				pospasted = false;
-				manuallySet = true;
+                if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
+                {
+                    if (snapTargetInstance == selectedObject) snapTargetInstance = null;
+                    if (snapTargetInstancePrevious == selectedObject) snapTargetInstancePrevious = null;
+                    if (selectedObjectPrevious == selectedObject) selectedObjectPrevious = null;
+                    KerbalKonstructs.instance.deleteObject(selectedObject);
+                    selectedObject = null;
+                }
 
-				selectedObject.setSetting("Orientation", (Vector3)orientation);
-
-				vis = float.Parse(visrange);
-
-				shouldUpdateSelection = true;
-			}
+                GUILayout.Space(15);
+            }
 
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Space(2);
+            GUILayout.Space(2);
 
-			if (GUI.tooltip != "")
-			{
-				var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-				GUI.Box(new Rect(Event.current.mousePosition.x - (25 + (labelSize.x / 2)), Event.current.mousePosition.y - 40, labelSize.x + 10, labelSize.y + 5), GUI.tooltip);
-			}
+            if (GUI.tooltip != "")
+            {
+                var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
+                GUI.Box(new Rect(Event.current.mousePosition.x - (25 + (labelSize.x / 2)), Event.current.mousePosition.y - 40, labelSize.x + 10, labelSize.y + 5), GUI.tooltip);
+            }
 
-			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-		}
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
 
 
-		#endregion
+        #endregion
 
-		#region Facility Editor
-		/// <summary>
+        #region Facility Editor
+        /// <summary>
         /// Facility Editor window
         /// </summary>
         /// <param name="id"></param>
-		void drawFacilityEditorWindow(int id)
-		{
-			BoxNoBorder = new GUIStyle(GUI.skin.box);
-			BoxNoBorder.normal.background = null;
-			BoxNoBorder.normal.textColor = Color.white;
+        void drawFacilityEditorWindow(int id)
+        {
+            BoxNoBorder = new GUIStyle(GUI.skin.box);
+            BoxNoBorder.normal.background = null;
+            BoxNoBorder.normal.textColor = Color.white;
 
-			DeadButton = new GUIStyle(GUI.skin.button);
-			DeadButton.normal.background = null;
-			DeadButton.hover.background = null;
-			DeadButton.active.background = null;
-			DeadButton.focused.background = null;
-			DeadButton.normal.textColor = Color.yellow;
-			DeadButton.hover.textColor = Color.white;
-			DeadButton.active.textColor = Color.yellow;
-			DeadButton.focused.textColor = Color.yellow;
-			DeadButton.fontSize = 14;
-			DeadButton.fontStyle = FontStyle.Normal;
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.yellow;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.yellow;
+            DeadButton.focused.textColor = Color.yellow;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Normal;
 
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
-			DeadButtonRed.normal.background = null;
-			DeadButtonRed.hover.background = null;
-			DeadButtonRed.active.background = null;
-			DeadButtonRed.focused.background = null;
-			DeadButtonRed.normal.textColor = Color.red;
-			DeadButtonRed.hover.textColor = Color.yellow;
-			DeadButtonRed.active.textColor = Color.red;
-			DeadButtonRed.focused.textColor = Color.red;
-			DeadButtonRed.fontSize = 12;
-			DeadButtonRed.fontStyle = FontStyle.Bold;
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
+            DeadButtonRed.normal.background = null;
+            DeadButtonRed.hover.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.focused.background = null;
+            DeadButtonRed.normal.textColor = Color.red;
+            DeadButtonRed.hover.textColor = Color.yellow;
+            DeadButtonRed.active.textColor = Color.red;
+            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.fontSize = 12;
+            DeadButtonRed.fontStyle = FontStyle.Bold;
 
-			LabelGreen = new GUIStyle(GUI.skin.label);
-			LabelGreen.normal.textColor = Color.green;
-			LabelGreen.fontSize = 13;
-			LabelGreen.fontStyle = FontStyle.Bold;
-			LabelGreen.padding.bottom = 1;
-			LabelGreen.padding.top = 1;
+            LabelGreen = new GUIStyle(GUI.skin.label);
+            LabelGreen.normal.textColor = Color.green;
+            LabelGreen.fontSize = 13;
+            LabelGreen.fontStyle = FontStyle.Bold;
+            LabelGreen.padding.bottom = 1;
+            LabelGreen.padding.top = 1;
 
-			LabelWhite = new GUIStyle(GUI.skin.label);
-			LabelWhite.normal.textColor = Color.white;
-			LabelWhite.fontSize = 13;
-			LabelWhite.fontStyle = FontStyle.Normal;
-			LabelWhite.padding.bottom = 1;
-			LabelWhite.padding.top = 1;
+            LabelWhite = new GUIStyle(GUI.skin.label);
+            LabelWhite.normal.textColor = Color.white;
+            LabelWhite.fontSize = 13;
+            LabelWhite.fontStyle = FontStyle.Normal;
+            LabelWhite.padding.bottom = 1;
+            LabelWhite.padding.top = 1;
 
-			GUILayout.BeginHorizontal();
-			{
-				GUI.enabled = false;
-				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+            GUILayout.BeginHorizontal();
+            {
+                GUI.enabled = false;
+                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUILayout.Button("Facility Editor", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Facility Editor", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUI.enabled = true;
+                GUI.enabled = true;
 
-				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-				{
-					editingFacility = false;
-				}
-			}
-			GUILayout.EndHorizontal();
+                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+                {
+                    editingFacility = false;
+                }
+            }
+            GUILayout.EndHorizontal();
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Space(2);
+            GUILayout.Space(2);
 
-			GUILayout.Box((string)selectedObject.model.getSetting("title"));
-			GUILayout.Space(1);
+            GUILayout.Box((string)selectedObject.model.getSetting("title"));
+            GUILayout.Space(1);
 
-			if (GUILayout.Button("Facility Type: " + infFacType, GUILayout.Height(23)))
-				bChangeFacilityType = true;
+            if (GUILayout.Button("Facility Type: " + infFacType, GUILayout.Height(23)))
+                bChangeFacilityType = true;
 
-			if (bChangeFacilityType)
-			{
-				facilityscroll = GUILayout.BeginScrollView(facilityscroll);
-				if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
-					bChangeFacilityType = false;
+            if (bChangeFacilityType)
+            {
+                facilityscroll = GUILayout.BeginScrollView(facilityscroll);
+                if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
+                    bChangeFacilityType = false;
 
-				if (GUILayout.Button("None", GUILayout.Height(23)))
-				{
-					infFacType = "None";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("None", GUILayout.Height(23)))
+                {
+                    infFacType = "None";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Barracks", GUILayout.Height(23)))
-				{
-					infFacType = "Barracks";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Barracks", GUILayout.Height(23)))
+                {
+                    infFacType = "Barracks";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Business", GUILayout.Height(23)))
-				{
-					infFacType = "Business";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Business", GUILayout.Height(23)))
+                {
+                    infFacType = "Business";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Fuel Tanks", GUILayout.Height(23)))
-				{
-					infFacType = "FuelTanks";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Fuel Tanks", GUILayout.Height(23)))
+                {
+                    infFacType = "FuelTanks";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Hangar", GUILayout.Height(23)))
-				{
-					infFacType = "Hangar";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Hangar", GUILayout.Height(23)))
+                {
+                    infFacType = "Hangar";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Research", GUILayout.Height(23)))
-				{
-					infFacType = "Research";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Research", GUILayout.Height(23)))
+                {
+                    infFacType = "Research";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Tracking Station", GUILayout.Height(23)))
-				{
-					infFacType = "TrackingStation";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Tracking Station", GUILayout.Height(23)))
+                {
+                    infFacType = "TrackingStation";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("City Lights", GUILayout.Height(23)))
-				{
-					infFacType = "CityLights";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("City Lights", GUILayout.Height(23)))
+                {
+                    infFacType = "CityLights";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
-				{
-					infFacType = "LandingGuide";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
+                {
+                    infFacType = "LandingGuide";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
-				{
-					infFacType = "TouchdownGuideR";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
+                {
+                    infFacType = "TouchdownGuideR";
+                    bChangeFacilityType = false;
+                }
 
-				if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
-				{
-					infFacType = "TouchdownGuideL";
-					bChangeFacilityType = false;
-				}
+                if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
+                {
+                    infFacType = "TouchdownGuideL";
+                    bChangeFacilityType = false;
+                }
 
-				GUILayout.EndScrollView();
-			}
+                GUILayout.EndScrollView();
+            }
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Open Cost: ", LabelGreen);
-			GUILayout.FlexibleSpace();
-			infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
-			GUILayout.Label("\\F", LabelWhite);
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Open Cost: ", LabelGreen);
+            GUILayout.FlexibleSpace();
+            infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
+            GUILayout.Label("\\F", LabelWhite);
+            GUILayout.EndHorizontal();
 
-			if (infFacType == "TrackingStation")
-			{
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Short Range: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
-				GUILayout.Label("m", LabelWhite);
-				GUILayout.EndHorizontal();
+            if (infFacType == "TrackingStation")
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Short Range: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("m", LabelWhite);
+                GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Angle: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infTrackingAngle = GUILayout.TextField(infTrackingAngle, 3, GUILayout.Width(130), GUILayout.Height(18));
-				GUILayout.Label("°", LabelWhite);
-				GUILayout.EndHorizontal();
-			}
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Angle: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infTrackingAngle = GUILayout.TextField(infTrackingAngle, 3, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("°", LabelWhite);
+                GUILayout.EndHorizontal();
+            }
 
-			if (infFacType == "Barracks" || infFacType == "Research" || infFacType == "Business")
-			{
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Max Staff: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
-				GUILayout.EndHorizontal();
-			}
+            if (infFacType == "Barracks" || infFacType == "Research" || infFacType == "Business")
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Max Staff: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
+                GUILayout.EndHorizontal();
+            }
 
-			if (infFacType == "Research" || infFacType == "Business")
-			{
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Production Rate: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
-				GUILayout.EndHorizontal();
+            if (infFacType == "Research" || infFacType == "Business")
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Production Rate: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
+                GUILayout.EndHorizontal();
 
-				GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
-			}
+                GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
+            }
 
-			if (infFacType == "Research")
-			{
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Max Science: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
-				GUILayout.EndHorizontal();
-			}
+            if (infFacType == "Research")
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Max Science: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
+                GUILayout.EndHorizontal();
+            }
 
-			if (infFacType == "Business")
-			{
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Max Funds: ", LabelGreen);
-				GUILayout.FlexibleSpace();
-				infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-				GUILayout.EndHorizontal();
-			}
+            if (infFacType == "Business")
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Max Funds: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                GUILayout.EndHorizontal();
+            }
 
-			GUILayout.FlexibleSpace();
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.FlexibleSpace();
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Space(2);
+            GUILayout.Space(2);
 
-			GUILayout.BeginHorizontal();
-			if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
-			{
-				bool bInvalidText = false;
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
+            {
+                bool bInvalidText = false;
 
-				if (infFacType != "") selectedObject.setSetting("FacilityType", infFacType);
-				if (infTrackingShort != "" && infTrackingShort != "0")
-				{
-					if (ValidateStringToDouble(infTrackingShort))
-						selectedObject.setSetting("TrackingShort", float.Parse(infTrackingShort));
-					else
-					{
-						MiscUtils.HUDMessage("Short Range is invalid.");
-						infTrackingShort = "0";
-						bInvalidText = true;
-					}
-				}
-				if (infTrackingAngle != "" && infTrackingAngle != "0")
-				{
-					if (ValidateStringToDouble(infTrackingAngle, 360, 1))
-						selectedObject.setSetting("TrackingAngle", float.Parse(infTrackingAngle));
-					else
-					{
-						MiscUtils.HUDMessage("Tracking Angle is invalid.");
-						infTrackingAngle = "0";
-						bInvalidText = true;
-					}
-				}
-										
-				if (infOpenCost != "" && infOpenCost != "0")
-				{
-					if (ValidateStringToDouble(infOpenCost))
-						selectedObject.setSetting("OpenCost", float.Parse(infOpenCost));
-					else
-					{
-						MiscUtils.HUDMessage("Open Cost is invalid.");
-						infOpenCost = "0";
-						bInvalidText = true;
-					}
-				}
-							
-				if (infStaffMax != "" && infStaffMax != "0")
-				{
-					if (ValidateStringToDouble(infStaffMax))
-						selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
-					else
-					{
-						MiscUtils.HUDMessage("Staff Max is invalid.");
-						infStaffMax = "0";
-						bInvalidText = true;
-					}
-				}
-									
-				if (infProdRateMax != "" && infProdRateMax != "0")
-				{
-					if (ValidateStringToDouble(infProdRateMax))
-						selectedObject.setSetting("ProductionRateMax", float.Parse(infProdRateMax));
-					else
-					{
-						MiscUtils.HUDMessage("Production Rate is invalid.");
-						infProdRateMax = "0";
-						bInvalidText = true;
-					}
-				}
+                if (infFacType != "") selectedObject.setSetting("FacilityType", infFacType);
+                if (infTrackingShort != "" && infTrackingShort != "0")
+                {
+                    if (ValidateStringToDouble(infTrackingShort))
+                        selectedObject.setSetting("TrackingShort", float.Parse(infTrackingShort));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Short Range is invalid.");
+                        infTrackingShort = "0";
+                        bInvalidText = true;
+                    }
+                }
+                if (infTrackingAngle != "" && infTrackingAngle != "0")
+                {
+                    if (ValidateStringToDouble(infTrackingAngle, 360, 1))
+                        selectedObject.setSetting("TrackingAngle", float.Parse(infTrackingAngle));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Tracking Angle is invalid.");
+                        infTrackingAngle = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-				if (infScienceMax != "" && infScienceMax != "0")
-				{
-					if (ValidateStringToDouble(infScienceMax))
-						selectedObject.setSetting("ScienceOMax", float.Parse(infScienceMax));
-					else
-					{
-						MiscUtils.HUDMessage("Max Science is invalid.");
-						infScienceMax = "0";
-						bInvalidText = true;
-					}
-				}
-										
-				if (infFundsMax != "" && infFundsMax != "0")
-				{
-					if (ValidateStringToDouble(infFundsMax))
-						selectedObject.setSetting("FundsOMax", float.Parse(infFundsMax));
-					else
-					{
-						MiscUtils.HUDMessage("Max Funds is invalid.");
-						infFundsMax = "0";
-						bInvalidText = true;
-					}
-				}
+                if (infOpenCost != "" && infOpenCost != "0")
+                {
+                    if (ValidateStringToDouble(infOpenCost))
+                        selectedObject.setSetting("OpenCost", float.Parse(infOpenCost));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Open Cost is invalid.");
+                        infOpenCost = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-				if (!bInvalidText)
-				{
-					KerbalKonstructs.instance.saveObjects();
-					editingFacility = false;
-				}
-			}
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
-			{
-				editingFacility = false;
-			}
-			GUILayout.EndHorizontal();
+                if (infStaffMax != "" && infStaffMax != "0")
+                {
+                    if (ValidateStringToDouble(infStaffMax))
+                        selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Staff Max is invalid.");
+                        infStaffMax = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                if (infProdRateMax != "" && infProdRateMax != "0")
+                {
+                    if (ValidateStringToDouble(infProdRateMax))
+                        selectedObject.setSetting("ProductionRateMax", float.Parse(infProdRateMax));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Production Rate is invalid.");
+                        infProdRateMax = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-			GUILayout.Space(2);
+                if (infScienceMax != "" && infScienceMax != "0")
+                {
+                    if (ValidateStringToDouble(infScienceMax))
+                        selectedObject.setSetting("ScienceOMax", float.Parse(infScienceMax));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Max Science is invalid.");
+                        infScienceMax = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-		}
-		#endregion
+                if (infFundsMax != "" && infFundsMax != "0")
+                {
+                    if (ValidateStringToDouble(infFundsMax))
+                        selectedObject.setSetting("FundsOMax", float.Parse(infFundsMax));
+                    else
+                    {
+                        MiscUtils.HUDMessage("Max Funds is invalid.");
+                        infFundsMax = "0";
+                        bInvalidText = true;
+                    }
+                }
 
-		public static Boolean ValidateStringToDouble(string sText, double RangeMax = 0, double RangeMin = 0)
-		{
-			double parsedValue;
-			bool parsed = double.TryParse(sText, out parsedValue);
+                if (!bInvalidText)
+                {
+                    KerbalKonstructs.instance.saveObjects();
+                    editingFacility = false;
+                }
+            }
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
+            {
+                editingFacility = false;
+            }
+            GUILayout.EndHorizontal();
 
-			if (parsed)
-			{
-				if (RangeMax > 0)
-				{
-					if (parsedValue > RangeMax) return false;
-				}
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-				if (RangeMin > 0)
-				{
-					if (parsedValue < RangeMin) return false;
-				}
+            GUILayout.Space(2);
 
-				return true;
-			}
-			else
-				return false;
-		}
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+        #endregion
 
-		public static void CloseEditors()
-		{
-			editingFacility = false;
-			editingSite = false;
-		}
+        public static Boolean ValidateStringToDouble(string sText, double RangeMax = 0, double RangeMin = 0)
+        {
+            double parsedValue;
+            bool parsed = double.TryParse(sText, out parsedValue);
 
-		#region Launchsite Editor
-		// Launchsite Editor handlers
-		string stOpenCost;
-		string stCloseValue;
-		string stRecoveryFactor;
-		string stRecoveryRange;
-		string stLaunchRefund;
-		string stLength;
-		string stWidth;
+            if (parsed)
+            {
+                if (RangeMax > 0)
+                {
+                    if (parsedValue > RangeMax) return false;
+                }
 
-		/// <summary>
+                if (RangeMin > 0)
+                {
+                    if (parsedValue < RangeMin) return false;
+                }
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public static void CloseEditors()
+        {
+            editingFacility = false;
+            editingSite = false;
+        }
+
+        #region Launchsite Editor
+        // Launchsite Editor handlers
+        string stOpenCost;
+        string stCloseValue;
+        string stRecoveryFactor;
+        string stRecoveryRange;
+        string stLaunchRefund;
+        string stLength;
+        string stWidth;
+
+        /// <summary>
         /// Launchsite Editor
         /// </summary>
         /// <param name="id"></param>
-		void drawSiteEditorWindow(int id)
-		{
-			BoxNoBorder = new GUIStyle(GUI.skin.box);
-			BoxNoBorder.normal.background = null;
-			BoxNoBorder.normal.textColor = Color.white;
+        void drawSiteEditorWindow(int id)
+        {
+            BoxNoBorder = new GUIStyle(GUI.skin.box);
+            BoxNoBorder.normal.background = null;
+            BoxNoBorder.normal.textColor = Color.white;
 
-			DeadButton = new GUIStyle(GUI.skin.button);
-			DeadButton.normal.background = null;
-			DeadButton.hover.background = null;
-			DeadButton.active.background = null;
-			DeadButton.focused.background = null;
-			DeadButton.normal.textColor = Color.yellow;
-			DeadButton.hover.textColor = Color.white;
-			DeadButton.active.textColor = Color.yellow;
-			DeadButton.focused.textColor = Color.yellow;
-			DeadButton.fontSize = 14;
-			DeadButton.fontStyle = FontStyle.Normal;
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.yellow;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.yellow;
+            DeadButton.focused.textColor = Color.yellow;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Normal;
 
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
-			DeadButtonRed.normal.background = null;
-			DeadButtonRed.hover.background = null;
-			DeadButtonRed.active.background = null;
-			DeadButtonRed.focused.background = null;
-			DeadButtonRed.normal.textColor = Color.red;
-			DeadButtonRed.hover.textColor = Color.yellow;
-			DeadButtonRed.active.textColor = Color.red;
-			DeadButtonRed.focused.textColor = Color.red;
-			DeadButtonRed.fontSize = 12;
-			DeadButtonRed.fontStyle = FontStyle.Bold;
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
+            DeadButtonRed.normal.background = null;
+            DeadButtonRed.hover.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.focused.background = null;
+            DeadButtonRed.normal.textColor = Color.red;
+            DeadButtonRed.hover.textColor = Color.yellow;
+            DeadButtonRed.active.textColor = Color.red;
+            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.fontSize = 12;
+            DeadButtonRed.fontStyle = FontStyle.Bold;
 
-			GUILayout.BeginHorizontal();
-			{
-				GUI.enabled = false;
-				GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+            GUILayout.BeginHorizontal();
+            {
+                GUI.enabled = false;
+                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUILayout.Button("Launchsite Editor", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Launchsite Editor", DeadButton, GUILayout.Height(21));
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-				GUI.enabled = true;
+                GUI.enabled = true;
 
-				if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-				{
-					editingSite = false;
-				}
-			}
-			GUILayout.EndHorizontal();
+                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+                {
+                    editingSite = false;
+                }
+            }
+            GUILayout.EndHorizontal();
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-			GUILayout.Space(2);
+            GUILayout.Space(2);
 
-			GUILayout.Box((string)selectedObject.model.getSetting("title"));
-			
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Site Name: ", GUILayout.Width(120));
-				siteName = GUILayout.TextField(siteName, GUILayout.Height(19));
-			GUILayout.EndHorizontal();
+            GUILayout.Box((string)selectedObject.model.getSetting("title"));
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Transform: ", GUILayout.Width(120));
-			GUILayout.Box("" + siteTrans);
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Site Name: ", GUILayout.Width(120));
+            siteName = GUILayout.TextField(siteName, GUILayout.Height(19));
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Length: ", GUILayout.Width(120));
-			stLength = GUILayout.TextField(stLength, GUILayout.Height(19));
-			GUILayout.Label(" m");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Transform: ", GUILayout.Width(120));
+            GUILayout.Box("" + siteTrans);
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Width: ", GUILayout.Width(120));
-			stWidth = GUILayout.TextField(stWidth, GUILayout.Height(19));
-			GUILayout.Label(" m");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Length: ", GUILayout.Width(120));
+            stLength = GUILayout.TextField(stLength, GUILayout.Height(19));
+            GUILayout.Label(" m");
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Site Category: ", GUILayout.Width(115));
-				GUILayout.Label(siteCategory, GUILayout.Width(85));
-				GUILayout.FlexibleSpace();
-				GUI.enabled = !(siteCategory == "RocketPad");
-				if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
-					siteCategory = "RocketPad";
-				GUI.enabled = !(siteCategory == "Runway");
-				if (GUILayout.Button("RW", GUILayout.Width(25), GUILayout.Height(23)))
-					siteCategory = "Runway";
-				GUI.enabled = !(siteCategory == "Helipad");
-				if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
-					siteCategory = "Helipad";
-				GUI.enabled = !(siteCategory == "Waterlaunch");
-                if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
-                    siteCategory = "Waterlaunch";
-                GUI.enabled = !(siteCategory == "Other");
-                if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
-					siteCategory = "Other";
-		    GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Width: ", GUILayout.Width(120));
+            stWidth = GUILayout.TextField(stWidth, GUILayout.Height(19));
+            GUILayout.Label(" m");
+            GUILayout.EndHorizontal();
 
-			GUI.enabled = true;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Site Category: ", GUILayout.Width(115));
+            GUILayout.Label(siteCategory, GUILayout.Width(85));
+            GUILayout.FlexibleSpace();
+            GUI.enabled = !(siteCategory == "RocketPad");
+            if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
+                siteCategory = "RocketPad";
+            GUI.enabled = !(siteCategory == "Runway");
+            if (GUILayout.Button("RW", GUILayout.Width(25), GUILayout.Height(23)))
+                siteCategory = "Runway";
+            GUI.enabled = !(siteCategory == "Helipad");
+            if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
+                siteCategory = "Helipad";
+            GUI.enabled = !(siteCategory == "Waterlaunch");
+            if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
+                siteCategory = "Waterlaunch";
+            GUI.enabled = !(siteCategory == "Other");
+            if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
+                siteCategory = "Other";
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Site Type: ", GUILayout.Width(120));
-				if (siteType == SiteType.VAB)
-					GUILayout.Label("VAB", GUILayout.Width(40));
-				if (siteType == SiteType.SPH)
-					GUILayout.Label("SPH", GUILayout.Width(40));
-				if (siteType == SiteType.Any)
-					GUILayout.Label("Any", GUILayout.Width(40));
-				GUILayout.FlexibleSpace();
-				GUI.enabled = !(siteType == (SiteType)0);
-				if (GUILayout.Button("VAB", GUILayout.Height(23)))
-					siteType = SiteType.VAB;
-				GUI.enabled = !(siteType == (SiteType)1);
-				if (GUILayout.Button("SPH", GUILayout.Height(23)))
-					siteType = SiteType.SPH;
-				GUI.enabled = !(siteType == (SiteType)2);
-				if (GUILayout.Button("Any", GUILayout.Height(23)))
-					siteType = SiteType.Any;
-			GUILayout.EndHorizontal();
+            GUI.enabled = true;
 
-			GUI.enabled = true;
-			
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Author: ", GUILayout.Width(120));
-				siteAuthor = GUILayout.TextField(siteAuthor, GUILayout.Height(19));
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Site Type: ", GUILayout.Width(120));
+            if (siteType == SiteType.VAB)
+                GUILayout.Label("VAB", GUILayout.Width(40));
+            if (siteType == SiteType.SPH)
+                GUILayout.Label("SPH", GUILayout.Width(40));
+            if (siteType == SiteType.Any)
+                GUILayout.Label("Any", GUILayout.Width(40));
+            GUILayout.FlexibleSpace();
+            GUI.enabled = !(siteType == (SiteType)0);
+            if (GUILayout.Button("VAB", GUILayout.Height(23)))
+                siteType = SiteType.VAB;
+            GUI.enabled = !(siteType == (SiteType)1);
+            if (GUILayout.Button("SPH", GUILayout.Height(23)))
+                siteType = SiteType.SPH;
+            GUI.enabled = !(siteType == (SiteType)2);
+            if (GUILayout.Button("Any", GUILayout.Height(23)))
+                siteType = SiteType.Any;
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Open Cost: ", GUILayout.Width(120));
-				stOpenCost = GUILayout.TextField(stOpenCost, GUILayout.Height(19));
-				GUILayout.Label(" \\F");
-			GUILayout.EndHorizontal();
+            GUI.enabled = true;
 
-			GUILayout.BeginHorizontal();
-				GUILayout.Label("Close Value: ", GUILayout.Width(120));
-				stCloseValue = GUILayout.TextField(stCloseValue, GUILayout.Height(19));
-				GUILayout.Label(" \\F");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Author: ", GUILayout.Width(120));
+            siteAuthor = GUILayout.TextField(siteAuthor, GUILayout.Height(19));
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Recovery Factor: ", GUILayout.Width(120));
-			stRecoveryFactor = GUILayout.TextField(stRecoveryFactor, GUILayout.Height(19));
-			GUILayout.Label(" %");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Open Cost: ", GUILayout.Width(120));
+            stOpenCost = GUILayout.TextField(stOpenCost, GUILayout.Height(19));
+            GUILayout.Label(" \\F");
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Effective Range: ", GUILayout.Width(120));
-			stRecoveryRange = GUILayout.TextField(stRecoveryRange, GUILayout.Height(19));
-			GUILayout.Label(" m");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Close Value: ", GUILayout.Width(120));
+            stCloseValue = GUILayout.TextField(stCloseValue, GUILayout.Height(19));
+            GUILayout.Label(" \\F");
+            GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Launch Refund: ", GUILayout.Width(120));
-			stLaunchRefund = GUILayout.TextField(stLaunchRefund, GUILayout.Height(19));
-			GUILayout.Label(" %");
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Recovery Factor: ", GUILayout.Width(120));
+            stRecoveryFactor = GUILayout.TextField(stRecoveryFactor, GUILayout.Height(19));
+            GUILayout.Label(" %");
+            GUILayout.EndHorizontal();
 
-			GUILayout.Label("Description: ");
-			descScroll = GUILayout.BeginScrollView(descScroll);
-				siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
-			GUILayout.EndScrollView();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Effective Range: ", GUILayout.Width(120));
+            stRecoveryRange = GUILayout.TextField(stRecoveryRange, GUILayout.Height(19));
+            GUILayout.Label(" m");
+            GUILayout.EndHorizontal();
 
-			GUI.enabled = true;
-			GUILayout.BeginHorizontal();
-			if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
-				{
-					Boolean addToDB = (selectedObject.settings.ContainsKey("LaunchSiteName") && siteName != "");
-					selectedObject.setSetting("LaunchSiteName", siteName);
-					selectedObject.setSetting("LaunchSiteLength", float.Parse(stLength));
-					selectedObject.setSetting("LaunchSiteWidth", float.Parse(stWidth));
-					selectedObject.setSetting("LaunchSiteType", siteType);
-					selectedObject.setSetting("LaunchPadTransform", siteTrans);
-					selectedObject.setSetting("LaunchSiteDescription", siteDesc);
-					selectedObject.setSetting("OpenCost", float.Parse(stOpenCost));
-					selectedObject.setSetting("CloseValue", float.Parse(stCloseValue));
-					selectedObject.setSetting("RecoveryFactor", float.Parse(stRecoveryFactor));
-					selectedObject.setSetting("RecoveryRange", float.Parse(stRecoveryRange));
-					selectedObject.setSetting("LaunchRefund", float.Parse(stLaunchRefund));
-					selectedObject.setSetting("OpenCloseState", "Open");
-					selectedObject.setSetting("Category", siteCategory);
-					if (siteAuthor != (string)selectedObject.model.getSetting("author"))
-						selectedObject.setSetting("LaunchSiteAuthor", siteAuthor);
-					
-					if(addToDB)
-					{
-						LaunchSiteManager.createLaunchSite(selectedObject);
-					}
-					KerbalKonstructs.instance.saveObjects();
-					
-					List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
-					PersistenceFile<LaunchSite>.SaveList(basesites, "LAUNCHSITES", "KK");
-					editingSite = false;
-				}
-				GUILayout.FlexibleSpace();
-				if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
-				{
-					editingSite = false;
-				}
-			GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Launch Refund: ", GUILayout.Width(120));
+            stLaunchRefund = GUILayout.TextField(stLaunchRefund, GUILayout.Height(19));
+            GUILayout.Label(" %");
+            GUILayout.EndHorizontal();
 
-			GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
+            GUILayout.Label("Description: ");
+            descScroll = GUILayout.BeginScrollView(descScroll);
+            siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
+            GUILayout.EndScrollView();
 
-			GUILayout.Space(1);
-			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUI.enabled = true;
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
+            {
+                Boolean addToDB = (selectedObject.settings.ContainsKey("LaunchSiteName") && siteName != "");
+                selectedObject.setSetting("LaunchSiteName", siteName);
+                selectedObject.setSetting("LaunchSiteLength", float.Parse(stLength));
+                selectedObject.setSetting("LaunchSiteWidth", float.Parse(stWidth));
+                selectedObject.setSetting("LaunchSiteType", siteType);
+                selectedObject.setSetting("LaunchPadTransform", siteTrans);
+                selectedObject.setSetting("LaunchSiteDescription", siteDesc);
+                selectedObject.setSetting("OpenCost", float.Parse(stOpenCost));
+                selectedObject.setSetting("CloseValue", float.Parse(stCloseValue));
+                selectedObject.setSetting("RecoveryFactor", float.Parse(stRecoveryFactor));
+                selectedObject.setSetting("RecoveryRange", float.Parse(stRecoveryRange));
+                selectedObject.setSetting("LaunchRefund", float.Parse(stLaunchRefund));
+                selectedObject.setSetting("OpenCloseState", "Open");
+                selectedObject.setSetting("Category", siteCategory);
+                if (siteAuthor != (string)selectedObject.model.getSetting("author"))
+                    selectedObject.setSetting("LaunchSiteAuthor", siteAuthor);
 
-			GUILayout.Space(2);
+                if (addToDB)
+                {
+                    LaunchSiteManager.createLaunchSite(selectedObject);
+                }
+                KerbalKonstructs.instance.saveObjects();
 
-			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-		}
-		#endregion
+                List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
+                PersistenceFile<LaunchSite>.SaveList(basesites, "LAUNCHSITES", "KK");
+                editingSite = false;
+            }
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
+            {
+                editingSite = false;
+            }
+            GUILayout.EndHorizontal();
 
-		#endregion
+            GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
 
-		#region Career Persistence
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-		#endregion
+            GUILayout.Space(2);
 
-		#region Utility Functions
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+        #endregion
+
+        #endregion
+
+        #region Career Persistence
+
+        #endregion
+
+        #region Utility Functions
 
 
         /// <summary>
@@ -1613,54 +1725,291 @@ namespace KerbalKonstructs.UI
         /// <param name="vPosition"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-		public StaticObject spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
-		{
-			StaticObject obj = new StaticObject();
-			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
-			obj.setSetting("RadiusOffset", fOffset);
-			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-			obj.setSetting("Group", "Ungrouped");
-			obj.setSetting("RadialPosition", vPosition);
-			obj.setSetting("RotationAngle", fAngle);
-			obj.setSetting("Orientation", Vector3.up);
-			obj.setSetting("VisibilityRange", 25000f);
+        public StaticObject spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
+        {
+            StaticObject obj = new StaticObject();
+            obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+            obj.setSetting("RadiusOffset", fOffset);
+            obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
+            obj.setSetting("Group", "Ungrouped");
+            obj.setSetting("RadialPosition", vPosition);
+            obj.setSetting("RotationAngle", fAngle);
+            obj.setSetting("Orientation", Vector3.up);
+            obj.setSetting("VisibilityRange", 25000f);
 
-			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
-			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
+            string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
+            if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
 
-			if (!KerbalKonstructs.instance.DevMode)
-			{
-				obj.setSetting("CustomInstance", "True");
-			}
+            if (!KerbalKonstructs.instance.DevMode)
+            {
+                obj.setSetting("CustomInstance", "True");
+            }
 
-			obj.model = model;
+            obj.model = model;
 
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
-			enableColliders = false;
-			obj.spawnObject(true, false);
-			return obj;
-		}
-
-		public static void setTargetSite(LaunchSite lsTarget, string sName = "")
-		{
-			lTargetSite = lsTarget;
+            KerbalKonstructs.instance.getStaticDB().addStatic(obj);
+            enableColliders = false;
+            obj.spawnObject(true, false);
+            return obj;
         }
 
+        public static void setTargetSite(LaunchSite lsTarget, string sName = "")
+        {
+            lTargetSite = lsTarget;
+        }
+
+        /// <summary>
+        /// the starting position of direction vectors (a bit right and up from the Objects position)
+        /// </summary>
+        private Vector3 vectorDrawPosition
+        {
+            get {
+                return (selectedObject.pqsCity.transform.position + 4 * selectedObject.pqsCity.transform.up + 4 * selectedObject.pqsCity.transform.right);
+            }
+        }
 
 
         /// <summary>
-        /// rotates a object around an axis by an amount
+        /// returns the heading the selected object, Function is from kOS
+        /// </summary>
+        /// <returns></returns>
+        public float GetHeading()
+        {
+            var up = upVector;
+            var north = northVector;
+            var headingQ =
+                Quaternion.Inverse(Quaternion.Euler(90, 0, 0) * Quaternion.Inverse(selectedObject.gameObject.transform.rotation) *
+                                   Quaternion.LookRotation(north, up));
+
+            return headingQ.eulerAngles.y;
+        }
+
+        /// <summary>
+        /// gives a vector to the east
+        /// </summary>
+        private Vector3 eastVector 
+        {
+           get
+            {
+                return Vector3.Cross(upVector, northVector).normalized;
+            }
+        }
+
+        /// <summary>
+        /// vector to north
+        /// </summary>
+        private Vector3 northVector
+        {
+            get
+            {
+                body = FlightGlobals.ActiveVessel.mainBody;
+                return Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
+            }
+        }
+
+        private Vector3 upVector
+        {
+            get
+            {
+                body = FlightGlobals.ActiveVessel.mainBody;
+                return (Vector3)body.GetSurfaceNVector(latitude, longitude).normalized;
+            }
+        }
+
+        /// <summary>
+        /// Sets the vectors active and updates thier position and directions
+        /// </summary>
+        private void UpdateVectors()
+        {
+            if (selectedObject == null) { return; }
+
+            if (referenceSystem == Space.Self)
+            {
+                fwdVR.SetShow(true);
+                upVR.SetShow(true);
+                rightVR.SetShow(true);
+
+                northVR.SetShow(false);
+                eastVR.SetShow(false);
+
+                fwdVR.Vector = selectedObject.pqsCity.transform.forward;
+                fwdVR.Start = vectorDrawPosition;
+                fwdVR.draw();
+
+                upVR.Vector = selectedObject.pqsCity.transform.up;
+                upVR.Start = vectorDrawPosition;
+                upVR.draw();
+
+                rightVR.Vector = selectedObject.pqsCity.transform.right;
+                rightVR.Start = vectorDrawPosition;
+                rightVR.draw();
+
+            }
+            if (referenceSystem == Space.World)
+            {
+                northVR.SetShow(true);
+                eastVR.SetShow(true);
+
+                fwdVR.SetShow(false);
+                upVR.SetShow(false);
+                rightVR.SetShow(false);
+
+                northVR.Vector = northVector;
+                northVR.Start = vectorDrawPosition;
+                northVR.draw();
+
+                eastVR.Vector = eastVector;
+                eastVR.Start = vectorDrawPosition;
+                eastVR.draw();
+            }
+        }
+
+        /// <summary>
+        /// creates the Vectors for later display
+        /// </summary>
+        private void SetupVectors()
+        {
+            // draw vectors
+            fwdVR.Color = new Color(0, 0, 1);
+            fwdVR.Vector = selectedObject.pqsCity.transform.forward;
+            fwdVR.Scale = 30d;
+            fwdVR.Start = vectorDrawPosition;
+            fwdVR.SetLabel("forward");
+            fwdVR.Width = 0.01d;
+            fwdVR.SetLayer(5);
+
+            upVR.Color = new Color(0, 1, 0);
+            upVR.Vector = selectedObject.pqsCity.transform.up;
+            upVR.Scale = 30d;
+            upVR.Start = vectorDrawPosition;
+            upVR.SetLabel("up");
+            upVR.Width = 0.01d;
+
+            rightVR.Color = new Color(1, 0, 0);
+            rightVR.Vector = selectedObject.pqsCity.transform.right;
+            rightVR.Scale = 30d;
+            rightVR.Start = vectorDrawPosition;
+            rightVR.SetLabel("right");
+            rightVR.Width = 0.01d;
+
+            northVR.Color = new Color(0.9f, 0.3f, 0.3f);
+            northVR.Vector = northVector;
+            northVR.Scale = 30d;
+            northVR.Start = vectorDrawPosition;
+            northVR.SetLabel("north");
+            northVR.Width = 0.01d;
+
+            eastVR.Color = new Color(0.3f, 0.3f, 0.9f);
+            eastVR.Vector = eastVector;
+            eastVR.Scale = 30d;
+            eastVR.Start = vectorDrawPosition;
+            eastVR.SetLabel("east");
+            eastVR.Width = 0.01d;
+        }
+
+        /// <summary>
+        /// stops the drawing of the vectors
+        /// </summary>
+        private void CloseVectors()
+        {
+            northVR.SetShow(false);
+            eastVR.SetShow(false);
+            fwdVR.SetShow(false);
+            upVR.SetShow(false);
+            rightVR.SetShow(false);
+        }
+
+        /// <summary>
+        /// sets the latitude and lognitude and creates a new reference vector
+        /// </summary>
+        /// <param name="north"></param>
+        /// <param name="east"></param>
+        internal void setlatlng(double north, double east)
+        {
+            double latOffset = north / (Planetarium.fetch.CurrentMainBody.Radius * KKMath.deg2rad);
+            latitude += latOffset;
+            double lonOffset = east / (Planetarium.fetch.CurrentMainBody.Radius * KKMath.deg2rad);
+            longitude += lonOffset * Math.Cos(Mathf.Deg2Rad * latitude);
+
+            referenceVector = KerbalKonstructs.instance.getCurrentBody().GetRelSurfaceNVector(latitude, longitude) * KerbalKonstructs.instance.getCurrentBody().Radius;
+            saveSettings();
+        }
+
+
+        /// <summary>
+        /// rotates a object around an right axis by an amount
         /// </summary>
         /// <param name="axis"></param>
         /// <param name="amount"></param>
-        internal void setOrientation(Vector3 axis, float amount)
+        internal void SetPitch(float amount)
         {
-            //Quaternion direction = Quaternion.LookRotation(selectedObject.gameObject.transform.forward, selectedObject.gameObject.transform.up);
-            Quaternion direction = Quaternion.AngleAxis(amount, axis);
-            //rotation = (double)QuaternionExtensions.Yaw(quat);
-            orientation = direction * orientation;
+            Vector3 upProjeced = Vector3.ProjectOnPlane(orientation, Vector3.forward);
+            double compensation = Vector3.Dot(Vector3.right, upProjeced);
+            double internalRotation = rotation - compensation;
+            Vector3 realRight = KKMath.RotateVector(Vector3.right, Vector3.back, internalRotation);
+
+            Quaternion rotate = Quaternion.AngleAxis(amount, realRight);
+            orientation = rotate * orientation;
+
+            Vector3 oldfwd = selectedObject.gameObject.transform.forward;
+            Vector3 oldright = selectedObject.gameObject.transform.right;
+            saveSettings();
+            Vector3 newfwd = selectedObject.gameObject.transform.forward;
+
+            // compensate for unwanted rotation
+            float deltaAngle = Vector3.Angle(Vector3.ProjectOnPlane(oldfwd, upVector), Vector3.ProjectOnPlane(newfwd, upVector));
+            if (Vector3.Dot(oldright, newfwd) > 0)
+            {
+                deltaAngle *= -1f;
+            }
+            rotation += deltaAngle;
+
             saveSettings();
         }
+
+        /// <summary>
+        /// rotates a object around forward axis by an amount
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <param name="amount"></param>
+        internal void SetRoll(float amount)
+        {
+
+
+            Vector3 upProjeced = Vector3.ProjectOnPlane(orientation, Vector3.forward);
+            double compensation = Vector3.Dot(Vector3.right, upProjeced);
+            double internalRotation = rotation - compensation;
+            Vector3 realFwd = KKMath.RotateVector(Vector3.forward, Vector3.right, internalRotation);
+
+            Quaternion rotate = Quaternion.AngleAxis(amount, realFwd);
+            orientation = rotate * orientation;
+
+
+            Vector3 oldfwd = selectedObject.gameObject.transform.forward;
+            Vector3 oldright = selectedObject.gameObject.transform.right;
+            Vector3 oldup = selectedObject.gameObject.transform.up;
+            saveSettings();
+            Vector3 newfwd = selectedObject.gameObject.transform.forward;
+
+            Vector3 deltaVector = oldfwd - newfwd;
+
+            // try to compensate some of the pitch
+            float deltaUpAngle = Vector3.Dot(oldup, deltaVector);
+            if (Math.Abs(deltaUpAngle) > 0.0001)
+            {
+                SetPitch(-1*deltaUpAngle);
+            }
+            
+            // compensate for unwanted rotation
+            float deltaAngle = Vector3.Angle(Vector3.ProjectOnPlane(oldfwd, upVector), Vector3.ProjectOnPlane(newfwd, upVector));
+            if (Vector3.Dot(oldright, newfwd) > 0)
+            {
+                deltaAngle *= -1f;
+            }
+            rotation += deltaAngle;
+            saveSettings();
+        }
+
 
         /// <summary>
         /// changes the rotation by a defined amount
@@ -1669,6 +2018,7 @@ namespace KerbalKonstructs.UI
         internal void setRotation(double increment)
         {
             rotation += increment;
+            rotation = (360d + rotation) % 360d;
             saveSettings();
         }
 
@@ -1679,11 +2029,13 @@ namespace KerbalKonstructs.UI
         /// <param name="direction"></param>
         internal void setTransform(Vector3 direction)
         {
-            Vector3d newposition = (Vector3d)(position + float.Parse(increment) * direction);
-            Planetarium.fetch.CurrentMainBody.GetLatLonAlt(newposition, out latitude, out longitude, out altitude);
-            //      referenceVector = (newposition - KerbalKonstructs.instance.getCurrentBody().position).normalized * KerbalKonstructs.instance.getCurrentBody().Radius;
-            referenceVector = KKMath.Spheric2Cubic(latitude,longitude, Planetarium.fetch.CurrentMainBody,0);
-            saveSettings();
+            direction = selectedObject.gameObject.transform.TransformVector(direction);
+            double northInc = Vector3d.Dot(northVector, direction);
+            double eastInc = Vector3d.Dot(eastVector, direction);
+            double upInc = Vector3d.Dot(upVector, direction);
+
+            altitude += upInc;
+            setlatlng(northInc, eastInc);
         }
 
 
@@ -1692,68 +2044,50 @@ namespace KerbalKonstructs.UI
         /// </summary>
         internal void saveSettings()
         {
-           
-                if (!manuallySet)
+            vis += (float)selectedObject.getSetting("VisibilityRange");
+
+
+            selectedObject.setSetting("Orientation", orientation);
+
+            if (modelScale < 0.01f)
+                modelScale = 0.01f;
+
+            rotation = (360d + rotation) % 360d;
+
+            if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange || vis < 1000)
+            {
+                if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange)
                 {
-                    //position += (Vector3)selectedObject.getSetting("RadialPosition");
-                    //orientation.x = float.Parse(xOri);
-                    //orientation.y = float.Parse(yOri);
-                    //orientation.z = float.Parse(zOri);
-                    //alt += (float)selectedObject.getSetting("RadiusOffset");
-                    //newRot += (float)selectedObject.getSetting("RotationAngle");
-                    vis += (float)selectedObject.getSetting("VisibilityRange");
-
-                    //if ((float)orientation.x > 1.0f || (float)orientation.x < -1.0f)
-                    //{
-                        //xOri = "0";
-                        //orientation.x = 0.0f;
-                    //}
-                    //if ((float)orientation.y > 1.0f || (float)orientation.y < -1.0f)
-                    //{
-                        //yOri = "0";
-                        //orientation.y = 0.0f;
-                    //}
-                    //if ((float)orientation.z > 1.0f || (float)orientation.z < -1.0f)
-                    //{
-                        //zOri = "0";
-                        //orientation.z = 0.0f;
-                    //}
-                    selectedObject.setSetting("Orientation", orientation);
-
-                    rotation = (36000 + rotation) % 360;
-
-                    if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange || vis < 1000)
-                    {
-                        if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange)
-                        {
-                            vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
-                        }
-                        else if (vis < 1000)
-                        {
-                            vis = 1000;
-                        }
-                    }
+                    vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
                 }
-
-                selectedObject.setSetting("RadialPosition", (Vector3)referenceVector);
-
-                selectedObject.setSetting("RadiusOffset", (float)altitude);
-                selectedObject.setSetting("RotationAngle", (float)rotation);
-                selectedObject.setSetting("VisibilityRange", vis);
-                selectedObject.setSetting("RefLatitude", latitude);
-                selectedObject.setSetting("RefLongitude", longitude);
-
-                selectedObject.setSetting("FacilityType", facType);
-                selectedObject.setSetting("Group", sGroup);
-
-                if (!KerbalKonstructs.instance.DevMode)
+                else if (vis < 1000)
                 {
-                    selectedObject.setSetting("CustomInstance", "True");
+                    vis = 1000;
                 }
+            }
 
 
-                updateSelection(selectedObject);
-            
+            selectedObject.setSetting("RadialPosition", (Vector3)referenceVector);
+
+            selectedObject.setSetting("RadiusOffset", (float)altitude);
+            selectedObject.setSetting("RotationAngle", (float)rotation);
+            selectedObject.setSetting("VisibilityRange", vis);
+            selectedObject.setSetting("RefLatitude", latitude);
+            selectedObject.setSetting("RefLongitude", longitude);
+
+            selectedObject.setSetting("FacilityType", facType);
+            selectedObject.setSetting("Group", sGroup);
+
+            selectedObject.setSetting("ModelScale", modelScale);
+
+            if (!KerbalKonstructs.instance.DevMode)
+            {
+                selectedObject.setSetting("CustomInstance", "True");
+            }
+
+
+            updateSelection(selectedObject);
+
         }
 
         /// <summary>
@@ -1761,32 +2095,25 @@ namespace KerbalKonstructs.UI
         /// </summary>
         /// <param name="obj"></param>
 		public static void updateSelection(StaticObject obj)
-		{
-			selectedObject = obj;
-	//		xPos = ((Vector3)obj.getSetting("RadialPosition")).x.ToString();
-	//		yPos = ((Vector3)obj.getSetting("RadialPosition")).y.ToString();
-	//		zPos = ((Vector3)obj.getSetting("RadialPosition")).z.ToString();
-			//xOri = ((Vector3)obj.getSetting("Orientation")).x.ToString();
-			//yOri = ((Vector3)obj.getSetting("Orientation")).y.ToString();
-			//zOri = ((Vector3)obj.getSetting("Orientation")).z.ToString();
-            //		altitude = ((float)obj.getSetting("RadiusOffset")).ToString();
-     //       rotation = (double)(float)obj.getSetting("RotationAngle");
-			visrange = ((float)obj.getSetting("VisibilityRange")).ToString();
-			facType = ((string)obj.getSetting("FacilityType"));
+        {
+            selectedObject = obj;
 
-			if (facType == null || facType == "" || facType == "None")
-			{
-				string DefaultFacType = (string)obj.model.getSetting("DefaultFacilityType");
+            visrange = ((float)obj.getSetting("VisibilityRange")).ToString();
+            facType = ((string)obj.getSetting("FacilityType"));
 
-				if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
-					facType = "None";
-				else
-					facType = DefaultFacType;
-			}
+            if (facType == null || facType == "" || facType == "None")
+            {
+                string DefaultFacType = (string)obj.model.getSetting("DefaultFacilityType");
 
-			sGroup = ((string)obj.getSetting("Group"));
-			selectedObject.update();
-		}
+                if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
+                    facType = "None";
+                else
+                    facType = DefaultFacType;
+            }
+
+            sGroup = ((string)obj.getSetting("Group"));
+            selectedObject.update();
+        }
 
 
         /// <summary>
@@ -1794,145 +2121,145 @@ namespace KerbalKonstructs.UI
         /// </summary>
         /// <returns></returns>
 		public float getIncrement()
-		{
-			return float.Parse(increment);
-		}
+        {
+            return float.Parse(increment);
+        }
 
-		public void setIncrement(bool increase, float amount)
-		{
-			if (increase)
-				increment = (float.Parse(increment) + amount).ToString();
-			else
-				increment = (float.Parse(increment) - amount).ToString();
+        public void setIncrement(bool increase, float amount)
+        {
+            if (increase)
+                increment = (float.Parse(increment) + amount).ToString();
+            else
+                increment = (float.Parse(increment) - amount).ToString();
 
-			if (float.Parse(increment) <= 0) increment = "0.1";
-		}
-        
+            if (float.Parse(increment) <= 0) increment = "0.1";
+        }
 
-		void FixDrift(bool bRotate = false)
-		{
-			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-			if (selectedObject == null || snapTargetInstance == null) return;
 
-			Vector3 snapSourceLocalPos = selectedSnapPoint.transform.localPosition;
-			Vector3 snapSourceWorldPos = selectedSnapPoint.transform.position;
-			Vector3 selSourceWorldPos = selectedObject.gameObject.transform.position;
-			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-			Vector3 snapTargetLocalPos = selectedSnapPoint2.transform.localPosition;
-			Vector3 snapTargetWorldPos = selectedSnapPoint2.transform.position;
-			Vector3 selTargetWorldPos = snapTargetInstance.gameObject.transform.position;
-			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
-			var spdist = 0f;
+        void FixDrift(bool bRotate = false)
+        {
+            if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
+            if (selectedObject == null || snapTargetInstance == null) return;
 
-			if (!bRotate) spdist = Vector3.Distance(snapSourceWorldPos, snapTargetWorldPos);
-			if (bRotate) spdist = Vector3.Distance(selSourceRot * snapSourceWorldPos, selTargetRot * snapTargetWorldPos);
+            Vector3 snapSourceLocalPos = selectedSnapPoint.transform.localPosition;
+            Vector3 snapSourceWorldPos = selectedSnapPoint.transform.position;
+            Vector3 selSourceWorldPos = selectedObject.gameObject.transform.position;
+            float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
+            Vector3 snapTargetLocalPos = selectedSnapPoint2.transform.localPosition;
+            Vector3 snapTargetWorldPos = selectedSnapPoint2.transform.position;
+            Vector3 selTargetWorldPos = snapTargetInstance.gameObject.transform.position;
+            float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
+            var spdist = 0f;
 
-			int iGiveUp = 0;
+            if (!bRotate) spdist = Vector3.Distance(snapSourceWorldPos, snapTargetWorldPos);
+            if (bRotate) spdist = Vector3.Distance(selSourceRot * snapSourceWorldPos, selTargetRot * snapTargetWorldPos);
 
-			while (spdist > 0.01 && iGiveUp < 100)
-			{
-				if (!bRotate)
-				{
-					snpspos = selectedSnapPoint.transform.position;
-					snptpos = selectedSnapPoint2.transform.position;
+            int iGiveUp = 0;
 
-					vDrift = snpspos - snptpos;
-					vCurrpos = selectedObject.pqsCity.repositionRadial;
-					selectedObject.setSetting("RadialPosition", vCurrpos + vDrift);
-					updateSelection(selectedObject);
+            while (spdist > 0.01 && iGiveUp < 100)
+            {
+                if (!bRotate)
+                {
+                    snpspos = selectedSnapPoint.transform.position;
+                    snptpos = selectedSnapPoint2.transform.position;
 
-					spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
-					iGiveUp = iGiveUp + 1;
-				}
+                    vDrift = snpspos - snptpos;
+                    vCurrpos = selectedObject.pqsCity.repositionRadial;
+                    selectedObject.setSetting("RadialPosition", vCurrpos + vDrift);
+                    updateSelection(selectedObject);
 
-				if (bRotate)
-				{
-					iGiveUp = 100;
-				}
-			}
-		}
+                    spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
+                    iGiveUp = iGiveUp + 1;
+                }
 
-		Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
-		{
-			Vector3 dir = point - pivot; // get point direction relative to pivot
-			dir = Quaternion.Euler(angles) * dir; // rotate it
-			Vector3 newpoint = dir + pivot; // calculate rotated point
-			return newpoint;
-		}
+                if (bRotate)
+                {
+                    iGiveUp = 100;
+                }
+            }
+        }
 
-		void SnapToTarget(bool bRotate = false)
-		{
-			if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-			if (selectedObject == null || snapTargetInstance == null) return;
+        Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+        {
+            Vector3 dir = point - pivot; // get point direction relative to pivot
+            dir = Quaternion.Euler(angles) * dir; // rotate it
+            Vector3 newpoint = dir + pivot; // calculate rotated point
+            return newpoint;
+        }
 
-			Vector3 snapPointRelation = new Vector3(0, 0, 0);
-			Vector3 snapPoint2Relation = new Vector3(0, 0, 0);
-			Vector3 snapVector = new Vector3(0, 0, 0);
-			Vector3 snapVectorNoRot = new Vector3(0, 0, 0);
-			Vector3 vFinalPos = new Vector3(0, 0, 0);
+        void SnapToTarget(bool bRotate = false)
+        {
+            if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
+            if (selectedObject == null || snapTargetInstance == null) return;
 
-			Vector3 snapSourcePos = selectedSnapPoint.transform.localPosition;
-			snapSourceWorldPos = selectedSnapPoint.transform.position;
-			Vector3 selSourcePos = selectedObject.gameObject.transform.position;
-			float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-			Vector3 snapTargetPos = selectedSnapPoint2.transform.localPosition;
-			snapTargetWorldPos = selectedSnapPoint2.transform.position;
-			Vector3 selTargetPos = snapTargetInstance.gameObject.transform.position;
-			float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
+            Vector3 snapPointRelation = new Vector3(0, 0, 0);
+            Vector3 snapPoint2Relation = new Vector3(0, 0, 0);
+            Vector3 snapVector = new Vector3(0, 0, 0);
+            Vector3 snapVectorNoRot = new Vector3(0, 0, 0);
+            Vector3 vFinalPos = new Vector3(0, 0, 0);
 
-			vbsnapangle1 = selectedSnapPoint.transform.position;
-			vbsnapangle2 = selectedSnapPoint2.transform.position;
+            Vector3 snapSourcePos = selectedSnapPoint.transform.localPosition;
+            snapSourceWorldPos = selectedSnapPoint.transform.position;
+            Vector3 selSourcePos = selectedObject.gameObject.transform.position;
+            float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
+            Vector3 snapTargetPos = selectedSnapPoint2.transform.localPosition;
+            snapTargetWorldPos = selectedSnapPoint2.transform.position;
+            Vector3 selTargetPos = snapTargetInstance.gameObject.transform.position;
+            float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
 
-			if (!bRotate)
-			{
-				// Quaternion quatSelObj = Quaternion.AngleAxis(selSourceRot, selSourcePos);
-				snapPointRelation = snapSourcePos;
-				//quatSelObj * snapSourcePos;
+            vbsnapangle1 = selectedSnapPoint.transform.position;
+            vbsnapangle2 = selectedSnapPoint2.transform.position;
 
-				//Quaternion quatSelTar = Quaternion.AngleAxis(selTargetRot, selTargetPos);
-				snapPoint2Relation = snapTargetPos;
-				//quatSelTar * snapTargetPos;
+            if (!bRotate)
+            {
+                // Quaternion quatSelObj = Quaternion.AngleAxis(selSourceRot, selSourcePos);
+                snapPointRelation = snapSourcePos;
+                //quatSelObj * snapSourcePos;
 
-				snapVector = (snapPoint2Relation - snapPointRelation);
-				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition") + snapVector;
-			}
-			else
-			{
-				// THIS SHIT DO NOT WORK
-				//MiscUtils.HUDMessage("Snapping with rotation.", 60, 2);
-				// Stick the origins on each other
-				vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
-				selectedObject.setSetting("RadialPosition", vFinalPos);
-				updateSelection(selectedObject);
+                //Quaternion quatSelTar = Quaternion.AngleAxis(selTargetRot, selTargetPos);
+                snapPoint2Relation = snapTargetPos;
+                //quatSelTar * snapTargetPos;
 
-				// Get the offset of the source and move by that
-				Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
-				snapPointRelation = selectedObject.gameObject.transform.position -
-					selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
-				MiscUtils.HUDMessage("" + snapPointRelation.ToString(), 60, 2);
-				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
-				selectedObject.setSetting("RadialPosition", vFinalPos);
-				updateSelection(selectedObject);
+                snapVector = (snapPoint2Relation - snapPointRelation);
+                vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition") + snapVector;
+            }
+            else
+            {
+                // THIS SHIT DO NOT WORK
+                //MiscUtils.HUDMessage("Snapping with rotation.", 60, 2);
+                // Stick the origins on each other
+                vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
+                selectedObject.setSetting("RadialPosition", vFinalPos);
+                updateSelection(selectedObject);
 
-				// Get the offset of the target and move by that
-				vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
-				snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
-					selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
-				MiscUtils.HUDMessage("" + snapPoint2Relation.ToString(), 60, 2);
-				vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
-			}
+                // Get the offset of the source and move by that
+                Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
+                snapPointRelation = selectedObject.gameObject.transform.position -
+                    selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
+                MiscUtils.HUDMessage("" + snapPointRelation.ToString(), 60, 2);
+                vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
+                selectedObject.setSetting("RadialPosition", vFinalPos);
+                updateSelection(selectedObject);
 
-			snapSourcePos = selectedSnapPoint.transform.localPosition;
-			snapTargetPos = selectedSnapPoint2.transform.localPosition;
-			snapVectorNoRot = (snapSourcePos - snapTargetPos);
+                // Get the offset of the target and move by that
+                vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
+                snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
+                    selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
+                MiscUtils.HUDMessage("" + snapPoint2Relation.ToString(), 60, 2);
+                vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
+            }
 
-			selectedObject.setSetting("RadialPosition", vFinalPos);
-			selectedObject.setSetting("RadiusOffset", (float)snapTargetInstance.getSetting("RadiusOffset") + snapVectorNoRot.y);
+            snapSourcePos = selectedSnapPoint.transform.localPosition;
+            snapTargetPos = selectedSnapPoint2.transform.localPosition;
+            snapVectorNoRot = (snapSourcePos - snapTargetPos);
 
-			updateSelection(selectedObject);
-			if (!bRotate) FixDrift();
-		}
+            selectedObject.setSetting("RadialPosition", vFinalPos);
+            selectedObject.setSetting("RadiusOffset", (float)snapTargetInstance.getSetting("RadiusOffset") + snapVectorNoRot.y);
 
-		#endregion
-	}
+            updateSelection(selectedObject);
+            if (!bRotate) FixDrift();
+        }
+
+        #endregion
+    }
 }
