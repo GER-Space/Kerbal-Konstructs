@@ -2,6 +2,8 @@
 #
 #
 
+cd /c/Git/Kerbal-Konstructs
+
 VERSION=`grep -i AssemblyFileVersion src/Properties/AssemblyInfo.cs  | cut -d "\"" -f 2`
 
 
