@@ -838,9 +838,9 @@ namespace KerbalKonstructs.UI
                 //
                 GUILayout.BeginHorizontal();
                 {
-                    GUILayout.Label("Rot.");
+                    GUILayout.Label("Heading:");
                     GUILayout.FlexibleSpace();
-                    rotation = double.Parse(GUILayout.TextField(rotation.ToString(), 8, GUILayout.Width(fTempWidth)));
+                    GUILayout.TextField(heading.ToString(), 7, GUILayout.Width(fTempWidth));
 
                     if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                     {
@@ -1770,18 +1770,25 @@ namespace KerbalKonstructs.UI
 
 
         /// <summary>
-        /// returns the heading the selected object, Function is from kOS
+        /// returns the heading the selected object
         /// </summary>
         /// <returns></returns>
-        public float GetHeading()
+        public float heading
         {
-            var up = upVector;
-            var north = northVector;
-            var headingQ =
-                Quaternion.Inverse(Quaternion.Euler(90, 0, 0) * Quaternion.Inverse(selectedObject.gameObject.transform.rotation) *
-                                   Quaternion.LookRotation(north, up));
+            get
+            {
+                Vector3 myForward = Vector3.ProjectOnPlane(selectedObject.gameObject.transform.forward, upVector);
+                float myHeading;
 
-            return headingQ.eulerAngles.y;
+                if (Vector3.Dot(myForward,eastVector) > 0 )
+                {
+                    myHeading = Vector3.Angle(myForward, northVector);
+                } else
+                {
+                    myHeading = 360 - Vector3.Angle(myForward, northVector);
+                }
+                return myHeading;
+            }
         }
 
         /// <summary>
