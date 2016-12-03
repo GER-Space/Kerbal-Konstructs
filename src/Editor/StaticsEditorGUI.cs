@@ -347,7 +347,7 @@ namespace KerbalKonstructs.UI
 					if (titlefilterset != "")
 					{
 						sTitleHolder = (string)model.getSetting("title");
-						if (sTitleHolder.Contains(titlefilterset))
+						if (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0)
 							showStatic = true;
 						else
 							showStatic = false;
@@ -356,7 +356,7 @@ namespace KerbalKonstructs.UI
 					if (categoryfilterset != "")
 					{
 						sCategoryHolder = (string)model.getSetting("category");
-						if (sCategoryHolder.Contains(categoryfilterset))
+						if (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0)
 							showStatic = true;
 						else
 							showStatic = false;
@@ -366,7 +366,7 @@ namespace KerbalKonstructs.UI
 					{
 						sTitleHolder = (string)model.getSetting("title");
 						sCategoryHolder = (string)model.getSetting("category");
-						if (sCategoryHolder.Contains(categoryfilterset) && sTitleHolder.Contains(titlefilterset))
+						if ( (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0 ) && (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0) )
 							showStatic = true;
 						else
 							showStatic = false;
