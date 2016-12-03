@@ -389,7 +389,7 @@ namespace KerbalKonstructs.UI
 					{
 						foreach (StaticObject soStaticobj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 						{
-							if ((string)soStaticobj.model.getSetting("DefaultFacilityType") == "None") continue;
+							if  (String.IsNullOrEmpty((string)soStaticobj.getSetting("FacilityType")) || String.Equals(((string)soStaticobj.getSetting("FacilityType")) ,"None", StringComparison.CurrentCultureIgnoreCase) ) continue;
 
 							if (soStaticobj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 							{
@@ -420,8 +420,9 @@ namespace KerbalKonstructs.UI
 						else
 							isLocal = false;
 
-						if ((string)obj.model.getSetting("DefaultFacilityType") == "None")
-						{
+						if (String.Equals(((string)obj.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
+
+                        {
 							isLocal = false;
 						}
 
