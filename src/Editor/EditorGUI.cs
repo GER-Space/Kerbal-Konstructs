@@ -105,12 +105,10 @@ namespace KerbalKonstructs.UI
 
         public static String facType = "None";
         public static String sGroup = "Ungrouped";
-        public static String visrange = "";
         String increment = "0.1";
         String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
-        string infFacType;
         string infTrackingShort, infTrackingAngle, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax;
 
         Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
@@ -154,10 +152,10 @@ namespace KerbalKonstructs.UI
 
         private double rotation = 0d;
 
-        float vis = 0;
+        private static float vis = 0;
 
 
-        float modelScale = 1f;
+        private static float modelScale = 1f;
 
         #endregion
 
@@ -739,7 +737,6 @@ namespace KerbalKonstructs.UI
                     if (GUILayout.Button("Min", GUILayout.Width(30), GUILayout.Height(23)))
                     {
                         vis -= 1000000000f;
-                        //vis = "2500f";
                         saveSettings();
                     }
                     if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(23)))
@@ -902,7 +899,6 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
                 {
-                    infFacType = facType;
                     infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
                     infTrackingAngle = selectedObject.getSetting("TrackingAngle").ToString();
 
@@ -1196,7 +1192,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Box((string)selectedObject.model.getSetting("title"));
             GUILayout.Space(1);
 
-            if (GUILayout.Button("Facility Type: " + infFacType, GUILayout.Height(23)))
+            if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
                 bChangeFacilityType = true;
 
             if (bChangeFacilityType)
@@ -1207,67 +1203,67 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("None", GUILayout.Height(23)))
                 {
-                    infFacType = "None";
+                    facType = "None";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Barracks", GUILayout.Height(23)))
                 {
-                    infFacType = "Barracks";
+                    facType = "Barracks";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Business", GUILayout.Height(23)))
                 {
-                    infFacType = "Business";
+                    facType = "Business";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Fuel Tanks", GUILayout.Height(23)))
                 {
-                    infFacType = "FuelTanks";
+                    facType = "FuelTanks";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Hangar", GUILayout.Height(23)))
                 {
-                    infFacType = "Hangar";
+                    facType = "Hangar";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Research", GUILayout.Height(23)))
                 {
-                    infFacType = "Research";
+                    facType = "Research";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Tracking Station", GUILayout.Height(23)))
                 {
-                    infFacType = "TrackingStation";
+                    facType = "TrackingStation";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("City Lights", GUILayout.Height(23)))
                 {
-                    infFacType = "CityLights";
+                    facType = "CityLights";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
                 {
-                    infFacType = "LandingGuide";
+                    facType = "LandingGuide";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
                 {
-                    infFacType = "TouchdownGuideR";
+                    facType = "TouchdownGuideR";
                     bChangeFacilityType = false;
                 }
 
                 if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
                 {
-                    infFacType = "TouchdownGuideL";
+                    facType = "TouchdownGuideL";
                     bChangeFacilityType = false;
                 }
 
@@ -1281,7 +1277,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("\\F", LabelWhite);
             GUILayout.EndHorizontal();
 
-            if (infFacType == "TrackingStation")
+            if (facType == "TrackingStation")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Short Range: ", LabelGreen);
@@ -1298,7 +1294,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
             }
 
-            if (infFacType == "Barracks" || infFacType == "Research" || infFacType == "Business")
+            if (facType == "Barracks" || facType == "Research" || facType == "Business")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Max Staff: ", LabelGreen);
@@ -1307,7 +1303,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
             }
 
-            if (infFacType == "Research" || infFacType == "Business")
+            if (facType == "Research" || facType == "Business")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Production Rate: ", LabelGreen);
@@ -1318,7 +1314,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
             }
 
-            if (infFacType == "Research")
+            if (facType == "Research")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Max Science: ", LabelGreen);
@@ -1327,7 +1323,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
             }
 
-            if (infFacType == "Business")
+            if (facType == "Business")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Max Funds: ", LabelGreen);
@@ -1342,11 +1338,13 @@ namespace KerbalKonstructs.UI
             GUILayout.Space(2);
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
+            if (GUILayout.Button("Save Facility", GUILayout.Width(115), GUILayout.Height(23)))
             {
                 bool bInvalidText = false;
 
-                if (infFacType != "") selectedObject.setSetting("FacilityType", infFacType);
+                if (facType != "")
+                    selectedObject.setSetting("FacilityType", facType);
+
                 if (infTrackingShort != "" && infTrackingShort != "0")
                 {
                     if (ValidateStringToDouble(infTrackingShort))
@@ -1452,6 +1450,14 @@ namespace KerbalKonstructs.UI
         }
         #endregion
 
+
+        /// <summary>
+        /// Parses a string to a double within a range
+        /// </summary>
+        /// <param name="sText"></param>
+        /// <param name="RangeMax"></param>
+        /// <param name="RangeMin"></param>
+        /// <returns></returns>
         public static Boolean ValidateStringToDouble(string sText, double RangeMax = 0, double RangeMin = 0)
         {
             double parsedValue;
@@ -1475,6 +1481,9 @@ namespace KerbalKonstructs.UI
                 return false;
         }
 
+        /// <summary>
+        /// closes the sub editor windows
+        /// </summary>
         public static void CloseEditors()
         {
             editingFacility = false;
@@ -2051,9 +2060,6 @@ namespace KerbalKonstructs.UI
         /// </summary>
         internal void saveSettings()
         {
-            vis += (float)selectedObject.getSetting("VisibilityRange");
-
-
             selectedObject.setSetting("Orientation", orientation);
 
             if (modelScale < 0.01f)
@@ -2061,18 +2067,14 @@ namespace KerbalKonstructs.UI
 
             rotation = (360d + rotation) % 360d;
 
-            if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange || vis < 1000)
+            if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange)
             {
-                if (vis > (float)KerbalKonstructs.instance.maxEditorVisRange)
-                {
-                    vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
-                }
-                else if (vis < 1000)
-                {
-                    vis = 1000;
-                }
+                vis = (float)KerbalKonstructs.instance.maxEditorVisRange;
             }
-
+            if (vis < 1000)
+            {
+                vis = 1000;
+            }
 
             selectedObject.setSetting("RadialPosition", (Vector3)referenceVector);
 
@@ -2105,10 +2107,10 @@ namespace KerbalKonstructs.UI
         {
             selectedObject = obj;
 
-            visrange = ((float)obj.getSetting("VisibilityRange")).ToString();
-            facType = ((string)obj.getSetting("FacilityType"));
+            vis = (float)obj.getSetting("VisibilityRange");
+            facType = (string)obj.getSetting("FacilityType");
 
-            if (facType == null || facType == "" || facType == "None")
+            if (facType == null || facType == "")
             {
                 string DefaultFacType = (string)obj.model.getSetting("DefaultFacilityType");
 
