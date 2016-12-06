@@ -1347,7 +1347,7 @@ namespace KerbalKonstructs
         }
 
         /// <summary>
-        /// saves the model definition
+        /// saves the model definition and the direct instances
         /// </summary>
         /// <param name="mModelToSave"></param>
         public void saveModelConfig(StaticModel mModelToSave)
@@ -1432,13 +1432,17 @@ namespace KerbalKonstructs
 
 
         /// <summary>
-        /// This should save all satic objects to thier instance files.. 
+        /// This saves all satic objects to thier instance files.. 
         /// </summary>
         public void saveObjects()
         {
+            List<String> processedInstances = new List<string>(); 
             List<StaticObject> allInstances = staticDB.getAllStatics();
             foreach (StaticObject instance in allInstances)
             {
+                // ignore allready processed cfg files
+                if  (processedInstances.Contains(instance.configPath) ) { continue;}
+
                 if (instance.configPath == instance.model.configPath)
                 {
                     saveModelConfig(instance.model);
@@ -1446,8 +1450,9 @@ namespace KerbalKonstructs
                 else {
                     // find all instances with the same configPath. 
                     SaveInstanceByCfg(instance.configPath);
-                } 
+                }
 
+                processedInstances.Add(instance.configPath);
             }
         }
 
