@@ -1061,8 +1061,6 @@ namespace KerbalKonstructs
                 obj.model = model;
                 obj.configUrl = configurl;
                 obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
-                Log.Normal("Processing File: " + obj.configPath);
-                Log.Normal("Modelfilename matched: " + ((String.Equals(model.configPath, obj.configPath)).ToString()));
                 //obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
