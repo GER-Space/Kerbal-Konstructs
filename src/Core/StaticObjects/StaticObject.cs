@@ -24,11 +24,16 @@ namespace KerbalKonstructs.Core
 		public PQSCity pqsCity;
 		public StaticModel model;
 
+        public UrlDir.UrlConfig configUrl;
+        public String configPath;
+
 		[KSPField]
 		public Dictionary<string, object> settings = new Dictionary<string, object>();
 
 		public Boolean editing;
 		public Boolean preview;
+
+        private Vector3 origScale;
 
 		private List<Renderer> _rendererComponents; 
 
@@ -44,7 +49,7 @@ namespace KerbalKonstructs.Core
 				pqsCity.repositionRadiusOffset = (float) settings["RadiusOffset"];
 				pqsCity.reorientInitialUp = (Vector3) settings["Orientation"];
 				pqsCity.reorientFinalAngle = (float) settings["RotationAngle"];
-                pqsCity.transform.localScale = pqsCity.transform.localScale.normalized * (float)settings["ModelScale"];
+                pqsCity.transform.localScale = origScale * (float)settings["ModelScale"];
                 pqsCity.Orientate();
 			}
 		}
@@ -150,6 +155,7 @@ namespace KerbalKonstructs.Core
 			pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
 			gameObject.transform.parent = ((CelestialBody)getSetting("CelestialBody")).pqsController.transform;
 			pqsCity.sphere = ((CelestialBody)getSetting("CelestialBody")).pqsController;
+            origScale = pqsCity.transform.localScale;             // save the original scale for later use
             pqsCity.transform.localScale *= (float)getSetting("ModelScale");
             pqsCity.order = 100;
 			pqsCity.modEnabled = true;
@@ -158,7 +164,7 @@ namespace KerbalKonstructs.Core
 
             body = (CelestialBody)getSetting("CelestialBody");
 
-      /*      // Add them to the bodys objectlist, so SigmaDimension can find it. 
+      /*      // Add them to the bodys objectlist, so tey show up as anomalies 
             PQSSurfaceObject pqsSrfObj = new PQSSurfaceObject();
             pqsSrfObj = (PQSSurfaceObject)pqsCity;
             var pqsObjectList = body.pqsSurfaceObjects.ToList();

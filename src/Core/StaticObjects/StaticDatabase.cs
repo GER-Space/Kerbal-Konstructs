@@ -310,6 +310,10 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        public List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
+        {
+            return (from obj in getAllStatics() where obj.configPath == model.configPath select obj).ToList();
+        }
 
         public List<StaticObject> getObjectsFromModel(StaticModel model)
 		{

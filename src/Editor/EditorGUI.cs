@@ -1734,20 +1734,24 @@ namespace KerbalKonstructs.UI
         /// <param name="vPosition"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public StaticObject spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
+        public void spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
         {
             StaticObject obj = new StaticObject();
-            obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+            obj.gameObject = UnityEngine.Object.Instantiate(KerbalKonstructs.instance.staticDB.GetModel(model.name).prefab);
             obj.setSetting("RadiusOffset", fOffset);
             obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-            obj.setSetting("Group", "Ungrouped");
+            string newGroup = (selectedObject != null) ? (string)selectedObject.getSetting("Group") : "Ungrouped";
+            obj.setSetting("Group", newGroup);
             obj.setSetting("RadialPosition", vPosition);
             obj.setSetting("RotationAngle", fAngle);
             obj.setSetting("Orientation", Vector3.up);
             obj.setSetting("VisibilityRange", 25000f);
 
             string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
-            if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
+            if (!String.IsNullOrEmpty(sPad))
+            {
+                obj.setSetting("LaunchPadTransform", sPad);
+            }
 
             if (!KerbalKonstructs.instance.DevMode)
             {
@@ -1755,11 +1759,13 @@ namespace KerbalKonstructs.UI
             }
 
             obj.model = model;
+            Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/NewInstances/");
+            obj.configPath= "KerbalKonstructs/NewInstances/" + model.name + "-clone.cfg";
+            obj.configUrl = null;
 
-            KerbalKonstructs.instance.getStaticDB().addStatic(obj);
+            KerbalKonstructs.instance.staticDB.addStatic(obj);
             enableColliders = false;
             obj.spawnObject(true, false);
-            return obj;
         }
 
         public static void setTargetSite(LaunchSite lsTarget, string sName = "")
@@ -1936,18 +1942,19 @@ namespace KerbalKonstructs.UI
         }
 
         /// <summary>
-        /// sets the latitude and lognitude and creates a new reference vector
+        /// sets the latitude and lognitude from the deltas of north and east and creates a new reference vector
         /// </summary>
         /// <param name="north"></param>
         /// <param name="east"></param>
         internal void setlatlng(double north, double east)
         {
-            double latOffset = north / (Planetarium.fetch.CurrentMainBody.Radius * KKMath.deg2rad);
+            body = Planetarium.fetch.CurrentMainBody;
+            double latOffset = north / (body.Radius * KKMath.deg2rad);
             latitude += latOffset;
-            double lonOffset = east / (Planetarium.fetch.CurrentMainBody.Radius * KKMath.deg2rad);
+            double lonOffset = east / (body.Radius * KKMath.deg2rad);
             longitude += lonOffset * Math.Cos(Mathf.Deg2Rad * latitude);
 
-            referenceVector = KerbalKonstructs.instance.getCurrentBody().GetRelSurfaceNVector(latitude, longitude) * KerbalKonstructs.instance.getCurrentBody().Radius;
+            referenceVector = body.GetRelSurfaceNVector(latitude, longitude).normalized * body.Radius;
             saveSettings();
         }
 
@@ -2125,25 +2132,6 @@ namespace KerbalKonstructs.UI
         }
 
 
-        /// <summary>
-        /// converts string to float
-        /// </summary>
-        /// <returns></returns>
-		public float getIncrement()
-        {
-            return float.Parse(increment);
-        }
-
-        public void setIncrement(bool increase, float amount)
-        {
-            if (increase)
-                increment = (float.Parse(increment) + amount).ToString();
-            else
-                increment = (float.Parse(increment) - amount).ToString();
-
-            if (float.Parse(increment) <= 0) increment = "0.1";
-        }
-
 
         void FixDrift(bool bRotate = false)
         {
@@ -2188,12 +2176,65 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+        float getIncrement
         {
-            Vector3 dir = point - pivot; // get point direction relative to pivot
-            dir = Quaternion.Euler(angles) * dir; // rotate it
-            Vector3 newpoint = dir + pivot; // calculate rotated point
-            return newpoint;
+            get
+            {
+                return float.Parse(increment);
+            }
+        }
+
+        internal void CheckEditorKeys()
+        {
+            if (selectedObject != null)
+            {
+
+                if (IsOpen())
+                {
+                    if (Input.GetKey(KeyCode.W))
+                    {
+                        setTransform(Vector3.forward * getIncrement);
+                    }
+                    if (Input.GetKey(KeyCode.S))
+                    {
+                        setTransform(Vector3.back * getIncrement);
+                    }
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        setTransform(Vector3.right * getIncrement);
+                    }
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        setTransform(Vector3.left * getIncrement);
+                    }
+                    if (Input.GetKey(KeyCode.E))
+                    {
+                        setRotation(-(double)getIncrement);
+                    }
+                    if (Input.GetKey(KeyCode.Q))
+                    {
+                        setRotation((double)getIncrement);
+                    }
+
+                    if (Input.GetKey(KeyCode.PageUp))
+                    {
+                        altitude += (double)getIncrement;
+                        saveSettings();
+                    }
+
+                    if (Input.GetKey(KeyCode.PageDown))
+                    {
+                        altitude += -(double)getIncrement;
+                        saveSettings();
+                    }
+                    if (Event.current.keyCode == KeyCode.Return)
+                    {  
+                        saveSettings();
+                    }
+                }
+
+            }
+
         }
 
         void SnapToTarget(bool bRotate = false)

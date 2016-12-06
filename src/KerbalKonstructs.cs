@@ -818,95 +818,7 @@ namespace KerbalKonstructs
             }
 
 
-            if (selectedObject != null)
-            {
-                Vector3 pos = Vector3.zero;
-                float alt = 0;
-                bool changed = false;
-
-                if (GUI_Editor.IsOpen())
-                {
-                    if (Input.GetKey(KeyCode.W))
-                    {
-                        pos.y += GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.S))
-                    {
-                        pos.y -= GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.D))
-                    {
-                        pos.x += GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.A))
-                    {
-                        pos.x -= GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.E))
-                    {
-                        pos.z += GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.Q))
-                    {
-                        pos.z -= GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-
-                    if (Input.GetKey(KeyCode.Equals) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
-                    {
-                        alt += (GUI_Editor.getIncrement()) / 10;
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.KeypadPlus))
-                    {
-                        alt += (GUI_Editor.getIncrement()) / 10;
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.PageUp))
-                    {
-                        alt += GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.Minus) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
-                    {
-                        alt -= (GUI_Editor.getIncrement()) / 10;
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.KeypadMinus))
-                    {
-                        alt -= (GUI_Editor.getIncrement()) / 10;
-                        changed = true;
-                    }
-                    if (Input.GetKey(KeyCode.PageDown))
-                    {
-                        alt -= GUI_Editor.getIncrement();
-                        changed = true;
-                    }
-
-                    if (Input.GetKey(KeyCode.KeypadMultiply))
-                    {
-                        GUI_Editor.setIncrement(true, GUI_Editor.getIncrement());
-                    }
-                    if (Input.GetKey(KeyCode.KeypadDivide))
-                    {
-                        GUI_Editor.setIncrement(false, (GUI_Editor.getIncrement() / 2));
-                    }
-                }
-
-                if (changed)
-                {
-                    pos += (Vector3)selectedObject.getSetting("RadialPosition");
-                    alt += (float)selectedObject.getSetting("RadiusOffset");
-                    selectedObject.setSetting("RadialPosition", pos);
-                    selectedObject.setSetting("RadiusOffset", alt);
-                    EditorGUI.updateSelection(selectedObject);
-                }
-            }
+            GUI_Editor.CheckEditorKeys();
 
             if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
             {
@@ -1126,10 +1038,10 @@ namespace KerbalKonstructs
         /// <summary>
         /// Loads and places all model instances from the confignode.
         /// </summary>
-        /// <param name="confconfig"></param>
+        /// <param name="configurl"></param>
         /// <param name="model"></param>
         /// <param name="bSecondPass"></param>
-		public void loadInstances(ConfigNode confconfig, StaticModel model, bool bSecondPass = false)
+		public void loadInstances(UrlDir.UrlConfig configurl, StaticModel model, bool bSecondPass = false)
         {
             if (model == null)
             {
@@ -1137,17 +1049,21 @@ namespace KerbalKonstructs
                 return;
             }
 
-            if (confconfig == null)
+            if (configurl == null)
             {
                 Log.UserError("KK: Attempting to loadInstances for a null ConfigNode. Check your model and config.");
                 return;
             }
 
-            foreach (ConfigNode instance in confconfig.GetNodes("Instances"))
+            foreach (ConfigNode instance in configurl.config.GetNodes("Instances"))
             {
                 StaticObject obj = new StaticObject();
                 obj.model = model;
-                //		obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+                obj.configUrl = configurl;
+                obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
+                Log.Normal("Processing File: " + obj.configPath);
+                Log.Normal("Modelfilename matched: " + ((String.Equals(model.configPath, obj.configPath)).ToString()));
+                //obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
                 {
@@ -1162,6 +1078,24 @@ namespace KerbalKonstructs
                     Log.UserError("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
                     continue;
                 }
+                // create RadialPosition, If we don't have one.
+                if (!obj.settings.ContainsKey("RadialPosition"))
+                {
+                    if (obj.settings.ContainsKey("RefLatitude") && obj.settings.ContainsKey("RefLongitude"))
+                    {
+                        double lat = (double)obj.getSetting("RefLatitude");
+                        double lon = (double)obj.getSetting("RefLongitude");
+                        CelestialBody body = (CelestialBody)obj.getSetting("CelestialBody");
+                        Vector3 newPostion = body.GetRelSurfaceNVector(lat, lon) * body.Radius;
+                        obj.setSetting("RadialPosition", newPostion);
+                        Log.UserInfo("creating new Radialposition for: " + obj.gameObject.name);
+                    } else
+                    {
+                        Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + obj.gameObject.name);
+                        continue;
+                    }
+                }
+
                 // sometimes we need a second pass.. (do we???)
                 // 
 
@@ -1281,7 +1215,7 @@ namespace KerbalKonstructs
                 ConfigNode CareerConfig = ConfigNode.Load(savedObjectPath);
                 ConfigNode CareerConfigRoot = CareerConfig.GetNode("STATIC");
 
-                loadInstances(CareerConfigRoot, model, true);
+                // loadInstances(CareerConfigRoot, model, true);
             }
         }
 
@@ -1309,7 +1243,7 @@ namespace KerbalKonstructs
                 // ignore referenced objects
                 if (conf.config.HasValue("pointername"))
                 {
-                    if ( (!String.IsNullOrEmpty(conf.config.GetValue("pointername")) && !conf.config.GetValue("pointername").Equals("none", StringComparison.CurrentCultureIgnoreCase)) )
+                    if ((!String.IsNullOrEmpty(conf.config.GetValue("pointername")) && !conf.config.GetValue("pointername").Equals("none", StringComparison.CurrentCultureIgnoreCase)))
                     {
                         continue;
                     }
@@ -1326,7 +1260,7 @@ namespace KerbalKonstructs
                     }
                     if (!String.IsNullOrEmpty(modelName))
                     {
-                        conf.config.AddValue("name", modelName);
+                        conf.config.SetValue("name", modelName, true);
                     }
                     else
                     {
@@ -1336,6 +1270,7 @@ namespace KerbalKonstructs
                 }
 
                 StaticModel model = new StaticModel();
+                model.name = modelName;
                 model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
                 model.config = conf.url;
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
@@ -1380,7 +1315,7 @@ namespace KerbalKonstructs
                     }
                 }
                 // most mods will not load without beeing loaded here
-                loadInstances(conf.config, model, false);
+                loadInstances(conf, model, false);
                 staticDB.registerModel(model, modelName);
             }
         }
@@ -1394,7 +1329,7 @@ namespace KerbalKonstructs
             string modelname = null;
             foreach (UrlDir.UrlConfig conf in configs)
             {
-                if (conf.config.HasValue("pointername") && !String.IsNullOrEmpty(conf.config.GetValue("pointername")) )
+                if (conf.config.HasValue("pointername") && !String.IsNullOrEmpty(conf.config.GetValue("pointername")))
                 {
                     modelname = conf.config.GetValue("pointername");
                 }
@@ -1407,65 +1342,119 @@ namespace KerbalKonstructs
                 StaticModel model = staticDB.GetModel(modelname);
                 if (model != null)
                 {
-                    loadInstances(conf.config, model, true);
+                    loadInstances(conf, model, true);
                 }
-                else { Log.Error("No Model found for: "  + model.configPath); }
+                else { Log.UserError("No Model named " + modelname + " found as defined in: " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"); }
             }
         }
 
+        /// <summary>
+        /// saves the model definition
+        /// </summary>
+        /// <param name="mModelToSave"></param>
         public void saveModelConfig(StaticModel mModelToSave)
         {
-            foreach (StaticModel model in staticDB.getModels())
+            StaticModel model = staticDB.GetModel(mModelToSave.name);
+
+
+            ConfigNode staticNode = new ConfigNode("STATIC");
+            ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
+
+            foreach (KeyValuePair<string, object> modelsetting in model.settings)
             {
-                if (model == mModelToSave)
+                if (modelsetting.Key == "mesh") continue;
+
+                if (modelConfig.HasValue(modelsetting.Key))
                 {
-                    ConfigNode staticNode = new ConfigNode("STATIC");
-                    ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
-
-                    foreach (KeyValuePair<string, object> modelsetting in model.settings)
-                    {
-                        if (modelsetting.Key == "mesh") continue;
-
-                        if (modelConfig.HasValue(modelsetting.Key))
-                        {
-                            modelConfig.RemoveValue(modelsetting.Key);
-                            modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
-                        }
-                        else
-                        {
-                            modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
-                        }
-                    }
-
-                    modelConfig.RemoveNodes("Instances");
-
-                    foreach (StaticObject obj in staticDB.getObjectsFromModel(model))
-                    {
-                        ConfigNode inst = new ConfigNode("Instances");
-                        foreach (KeyValuePair<string, object> setting in obj.settings)
-                        {
-                            inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-                        }
-                        modelConfig.nodes.Add(inst);
-                    }
-
-                    staticNode.AddNode(modelConfig);
-                    staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + model.configPath, "Generated by Kerbal Konstructs");
-
-                    break;
+                    modelConfig.RemoveValue(modelsetting.Key);
+                    modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
                 }
                 else
-                    continue;
+                {
+                    modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
+                }
+            }
+
+            modelConfig.RemoveNodes("Instances");
+
+            foreach (StaticObject obj in staticDB.GetDirectInstancesFromModel(model))
+            {
+                ConfigNode inst = new ConfigNode("Instances");
+                foreach (KeyValuePair<string, object> setting in obj.settings)
+                {
+                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
+                }
+                modelConfig.nodes.Add(inst);
+            }
+
+            staticNode.AddNode(modelConfig);
+            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + model.configPath, "Generated by Kerbal Konstructs");
+
+        }
+
+
+        /// <summary>
+        /// this saves the pointer references to thier configfiles.
+        /// </summary>
+        /// <param name="pathname"></param>
+        internal void SaveInstanceByCfg(string pathname)
+        {
+            List<StaticObject> allInstances = staticDB.getAllStatics().Where(instance => instance.configPath == pathname).ToList();
+            StaticObject firstInstance = allInstances.First();
+            ConfigNode instanceConfig = null;
+
+            ConfigNode staticNode = new ConfigNode("STATIC");
+
+            if (firstInstance.configUrl == null) //this are newly spawned instances
+            {
+                instanceConfig = new ConfigNode("STATIC");
+                instanceConfig.AddValue("pointername", firstInstance.model.name);
+            } else
+            {
+
+                instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);
+                instanceConfig.RemoveNodes("Instances");
+            }
+
+            staticNode.AddNode(instanceConfig);
+            foreach (StaticObject obj in allInstances)
+            {
+                ConfigNode inst = new ConfigNode("Instances");
+                foreach (KeyValuePair<string, object> setting in obj.settings)
+                {
+                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
+                }
+                instanceConfig.nodes.Add(inst);
+            }
+
+
+            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + firstInstance.configPath, "Generated by Kerbal Konstructs");
+        }
+
+
+
+        /// <summary>
+        /// This should save all satic objects to thier instance files.. 
+        /// </summary>
+        public void saveObjects()
+        {
+            List<StaticObject> allInstances = staticDB.getAllStatics();
+            foreach (StaticObject instance in allInstances)
+            {
+                if (instance.configPath == instance.model.configPath)
+                {
+                    saveModelConfig(instance.model);
+                }
+                else {
+                    // find all instances with the same configPath. 
+                    SaveInstanceByCfg(instance.configPath);
+                } 
+
             }
         }
 
-        public void saveObjects()
-        {
-            foreach (StaticModel model in staticDB.getModels())
-            {
-                saveModelConfig(model);
-            }
-        }
+
+
 
         public void exportCustomInstances(string sPackName = "MyStaticPack", string sBaseName = "All", string sGroup = "", Boolean bLocal = false)
         {

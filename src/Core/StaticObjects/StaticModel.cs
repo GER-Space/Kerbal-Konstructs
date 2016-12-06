@@ -10,6 +10,8 @@ namespace KerbalKonstructs.Core
 		public string config;
 		public string configPath;
 		public string path;
+        public string name;
+
         public GameObject  prefab;
 		public Dictionary<string, object> settings = new Dictionary<string, object>();
 		public List<StaticModule> modules = new List<StaticModule>();

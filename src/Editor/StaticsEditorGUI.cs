@@ -392,8 +392,8 @@ namespace KerbalKonstructs.UI
 						{
 							EditorGUI.CloseEditors();
 							KerbalKonstructs.instance.DeletePreviewObject();
-							KerbalKonstructs.instance.bDisablePositionEditing = false;
-							spawnInstance(model);
+                            KerbalKonstructs.instance.bDisablePositionEditing = false;
+                            spawnInstance(model);
 							smessage = "Spawned " + model.getSetting("title");
 							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
@@ -769,32 +769,17 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public StaticObject spawnInstance(StaticModel model)
+        /// <summary>
+        /// wrapper for editorGUI spawnInstance
+        /// </summary>
+        /// <param name="model"></param>
+		public void spawnInstance(StaticModel model)
 		{
-			StaticObject obj = new StaticObject();
-			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
-			obj.setSetting("RadiusOffset", (float)FlightGlobals.ActiveVessel.altitude);
-			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-			obj.setSetting("Group", "Ungrouped");
-			obj.setSetting("RadialPosition", KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position));
-			obj.setSetting("RotationAngle", 0f);
-			obj.setSetting("Orientation", Vector3.up);
-			obj.setSetting("VisibilityRange", 25000f);
+            KerbalKonstructs.GUI_Editor.spawnInstance(model, 
+                (float)FlightGlobals.ActiveVessel.altitude, 
+                KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
+                0f);
 
-			string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
-			if (sPad != null) obj.setSetting("LaunchPadTransform", sPad);
-
-			if (!KerbalKonstructs.instance.DevMode)
-			{
-				obj.setSetting("CustomInstance", "True");
-			}
-
-			obj.model = model;
-
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
-			enableColliders = false;
-			obj.spawnObject(true, false);
-			return obj;
 		}
 
 	}
