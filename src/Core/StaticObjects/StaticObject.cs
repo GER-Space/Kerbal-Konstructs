@@ -68,7 +68,7 @@ namespace KerbalKonstructs.Core
 			}
 			else
 			{
-				Log.Debug("Setting " + setting + " not found in instance API. BUG BUG BUG.");
+				Log.Normal("Setting " + setting + " not found in instance API. BUG BUG BUG.");
 				return null;
 			}
 		}
