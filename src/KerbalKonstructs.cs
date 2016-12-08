@@ -145,6 +145,7 @@ namespace KerbalKonstructs
         public Boolean enableRTsupport = false;
         #endregion
 
+        private List<StaticObject> deletedInstances = new List<StaticObject>();
 
         void Awake()
         {
@@ -1445,23 +1446,44 @@ namespace KerbalKonstructs
         /// </summary>
         public void saveObjects()
         {
-            List<String> processedInstances = new List<string>(); 
+            List<String> processedInstances = new List<string>();
             List<StaticObject> allInstances = staticDB.getAllStatics();
             foreach (StaticObject instance in allInstances)
             {
                 // ignore allready processed cfg files
-                if  (processedInstances.Contains(instance.configPath) ) { continue;}
+                if (processedInstances.Contains(instance.configPath)) { continue; }
 
                 if (instance.configPath == instance.model.configPath)
                 {
                     saveModelConfig(instance.model);
                 }
-                else {
+                else
+                {
                     // find all instances with the same configPath. 
                     SaveInstanceByCfg(instance.configPath);
                 }
 
                 processedInstances.Add(instance.configPath);
+            }
+
+            // check for orqhaned files
+            foreach (StaticObject deletedInstance in deletedInstances)
+            {
+                if (!processedInstances.Contains(deletedInstance.configPath))
+                {
+                    if (deletedInstance.configPath == deletedInstance.model.configPath)
+                    {
+                        // keep the mode definition
+                        saveModelConfig(deletedInstance.model);
+                    }
+                    else
+                    {
+                        // remove the file
+                        File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + deletedInstance.configPath);
+                    }
+                }
+                processedInstances.Add(deletedInstance.configPath);
+
             }
         }
 
@@ -1636,6 +1658,9 @@ namespace KerbalKonstructs
                 snapTargetInstance = null;
 
             Log.Debug("deleteObject");
+
+            // check later when saving if this file is empty
+            deletedInstances.Add(obj);
 
             staticDB.deleteObject(obj);
         }
