@@ -77,11 +77,10 @@ namespace KerbalKonstructs.UI
             GetShipCenterCoords();
             PutAtShipRelativeCoords();
 
-            SetLayer(isOnMap ? MAP_LAYER : FLIGHT_LAYER);
+            SetLayer(FLIGHT_LAYER);
 
-            var mapChange = isOnMap != prevIsOnMap;
             var magnitudeChange = prevCamLookVec.magnitude != camLookVec.magnitude;
-            if (mapChange || magnitudeChange)
+            if (magnitudeChange)
             {
                 RenderPointCoords();
                 LabelPlacement();

@@ -20,6 +20,7 @@ namespace KerbalKonstructs.UI
 
         private CelestialBody body;
 
+        internal static FacilityEditor GUI_FacilityEditor = new FacilityEditor();
 
         public Boolean foldedIn = false;
         public Boolean doneFold = false;
@@ -52,7 +53,7 @@ namespace KerbalKonstructs.UI
         public Boolean enableColliders = false;
         public static Boolean editingSite = false;
 
-        public static Boolean editingFacility = false;
+     //   public static Boolean editingFacility = false;
 
         public Boolean creatingInstance = false;
         public Boolean showLocal = false;
@@ -68,23 +69,18 @@ namespace KerbalKonstructs.UI
         // GUI Windows
         Rect toolRect = new Rect(300, 35, 330, 680);
         Rect siteEditorRect = new Rect(400, 45, 360, 590);
-        Rect facilityEditorRect = new Rect(400, 45, 360, 370);
 
         #endregion
 
         #region GUI elements
         // GUI elements
         Vector2 descScroll;
-        Vector2 facilityscroll;
         GUIStyle listStyle = new GUIStyle();
         GUIStyle navStyle = new GUIStyle();
 
-        GUIStyle LabelGreen;
-        GUIStyle LabelWhite;
-
         GUIStyle DeadButton;
         GUIStyle DeadButtonRed;
-        GUIStyle KKWindow;
+        GUIStyle KKWindows;
         GUIStyle BoxNoBorder;
 
         SiteType siteType;
@@ -103,13 +99,13 @@ namespace KerbalKonstructs.UI
         public StaticObject selectedObjectPrevious = null;
         static LaunchSite lTargetSite = null;
 
-        public static String facType = "None";
-        public static String sGroup = "Ungrouped";
+        internal static String facType = "None";
+        internal static String sGroup = "Ungrouped";
         String increment = "0.1";
         String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
-        string infTrackingShort, infTrackingAngle, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax;
+
 
         Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
         Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
@@ -156,6 +152,8 @@ namespace KerbalKonstructs.UI
 
 
         private static float modelScale = 1f;
+
+        private bool guiInitialized = false;
 
         #endregion
 
@@ -216,6 +214,11 @@ namespace KerbalKonstructs.UI
         /// <param name="obj"></param>
         public void drawEditor(StaticObject obj)
         {
+            if (!guiInitialized)
+            {
+                InitializeLayout();
+                guiInitialized = true ;
+            }
             if (obj != null)
             {
                 if (selectedObject != obj)
@@ -226,8 +229,6 @@ namespace KerbalKonstructs.UI
                     SetupVectors();
                 }
 
-                KKWindow = new GUIStyle(GUI.skin.window);
-                KKWindow.padding = new RectOffset(8, 8, 3, 3);
 
                 if (foldedIn)
                 {
@@ -245,47 +246,21 @@ namespace KerbalKonstructs.UI
                     doneFold = false;
                 }
 
-                toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindow);
+                toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
 
                 if (editingSite)
                 {
-                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindow);
-                }
-
-                if (editingFacility)
-                {
-                    facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindow);
+                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindows);
                 }
             }
         }
 
         #endregion
 
-        #region Editors
-
-        #region Instance Editor
-
-        /// <summary>
-        /// Instance Editor window
-        /// </summary>
-        /// <param name="windowID"></param>
-        void InstanceEditorWindow(int windowID)
+        private void InitializeLayout()
         {
-            //initialize values
-            rotation = (double)(float)selectedObject.getSetting("RotationAngle");
-            referenceVector = (Vector3d)(Vector3)selectedObject.getSetting("RadialPosition");
-            orientation = (Vector3)selectedObject.getSetting("Orientation");
-            modelScale = (float)selectedObject.getSetting("ModelScale");
-
-            // make this new when converted to PQSCity2
-            // fill the variables here for later use
-            if (position == Vector3d.zero)
-            {
-                position = selectedObject.gameObject.transform.position;
-                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-            }
-
-            UpdateVectors();
+            KKWindows = new GUIStyle(GUI.skin.window);
+            KKWindows.padding = new RectOffset(8, 8, 3, 3);
 
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
@@ -314,8 +289,34 @@ namespace KerbalKonstructs.UI
             DeadButtonRed.focused.textColor = Color.red;
             DeadButtonRed.fontSize = 12;
             DeadButtonRed.fontStyle = FontStyle.Bold;
+        }
 
 
+        #region Editors
+
+        #region Instance Editor
+
+        /// <summary>
+        /// Instance Editor window
+        /// </summary>
+        /// <param name="windowID"></param>
+        void InstanceEditorWindow(int windowID)
+        {
+            //initialize values
+            rotation = (double)(float)selectedObject.getSetting("RotationAngle");
+            referenceVector = (Vector3d)(Vector3)selectedObject.getSetting("RadialPosition");
+            orientation = (Vector3)selectedObject.getSetting("Orientation");
+            modelScale = (float)selectedObject.getSetting("ModelScale");
+
+            // make this new when converted to PQSCity2
+            // fill the variables here for later use
+            if (position == Vector3d.zero)
+            {
+                position = selectedObject.gameObject.transform.position;
+                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+            }
+
+            UpdateVectors();
 
             string smessage = "";
 
@@ -600,7 +601,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
-                double.Parse(GUILayout.TextField(altitude.ToString(), 25, GUILayout.Width(fTempWidth)));
+                altitude = double.Parse(GUILayout.TextField(altitude.ToString(), 25, GUILayout.Width(fTempWidth)));
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
                     altitude -= double.Parse(increment);
@@ -899,30 +900,8 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
                 {
-                    infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
-                    infTrackingAngle = selectedObject.getSetting("TrackingAngle").ToString();
-
-                    infOpenCost = selectedObject.getSetting("OpenCost").ToString();
-                    if (infOpenCost == "0" || infOpenCost == "")
-                        infOpenCost = selectedObject.model.getSetting("cost").ToString();
-
-                    infStaffMax = selectedObject.getSetting("StaffMax").ToString();
-                    if (infStaffMax == "0" || infStaffMax == "")
-                        infStaffMax = selectedObject.model.getSetting("DefaultStaffMax").ToString();
-
-                    infProdRateMax = selectedObject.getSetting("ProductionRateMax").ToString();
-                    if (infProdRateMax == "0" || infProdRateMax == "")
-                        infProdRateMax = selectedObject.model.getSetting("DefaultProductionRateMax").ToString();
-
-                    infScienceMax = selectedObject.getSetting("ScienceOMax").ToString();
-                    if (infScienceMax == "0" || infScienceMax == "")
-                        infScienceMax = selectedObject.model.getSetting("DefaultScienceOMax").ToString();
-
-                    infFundsMax = selectedObject.getSetting("FundsOMax").ToString();
-                    if (infFundsMax == "0" || infFundsMax == "")
-                        infFundsMax = selectedObject.model.getSetting("DefaultFundsOMax").ToString();
-
-                    editingFacility = true;
+                    if (!GUI_FacilityEditor.IsOpen())
+                        GUI_FacilityEditor.Open() ;
                 }
             }
 
@@ -1092,6 +1071,7 @@ namespace KerbalKonstructs.UI
                     if (selectedObjectPrevious == selectedObject) selectedObjectPrevious = null;
                     KerbalKonstructs.instance.deleteObject(selectedObject);
                     selectedObject = null;
+                    return;
                 }
 
                 GUILayout.Space(15);
@@ -1115,378 +1095,12 @@ namespace KerbalKonstructs.UI
 
         #endregion
 
-        #region Facility Editor
-        /// <summary>
-        /// Facility Editor window
-        /// </summary>
-        /// <param name="id"></param>
-        void drawFacilityEditorWindow(int id)
-        {
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            LabelGreen = new GUIStyle(GUI.skin.label);
-            LabelGreen.normal.textColor = Color.green;
-            LabelGreen.fontSize = 13;
-            LabelGreen.fontStyle = FontStyle.Bold;
-            LabelGreen.padding.bottom = 1;
-            LabelGreen.padding.top = 1;
-
-            LabelWhite = new GUIStyle(GUI.skin.label);
-            LabelWhite.normal.textColor = Color.white;
-            LabelWhite.fontSize = 13;
-            LabelWhite.fontStyle = FontStyle.Normal;
-            LabelWhite.padding.bottom = 1;
-            LabelWhite.padding.top = 1;
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("Facility Editor", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-                {
-                    editingFacility = false;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            GUILayout.Box((string)selectedObject.model.getSetting("title"));
-            GUILayout.Space(1);
-
-            if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
-                bChangeFacilityType = true;
-
-            if (bChangeFacilityType)
-            {
-                facilityscroll = GUILayout.BeginScrollView(facilityscroll);
-                if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
-                    bChangeFacilityType = false;
-
-                if (GUILayout.Button("None", GUILayout.Height(23)))
-                {
-                    facType = "None";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Barracks", GUILayout.Height(23)))
-                {
-                    facType = "Barracks";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Business", GUILayout.Height(23)))
-                {
-                    facType = "Business";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Fuel Tanks", GUILayout.Height(23)))
-                {
-                    facType = "FuelTanks";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Hangar", GUILayout.Height(23)))
-                {
-                    facType = "Hangar";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Research", GUILayout.Height(23)))
-                {
-                    facType = "Research";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Tracking Station", GUILayout.Height(23)))
-                {
-                    facType = "TrackingStation";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("City Lights", GUILayout.Height(23)))
-                {
-                    facType = "CityLights";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
-                {
-                    facType = "LandingGuide";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
-                {
-                    facType = "TouchdownGuideR";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
-                {
-                    facType = "TouchdownGuideL";
-                    bChangeFacilityType = false;
-                }
-
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Open Cost: ", LabelGreen);
-            GUILayout.FlexibleSpace();
-            infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
-            GUILayout.Label("\\F", LabelWhite);
-            GUILayout.EndHorizontal();
-
-            if (facType == "TrackingStation")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Short Range: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("m", LabelWhite);
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Angle: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infTrackingAngle = GUILayout.TextField(infTrackingAngle, 3, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("°", LabelWhite);
-                GUILayout.EndHorizontal();
-            }
-
-            if (facType == "Barracks" || facType == "Research" || facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Staff: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
-
-            if (facType == "Research" || facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Production Rate: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-
-                GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
-            }
-
-            if (facType == "Research")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Science: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
-
-            if (facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Funds: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
-
-            GUILayout.FlexibleSpace();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save Facility", GUILayout.Width(115), GUILayout.Height(23)))
-            {
-                bool bInvalidText = false;
-
-                if (facType != "")
-                    selectedObject.setSetting("FacilityType", facType);
-
-                if (infTrackingShort != "" && infTrackingShort != "0")
-                {
-                    if (ValidateStringToDouble(infTrackingShort))
-                        selectedObject.setSetting("TrackingShort", float.Parse(infTrackingShort));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Short Range is invalid.");
-                        infTrackingShort = "0";
-                        bInvalidText = true;
-                    }
-                }
-                if (infTrackingAngle != "" && infTrackingAngle != "0")
-                {
-                    if (ValidateStringToDouble(infTrackingAngle, 360, 1))
-                        selectedObject.setSetting("TrackingAngle", float.Parse(infTrackingAngle));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Tracking Angle is invalid.");
-                        infTrackingAngle = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (infOpenCost != "" && infOpenCost != "0")
-                {
-                    if (ValidateStringToDouble(infOpenCost))
-                        selectedObject.setSetting("OpenCost", float.Parse(infOpenCost));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Open Cost is invalid.");
-                        infOpenCost = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (infStaffMax != "" && infStaffMax != "0")
-                {
-                    if (ValidateStringToDouble(infStaffMax))
-                        selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Staff Max is invalid.");
-                        infStaffMax = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (infProdRateMax != "" && infProdRateMax != "0")
-                {
-                    if (ValidateStringToDouble(infProdRateMax))
-                        selectedObject.setSetting("ProductionRateMax", float.Parse(infProdRateMax));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Production Rate is invalid.");
-                        infProdRateMax = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (infScienceMax != "" && infScienceMax != "0")
-                {
-                    if (ValidateStringToDouble(infScienceMax))
-                        selectedObject.setSetting("ScienceOMax", float.Parse(infScienceMax));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Max Science is invalid.");
-                        infScienceMax = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (infFundsMax != "" && infFundsMax != "0")
-                {
-                    if (ValidateStringToDouble(infFundsMax))
-                        selectedObject.setSetting("FundsOMax", float.Parse(infFundsMax));
-                    else
-                    {
-                        MiscUtils.HUDMessage("Max Funds is invalid.");
-                        infFundsMax = "0";
-                        bInvalidText = true;
-                    }
-                }
-
-                if (!bInvalidText)
-                {
-                    KerbalKonstructs.instance.saveObjects();
-                    editingFacility = false;
-                }
-            }
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
-            {
-                editingFacility = false;
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-        #endregion
-
-
-        /// <summary>
-        /// Parses a string to a double within a range
-        /// </summary>
-        /// <param name="sText"></param>
-        /// <param name="RangeMax"></param>
-        /// <param name="RangeMin"></param>
-        /// <returns></returns>
-        public static Boolean ValidateStringToDouble(string sText, double RangeMax = 0, double RangeMin = 0)
-        {
-            double parsedValue;
-            bool parsed = double.TryParse(sText, out parsedValue);
-
-            if (parsed)
-            {
-                if (RangeMax > 0)
-                {
-                    if (parsedValue > RangeMax) return false;
-                }
-
-                if (RangeMin > 0)
-                {
-                    if (parsedValue < RangeMin) return false;
-                }
-
-                return true;
-            }
-            else
-                return false;
-        }
-
         /// <summary>
         /// closes the sub editor windows
         /// </summary>
         public static void CloseEditors()
         {
-            editingFacility = false;
+            GUI_FacilityEditor.Close();
             editingSite = false;
         }
 
@@ -1760,7 +1374,7 @@ namespace KerbalKonstructs.UI
 
             obj.model = model;
             Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/NewInstances/");
-            obj.configPath= "KerbalKonstructs/NewInstances/" + model.name + "-clone.cfg";
+            obj.configPath= "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
             obj.configUrl = null;
 
             KerbalKonstructs.instance.staticDB.addStatic(obj);

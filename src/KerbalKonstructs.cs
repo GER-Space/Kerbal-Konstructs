@@ -264,6 +264,10 @@ namespace KerbalKonstructs
             KKAPI.addModelSetting("DefaultFacilityMassCapacity", new ConfigFloat());
             KKAPI.addModelSetting("DefaultFacilityCraftCapacity", new ConfigFloat());
 
+            KKAPI.addInstanceSetting("FacilityMassCapacity", new ConfigFloat());
+            KKAPI.addInstanceSetting("FacilityCraftCapacity", new ConfigFloat());
+
+
             ConfigGenericString instfacilityrole = new ConfigGenericString();
             instfacilityrole.setDefaultValue("None");
             KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
@@ -294,10 +298,13 @@ namespace KerbalKonstructs
 
             // Fueling
             KKAPI.addModelSetting("LqFMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("LqFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("LqFCurrent", new ConfigFloat());
             KKAPI.addModelSetting("OxFMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("OxFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("OxFCurrent", new ConfigFloat());
             KKAPI.addModelSetting("MoFMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("MoFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
 
             KKAPI.addInstanceSetting("LqFAlt", new ConfigGenericString());
@@ -306,6 +313,8 @@ namespace KerbalKonstructs
 
             KKAPI.addModelSetting("ECMax", new ConfigFloat());
             KKAPI.addModelSetting("ECRechargeRate", new ConfigFloat());
+            KKAPI.addInstanceSetting("ECMax", new ConfigFloat());
+            KKAPI.addInstanceSetting("ECRechargeRate", new ConfigFloat());
             KKAPI.addInstanceSetting("ECCurrent", new ConfigFloat());
 
             // Industry

@@ -66,11 +66,11 @@ namespace KerbalKonstructs.UI
             string sResource2 = "Oxidizer";
             string sResource3 = "Monopropellant";
 
-            fLqFMax = (float)selectedObject.model.getSetting("LqFMax");
+            fLqFMax = (selectedObject.settings.ContainsKey("LqFMax")) ? (float)selectedObject.getSetting("LqFMax") : (float)selectedObject.model.getSetting("LqFMax");
             fLqFCurrent = (float)selectedObject.getSetting("LqFCurrent");
-            fOxFMax = (float)selectedObject.model.getSetting("OxFMax");
+            fOxFMax = (selectedObject.settings.ContainsKey("OxFMax")) ? (float)selectedObject.getSetting("OxFMax") : (float)selectedObject.model.getSetting("OxFMax");
             fOxFCurrent = (float)selectedObject.getSetting("OxFCurrent");
-            fMoFMax = (float)selectedObject.model.getSetting("MoFMax");
+            fMoFMax = (selectedObject.settings.ContainsKey("MoFMax")) ? (float)selectedObject.getSetting("MoFMax") : (float)selectedObject.model.getSetting("MoFMax");
             fMoFCurrent = (float)selectedObject.getSetting("MoFCurrent");
 
             float fPurchaseRate = fTransferRate * 100f;
