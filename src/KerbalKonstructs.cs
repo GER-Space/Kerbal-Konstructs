@@ -1086,6 +1086,11 @@ namespace KerbalKonstructs
                     Log.UserError("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
                     continue;
                 }
+
+                CelestialBody body = (CelestialBody)obj.getSetting("CelestialBody");
+                if (body == null)
+                    continue;
+
                 // create RadialPosition, If we don't have one.
                 if (!obj.settings.ContainsKey("RadialPosition"))
                 {
@@ -1093,7 +1098,6 @@ namespace KerbalKonstructs
                     {
                         double lat = (double)obj.getSetting("RefLatitude");
                         double lon = (double)obj.getSetting("RefLongitude");
-                        CelestialBody body = (CelestialBody)obj.getSetting("CelestialBody");
                         Vector3 newPostion = body.GetRelSurfaceNVector(lat, lon) * body.Radius;
                         obj.setSetting("RadialPosition", newPostion);
                         Log.UserInfo("creating new Radialposition for: " + obj.gameObject.name);
@@ -1322,9 +1326,9 @@ namespace KerbalKonstructs
                         collider.convex = false;
                     }
                 }
+                staticDB.registerModel(model, modelName);
                 // most mods will not load without beeing loaded here
                 loadInstances(conf, model, false);
-                staticDB.registerModel(model, modelName);
             }
         }
 
