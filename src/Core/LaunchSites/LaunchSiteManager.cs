@@ -36,8 +36,8 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody Kerbin = KKAPI.getCelestialBody("HomeWorld");
-                var mods = Kerbin.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
+                CelestialBody body = KKAPI.getCelestialBody("HomeWorld");
+                var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d ;
 
                 foreach (var m in mods)
@@ -57,8 +57,8 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody Kerbin = KKAPI.getCelestialBody("HomeWorld");
-                var mods = Kerbin.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
+                CelestialBody body = KKAPI.getCelestialBody("HomeWorld");
+                var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d;
 
                 foreach (var m in mods)
