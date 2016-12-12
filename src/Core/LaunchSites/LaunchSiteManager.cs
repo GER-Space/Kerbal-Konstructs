@@ -11,33 +11,77 @@ using KSP.UI.Screens;
 
 namespace KerbalKonstructs.Core
 {
-	public class LaunchSiteManager
-	{
-		private static List<LaunchSite> launchSites = new List<LaunchSite>();
+    public class LaunchSiteManager
+    {
+        private static List<LaunchSite> launchSites = new List<LaunchSite>();
         private static string lastLaunchSite = "Runway";
-		public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
-		public static float RangeNearestOpenBase = 0f;
-		public static string NearestOpenBase = "";
-		public static float RangeNearestBase = 0f;
-		public static string NearestBase = "";
+        public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+        public static float RangeNearestOpenBase = 0f;
+        public static string NearestOpenBase = "";
+        public static float RangeNearestBase = 0f;
+        public static string NearestBase = "";
 
-		public static LaunchSite runway = new LaunchSite("Runway", "Squad", SiteType.SPH, 
-			GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false), null, 
-			"The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.", 
-			"Runway", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), 285.37f, -0.09f, 69, 2500f, 75f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
-		public static LaunchSite launchpad = new LaunchSite("LaunchPad", "Squad", SiteType.VAB, 
-			GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false), null, 
-			"The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...", 
-			"RocketPad", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), 285.37f, -0.09f, 72, 20f, 20f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
+        public static LaunchSite runway = new LaunchSite("Runway", "Squad", SiteType.SPH,
+            GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false), null,
+            "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.",
+            "Runway", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), getKSCLon, getKSCLat, 69, 2500f, 75f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
+        public static LaunchSite launchpad = new LaunchSite("LaunchPad", "Squad", SiteType.VAB,
+            GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false), null,
+            "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...",
+            "RocketPad", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), getKSCLon, getKSCLat, 72, 20f, 20f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
 
-		static LaunchSiteManager()
-		{
-            if (KKAPI.getCelestialBody("Kerbin") != null) // only add this if we have a planet named Kerbin
+
+
+        private static float getKSCLon
+        {
+            get
             {
-                launchSites.Add(runway);
-                launchSites.Add(launchpad);
+                CelestialBody Kerbin = KKAPI.getCelestialBody("HomeWorld");
+                var mods = Kerbin.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
+                double retval = 0d ;
+
+                foreach (var m in mods)
+                {
+                    PQSCity mod = m as PQSCity;
+                    if (mod.name == "KSC")
+                    {
+                        retval = (NavUtils.GetLongitude(mod.repositionRadial) * KKMath.rad2deg);
+                        break;
+                    }
+                }
+                return (float)((360 + retval) % 360);
             }
-		}
+        }
+
+        private static float getKSCLat
+        {
+            get
+            {
+                CelestialBody Kerbin = KKAPI.getCelestialBody("HomeWorld");
+                var mods = Kerbin.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
+                double retval = 0d;
+
+                foreach (var m in mods)
+                {
+                    PQSCity mod = m as PQSCity;
+                    if (mod.name == "KSC")
+                    {
+                        retval = (NavUtils.GetLatitude(mod.repositionRadial) * KKMath.rad2deg);
+                        break;
+                    }
+                }
+                return (float)retval;
+            }
+        }
+
+        static LaunchSiteManager()
+        {
+            launchSites.Add(runway);
+            launchSites.Add(launchpad);
+        }
+
+
+
 
         /// <summary>
         /// Add a launchsite to the KK launchsite and custom space centre database
