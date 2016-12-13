@@ -142,7 +142,9 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean DevMode = false;
         [KSPField]
-        public Boolean enableRTsupport = false;
+        public Boolean enableRT = true;
+        [KSPField]
+        public Boolean enableCommNet = true;
         #endregion
 
         private List<StaticObject> deletedInstances = new List<StaticObject>();

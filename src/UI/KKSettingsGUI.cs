@@ -401,7 +401,52 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
-			GUILayout.Space(3);
+            GUILayout.Label("CommNet Support", LabelInfo);
+            GUILayout.BeginHorizontal();
+            if (!KerbalKonstructs.instance.enableCommNet)
+            {
+                if (GUILayout.Button("Enable CommNet groundstations", GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.enableCommNet = true;
+                }
+
+                GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+            }
+            else
+            {
+                if (GUILayout.Button("Disable CommNet groundstations", GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.enableCommNet = false;
+                }
+
+                GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.Label("RemoteTech Support", LabelInfo);
+            GUILayout.BeginHorizontal();
+            if (!KerbalKonstructs.instance.enableRT)
+            {
+                if (GUILayout.Button("Enable RemoteTech groundstations", GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.enableRT = true;
+                }
+
+                GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+            }
+            else
+            {
+                if (GUILayout.Button("Disable RemoteTech groundstations", GUILayout.Height(23)))
+                {
+                    KerbalKonstructs.instance.enableRT = false;
+                }
+
+                GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+            }
+            GUILayout.EndHorizontal();
+
+
+            GUILayout.Space(3);
 			GUILayout.Box("Tracking/Map View Settngs");
 			GUILayout.Label("Never show the icons of closed launchsites?", LabelInfo);
 			GUILayout.BeginHorizontal();
