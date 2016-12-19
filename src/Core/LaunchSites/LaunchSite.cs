@@ -6,7 +6,6 @@ namespace KerbalKonstructs.Core
 {
 	public class LaunchSite
 	{
-		[PersistentKey]
 		public string name;
 
 		public string author;
@@ -19,16 +18,9 @@ namespace KerbalKonstructs.Core
 		public float opencost;
 		public float closevalue;
 
-		[PersistentField]
 		public string openclosestate;
-
-		[PersistentField]
 		public string favouritesite;
-
-		[PersistentField]
 		public float missioncount;
-
-		[PersistentField]
 		public string missionlog;
 
 		public float reflon;

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using KerbalKonstructs.API;
 using UnityEngine;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -54,7 +55,6 @@ namespace KerbalKonstructs.UI
 		public float iFundsClose = 0;
 		public float rangekm = 0;
 
-		bool loadedPersistence = false;
 
 		public Boolean isOpen = false;
 		public Boolean isFavourite = false;
@@ -181,11 +181,6 @@ namespace KerbalKonstructs.UI
 			SmallButton.hover.background = null;
 			SmallButton.fontSize = 12;
 
-			if (!loadedPersistence && MiscUtils.isCareerGame())
-			{
-				PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-				loadedPersistence = true;
-			}
 
 			string sButtonName = "";
 			sButtonName = selectedSite.name;
@@ -211,7 +206,6 @@ namespace KerbalKonstructs.UI
 					{
 						InputLockManager.RemoveControlLock("KKEditorLock");
 						selectedSite = null;
-						loadedPersistence = false;
                         this.Close();
                         return;
                     }
@@ -292,9 +286,6 @@ namespace KerbalKonstructs.UI
 						selectedSite.favouritesite = "No";							
 					else
 						selectedSite.favouritesite = "Yes";
-
-					List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 				}
 
 				if (foldedIn) tFolded = tFoldOut;
@@ -424,7 +415,6 @@ namespace KerbalKonstructs.UI
 							{
 								selectedSite.openclosestate = "Open";
 								Funding.Instance.AddFunds(-iFundsOpen, TransactionReasons.Cheating);
-								PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 							}
 						}
 					}
@@ -438,8 +428,6 @@ namespace KerbalKonstructs.UI
 					{
 						Funding.Instance.AddFunds(iFundsClose, TransactionReasons.Cheating);
 						selectedSite.openclosestate = "Closed";
-
-						PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 					}
 				}
 				GUI.enabled = true;

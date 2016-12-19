@@ -262,7 +262,6 @@ namespace KerbalKonstructs.Core
 				if (site.name == sSiteName)
 				{
 					site.openclosestate = sState;
-					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 					return;
 				}
 			}
@@ -277,7 +276,6 @@ namespace KerbalKonstructs.Core
 				if (site.name == sSiteName)
 				{
 					site.openclosestate = site.openclosestate + "Locked";
-					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 					return;
 				}
 			}
@@ -295,8 +293,6 @@ namespace KerbalKonstructs.Core
 						site.openclosestate = "Open";
 					else
 						site.openclosestate = "Closed";
-					
-					PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 					return;
 				}
 			}

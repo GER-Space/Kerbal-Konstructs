@@ -12,12 +12,9 @@ namespace KerbalKonstructs.Core
 {
 	public class StaticObject
 	{
-		[PersistentKey]
 		public Vector3 RadialPosition;
 
-		[PersistentField]
 		public CelestialBody body;
-		[PersistentField]
 		public float StaffCurrent;
 
 		public GameObject gameObject;

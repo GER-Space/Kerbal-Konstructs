@@ -82,7 +82,6 @@ namespace KerbalKonstructs.UI
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Cheating);
 
 								// Save new state to persistence
-								PersistenceUtils.saveStaticPersistence(selectedFacility);
 								soStoredEventObject = selectedFacility;
 								if (evFacilityOpened != null)
 									evFacilityOpened(selectedFacility);
@@ -110,9 +109,6 @@ namespace KerbalKonstructs.UI
 							// Pay back some funds
 							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Cheating);
 							selectedFacility.setSetting("OpenCloseState", "Closed");
-
-							// Save new state to persistence
-							PersistenceUtils.saveStaticPersistence(selectedFacility);
 
 							soStoredEventObject = selectedFacility;
 							if (evFacilityClosed != null)

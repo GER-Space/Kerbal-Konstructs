@@ -135,7 +135,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Order", GUILayout.Height(18)))
                 {
                     LockFuelTank();
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedLqF = true;
                 }
                 GUI.enabled = !bLqFIn;
@@ -143,21 +142,18 @@ namespace KerbalKonstructs.UI
                 {
                     bLqFIn = true;
                     bLqFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = !bLqFOut;
                 if (GUILayout.Button("Out", GUILayout.Height(18)))
                 {
                     bLqFOut = true;
                     bLqFIn = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = bLqFIn || bLqFOut;
                 if (GUILayout.Button("Stop", GUILayout.Height(18)))
                 {
                     bLqFIn = false;
                     bLqFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer stopped";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -186,7 +182,6 @@ namespace KerbalKonstructs.UI
                 {
                     fLqFAmount = (fLqFMax - fLqFCurrent).ToString();
                     if ((float.Parse(fLqFAmount)) < 0f) fLqFAmount = "0.00";
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
 
                 float flqFPrice = 0.5f;
@@ -222,11 +217,9 @@ namespace KerbalKonstructs.UI
                         }
                     }
 
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 if (GUILayout.Button("Done", GUILayout.Height(18)))
                 {
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedLqF = false;
                 }
                 GUILayout.EndHorizontal();
@@ -251,7 +244,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Order", GUILayout.Height(18)))
                 {
                     LockFuelTank();
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedOxF = true;
                 }
                 GUI.enabled = !bOxFIn;
@@ -259,21 +251,18 @@ namespace KerbalKonstructs.UI
                 {
                     bOxFIn = true;
                     bOxFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = !bOxFOut;
                 if (GUILayout.Button("Out", GUILayout.Height(18)))
                 {
                     bOxFOut = true;
                     bOxFIn = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = bOxFIn || bOxFOut;
                 if (GUILayout.Button("Stop", GUILayout.Height(18)))
                 {
                     bOxFIn = false;
                     bOxFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer stopped";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -302,7 +291,6 @@ namespace KerbalKonstructs.UI
                 {
                     fOxFAmount = (fOxFMax - fOxFCurrent).ToString();
                     if ((float.Parse(fOxFAmount)) < 0f) fOxFAmount = "0.00";
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
 
                 float fOxFPrice = 1.5f;
@@ -338,11 +326,9 @@ namespace KerbalKonstructs.UI
                         }
                     }
 
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 if (GUILayout.Button("Done", GUILayout.Height(18)))
                 {
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedOxF = false;
                 }
                 GUILayout.EndHorizontal();
@@ -367,7 +353,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Order", GUILayout.Height(18)))
                 {
                     LockFuelTank();
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedMoF = true;
                 }
                 GUI.enabled = !bMoFIn;
@@ -375,21 +360,18 @@ namespace KerbalKonstructs.UI
                 {
                     bMoFIn = true;
                     bMoFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = !bMoFOut;
                 if (GUILayout.Button("Out", GUILayout.Height(18)))
                 {
                     bMoFOut = true;
                     bMoFIn = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 GUI.enabled = bMoFIn || bMoFOut;
                 if (GUILayout.Button("Stop", GUILayout.Height(18)))
                 {
                     bMoFIn = false;
                     bMoFOut = false;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer stopped";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -418,7 +400,6 @@ namespace KerbalKonstructs.UI
                 {
                     fMoFAmount = (fMoFMax - fMoFCurrent).ToString();
                     if ((float.Parse(fMoFAmount)) < 0f) fMoFAmount = "0.00";
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
 
                 float fMoFPrice = 1.2f;
@@ -454,11 +435,9 @@ namespace KerbalKonstructs.UI
                         }
                     }
 
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                 }
                 if (GUILayout.Button("Done", GUILayout.Height(18)))
                 {
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     bOrderedMoF = false;
                 }
                 GUILayout.EndHorizontal();
@@ -474,7 +453,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("x1", GUILayout.Height(18)))
                 {
                     fTransferRate = 0.01f;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer rate set to x1";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -482,7 +460,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("x4", GUILayout.Height(18)))
                 {
                     fTransferRate = 0.04f;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer rate set to x4";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -490,7 +467,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("x10", GUILayout.Height(18)))
                 {
                     fTransferRate = 0.1f;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer rate set to x10";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -498,7 +474,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("x25", GUILayout.Height(18)))
                 {
                     fTransferRate = 0.25f;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer rate set to x25";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -506,7 +481,6 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("x100", GUILayout.Height(18)))
                 {
                     fTransferRate = 1.0f;
-                    PersistenceUtils.saveStaticPersistence(selectedObject);
                     smessage = "Fuel transfer rate set to x100";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -545,7 +519,6 @@ namespace KerbalKonstructs.UI
                                 {
                                     SelectedResource = rResource;
                                     SelectedTank = fTank;
-                                    PersistenceUtils.saveStaticPersistence(selectedObject);
                                 }
 
                                 GUI.enabled = PartSelected;
@@ -553,7 +526,6 @@ namespace KerbalKonstructs.UI
                                 {
                                     SelectedResource = null;
                                     SelectedTank = null;
-                                    PersistenceUtils.saveStaticPersistence(selectedObject);
                                 }
                                 GUI.enabled = true;
                                 GUILayout.EndHorizontal();

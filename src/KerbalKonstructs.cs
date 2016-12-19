@@ -15,6 +15,7 @@ using KerbalKonstructs.API.Config;
 using KSP.UI.Screens;
 using Upgradeables;
 using KerbalKonstructs.Addons;
+using KerbalKonstructs.Modules;
 
 using Debug = UnityEngine.Debug;
 
@@ -43,7 +44,6 @@ namespace KerbalKonstructs
         public Double VesselCost = 0;
         public Double RefundAmount = 0;
 
-        string savedObjectPath = "";
         public string lastRecoveryBase = "";
         public float lastRecoveryDistance = 0f;
         public float fRecovFactor = 0f;
@@ -56,7 +56,6 @@ namespace KerbalKonstructs
 
         #region Switches
         private Boolean atMainMenu = false;
-        public Boolean InitialisedFacilities = false;
         public Boolean VesselLaunched = false;
         public Boolean bImportedCustom = false;
         public Boolean bStylesSet = false;
@@ -68,7 +67,6 @@ namespace KerbalKonstructs
         internal static EditorGUI GUI_Editor = new EditorGUI();
         internal static StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
         internal static NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
-        internal static DownlinkGUI GUI_Downlink = new DownlinkGUI();
         internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();
         internal static FacilityManager GUI_FacilityManager = new FacilityManager();
         internal static LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
@@ -160,18 +158,15 @@ namespace KerbalKonstructs
             GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
             GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
             GameEvents.OnVesselRecoveryRequested.Add(OnVesselRecoveryRequested);
-            GameEvents.OnFundsChanged.Add(OnDoshChanged);
             GameEvents.onVesselRecovered.Add(OnVesselRecovered);
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecovery);
-            GameEvents.onGameStateSave.Add(SaveState);
-            GameEvents.onGameStateLoad.Add(LoadState);
-            GameEvents.OnKSCFacilityUpgraded.Add(OnKSCFacilityUpgraded);
-            GameEvents.OnKSCFacilityUpgrading.Add(OnKSCFacilityUpgrading);
-            GameEvents.OnUpgradeableObjLevelChange.Add(OnUpgradeableObjLevelChange);
             GameEvents.OnVesselRollout.Add(OnVesselLaunched);
             // draw map icons when needed
             GameEvents.OnMapEntered.Add(GUI_MapIcons.Open);
             GameEvents.OnMapExited.Add(GUI_MapIcons.Close);
+            //process save game loading
+            GameEvents.onGameStateSave.Add(SaveState);
+            GameEvents.onGameStateLoad.Add(LoadState);
             #endregion
 
             #region Other Mods Hooks
@@ -417,28 +412,11 @@ namespace KerbalKonstructs
 
         #region Game Events
 
-        public void LoadState(ConfigNode configNode)
-        {
-            if (HighLogic.LoadedScene == GameScenes.MAINMENU)
-            { }
-            else
-            {
-                Log.Debug("LoadState");
-                PersistenceUtils.loadPersistenceBackup();
-            }
-        }
 
-        public void SaveState(ConfigNode configNode)
-        {
-            if (HighLogic.LoadedScene == GameScenes.MAINMENU)
-            { }
-            else
-            {
-                PersistenceUtils.savePersistenceBackup();
-                Log.Debug("SaveState");
-            }
-        }
-
+        /// <summary>
+        /// Updates the mission log and processes the launch refund.
+        /// </summary>
+        /// <param name="vVessel"></param>
         void OnVesselLaunched(ShipConstruct vVessel)
         {
             Log.Normal("OnVesselLaunched");
@@ -449,7 +427,6 @@ namespace KerbalKonstructs
             else
             {
                 Log.Normal("OnVesselLaunched is Career");
-                PersistenceUtils.savePersistenceBackup();
                 string sitename = LaunchSiteManager.getCurrentLaunchSite();
                 if (sitename == "Runway") return;
                 if (sitename == "LaunchPad") return;
@@ -474,9 +451,6 @@ namespace KerbalKonstructs
                 string sWeight = vVessel.GetTotalMass().ToString();
                 string sLogEntry = lsSite.missionlog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
                 lsSite.missionlog = sLogEntry;
-
-                List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-                PersistenceFile<LaunchSite>.SaveList(sites, "LAUNCHSITES", "KK");
 
                 VesselLaunched = true;
 
@@ -505,6 +479,27 @@ namespace KerbalKonstructs
             }
         }
 
+
+        public void LoadState(ConfigNode node)
+        {
+            Log.Normal("Load State");
+            if (CareerUtils.isCarrerGame)
+            {
+                Log.Normal("Load openclose states for career game");
+                Log.PerfStart("Load Fac");
+                CareerState.Load();
+                Log.PerfStop("Load Fac");
+            }
+            RemoteNet.LoadAntennas();
+        }
+
+        public void SaveState(ConfigNode configNode)
+        {
+            Log.Normal("Save State");
+            CareerState.Save();
+        }
+
+
         void onLevelWasLoaded(GameScenes data)
         {
             bool bTreatBodyAsNullForStatics = true;
@@ -518,11 +513,6 @@ namespace KerbalKonstructs
                 camControl.active = false;
             }
 
-            if (!data.Equals(GameScenes.FLIGHT))
-            {
-                DownlinkGUI.DisAudio.Stop();
-            }
-
             if (data.Equals(GameScenes.FLIGHT))
             {
                 bTreatBodyAsNullForStatics = false;
@@ -530,7 +520,6 @@ namespace KerbalKonstructs
                 InputLockManager.RemoveControlLock("KKEditorLock");
                 InputLockManager.RemoveControlLock("KKEditorLock2");
 
-                PersistenceUtils.savePersistenceBackup();
 
                 if (FlightGlobals.ActiveVessel != null)
                 {
@@ -559,18 +548,13 @@ namespace KerbalKonstructs
                 // Tighter control over what statics are active
                 bTreatBodyAsNullForStatics = false;
                 currentBody = KKAPI.getCelestialBody("HomeWorld");
-                Log.Debug("Homeworld is " + currentBody.name);
+                Log.Normal("Homeworld is " + currentBody.name);
                 //staticDB.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
                 //staticDB.onBodyChanged(null);
                 staticDB.ToggleActiveStaticsInGroup("KSCUpgrades", true);
                 staticDB.ToggleActiveStaticsInGroup("KSCRace", true);
                 // *********
 
-                if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
-                {
-                    Log.Debug("Load launchsite openclose states for career game");
-                    PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-                }
             }
 
             if (data.Equals(GameScenes.MAINMENU))
@@ -584,7 +568,6 @@ namespace KerbalKonstructs
                 atMainMenu = true;
                 bTreatBodyAsNullForStatics = false;
                 iMenuCount = iMenuCount + 1;
-                InitialisedFacilities = false;
             }
 
             if (data.Equals(GameScenes.EDITOR))
@@ -628,22 +611,6 @@ namespace KerbalKonstructs
             updateCache();
         }
 
-        void OnKSCFacilityUpgraded(Upgradeables.UpgradeableFacility Facility, int iLevel)
-        {
-        }
-
-        void OnKSCFacilityUpgrading(Upgradeables.UpgradeableFacility Facility, int iLevel)
-        {
-        }
-
-        void OnUpgradeableObjLevelChange(Upgradeables.UpgradeableObject uObject, int iLevel)
-        {
-        }
-
-        void OnDoshChanged(double amount, TransactionReasons reason)
-        {
-            //PersistenceUtils.savePersistenceBackup();
-        }
 
         void OnProcessRecovery(ProtoVessel vessel, MissionRecoveryDialog dialog, float fFloat)
         {
@@ -656,7 +623,6 @@ namespace KerbalKonstructs
                     if (dialog == null) return;
                     Log.Normal("OnProcessRecovery");
                     dRecoveryValue = dialog.fundsEarned;
-                    PersistenceUtils.savePersistenceBackup();
                 }
             }
         }
@@ -773,63 +739,6 @@ namespace KerbalKonstructs
 
         void LateUpdate()
         {
-            if (HighLogic.LoadedScene == (GameScenes)5 && (!InitialisedFacilities))
-            {
-                string saveConfigPath = string.Format("{0}saves/{1}/persistent.sfs", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
-                if (File.Exists(saveConfigPath))
-                {
-                    Log.Debug("Found persistent.sfs");
-                    ConfigNode rootNode = ConfigNode.Load(saveConfigPath);
-                    ConfigNode rootrootNode = rootNode.GetNode("GAME");
-                    foreach (ConfigNode ins in rootrootNode.GetNodes())
-                    {
-                        // Debug.Log("KK: ConfigNode is " + ins);
-                        if (ins.GetValue("name") == "ScenarioUpgradeableFacilities")
-                        {
-                            Log.Debug("Found ScenarioUpgradeableFacilities in persistent.sfs");
-
-                            foreach (var s in new List<string> {
-                            "SpaceCenter/LaunchPad",
-                            "SpaceCenter/Runway",
-                            "SpaceCenter/VehicleAssemblyBuilding",
-                            "SpaceCenter/SpaceplaneHangar",
-                            "SpaceCenter/TrackingStation",
-                            "SpaceCenter/AstronautComplex",
-                            "SpaceCenter/MissionControl",
-                            "SpaceCenter/ResearchAndDevelopment",
-                            "SpaceCenter/Administration",
-                            "SpaceCenter/FlagPole" })
-                            {
-                                ConfigNode n = ins.GetNode(s);
-                                if (n == null)
-                                {
-                                    Log.Normal("Could not find " + s + " node. Creating node.");
-                                    n = ins.AddNode(s);
-                                    n.AddValue("lvl", 0);
-                                    rootNode.Save(saveConfigPath);
-                                    InitialisedFacilities = true;
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-                    if (InitialisedFacilities)
-                    {
-                        rootNode.Save(saveConfigPath);
-                        foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
-                        {
-                            facility.SetLevel(0);
-                        }
-                    }
-
-                    Log.Normal("loadCareerObjects");
-                    loadCareerObjects();
-                    InitialisedFacilities = true;
-                }
-            }
-
-
             GUI_Editor.CheckEditorKeys();
 
             if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
@@ -880,7 +789,6 @@ namespace KerbalKonstructs
 
                 if (sFacType == "Hangar")
                 {
-                    PersistenceUtils.loadStaticPersistence(obj);
                     string sInStorage = (string)obj.getSetting("InStorage");
                     string sInStorage2 = (string)obj.getSetting("TargetID");
                     string sInStorage3 = (string)obj.getSetting("TargetType");
@@ -909,7 +817,6 @@ namespace KerbalKonstructs
                             // Craft no longer exists. Clear this hangar space.
                             Log.Debug("Craft InStorage no longer exists. Emptying this hangar space.");
                             obj.setSetting("InStorage", "None");
-                            PersistenceUtils.saveStaticPersistence(obj);
                         }
                     }
 
@@ -933,7 +840,6 @@ namespace KerbalKonstructs
                             // Craft no longer exists. Clear this hangar space.
                             Log.Debug("Craft TargetID no longer exists. Emptying this hangar space.");
                             obj.setSetting("TargetID", "None");
-                            PersistenceUtils.saveStaticPersistence(obj);
                         }
                     }
 
@@ -958,7 +864,6 @@ namespace KerbalKonstructs
                             Log.Debug("Craft TargetType no longer exists. Emptying this hangar space.");
 
                             obj.setSetting("TargetType", "None");
-                            PersistenceUtils.saveStaticPersistence(obj);
                         }
                     }
 
@@ -990,7 +895,6 @@ namespace KerbalKonstructs
                                     // Empty the hangar
                                     Log.Debug("Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
                                     obj.setSetting(sHangarSpace, "None");
-                                    PersistenceUtils.saveStaticPersistence(obj);
                                 }
                                 else
                                 {
@@ -1203,34 +1107,9 @@ namespace KerbalKonstructs
 
                 if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
                     LaunchSiteManager.createLaunchSite(obj);
+
             }
 
-        }
-
-        public void loadCareerObjects()
-        {
-            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
-
-            foreach (UrlDir.UrlConfig conf in configs)
-            {
-                StaticModel model = new StaticModel();
-                model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-                model.config = conf.url;
-                model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
-                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
-
-                string sConfigName = (Path.GetFileName(conf.url)) + ".cfg";
-
-                savedObjectPath = string.Format("{0}saves/{1}/{2}", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder, sConfigName);
-
-                if (!File.Exists(savedObjectPath))
-                    continue;
-
-                ConfigNode CareerConfig = ConfigNode.Load(savedObjectPath);
-                ConfigNode CareerConfigRoot = CareerConfig.GetNode("STATIC");
-
-                // loadInstances(CareerConfigRoot, model, true);
-            }
         }
 
 
