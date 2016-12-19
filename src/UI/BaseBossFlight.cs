@@ -176,21 +176,6 @@ namespace KerbalKonstructs.UI
                     KerbalKonstructs.GUI_NGS.Toggle();
 				}
 
-				GUILayout.FlexibleSpace();
-				GUILayout.Label("Downlink ", LabelInfo);
-
-				if (KerbalKonstructs.GUI_Downlink.IsOpen())
-                {
-                    tToggle2 = tIconOpen;
-                } else {
-                    tToggle2 = tIconClosed;
-                }
-
-				if (GUILayout.Button(tToggle2, GUILayout.Height(18), GUILayout.Width(18)))
-				{
-                    KerbalKonstructs.GUI_Downlink.Toggle();
-                }
-
 
 				GUILayout.Space(2);
 			}
@@ -387,21 +372,6 @@ namespace KerbalKonstructs.UI
 						bShowFacilities = false;
 					else
 					{
-						foreach (StaticObject soStaticobj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-						{
-							if  (String.IsNullOrEmpty((string)soStaticobj.getSetting("FacilityType")) || String.Equals(((string)soStaticobj.getSetting("FacilityType")) ,"None", StringComparison.CurrentCultureIgnoreCase) ) continue;
-
-							if (soStaticobj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
-							{
-								var dist2 = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, soStaticobj.gameObject.transform.position);
-								if (dist2 > 5000f) continue;
-							}
-							else
-								continue;
-
-							PersistenceUtils.loadStaticPersistence(soStaticobj);
-						}
-
 						bShowFacilities = true;
 					}
 				}
@@ -443,8 +413,7 @@ namespace KerbalKonstructs.UI
 								{
 									selectedObject = obj;
 									KerbalKonstructs.instance.selectObject(obj, false, true, false);
-									PersistenceUtils.loadStaticPersistence(obj);
-									FacilityManager.setSelectedFacility(obj);
+									FacilityManager.selectedFacility = obj;
                                     KerbalKonstructs.GUI_FacilityManager.Open();
                                 }
 
