@@ -9,10 +9,29 @@ using CommNet;
 
 namespace KerbalKonstructs.Modules
 {
+
     internal class RemoteNet
     {
-        internal static void LoadAntennas()
+        static List<StaticObject> openCNStations = new List<StaticObject>();
+        static Dictionary<StaticObject,Guid> openRTStations = new Dictionary<StaticObject, Guid>();
+
+        /// <summary>
+        /// iterates through all potential open TrackingStations and attaches GroundStations
+        /// </summary>
+        internal static void LoadGroundStations()
         {
+            // first we close any postential open Groundstations.
+
+            CommNetHome[] homes = UnityEngine.Object.FindObjectsOfType<CommNetHome>();
+            for (int i = 0; i < homes.Length; i++)
+            {
+                Log.Normal("Found ComNet: " + homes[i].nodeName +" " + homes[i].isKSC);
+                if (homes[i].isKSC == true)
+                    continue;
+                UnityEngine.Object.Destroy(homes[i]);
+            }
+
+
             foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics())
             {
 
@@ -28,58 +47,64 @@ namespace KerbalKonstructs.Modules
 
                 if (CareerUtils.isSandboxGame || CareerUtils.FacilityIsOpen(instance))
                 {
-                    AttachAntennas(instance);
+                    AttachGroundStation(instance);
                 }
             }
         }
 
-
-        internal static void AttachAntennas(StaticObject instance)
+        /// <summary>
+        /// Attaches A CommNet or RemoteTech Groundstation to a Static Object instance
+        /// </summary>
+        /// <param name="instance"></param>
+        internal static void AttachGroundStation(StaticObject instance)
         {
-            float antennaPower = (float)instance.getSetting("TrackingShort") * 1000;
-            if (antennaPower == 0f || (string)instance.getSetting("Group") == "KSCUpgrades" )
+            float antennaPower = (float)instance.getSetting("TrackingShort") * 10;
+            if (antennaPower == 0f || (string)instance.getSetting("Group") == "KSCUpgrades")
             {
                 return;
             }
 
-            Log.Normal("Adding Antenna: " + (antennaPower/1000).ToString() + "km");
+            // add CommNet Groundstations
             if (KerbalKonstructs.instance.enableCommNet)
             {
-                if (instance.gameObject.GetComponent<CommNetNode>() == null)
+                Log.Normal("Adding Groundstation: " + (string)instance.getSetting("Group") );
+                if (openCNStations.Contains(instance) == false)
                 {
-                    var commNetAntenna = instance.gameObject.AddComponent<CommNetHome>();
-               //     CommNode node = new CommNode();
+                    CommNetHome commNetGroudStation = instance.gameObject.AddComponent<CommNetHome>();
 
-               //     node.antennaTransmit = new CommNode.AntennaInfo();
-               //     node.antennaTransmit.power = (double)antennaPower;
-
-               //     node.isHome = true;
-
-                //    commNetAntenna.Comm = node;
-                    commNetAntenna.enabled = true;
-
-                } else
-                {
-                    var commNetAntenna = instance.gameObject.GetComponent<CommNetNode>();
-                    commNetAntenna.enabled = true;
+                    commNetGroudStation.nodeName = instance.body.name + " " + (string)instance.getSetting("Group");
+                    //commNetGroudStation.enabled = true;
+                    openCNStations.Add(instance);
+                    CommNet.CommNetNetwork.Reset();
                 }
-            } 
-
+                else
+                {
+                }
+            }
+            // Add RemoteTech Groundstation
             if (KerbalKonstructs.instance.enableRT)
             {
 
             }
         }
 
-
-        internal static void CloseAntenna(StaticObject instance)
+        /// <summary>
+        /// Removes all GroundStations from an Static Object.
+        /// </summary>
+        /// <param name="instance"></param>
+        internal static void DetachGroundStation(StaticObject instance)
         {
             if (KerbalKonstructs.instance.enableCommNet)
             {
-                Log.Normal("Closing Antenna");
-                var commNetAntenna = instance.gameObject.GetComponent<CommNetNode>();
-                commNetAntenna.enabled = false;
+                if (openCNStations.Contains(instance))
+                {
+                    Log.Normal("Closing Antenna for " + (string)instance.getSetting("Group"));
+                    CommNetHome commNetGroundStation = instance.gameObject.GetComponent<CommNetHome>();
+                    //commNetGroundStation.enabled = false;
+                    UnityEngine.Object.Destroy(commNetGroundStation);
+                    openCNStations.Remove(instance);
 
+                }
             }
 
             if (KerbalKonstructs.instance.enableRT)
@@ -87,8 +112,6 @@ namespace KerbalKonstructs.Modules
 
             }
         }
-
-
 
 
     }
