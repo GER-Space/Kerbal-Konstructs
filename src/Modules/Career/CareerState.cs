@@ -42,30 +42,28 @@ namespace KerbalKonstructs.Modules
 
             foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
             {
-                if (scenarioNode.GetValue("Name") == "KKStatics")
-                {
-                    foreach (ConfigNode facNode in scenarioNode.GetNodes("KKStatic"))
-                    {
-                        Dictionary<string, string> config = new Dictionary<string, string>();
-                        position = CareerUtils.KeyFromString(facNode.GetValue("RadialPosition"));
-                        facType = facNode.GetValue("FacilityType");
-                        if (parsedConfig.ContainsKey(position))
-                        {
-                            Log.UserError("duplicate posistion key found in file: " + position);
-                            continue;
-                        }
-                        foreach (string key in CareerUtils.ParametersForFacility(facType) )
-                        {
-                            if (facNode.HasValue(key))
-                            {
-                                config.Add(key, facNode.GetValue(key));
-                            }
-                        }
-                        parsedConfig.Add(position, config);
 
+                foreach (ConfigNode facNode in scenarioNode.GetNodes("KKStatic"))
+                {
+                    Dictionary<string, string> config = new Dictionary<string, string>();
+                    position = CareerUtils.KeyFromString(facNode.GetValue("RadialPosition"));
+                    facType = facNode.GetValue("FacilityType");
+                    if (parsedConfig.ContainsKey(position))
+                    {
+                        Log.UserError("duplicate posistion key found in file: " + position);
+                        continue;
                     }
+                    foreach (string key in CareerUtils.ParametersForFacility(facType))
+                    {
+                        if (facNode.HasValue(key))
+                        {
+                            config.Add(key, facNode.GetValue(key));
+                        }
+                    }
+                    parsedConfig.Add(position, config);
+
                 }
-                else { Log.Normal("No static found"); }
+
             }
 
         }
@@ -86,7 +84,6 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
                 string instanceKey = CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString());
-
                 // check if we have a config loaded with the same radial position
                 if (parsedConfig.ContainsKey(instanceKey) )
                 {
@@ -98,10 +95,12 @@ namespace KerbalKonstructs.Modules
                         if (CareerUtils.IsString(key))
                         {
                             instance.setSetting(key, config[key]);
+                            //Log.Normal("Setting: " +(string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
                         }
                         if (CareerUtils.IsFloat(key))
                         {
                             instance.setSetting(key, float.Parse(config[key]));
+                            //Log.Normal("Setting: " + (string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
                         }
                     }
 
