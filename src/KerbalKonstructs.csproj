@@ -76,6 +76,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
+    <Compile Include="Addons\SDTest.cs" />
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="API\Config\ConfigCelestialBody.cs" />
     <Compile Include="API\Config\ConfigFile.cs" />
