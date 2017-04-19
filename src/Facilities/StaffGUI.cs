@@ -164,7 +164,6 @@ namespace KerbalKonstructs.UI
 				else
 				{
 					selectedFacility.setSetting("StaffMax", (float)fMaxStaff);
-					PersistenceUtils.saveStaticPersistence(selectedFacility);
 				}
 			}
 
@@ -244,7 +243,6 @@ namespace KerbalKonstructs.UI
 									selectedFacility.setSetting("StaffCurrent", (float)fStaff + 1);
 									Funding.Instance.AddFunds(-fHireFundCost, TransactionReasons.Cheating);
 									selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") + 1);
-									PersistenceUtils.saveStaticPersistence(selectedFacility);
 								}
 							}
 
@@ -265,7 +263,6 @@ namespace KerbalKonstructs.UI
 								{
 									selectedFacility.setSetting("StaffCurrent", (float)fStaff - 1);
 									selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") - 1);
-									PersistenceUtils.saveStaticPersistence(selectedFacility);
 									Funding.Instance.AddFunds(fFireRefund, TransactionReasons.Cheating);
 									Reputation.Instance.AddReputation(-fFireRepCost, TransactionReasons.Cheating);
 								}
@@ -315,8 +312,6 @@ namespace KerbalKonstructs.UI
 										DrawFromBarracks(soNearestBarracks);
 
 										selectedFacility.setSetting("StaffCurrent", (float)fStaff + 1);
-										PersistenceUtils.saveStaticPersistence(selectedFacility);
-										PersistenceUtils.saveStaticPersistence(soNearestBarracks);
 									}
 									else
 										MiscUtils.HUDMessage("No facility with available staff is nearby.", 10, 3);
@@ -338,8 +333,6 @@ namespace KerbalKonstructs.UI
 								{
 									UnassignToBarracks(soAvailableSpace);
 									selectedFacility.setSetting("StaffCurrent", (float)fStaff - 1);
-									PersistenceUtils.saveStaticPersistence(selectedFacility);
-									PersistenceUtils.saveStaticPersistence(soAvailableSpace);
 								}
 								else
 								{

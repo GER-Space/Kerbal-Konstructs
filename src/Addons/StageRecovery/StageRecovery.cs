@@ -43,8 +43,6 @@ namespace KerbalKonstructs.Addons
                     smallestDist = SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
                     Log.Normal("Distance to KSC is " + smallestDist);
 
-                    PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-
                     foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
                     {
 

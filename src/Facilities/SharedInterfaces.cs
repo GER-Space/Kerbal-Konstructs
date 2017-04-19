@@ -79,18 +79,21 @@ namespace KerbalKonstructs.UI
 								selectedFacility.setSetting("OpenCloseState", "Open");
 
 								// Charge some funds
-								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Cheating);
+								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
 
 								// Save new state to persistence
-								PersistenceUtils.saveStaticPersistence(selectedFacility);
 								soStoredEventObject = selectedFacility;
 								if (evFacilityOpened != null)
 									evFacilityOpened(selectedFacility);
 
+                                // Callback to CommNet.
+                                if (((string)selectedFacility.getSetting("FacilityType")) == "TrackingStation")
+                                {
+                                    Modules.RemoteNet.AttachGroundStation(selectedFacility);
+                                } 
 
-								//PersistenceUtils.saveRTCareerBackup();
-							}
-						}
+                            }
+                        }
 						GUI.enabled = true;
 					}
 					else
@@ -108,25 +111,30 @@ namespace KerbalKonstructs.UI
 						{
 							// Close the site - save to instance
 							// Pay back some funds
-							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Cheating);
+							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Structures);
 							selectedFacility.setSetting("OpenCloseState", "Closed");
-
-							// Save new state to persistence
-							PersistenceUtils.saveStaticPersistence(selectedFacility);
 
 							soStoredEventObject = selectedFacility;
 							if (evFacilityClosed != null)
 								evFacilityClosed(selectedFacility);
-						}
-						GUI.enabled = true;
-					}
-					else
-					{
-						// GUILayout.Box("This facility cannot be closed.", BoxInfo);
-					}					
-				}
-				GUILayout.EndHorizontal();
-			}
-		}
-	}
-}
+
+                            // Callback to CommNet.
+                            if (((string)selectedFacility.getSetting("FacilityType")) == "TrackingStation")
+                            {
+                                Modules.RemoteNet.DetachGroundStation(selectedFacility);
+                            }
+
+                        }
+
+                        GUI.enabled = true;
+                       }
+                       else
+                       {
+                           // GUILayout.Box("This facility cannot be closed.", BoxInfo);
+                       }					
+                   }
+                   GUILayout.EndHorizontal();
+               }
+           }
+       }
+   }

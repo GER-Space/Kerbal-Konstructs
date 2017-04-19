@@ -45,7 +45,7 @@ namespace KerbalKonstructs.UI
 
 		public String sSelectedfacility = "None";
 		public String sFacilityUseRange = "";
-		public String sLevel;
+
 
 		public bool bDetermined = false;
 
@@ -73,25 +73,6 @@ namespace KerbalKonstructs.UI
 			KSCmanagerRect = GUI.Window(0xC00B1E2, KSCmanagerRect, drawKSCmanagerWindow, "", KKWindow);
 		}
 
-		public static string DetermineFacilityLevel(string sFacility)
-		{
-			string slLevel = "Lvl 1";
-			string sString;
-			foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
-			{
-				fFacLvl = 1 + (facility.FacilityLevel);
-				fmaxLvl = 1 + (facility.MaxLevel);
-				sString = "Lvl " + fFacLvl + "/" + fmaxLvl;
-
-				if (facility.name == sFacility)
-				{
-					slLevel = sString;
-					return slLevel;
-				}
-			}
-
-			return slLevel;
-		}
 
 		public void drawKSCmanagerWindow(int WindowID)
 		{
@@ -182,90 +163,7 @@ namespace KerbalKonstructs.UI
 
 			if (MiscUtils.isCareerGame())
 			{
-				GUILayout.Box("KSC Primary Facilities");
-				GUILayout.BeginHorizontal();
-				{
-					GUI.enabled = !(sSelectedfacility == "LaunchPad");
-					if (GUILayout.Button(tLaunch, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "LaunchPad";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "Runway");
-					if (GUILayout.Button(tRunway, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "Runway";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "VehicleAssemblyBuilding");
-					if (GUILayout.Button(tFacVAB, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "VehicleAssemblyBuilding";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "SpaceplaneHangar");
-					if (GUILayout.Button(tFacSPH, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "SpaceplaneHangar";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "TrackingStation");
-					if (GUILayout.Button(tTracking, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "TrackingStation";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "AstronautComplex");
-					if (GUILayout.Button(tAstro, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "AstronautComplex";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "MissionControl");
-					if (GUILayout.Button(tControl, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "MissionControl";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "ResearchAndDevelopment");
-					if (GUILayout.Button(tRND, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "ResearchAndDevelopment";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-
-					GUI.enabled = !(sSelectedfacility == "Administration");
-					if (GUILayout.Button(tAdmin, GUILayout.Height(30), GUILayout.Width(35)))
-					{
-						sSelectedfacility = "Administration";
-						sLevel = DetermineFacilityLevel(sSelectedfacility);
-					}
-					GUI.enabled = true;
-				}
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Selected Facility: " + sSelectedfacility, LabelInfo);
-					GUILayout.FlexibleSpace();
-					GUILayout.Label(sLevel, LabelInfo);
-				}
-				GUILayout.EndHorizontal();
+				
 
 				GUILayout.Space(3);
 				GUILayout.Box("KSC Secondary Facilities");

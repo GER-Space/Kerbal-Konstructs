@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
@@ -32,16 +33,8 @@ namespace KerbalKonstructs.Core
             var smallestDist = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
             Log.Normal("Distance to KSC is " + smallestDist);
 
-			bool isCareer = false;
+			bool isCareer = CareerUtils.isCarrerGame;
 
-			if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER)
-			{
-				if (!KerbalKonstructs.instance.disableCareerStrategyLayer)
-				{
-					isCareer = true;
-					PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-				}
-			}
 
 			string sOpenCloseState = "Closed";
 			string sBaseName = "";

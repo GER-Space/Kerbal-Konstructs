@@ -29,7 +29,7 @@ namespace KerbalKonstructs.Modules
 
         Vector3 ObjectPos = new Vector3(0, 0, 0);
 
-        bool loadedPersistence = false;
+
 
         public MapIconManager()
         {
@@ -54,17 +54,6 @@ namespace KerbalKonstructs.Modules
 
         void drawMapManagerWindow(int windowID)
         {
-            if (!loadedPersistence && MiscUtils.isCareerGame())
-            {
-                PersistenceFile<LaunchSite>.LoadList(LaunchSiteManager.AllLaunchSites, "LAUNCHSITES", "KK");
-                foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-                {
-                    if ((string)obj.getSetting("FacilityType") == "TrackingStation")
-                        PersistenceUtils.loadStaticPersistence(obj);
-                }
-
-                loadedPersistence = true;
-            }
 
             GUILayout.BeginHorizontal();
             GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
@@ -241,7 +230,6 @@ namespace KerbalKonstructs.Modules
 
             if (GUILayout.Button("X", UIMain.ButtonRed, GUILayout.Height(20), GUILayout.Width(20)))
             {
-                loadedPersistence = false;
                 this.Close();
             }
 

@@ -38,7 +38,7 @@
     <OutputPath>..\..\Kerbal Space Program\GameData\KerbalKonstructs\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Optimize>false</Optimize>
@@ -76,6 +76,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
+    <Compile Include="Addons\SDTest.cs" />
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="API\Config\ConfigCelestialBody.cs" />
     <Compile Include="API\Config\ConfigFile.cs" />
@@ -86,7 +88,6 @@
     <Compile Include="API\Config\ConfigVector3.cs" />
     <Compile Include="API\Config\IConfigItem.cs" />
     <Compile Include="API\KKAPI.cs" />
-    <Compile Include="API\PersistenceFile.cs" />
     <Compile Include="Core\KKMath.cs" />
     <Compile Include="Editor\FacilityEditor.cs" />
     <Compile Include="Editor\VectorRenderer.cs" />
@@ -95,7 +96,10 @@
     <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
     <Compile Include="Core\LaunchSites\LaunchSite.cs" />
+    <Compile Include="Modules\Career\CareerState.cs" />
+    <Compile Include="Modules\Career\CareerUtils.cs" />
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
+    <Compile Include="Modules\RemoteNet\RemoteNet.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Modules\OnClick\GUIOnClick.cs" />
     <Compile Include="Modules\OnClick\AnimateOnClick.cs" />
@@ -119,7 +123,6 @@
     <Compile Include="Editor\ModelInfo.cs" />
     <Compile Include="UI\KKSettingsGUI.cs" />
     <Compile Include="Editor\StaticsEditorGUI.cs" />
-    <Compile Include="UI\DownlinkGUI.cs" />
     <Compile Include="Facilities\FuelTanksGUI.cs" />
     <Compile Include="Facilities\TrackingStationGUI.cs" />
     <Compile Include="Facilities\StaffGUI.cs" />
@@ -137,10 +140,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />
-    <Compile Include="Utilities\PersistenceUtils.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Utilities\NavUtils.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj

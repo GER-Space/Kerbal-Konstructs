@@ -70,7 +70,6 @@ namespace KerbalKonstructs.UI
 			{
 				sProducing = "None";
 				selectedFacility.setSetting("Producing", "None");
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 			}
 
 			if (GUILayout.Button("Construct a Craft", ButtonSmallText, GUILayout.Height(20)))

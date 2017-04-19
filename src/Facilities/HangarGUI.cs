@@ -91,19 +91,16 @@ namespace KerbalKonstructs.UI
 			{
 				sInStorage = "None";
 				selectedFacility.setSetting("InStorage", "None");
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 			}
 			if (sInStorage2 == null || sInStorage2 == "")
 			{
 				sInStorage2 = "None";
 				selectedFacility.setSetting("TargetID", "None");
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 			}
 			if (sInStorage3 == null || sInStorage3 == "")
 			{
 				sInStorage3 = "None";
 				selectedFacility.setSetting("TargetType", "None");
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 			}
 
 			if (sInStorage == "None" && sInStorage2 == "None" && sInStorage3 == "None")
@@ -298,7 +295,6 @@ namespace KerbalKonstructs.UI
 						// Craft has been taken control
 						// Empty the hangar
 						obj.setSetting(sHangarSpace, "None");
-						PersistenceUtils.saveStaticPersistence(obj);
 					}
 					else
 					{
@@ -337,7 +333,6 @@ namespace KerbalKonstructs.UI
 			{
 				string sVesselID = vVessel.id.ToString();
 				soHangar.setSetting(sSpace, sVesselID);
-				PersistenceUtils.saveStaticPersistence(soHangar);
 
 				// Hangar the vessel - hide it
 				foreach (Part p in vVessel.Parts)
@@ -398,7 +393,6 @@ namespace KerbalKonstructs.UI
 				sSpace = "TargetType";
 
 			soHangar.setSetting(sSpace, "None");
-			PersistenceUtils.saveStaticPersistence(soHangar);
 		}
 
 		public static void UnhangarCraft(Vessel vVesselStored, StaticObject soHangar)

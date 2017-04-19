@@ -170,8 +170,6 @@ namespace KerbalKonstructs.Modules
                 string sTarget = (string)obj.getSetting("TargetID");
                 //    float fStRange = (obj.getSetting("TrackingShort") != null ) ? (float)obj.getSetting("TrackingShort") : 10000f;
                 //   float fStAngle = (obj.getSetting("TrackingAngle") != null) ? (float)obj.getSetting("TrackingAngle") : 60f;
-                float fStRange = 200000f;
-                float fStAngle = 90f;
 
 
                 if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
@@ -191,52 +189,7 @@ namespace KerbalKonstructs.Modules
                             CelestialBody cbTStation = (CelestialBody)obj.getSetting("CelestialBody");
                             CelestialBody cbTCraft = vTargetVessel.mainBody;
 
-                            if (cbTStation == cbTCraft && openclosed3 == "Open" && KerbalKonstructs.instance.mapShowUplinks)
-                            {
-                                Vector3 vCraftPos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vTargetVessel.gameObject.transform.position));
-
-                                float fRangeToTarget = TrackingStationGUI.GetRangeToCraft(obj, vTargetVessel);
-                                int iUplink = TrackingStationGUI.GetUplinkQuality(fStRange, fRangeToTarget);
-                                float fUplink = (float)iUplink / 100;
-
-                                float fRed = 1f;
-                                float fGreen = 0f;
-                                float fBlue = fUplink;
-                                float fAlpha = 1f;
-
-                                if (iUplink > 45)
-                                {
-                                    fRed = 1f;
-                                    fGreen = 0.65f + (fUplink / 10);
-                                    fBlue = 0f;
-                                }
-
-                                if (iUplink > 85)
-                                {
-                                    fRed = 0f;
-                                    fGreen = fUplink;
-                                    fBlue = 0f;
-                                }
-
-                                float fStationLOS = TrackingStationGUI.StationHasLOS(obj, vTargetVessel);
-
-                                if (fStationLOS > fStAngle)
-                                {
-                                    fRed = 1f;
-                                    fGreen = 0f;
-                                    fBlue = 0f;
-                                    fAlpha = 0.5f;
-                                }
-
-                                NavUtils.CreateLineMaterial(3);
-
-                                GL.Begin(GL.LINES);
-                                NavUtils.lineMaterial3.SetPass(0);
-                                GL.Color(new Color(fRed, fGreen, fBlue, fAlpha));
-                                GL.Vertex3(pos.x - Screen.width / 2, pos.y - Screen.height / 2, pos.z);
-                                GL.Vertex3(vCraftPos.x - Screen.width / 2, vCraftPos.y - Screen.height / 2, vCraftPos.z);
-                                GL.End();
-                            }
+                            
                         }
                     }
                 } 
@@ -258,16 +211,11 @@ namespace KerbalKonstructs.Modules
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
-                        float sTrackAngle = (float)obj.getSetting("TrackingAngle");
                         float sTrackRange = (float)obj.getSetting("TrackingShort");
-
-                        PersistenceUtils.loadStaticPersistence(obj);
-
-                        float sTrackAngle2 = (float)obj.getSetting("TrackingAngle");
                         float sTrackRange2 = (float)obj.getSetting("TrackingShort");
 
                         selectedFacility = obj;
-                        FacilityManager.setSelectedFacility(obj);
+                        FacilityManager.selectedFacility = obj;
                         KerbalKonstructs.GUI_FacilityManager.Open();
                     }
                 }  

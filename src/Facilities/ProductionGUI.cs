@@ -79,7 +79,6 @@ namespace KerbalKonstructs.UI
 				if (sFacilityType == "Mining") fDefaultRate = 0.05f;
 
 				selectedFacility.setSetting("ProductionRateCurrent", fDefaultRate);
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 				fProductionRate = fDefaultRate * (fStaffing / 2f);
 			}
 
@@ -89,7 +88,6 @@ namespace KerbalKonstructs.UI
 			{
 				fLastCheck = (float)Planetarium.GetUniversalTime();
 				selectedFacility.setSetting("LastCheck", fLastCheck);
-				PersistenceUtils.saveStaticPersistence(selectedFacility);
 			}
 
 			if (sFacilityType == "Research" || sFacilityType == "Business" || sFacilityType == "Mining")
@@ -110,7 +108,6 @@ namespace KerbalKonstructs.UI
 						if (fMax < 1) fMax = 10f;
 
 						selectedFacility.setSetting("ScienceOMax", fMax);
-						PersistenceUtils.saveStaticPersistence(selectedFacility);
 					}
 
 					fCurrent = (float)selectedFacility.getSetting("ScienceOCurrent");
@@ -127,7 +124,6 @@ namespace KerbalKonstructs.UI
 						if (fMax < 1) fMax = 10000f;
 
 						selectedFacility.setSetting("FundsOMax", fMax);
-						PersistenceUtils.saveStaticPersistence(selectedFacility);
 					}
 
 					fCurrent = (float)selectedFacility.getSetting("FundsOCurrent");
@@ -151,7 +147,6 @@ namespace KerbalKonstructs.UI
 				if (fLastCheck > (float)dTime)
 				{
 					selectedFacility.setSetting("LastCheck", (float)dTime);
-					PersistenceUtils.saveStaticPersistence(selectedFacility);
 				}
 
 				if ((float)dTime - fLastCheck > 43200)
@@ -177,7 +172,6 @@ namespace KerbalKonstructs.UI
 					}
 
 					selectedFacility.setSetting("LastCheck", (float)dTime);
-					PersistenceUtils.saveStaticPersistence(selectedFacility);
 				}
 
 				GUILayout.BeginHorizontal();
@@ -194,7 +188,6 @@ namespace KerbalKonstructs.UI
 					{
 						ResearchAndDevelopment.Instance.AddScience(fCurrent, TransactionReasons.Cheating);
 						selectedFacility.setSetting("ScienceOCurrent", 0f);
-						PersistenceUtils.saveStaticPersistence(selectedFacility);
 					}
 					/* GUILayout.BeginHorizontal();
 					{
@@ -213,7 +206,6 @@ namespace KerbalKonstructs.UI
 					{
 						Funding.Instance.AddFunds((double)fCurrent, TransactionReasons.Cheating);
 						selectedFacility.setSetting("FundsOCurrent", 0f);
-						PersistenceUtils.saveStaticPersistence(selectedFacility);
 					}
 				}
 				/* if (sFacilityType == "Mining")

@@ -10,8 +10,8 @@ namespace KerbalKonstructs.Core
 {
     internal class Log
     {
-        internal static Dictionary<string, Stopwatch> alltimers = new Dictionary<string, Stopwatch>();
-        internal static Stopwatch myWatch = null;
+        private static Dictionary<string, Stopwatch> alltimers = new Dictionary<string, Stopwatch>();
+        private static Stopwatch myWatch = null;
 
         /// <summary>
         /// log a normal message, if dbug is aktivated

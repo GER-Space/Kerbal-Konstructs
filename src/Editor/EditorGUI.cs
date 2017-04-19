@@ -1308,9 +1308,6 @@ namespace KerbalKonstructs.UI
                     LaunchSiteManager.createLaunchSite(selectedObject);
                 }
                 KerbalKonstructs.instance.saveObjects();
-
-                List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
-                PersistenceFile<LaunchSite>.SaveList(basesites, "LAUNCHSITES", "KK");
                 editingSite = false;
             }
             GUILayout.FlexibleSpace();
