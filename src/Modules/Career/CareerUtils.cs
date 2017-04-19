@@ -158,7 +158,7 @@ namespace KerbalKonstructs.Modules
 
         internal static string KeyFromString(string orginalString)
         {
-            return Regex.Replace(orginalString, @"\s+", ""); ;
+            return Regex.Replace(orginalString, @"\s+", "");
         }
 
         internal static string LSKeyFromName(string name)
