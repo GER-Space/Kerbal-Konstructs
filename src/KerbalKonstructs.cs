@@ -407,7 +407,6 @@ namespace KerbalKonstructs
             UIMain.setTextures();
             Log.PerfStop("Awake Function");
 
-
         }
 
         #region Game Events
@@ -490,7 +489,7 @@ namespace KerbalKonstructs
                 CareerState.Load();
                 Log.PerfStop("Load Fac");
             }
-            RemoteNet.LoadAntennas();
+            RemoteNet.LoadGroundStations();
         }
 
         public void SaveState(ConfigNode configNode)
