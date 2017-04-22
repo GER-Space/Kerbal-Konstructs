@@ -13,6 +13,6 @@ if test -e $FILENAME ; then
 	rm -f  Kerbal-Konstructs-${VERSION}.zip
 fi
 
-7z a -r  $FILENAME GameData
+/c/Program\ Files/7-Zip/7z.exe a -r  $FILENAME GameData
 
 

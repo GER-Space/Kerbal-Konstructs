@@ -149,7 +149,8 @@
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
 
 IF $(ConfigurationName) == Release (
-"C:\Program Files\Git\"git-bash.exe $(SolutionDir)\create_zip.sh )</PostBuildEvent>
+"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh 
+)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

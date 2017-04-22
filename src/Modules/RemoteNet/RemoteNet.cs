@@ -79,7 +79,7 @@ namespace KerbalKonstructs.Modules
         /// <param name="instance"></param>
         internal static void AttachGroundStation(StaticObject instance)
         {
-            float antennaPower = (float)instance.getSetting("TrackingShort") * 10;
+            float antennaPower = (float)instance.getSetting("TrackingShort") * 600;
             if (antennaPower == 0f || (string)instance.getSetting("Group") == "KSCUpgrades")
             {
                 return;
