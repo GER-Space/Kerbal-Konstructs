@@ -6,6 +6,8 @@ using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using UnityEngine;
 using CommNet;
+using KerbalKonstructs.Addons;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Modules
 {
@@ -21,16 +23,23 @@ namespace KerbalKonstructs.Modules
         internal static void LoadGroundStations()
         {
             // first we close any postential open Groundstations.
-
-            CommNetHome[] homes = UnityEngine.Object.FindObjectsOfType<CommNetHome>();
-            for (int i = 0; i < homes.Length; i++)
+            if (KerbalKonstructs.instance.enableCommNet)
             {
-                Log.Normal("Found ComNet: " + homes[i].nodeName +" " + homes[i].isKSC);
-                if (homes[i].isKSC == true)
-                    continue;
-                UnityEngine.Object.Destroy(homes[i]);
+                CommNetHome[] homes = UnityEngine.Object.FindObjectsOfType<CommNetHome>();
+                for (int i = 0; i < homes.Length; i++)
+                {
+                    Log.Normal("Found ComNet: " + homes[i].nodeName + " " + homes[i].isKSC);
+                    if (homes[i].isKSC == true)
+                        continue;
+                    UnityEngine.Object.Destroy(homes[i]);
+                }
             }
-
+            // needed as long the Groundstation list is still not saved in persestence layer.
+            if (KerbalKonstructs.instance.enableRT)
+            {
+                // not working.
+                //RemoteTechAddon.CloseAllStations();
+            }
 
             foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics())
             {
@@ -44,6 +53,11 @@ namespace KerbalKonstructs.Modules
                 {
                     continue;
                 }
+
+                if (openRTStations.ContainsKey(instance))
+                    continue;
+                if (openCNStations.Contains(instance))
+                    continue;
 
                 if (CareerUtils.isSandboxGame || CareerUtils.FacilityIsOpen(instance))
                 {
@@ -67,6 +81,7 @@ namespace KerbalKonstructs.Modules
             // add CommNet Groundstations
             if (KerbalKonstructs.instance.enableCommNet)
             {
+
                 Log.Normal("Adding Groundstation: " + (string)instance.getSetting("Group") );
                 if (openCNStations.Contains(instance) == false)
                 {
@@ -79,12 +94,27 @@ namespace KerbalKonstructs.Modules
                 }
                 else
                 {
+                    Log.UserError("Adding GroundStations should never be here: (instance allready added when open was called)");
                 }
             }
             // Add RemoteTech Groundstation
-            if (KerbalKonstructs.instance.enableRT)
+            if (KerbalKonstructs.instance.enableRT )
             {
 
+                Guid stationID = RemoteTechAddon.GetGroundStationGuid((instance.body.name) + " " + (string)instance.getSetting("Group"));
+                if (stationID == Guid.Empty)
+                {
+                    double lng, lat, alt;
+                    alt = instance.body.pqsController.GetSurfaceHeight(instance.pqsCity.repositionRadial) - instance.body.pqsController.radius + 15;
+
+                    var objectPos = instance.body.transform.InverseTransformPoint(instance.gameObject.transform.position);
+                    lng = NavUtils.GetLongitude((Vector3d)objectPos) * KKMath.rad2deg;
+                    lat = NavUtils.GetLatitude((Vector3d)objectPos) * KKMath.rad2deg;
+                    stationID = RemoteTechAddon.AddGroundstation((instance.body.name) + " " + (string)instance.getSetting("Group"), lat, lng, alt, instance.body);
+                    Log.Normal("Got RTStationID: " + stationID);
+                }
+                openRTStations.Add(instance, stationID);
+                RemoteTechAddon.ChangeGroundStationRange(stationID, antennaPower);
             }
         }
 
@@ -109,7 +139,8 @@ namespace KerbalKonstructs.Modules
 
             if (KerbalKonstructs.instance.enableRT)
             {
-
+                RemoteTechAddon.RemoveGroundStation(openRTStations[instance]);
+                openRTStations.Remove(instance);
             }
         }
 
