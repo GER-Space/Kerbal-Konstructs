@@ -10,6 +10,11 @@ namespace KerbalKonstructs.Utilities
 {
 	public class NavUtils
 	{
+        /// <summary>
+        /// Returns the Longitude of a Position (in Radians) 
+        /// </summary>
+        /// <param name="radialPosition"></param>
+        /// <returns></returns>
 		public static double GetLongitude(Vector3d radialPosition)
 		{
 			Vector3d norm = radialPosition.normalized;
@@ -17,7 +22,12 @@ namespace KerbalKonstructs.Utilities
 			return (!double.IsNaN(longitude) ? longitude : 0.0);
 		}
 
-		public static double GetLatitude(Vector3d radialPosition)
+        /// <summary>
+        /// Returns the Lattitude of a Position (in Radians) 
+        /// </summary>
+        /// <param name="radialPosition"></param>
+        /// <returns></returns>
+        public static double GetLatitude(Vector3d radialPosition)
 		{
 			double latitude = Math.Asin(radialPosition.normalized.y);
 			return (!double.IsNaN(latitude) ? latitude : 0.0);
