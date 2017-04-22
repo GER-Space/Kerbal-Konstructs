@@ -25,20 +25,27 @@ namespace KerbalKonstructs.Modules
             // first we close any postential open Groundstations.
             if (KerbalKonstructs.instance.enableCommNet)
             {
-                CommNetHome[] homes = UnityEngine.Object.FindObjectsOfType<CommNetHome>();
-                for (int i = 0; i < homes.Length; i++)
+                if (!CommNet.CommNetScenario.CommNetEnabled)
                 {
-                    Log.Normal("Found ComNet: " + homes[i].nodeName + " " + homes[i].isKSC);
-                    if (homes[i].isKSC == true)
-                        continue;
-                    UnityEngine.Object.Destroy(homes[i]);
+                    KerbalKonstructs.instance.enableCommNet = false;
+                }
+                else
+                {
+                    CommNetHome[] homes = UnityEngine.Object.FindObjectsOfType<CommNetHome>();
+                    for (int i = 0; i < homes.Length; i++)
+                    {
+                        Log.Normal("Found ComNet: " + homes[i].nodeName + " " + homes[i].isKSC);
+                        if (homes[i].isKSC == true)
+                            continue;
+                        UnityEngine.Object.Destroy(homes[i]);
+                    }
                 }
             }
             // needed as long the Groundstation list is still not saved in persestence layer.
             if (KerbalKonstructs.instance.enableRT)
             {
-                // not working.
-                //RemoteTechAddon.CloseAllStations();
+                // nothing to do, as RT saves the groundstations an we query them later.
+                
             }
 
             foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics())

@@ -8,6 +8,7 @@ using System.Linq;
 using System.IO;
 using Upgradeables;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Addons;
 using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
@@ -405,6 +406,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             if (!KerbalKonstructs.instance.enableCommNet)
             {
+                GUI.enabled = CommNet.CommNetScenario.CommNetEnabled;
                 if (GUILayout.Button("Enable CommNet groundstations", GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.enableCommNet = true;
@@ -421,18 +423,21 @@ namespace KerbalKonstructs.UI
 
                 GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
             }
+            GUI.enabled = true;
             GUILayout.EndHorizontal();
 
             GUILayout.Label("RemoteTech Support", LabelInfo);
             GUILayout.BeginHorizontal();
             if (!KerbalKonstructs.instance.enableRT)
             {
+                GUI.enabled = RemoteTechAddon.isInstalled;
                 if (GUILayout.Button("Enable RemoteTech groundstations", GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.enableRT = true;
                 }
 
                 GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+                
             }
             else
             {
@@ -444,7 +449,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
             }
             GUILayout.EndHorizontal();
-
+            GUI.enabled = true;
 
             GUILayout.Space(3);
 			GUILayout.Box("Tracking/Map View Settngs");
