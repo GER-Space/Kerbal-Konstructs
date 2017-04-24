@@ -49,6 +49,9 @@ namespace KerbalKonstructs.Core
                 pqsCity.transform.localScale = origScale * (float)settings["ModelScale"];
                 pqsCity.Orientate();
 			}
+			// Notify modules about update
+			foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
+			    module.StaticObjectUpdate();
 		}
 
 		public object getSetting(string setting)
