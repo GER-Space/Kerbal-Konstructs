@@ -6,6 +6,7 @@ using UnityEngine;
 using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using System.IO;
+using Upgradeables;
 
 namespace KerbalKonstructs.Modules
 {
@@ -284,6 +285,63 @@ namespace KerbalKonstructs.Modules
             SaveLaunchsites();
         }
 
+        internal static void FixKSCFacilities ()
+        {
+            if ((HighLogic.LoadedScene == GameScenes.SPACECENTER) && (!KerbalKonstructs.InitialisedFacilities))
+            {
+                string saveConfigPath = string.Format("{0}saves/{1}/persistent.sfs", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
+                if (File.Exists(saveConfigPath))
+                {
+                    Log.Debug("Found persistent.sfs");
+                    ConfigNode rootNode = ConfigNode.Load(saveConfigPath);
+                    ConfigNode rootrootNode = rootNode.GetNode("GAME");
+                    foreach (ConfigNode ins in rootrootNode.GetNodes())
+                    {
+                        // Debug.Log("KK: ConfigNode is " + ins);
+                        if (ins.GetValue("name") == "ScenarioUpgradeableFacilities")
+                        {
+                            Log.Debug("Found ScenarioUpgradeableFacilities in persistent.sfs");
+
+                            foreach (string kscBuilding in new List<string> {
+                            "SpaceCenter/LaunchPad",
+                            "SpaceCenter/Runway",
+                            "SpaceCenter/VehicleAssemblyBuilding",
+                            "SpaceCenter/SpaceplaneHangar",
+                            "SpaceCenter/TrackingStation",
+                            "SpaceCenter/AstronautComplex",
+                            "SpaceCenter/MissionControl",
+                            "SpaceCenter/ResearchAndDevelopment",
+                            "SpaceCenter/Administration",
+                            "SpaceCenter/FlagPole" })
+                            {
+                                ConfigNode node = ins.GetNode(kscBuilding);
+                                if (node == null)
+                                {
+                                    Log.Normal("Could not find " + kscBuilding + " node. Creating node.");
+                                    node = ins.AddNode(kscBuilding);
+                                    node.AddValue("lvl", 0);
+                                    rootNode.Save(saveConfigPath);
+                                    KerbalKonstructs.InitialisedFacilities = true;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (KerbalKonstructs.InitialisedFacilities)
+                    {
+                        rootNode.Save(saveConfigPath);
+                        foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
+                        {
+                            facility.SetLevel(0);
+                        }
+                    }
+
+                    Log.Normal("loadCareerObjects");
+                    KerbalKonstructs.InitialisedFacilities = true;
+                }
+            }
+        }
 
     }
 }

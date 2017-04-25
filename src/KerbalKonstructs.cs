@@ -38,6 +38,7 @@ namespace KerbalKonstructs
         public StaticDatabase staticDB = new StaticDatabase();
         public CameraController camControl = new CameraController();
         private CelestialBody currentBody;
+        internal static bool InitialisedFacilities = false;
 
         public int iMenuCount = 0;
 
@@ -140,9 +141,9 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean DevMode = false;
         [KSPField]
-        public Boolean enableRT = true;
+        public Boolean enableRT = false;
         [KSPField]
-        public Boolean enableCommNet = true;
+        public Boolean enableCommNet = false;
         #endregion
 
         private List<StaticObject> deletedInstances = new List<StaticObject>();
@@ -393,6 +394,8 @@ namespace KerbalKonstructs
             DontDestroyOnLoad(this);
             Log.PerfStart("Object loading1");
 
+            LoadSquadModels();
+
             LoadModels();
             Log.PerfStop("Object loading1");
             Log.PerfStart("Object loading2");
@@ -490,6 +493,7 @@ namespace KerbalKonstructs
                 Log.PerfStop("Load Fac");
             }
             RemoteNet.LoadGroundStations();
+            //LoadSquadModels();
         }
 
         public void SaveState(ConfigNode configNode)
@@ -738,12 +742,18 @@ namespace KerbalKonstructs
 
         void LateUpdate()
         {
+            // Check if we don't have the KSC Buildings in the savegame and save them there if missing.
+            // this is needed, because for some reason we set all buildings directly to max level without.
+            CareerState.FixKSCFacilities();
+
             GUI_Editor.CheckEditorKeys();
 
             if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
             {
                 GUI_StaticsEditor.ToggleEditor();
             }
+
+
         }
 
         #endregion
@@ -764,17 +774,8 @@ namespace KerbalKonstructs
             {
                 if (ModelInfo.currPreview != null)
                 {
-                    /*InputLockManager.RemoveControlLock("KKShipLock");
-					InputLockManager.RemoveControlLock("KKEVALock");
-					InputLockManager.RemoveControlLock("KKCamControls");
-					InputLockManager.RemoveControlLock("KKCamModes"); */
-
-                    //camControl.disable();
-
                     ModelInfo.DestroyPreviewInstance(null);
                 }
-
-                //selectedModel = null;
             }
         }
 
@@ -1122,6 +1123,41 @@ namespace KerbalKonstructs
             }
         }
 
+        /// <summary>
+        /// Tes for getting information out of the prebuild static models.
+        /// </summary>
+        public void LoadSquadModels ()
+        {
+            // first we find any potential PQSCity Objects
+
+            PQSMod_MapDecalTangent[] statics = UnityEngine.Object.FindObjectsOfType<PQSMod_MapDecalTangent>();
+            // Component[] allComponents;
+            foreach (var pqs in statics)
+            {
+                Log.Normal("Found PQSCity: " + pqs.name);
+                Log.Normal("radius: " + pqs.radius);
+                Log.Normal("removeScatter: " + pqs.removeScatter );
+                Log.Normal("angle: "  + pqs.angle );
+                Log.Normal("absolute: " + pqs.absolute );
+                Log.Normal("absOffset: " + pqs.absoluteOffset );
+               // Log.Normal("colorMapName: " + pqs.colorMap.MapName );
+                Log.Normal("hightMapName: " + pqs.heightMap.MapName );
+                Log.Normal("heightMapDeformity: " + pqs.heightMapDeformity );
+                Log.Normal("smoothColor: " + pqs.smoothColor );
+                Log.Normal("smoothHeight: " + pqs.smoothHeight);
+                Log.Normal("useAlphaHeightSmoothing: " + pqs.useAlphaHeightSmoothing);
+                Log.Normal("");
+
+                //      allComponents = statics[i].gameObject.GetComponents<Component>();
+                //     foreach (var component in allComponents)
+                //    {
+                //       Debug.Log(component.GetType().ToString());
+                //   } 
+
+                //statics[i].gameObject
+            }
+
+        }
 
         /// <summary>
         /// Loads the models and creates the prefab objects, which are referenced by the instance loader
