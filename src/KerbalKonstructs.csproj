@@ -54,6 +54,9 @@
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="KSPAssets">
+      <HintPath>..\..\Kerbal Space Program\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_Data\Managed\System.dll</HintPath>
       <Private>False</Private>
@@ -89,6 +92,7 @@
     <Compile Include="API\Config\IConfigItem.cs" />
     <Compile Include="API\KKAPI.cs" />
     <Compile Include="Core\KKMath.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Editor\FacilityEditor.cs" />
     <Compile Include="Editor\VectorRenderer.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
@@ -101,9 +105,9 @@
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
     <Compile Include="Modules\RemoteNet\RemoteNet.cs" />
     <Compile Include="UI\LandingGuide.cs" />
-    <Compile Include="Modules\OnClick\GUIOnClick.cs" />
-    <Compile Include="Modules\OnClick\AnimateOnClick.cs" />
-    <Compile Include="Modules\Compat\AnimateOnClick.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\Compat\AnimateOnClick.cs" />
     <Compile Include="Core\SpaceCenters\CustomSpaceCenter.cs" />
     <Compile Include="Core\SpaceCenters\SpaceCenterManager.cs" />
     <Compile Include="Core\StaticObjects\StaticUtils.cs" />
