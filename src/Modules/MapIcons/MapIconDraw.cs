@@ -139,6 +139,12 @@ namespace KerbalKonstructs.Modules
                 if ((string)obj.getSetting("FacilityType") != "TrackingStation")
                     continue;
 
+                if ((float)obj.getSetting("TrackingShort") == 0f)
+                    continue;
+
+                if ((string)obj.getSetting("Group") == "KSCUpgrades")
+                    continue;
+
                 if ((mapHideIconsBehindBody) && (isOccluded(obj.gameObject.transform.position, body)))
                 {
                         continue;
@@ -167,32 +173,10 @@ namespace KerbalKonstructs.Modules
 
                 if (fRadarRadius > 15) GUI.DrawTexture(screenRect6, UIMain.TrackingStationIcon, ScaleMode.ScaleToFit, true);
 
-                string sTarget = (string)obj.getSetting("TargetID");
-                //    float fStRange = (obj.getSetting("TrackingShort") != null ) ? (float)obj.getSetting("TrackingShort") : 10000f;
-                //   float fStAngle = (obj.getSetting("TrackingAngle") != null) ? (float)obj.getSetting("TrackingAngle") : 60f;
-
 
                 if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
                     drawGroundComms(obj);
 
-                if ((string)obj.getSetting("TargetType") == "Craft" && sTarget != "None")
-                {
-                    Vessel vTargetVessel = TrackingStationGUI.GetTargetVessel(sTarget);
-                    if (vTargetVessel == null)
-                    { }
-                    else
-                    {
-                        if (vTargetVessel.state == Vessel.State.DEAD)
-                        { }
-                        else
-                        {
-                            CelestialBody cbTStation = (CelestialBody)obj.getSetting("CelestialBody");
-                            CelestialBody cbTCraft = vTargetVessel.mainBody;
-
-                            
-                        }
-                    }
-                } 
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
                 {

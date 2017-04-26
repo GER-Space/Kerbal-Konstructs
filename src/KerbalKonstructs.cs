@@ -278,10 +278,8 @@ namespace KerbalKonstructs
 
             // Facility Ratings
 
-            // Tracking station max short range in m
+            // Tracking station max range in m
             KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
-            // Max tracking angle
-            KKAPI.addInstanceSetting("TrackingAngle", new ConfigFloat());
 
             // Target Type and ID
             KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
@@ -485,6 +483,7 @@ namespace KerbalKonstructs
         public void LoadState(ConfigNode node)
         {
             Log.Normal("Load State");
+
             if (CareerUtils.isCarrerGame)
             {
                 Log.Normal("Load openclose states for career game");
@@ -493,6 +492,7 @@ namespace KerbalKonstructs
                 Log.PerfStop("Load Fac");
             }
             RemoteNet.LoadGroundStations();
+            
             //LoadSquadModels();
         }
 
@@ -978,6 +978,7 @@ namespace KerbalKonstructs
                 obj.configUrl = configurl;
                 obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
                 //obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+                Log.Normal("Load Instance: " + obj.configPath);
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
                 {
