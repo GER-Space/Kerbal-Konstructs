@@ -32,6 +32,8 @@ namespace KerbalKonstructs.Core
 
         private Vector3 origScale;
 
+        internal bool isActive = false;
+
 		private List<Renderer> _rendererComponents; 
 
 
@@ -52,7 +54,8 @@ namespace KerbalKonstructs.Core
 			// Notify modules about update
 			foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
 			    module.StaticObjectUpdate();
-		}
+
+        }
 
 		public object getSetting(string setting)
 		{

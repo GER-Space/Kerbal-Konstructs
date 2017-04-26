@@ -12,8 +12,8 @@ namespace KerbalKonstructs.Core
 		public String groupName;
 		public String bodyName;
 
-		public List<StaticObject> childObjects = new List<StaticObject>();
-		public Vector3 centerPoint = Vector3.zero;
+        public List<StaticObject> childObjects = new List<StaticObject>();
+        public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
 		public Boolean alwaysActive = false;
 		public Boolean active = false;
@@ -76,6 +76,35 @@ namespace KerbalKonstructs.Core
 			visibilityRange = highestVisibility + (furthestDist * 2);
 		}
 
+
+        /// <summary>
+        /// Sets an StaticObject active or passive
+        /// </summary>
+        /// <param name="instance">the StaticObject which should be set</param>
+        /// <param name="newState">new active state</param>
+        internal static void SetActive (StaticObject instance, bool newState)
+        {
+            if (instance.isActive == newState)
+            {
+                return;
+            }
+            else
+            {
+                instance.isActive = newState;
+
+                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
+                    module.StaticObjectUpdate();
+
+                SetActiveRecursively(instance.gameObject, newState);
+            }
+        }
+
+
+        /// <summary>
+        /// Goes through all layers and sets the gameobjects active
+        /// </summary>
+        /// <param name="rootObject"></param>
+        /// <param name="active"></param>
 		public static void SetActiveRecursively(GameObject rootObject, bool active)
 		{
 			rootObject.SetActive(active);
@@ -84,13 +113,16 @@ namespace KerbalKonstructs.Core
 			{
 				SetActiveRecursively(childTransform.gameObject, active);
 			}
-		}
+        }
 
+        /// <summary>
+        /// Makes all objects invisible
+        /// </summary>
 		public void cacheAll()
 		{
 			foreach (StaticObject obj in childObjects)
 			{
-				SetActiveRecursively(obj.gameObject, false);
+				SetActive(obj, false);
 			}
 		}
 
@@ -102,14 +134,14 @@ namespace KerbalKonstructs.Core
 		{
             float dist = 0f;
             bool visible = false;
-
+            string sFacType = "";
 
             foreach (StaticObject obj in childObjects)
 			{
 				dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
 				visible = (dist < (float) obj.getSetting("VisibilityRange"));
 
-				string sFacType = (string)obj.getSetting("FacilityType");
+				sFacType = (string)obj.getSetting("FacilityType");
 
 				if (sFacType == "Hangar")
 				{
@@ -141,15 +173,14 @@ namespace KerbalKonstructs.Core
 				{
 					if (dist < 65000f)
 					{
-						SetActiveRecursively(obj.gameObject, false);
-						return;
-					}
+                        visible = true;
+                    }
 				}
-			
-				if (visible)
-					SetActiveRecursively(obj.gameObject, true);
+
+                if (visible)
+					SetActive(obj, true);
 				else
-					SetActiveRecursively(obj.gameObject, false);
+					SetActive(obj, false);
 			}
 		}
 
