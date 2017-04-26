@@ -105,9 +105,9 @@ namespace KerbalKonstructs.UI
 					{
 						GUI.enabled = isOpen2;
 
-						if (iFundsClose2 == 0) iFundsClose2 = iFundsDefaultCost / 4;
+						if (iFundsClose2 == 0) iFundsClose2 = iFundsDefaultCost / 5;
 
-						if (GUILayout.Button("Close for \n" + iFundsClose2 + " funds", ButtonSmallText, GUILayout.Height(30)))
+						if (GUILayout.Button("Close for \n" + iFundsClose2 + " refund", ButtonSmallText, GUILayout.Height(30)))
 						{
 							// Close the site - save to instance
 							// Pay back some funds
