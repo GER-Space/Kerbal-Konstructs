@@ -200,13 +200,9 @@ namespace KerbalKonstructs.Core
 
 						List<StaticObject> groupchildObjects = group.childObjects;
 
-                        for (int i = 0; i < groupchildObjects.Count; i++)
-						{
-							dist = Vector3.Distance(vPlayerPos, groupchildObjects[i].gameObject.transform.position);
-                            Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
+						dist = Vector3.Distance(vPlayerPos, groupchildObjects[0].gameObject.transform.position);
+                        Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
 
-							break;
-						}
 
 						if (center == Vector3.zero)
 						{
