@@ -117,14 +117,6 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean mapShowOther = false;
         [KSPField]
-        public Boolean mapShowRadar = false;
-        [KSPField]
-        public Boolean mapShowDownlinks = false;
-        [KSPField]
-        public Boolean mapShowUplinks = false;
-        [KSPField]
-        public Boolean mapShowGroundComms = false;
-        [KSPField]
         public Boolean mapHideIconsBehindBody = true;
         [KSPField]
         public Boolean disableRemoteRecovery = false;
