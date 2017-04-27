@@ -39,80 +39,38 @@ namespace KerbalKonstructs.Core
 			updateCacheSettings();
 		}
 
-		public void updateCacheSettings()
-		{
-			float highestVisibility = 0;
-			float furthestDist = 0;
-
-			centerPoint = Vector3.zero;
-			StaticObject soCenter = null;
-			Vector3 vRadPos = Vector3.zero;
-
-			foreach (StaticObject obj in childObjects)
-			{
-				// FIRST ONE IS THE CENTER
-				centerPoint = obj.gameObject.transform.position;
-				vRadPos = (Vector3)obj.getSetting("RadialPosition");
-				obj.setSetting("GroupCenter", "true");
-				soCenter = obj;
-				break;
-			}
-
-			foreach (StaticObject obj in childObjects)
-			{
-				obj.setSetting("RefCenter", vRadPos);
-
-				if (obj != soCenter) obj.setSetting("GroupCenter", "false");
-
-				if ((float)obj.getSetting("VisibilityRange") > highestVisibility)
-					highestVisibility = (float)obj.getSetting("VisibilityRange");
-
-				float dist = Vector3.Distance(centerPoint, obj.gameObject.transform.position);
-				
-				if (dist > furthestDist)
-					furthestDist = dist;
-			}
-
-			visibilityRange = highestVisibility + (furthestDist * 2);
-		}
-
-
-        /// <summary>
-        /// Sets an StaticObject active or passive
-        /// </summary>
-        /// <param name="instance">the StaticObject which should be set</param>
-        /// <param name="newState">new active state</param>
-        internal static void SetActive (StaticObject instance, bool newState)
+        public void updateCacheSettings()
         {
-            if (instance.isActive == newState)
+            float highestVisibility = 0;
+            float furthestDist = 0;
+
+            centerPoint = Vector3.zero;
+            StaticObject soCenter = null;
+            Vector3 vRadPos = Vector3.zero;
+
+
+            // FIRST ONE IS THE CENTER
+            centerPoint = childObjects[0].gameObject.transform.position;
+            vRadPos = (Vector3)childObjects[0].getSetting("RadialPosition");
+            childObjects[0].setSetting("GroupCenter", "true");
+            soCenter = childObjects[0];
+
+            for (int i = 0; i < childObjects.Count; i++)
             {
-                return;
+                childObjects[i].setSetting("RefCenter", vRadPos);
+
+                if (childObjects[i] != soCenter) childObjects[i].setSetting("GroupCenter", "false");
+
+                if ((float)childObjects[i].getSetting("VisibilityRange") > highestVisibility)
+                    highestVisibility = (float)childObjects[i].getSetting("VisibilityRange");
+
+                float dist = Vector3.Distance(centerPoint, childObjects[i].gameObject.transform.position);
+
+                if (dist > furthestDist)
+                    furthestDist = dist;
             }
-            else
-            {
-                instance.isActive = newState;
 
-                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
-                    module.StaticObjectUpdate();
-
-                SetActiveRecursively(instance.gameObject, newState);
-            }
-        }
-
-
-        /// <summary>
-        /// Goes through all layers and sets the gameobjects active
-        /// </summary>
-        /// <param name="rootObject"></param>
-        /// <param name="active"></param>
-		public static void SetActiveRecursively(GameObject rootObject, bool active)
-		{
-			rootObject.SetActive(active);
-
-			foreach (Transform childTransform in rootObject.transform)
-			{
-				SetActiveRecursively(childTransform.gameObject, active);
-			}
+            visibilityRange = highestVisibility + (furthestDist * 2);
         }
 
         /// <summary>
@@ -120,9 +78,9 @@ namespace KerbalKonstructs.Core
         /// </summary>
 		public void cacheAll()
 		{
-			foreach (StaticObject obj in childObjects)
+            for (int i = 0 ; i < childObjects.Count; i++ )
 			{
-				SetActive(obj, false);
+                childObjects[i].SetActive(false);
 			}
 		}
 
@@ -178,9 +136,9 @@ namespace KerbalKonstructs.Core
 				}
 
                 if (visible)
-					SetActive(obj, true);
+					obj.SetActive(true);
 				else
-					SetActive(obj, false);
+					obj.SetActive(false);
 			}
 		}
 

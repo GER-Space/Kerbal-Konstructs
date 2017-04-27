@@ -121,13 +121,13 @@ namespace KerbalKonstructs.Core
 
 		public void spawnObject(Boolean editing, Boolean bPreview)
 		{
-			// Objects spawned at runtime should be active, ones spawned at loading not
-			SetActiveRecursively(gameObject, editing);
+            // Objects spawned at runtime should be active, ones spawned at loading not
+            gameObject.SetActive(editing);
 			
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
 
-			setLayerRecursively(gameObject, 15);
+            SetColliderLayer(15);
 
 			if (bPreview) this.ToggleAllColliders(false);
 
@@ -207,25 +207,62 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
+        /// <summary>
+        /// Sets the collider layer to a new layer 
+        /// </summary>
+        /// <param name="layerNumber"></param>
+        internal void SetColliderLayer (int layerNumber)
+        {
+            SetLayerRecursively(gameObject, layerNumber);
+        }
+
+
+        /// <summary>
+        /// iterates through the gameobject and its childs and sets the layer
+        /// </summary>
+        /// <param name="sGameObject"></param>
+        /// <param name="newLayerNumber"></param>
+		private void SetLayerRecursively(GameObject sGameObject, int newLayerNumber)
 		{
 			if (sGameObject.GetComponent<Collider>() == null) sGameObject.layer = newLayerNumber;
 			else
 				if (!sGameObject.GetComponent<Collider>().isTrigger) sGameObject.layer = newLayerNumber;
 
 
-			/* if ((sGameObject.GetComponent<Collider>() != null && sGameObject.GetComponent<Collider>().enabled && !sGameObject.GetComponent<Collider>().isTrigger) || sGameObject.GetComponent<Collider>() == null)
-			{
-				sGameObject.layer = newLayerNumber;
-			} */
-
 			foreach (Transform child in sGameObject.transform)
 			{
-				setLayerRecursively(child.gameObject, newLayerNumber);
+				SetLayerRecursively(child.gameObject, newLayerNumber);
 			}
 		}
 
-		public void SetActiveRecursively(GameObject rootObject, bool active)
+        /// <summary>
+        /// Sets the StaticObject active or passive
+        /// </summary>
+        /// <param name="newState">new active state</param>
+        internal void SetActive(bool newState)
+        {
+            if (this.isActive == newState)
+            {
+                return;
+            }
+            else
+            {
+                this.isActive = newState;
+
+                foreach (StaticModule module in this.gameObject.GetComponents<StaticModule>())
+                    module.StaticObjectUpdate();
+
+                SetActiveRecursively(this.gameObject, newState);
+            }
+        }
+
+
+        /// <summary>
+        /// iterates through the gameobject and its childs and set them active
+        /// </summary>
+        /// <param name="rootObject"></param>
+        /// <param name="active"></param>
+        private void SetActiveRecursively(GameObject rootObject, bool active)
 		{
 			rootObject.SetActive(active);
 
