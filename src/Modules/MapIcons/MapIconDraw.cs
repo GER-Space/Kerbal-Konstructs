@@ -23,6 +23,8 @@ namespace KerbalKonstructs.Modules
 
         internal static bool mapHideIconsBehindBody = true;
 
+        private static List<StaticObject> groundStations;
+
         private int iRadarCounter;
 
         public override void Draw()
@@ -34,6 +36,43 @@ namespace KerbalKonstructs.Modules
             }
         }
 
+        public override void Open()
+        {
+            CacheGroundStations();
+
+            base.Open();
+        }
+
+        /// <summary>
+        /// Generates a list of available groundstations and saves this in the this.groundStations
+        /// </summary>
+        private void CacheGroundStations()
+        {
+            groundStations = new List<StaticObject>();
+
+            StaticObject[] allObjects = KerbalKonstructs.instance.getStaticDB().getAllStatics().ToArray();
+
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+
+                if ((string)allObjects[i].getSetting("FacilityType") != "TrackingStation")
+                    continue;
+
+                if ((float)allObjects[i].getSetting("TrackingShort") == 0f)
+                    continue;
+
+                if ((string)allObjects[i].getSetting("Group") == "KSCUpgrades")
+                    continue;
+
+                groundStations.Add(allObjects[i]);
+            }
+        }
+
+        /// <summary>
+        /// Draws the unused Lines between sites (to be removed)
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="lSite"></param>
         public void drawGroundComms(StaticObject obj, LaunchSite lSite = null)
         {
             string Base = "";
@@ -122,37 +161,35 @@ namespace KerbalKonstructs.Modules
             }
         }
 
+
+        /// <summary>
+        /// Draws the groundStation icons on the map
+        /// </summary>
         public void drawTrackingStations()
         {
-            if (!KerbalKonstructs.instance.mapShowOpenT) { return;  }
-            displayingTooltip2 = false;
+            if (!MiscUtils.isCareerGame())
+                return;
+            if (!KerbalKonstructs.instance.mapShowOpenT)
+                return;
+
+            bool display2 = false;
+            string openclosed3 = "Closed";
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
+            StaticObject groundStation;
+
+            displayingTooltip2 = false;
 
             // Do tracking stations first
-            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+            for (int i = 0; i < groundStations.Count; i++ )
             {
-                if (!MiscUtils.isCareerGame()) break;
-
-                bool display2 = false;
-                string openclosed3 = "Closed";
-
-                if ((string)obj.getSetting("FacilityType") != "TrackingStation")
-                    continue;
-
-                if ((float)obj.getSetting("TrackingShort") == 0f)
-                    continue;
-
-                if ((string)obj.getSetting("Group") == "KSCUpgrades")
-                    continue;
-
-                if ((mapHideIconsBehindBody) && (isOccluded(obj.gameObject.transform.position, body)))
+                groundStation = groundStations[i];
+                if ((mapHideIconsBehindBody) && (isOccluded(groundStation.gameObject.transform.position, body)))
                 {
                         continue;
                 }
 
-                openclosed3 = (string)obj.getSetting("OpenCloseState");
+                openclosed3 = (string)groundStation.getSetting("OpenCloseState");
 
-                if ((float)obj.getSetting("OpenCost") == 0) openclosed3 = "Open";
 
                 if (KerbalKonstructs.instance.mapShowOpenT)
                     display2 = true;
@@ -164,7 +201,7 @@ namespace KerbalKonstructs.Modules
                 if (!display2)
                     continue;
 
-                Vector3  pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(obj.gameObject.transform.position));
+                Vector3  pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(groundStation.gameObject.transform.position));
   
                 Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
                 // Distance between camera and spawnpoint sort of
@@ -175,14 +212,14 @@ namespace KerbalKonstructs.Modules
 
 
                 if (openclosed3 == "Open" && KerbalKonstructs.instance.mapShowGroundComms)
-                    drawGroundComms(obj);
+                    drawGroundComms(groundStation);
 
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
                 {
-                    CelestialBody cPlanetoid = (CelestialBody)obj.getSetting("CelestialBody");
+                    CelestialBody cPlanetoid = (CelestialBody)groundStation.getSetting("CelestialBody");
 
-                    var objectpos2 = cPlanetoid.transform.InverseTransformPoint(obj.gameObject.transform.position);
+                    var objectpos2 = cPlanetoid.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
                     var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
                     var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
                     var disObjectLat2 = dObjectLat2 * 180 / Math.PI;
@@ -195,11 +232,11 @@ namespace KerbalKonstructs.Modules
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
-                        float sTrackRange = (float)obj.getSetting("TrackingShort");
-                        float sTrackRange2 = (float)obj.getSetting("TrackingShort");
+                        float sTrackRange = (float)groundStation.getSetting("TrackingShort");
+                        float sTrackRange2 = (float)groundStation.getSetting("TrackingShort");
 
-                        selectedFacility = obj;
-                        FacilityManager.selectedFacility = obj;
+                        selectedFacility = groundStation;
+                        FacilityManager.selectedFacility = groundStation;
                         KerbalKonstructs.GUI_FacilityManager.Open();
                     }
                 }  
