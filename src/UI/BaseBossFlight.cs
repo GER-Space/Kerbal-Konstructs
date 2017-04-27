@@ -31,6 +31,7 @@ namespace KerbalKonstructs.UI
 		public Boolean bIsOpen = false;
 
 		public Boolean bShowFacilities = false;
+        private static List<StaticObject> allFacilities = new List<StaticObject>();
 		
 		public static Boolean bChangeTarget = false;
 		
@@ -67,6 +68,7 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
+            bShowFacilities = false;
             KerbalKonstructs.GUI_FacilityManager.Close();
             base.Close();
         }
@@ -372,60 +374,45 @@ namespace KerbalKonstructs.UI
 						bShowFacilities = false;
 					else
 					{
+                        CacheFacilities();
 						bShowFacilities = true;
 					}
 				}
 
-				if (bShowFacilities)
+				if (bShowFacilities && allFacilities.Count  > 0)
 				{
 					scrollPos = GUILayout.BeginScrollView(scrollPos);
-					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
-					{
-						bool isLocal = true;
-						if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
-						{
-							var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-							isLocal = dist < 5000f;
-						}
-						else
-							isLocal = false;
 
-						if (String.Equals(((string)obj.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
-
+                    for (int i = 0; i < allFacilities.Count; i++)
+                    {
+                        bAreFacilities = true;
+                        GUILayout.BeginHorizontal();
                         {
-							isLocal = false;
-						}
+                            bIsOpen = ((string)allFacilities[i].getSetting("OpenCloseState") == "Open");
 
-						if (isLocal)
-						{
-							bAreFacilities = true;
-							GUILayout.BeginHorizontal();
-							{
-								bIsOpen = ((string)obj.getSetting("OpenCloseState") == "Open");
+                            if (!bIsOpen)
+                            {
+                                iFundsOpen2 = (float)allFacilities[i].model.getSetting("cost");
+                                if (iFundsOpen2 == 0) bIsOpen = true;
+                            }
 
-								if (!bIsOpen)
-								{
-									iFundsOpen2 = (float)obj.model.getSetting("cost");
-									if (iFundsOpen2 == 0) bIsOpen = true;
-								}
+                            if (GUILayout.Button((string)allFacilities[i].model.getSetting("title"), GUILayout.Height(23)))
+                            {
+                                selectedObject = allFacilities[i];
+                                KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
+                                FacilityManager.selectedFacility = allFacilities[i];
+                                KerbalKonstructs.GUI_FacilityManager.Open();
+                            }
 
-								if (GUILayout.Button((string)obj.model.getSetting("title"), GUILayout.Height(23)))
-								{
-									selectedObject = obj;
-									KerbalKonstructs.instance.selectObject(obj, false, true, false);
-									FacilityManager.selectedFacility = obj;
-                                    KerbalKonstructs.GUI_FacilityManager.Open();
-                                }
+                            if (bIsOpen)
+                                GUILayout.Label(tIconOpen, GUILayout.Height(23), GUILayout.Width(23));
 
-								if (bIsOpen)
-									GUILayout.Label(tIconOpen, GUILayout.Height(23), GUILayout.Width(23));
+                            if (!bIsOpen)
+                                GUILayout.Label(tIconClosed, GUILayout.Height(23), GUILayout.Width(23));
+                        }
+                        GUILayout.EndHorizontal();
 
-								if (!bIsOpen)
-									GUILayout.Label(tIconClosed, GUILayout.Height(23), GUILayout.Width(23));
-							}
-							GUILayout.EndHorizontal();
-						}
-					}
+                    }
 					GUILayout.EndScrollView();
 				}
 				else
@@ -492,5 +479,27 @@ namespace KerbalKonstructs.UI
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
+
+
+        private void CacheFacilities()
+        {
+
+            List<StaticObject> allStatics = KerbalKonstructs.instance.getStaticDB().getAllStatics();
+
+            for (int i = 0; i < allStatics.Count; i++)
+            {
+                //not anywhere here
+                if (!allStatics[i].isActive)
+                    continue;
+                // Facility is more than 5000m away
+                if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].gameObject.transform.position) > 5000f)
+                    continue;
+                // is not a facility
+                if (String.Equals(((string)allStatics[i].getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
+                    continue;
+
+                allFacilities.Add(allStatics[i]);
+            }
+        }
 	}
 }
