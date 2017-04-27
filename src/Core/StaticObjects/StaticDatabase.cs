@@ -82,7 +82,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 			{
 				if ((string)obj.getSetting("Group") == sGroup)
 					obj.SetActive(bActive);
@@ -200,9 +200,9 @@ namespace KerbalKonstructs.Core
 
 						List<StaticObject> groupchildObjects = group.childObjects;
 
-						foreach (StaticObject obj in groupchildObjects)
+                        for (int i = 0; i < groupchildObjects.Count; i++)
 						{
-							dist = Vector3.Distance(vPlayerPos, obj.gameObject.transform.position);
+							dist = Vector3.Distance(vPlayerPos, groupchildObjects[i].gameObject.transform.position);
                             Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
 
 							break;

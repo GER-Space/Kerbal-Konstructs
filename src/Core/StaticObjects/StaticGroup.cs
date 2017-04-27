@@ -94,35 +94,35 @@ namespace KerbalKonstructs.Core
             bool visible = false;
             string sFacType = "";
 
-            foreach (StaticObject obj in childObjects)
-			{
-				dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
-				visible = (dist < (float) obj.getSetting("VisibilityRange"));
+            for (int i = 0; i < childObjects.Count; i++)
+            {
+				dist = Vector3.Distance(childObjects[i].gameObject.transform.position, playerPos);
+				visible = (dist < (float)childObjects[i].getSetting("VisibilityRange"));
 
-				sFacType = (string)obj.getSetting("FacilityType");
+				sFacType = (string)childObjects[i].getSetting("FacilityType");
 
 				if (sFacType == "Hangar")
 				{
-					if (visible) HangarGUI.CacheHangaredCraft(obj);
+					if (visible) HangarGUI.CacheHangaredCraft(childObjects[i]);
 				}
 
 				if (sFacType == "LandingGuide")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(childObjects[i]);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
 				}
 
 				if (sFacType == "TouchdownGuideL")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(childObjects[i]);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
 				}
 
 				if (sFacType == "TouchdownGuideR")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(childObjects[i]);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
 				}
@@ -136,9 +136,9 @@ namespace KerbalKonstructs.Core
 				}
 
                 if (visible)
-					obj.SetActive(true);
+                    childObjects[i].SetActive(true);
 				else
-					obj.SetActive(false);
+                    childObjects[i].SetActive(false);
 			}
 		}
 
