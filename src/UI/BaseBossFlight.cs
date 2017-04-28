@@ -194,7 +194,7 @@ namespace KerbalKonstructs.UI
 				GUILayout.BeginHorizontal();
 				{
 					string snearestopen = "";
-					LaunchSiteManager.getNearestOpenBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Range, out lNearest);
+					LaunchSiteManager.GetNearestOpenBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Range, out lNearest);
 					if (FlightGlobals.ActiveVessel.altitude > 75000)
 					{
 						GUILayout.Label("No base's beacon in range at this altitude.", LabelInfo);

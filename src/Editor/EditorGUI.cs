@@ -51,6 +51,7 @@ namespace KerbalKonstructs.UI
         #region Switches
         // Switches
         public Boolean enableColliders = false;
+        internal static bool isScanable = false;
         public static Boolean editingSite = false;
 
      //   public static Boolean editingFacility = false;
@@ -67,8 +68,8 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        Rect toolRect = new Rect(300, 35, 330, 680);
-        Rect siteEditorRect = new Rect(400, 45, 360, 590);
+        Rect toolRect = new Rect(300, 35, 330, 695);
+        Rect siteEditorRect = new Rect(400, 45, 360, 625);
 
         #endregion
 
@@ -102,7 +103,7 @@ namespace KerbalKonstructs.UI
         internal static String facType = "None";
         internal static String sGroup = "Ungrouped";
         String increment = "0.1";
-        String siteName, siteTrans, siteDesc, siteAuthor, siteCategory;
+        String siteName, siteTrans, siteDesc, siteAuthor, siteCategory, siteHidden;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
 
@@ -250,7 +251,7 @@ namespace KerbalKonstructs.UI
 
                 if (editingSite)
                 {
-                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawSiteEditorWindow, "", KKWindows);
+                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
                 }
             }
         }
@@ -307,6 +308,7 @@ namespace KerbalKonstructs.UI
             referenceVector = (Vector3d)(Vector3)selectedObject.getSetting("RadialPosition");
             orientation = (Vector3)selectedObject.getSetting("Orientation");
             modelScale = (float)selectedObject.getSetting("ModelScale");
+            //isScanable = bool.Parse((string)selectedObject.getSetting("isScanable"));
 
             // make this new when converted to PQSCity2
             // fill the variables here for later use
@@ -921,7 +923,7 @@ namespace KerbalKonstructs.UI
 
             if (!foldedIn)
             {
-                GUILayout.Space(5);
+                GUILayout.Space(3);
 
                 GUILayout.BeginHorizontal();
                 {
@@ -962,7 +964,18 @@ namespace KerbalKonstructs.UI
                 }
                 GUILayout.EndHorizontal();
 
-                GUILayout.Space(10);
+                GUILayout.Space(5);
+
+                GUILayout.BeginHorizontal();
+                {
+                    bool isScanable2 = GUILayout.Toggle(isScanable, "Static will show up on anomaly scanners", GUILayout.Width(250), GUILayout.Height(23));
+                    if (isScanable2 != isScanable)
+                        isScanable = isScanable2;
+                        saveSettings();
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.Space(6);
 
             }
 
@@ -1008,6 +1021,7 @@ namespace KerbalKonstructs.UI
                         siteDesc = sModelDesc;
 
                     siteCategory = (string)selectedObject.getSetting("Category");
+                    siteHidden = (string)selectedObject.getSetting("LaunchSiteIsHidden");
                     siteType = (SiteType)selectedObject.getSetting("LaunchSiteType");
                     flOpenCost = (float)selectedObject.getSetting("OpenCost");
                     flCloseValue = (float)selectedObject.getSetting("CloseValue");
@@ -1118,7 +1132,7 @@ namespace KerbalKonstructs.UI
         /// Launchsite Editor
         /// </summary>
         /// <param name="id"></param>
-        void drawSiteEditorWindow(int id)
+        void drawLaunchSiteEditorWindow(int id)
         {
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
@@ -1277,6 +1291,19 @@ namespace KerbalKonstructs.UI
             GUILayout.Label(" %");
             GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Site is hidden: ", GUILayout.Width(115));
+            GUILayout.Label(siteHidden, GUILayout.Width(85));
+            GUILayout.FlexibleSpace();
+            GUI.enabled = !(siteHidden == "false");
+            if (GUILayout.Button("No", GUILayout.Width(40), GUILayout.Height(23)))
+                siteHidden = "false";
+            GUI.enabled = !(siteHidden == "true");
+            if (GUILayout.Button("Yes", GUILayout.Width(40), GUILayout.Height(23)))
+                siteHidden = "true";
+            GUILayout.EndHorizontal();
+            GUI.enabled = true;
+
             GUILayout.Label("Description: ");
             descScroll = GUILayout.BeginScrollView(descScroll);
             siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
@@ -1300,6 +1327,7 @@ namespace KerbalKonstructs.UI
                 selectedObject.setSetting("LaunchRefund", float.Parse(stLaunchRefund));
                 selectedObject.setSetting("OpenCloseState", "Open");
                 selectedObject.setSetting("Category", siteCategory);
+                selectedObject.setSetting("LaunchSiteIsHidden", siteHidden);
                 if (siteAuthor != (string)selectedObject.model.getSetting("author"))
                     selectedObject.setSetting("LaunchSiteAuthor", siteAuthor);
 
@@ -1712,6 +1740,7 @@ namespace KerbalKonstructs.UI
                 selectedObject.setSetting("CustomInstance", "True");
             }
 
+            selectedObject.setSetting("isScanable", isScanable.ToString());
 
             updateSelection(selectedObject);
 
@@ -1724,6 +1753,8 @@ namespace KerbalKonstructs.UI
 		public static void updateSelection(StaticObject obj)
         {
             selectedObject = obj;
+
+            isScanable = bool.Parse((string)selectedObject.getSetting("isScanable"));
 
             vis = (float)obj.getSetting("VisibilityRange");
             facType = (string)obj.getSetting("FacilityType");

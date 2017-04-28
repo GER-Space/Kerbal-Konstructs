@@ -160,15 +160,15 @@ namespace KerbalKonstructs.Modules
             displayingTooltip = false;
             LaunchSite launchSite;
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
-
+            string openclosed, category;
 
             // Then do launchsites
             for (int index = 0; index < lauchSites.Length; index++)
             {
                 launchSite = lauchSites[index];
                 // check if we should display the site or not this is the fastst check, so it shoud be first
-                string openclosed = launchSite.openclosestate;
-                string category = launchSite.category;
+                openclosed = launchSite.openCloseState;
+                category = launchSite.category;
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
                     continue;
@@ -189,9 +189,12 @@ namespace KerbalKonstructs.Modules
                         continue;
                     if (openclosed == "OpenLocked" || openclosed == "ClosedLocked")
                         continue;
+                    // don't show hidden bases when closed
+                    if (launchSite.isHidden && (launchSite.openCloseState == "Closed"))
+                        continue;
                 }
 
-                Vector3 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.reflat, launchSite.reflon,launchSite.refalt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                Vector3 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon,launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && isOccluded(launchSitePosition, body))
                 {

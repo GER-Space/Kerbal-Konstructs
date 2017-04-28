@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using KerbalKonstructs.API;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
@@ -10,68 +11,99 @@ namespace KerbalKonstructs.Core
 
 		public string author;
 		public SiteType type;
-		public Texture logo;
-		public Texture icon;
+		public Texture logo = null;
+		public Texture icon = null;
 		public string description;
 
 		public string category;
-		public float opencost;
-		public float closevalue;
+        public float openCost = 0f;
+		public float closeValue = 0f;
 
-		public string openclosestate;
-		public string favouritesite;
-		public float missioncount;
-		public string missionlog;
+		public string openCloseState = "Closed";
+		public string favouriteSite = "No";
+		public float missionCount = 0f;
+		public string missionLog = "Too busy to keep this log. Signed Gene Kerman.";
 
-		public float reflon;
-		public float reflat;
-		public float refalt;
-		public float sitelength;
-		public float sitewidth;
-		public float launchrefund;
-		public float recoveryfactor;
-		public float recoveryrange;
+		public float refLon;
+		public float refLat;
+		public float refAlt;
+		public float siteLength;
+		public float siteWidth;
+		public float launchRefund = 0f;
+		public float recoveryFactor = 0f;
+		public float recoveryRange = 0f;
         public CelestialBody body;
 
-		public string nation;
+		public string nation = "United Kerbin";
 
-		public GameObject GameObject;
-		public PSystemSetup.SpaceCenterFacility facility;
+		public GameObject gameObject;
+		public PSystemSetup.SpaceCenterFacility facility = null;
 
-		public LaunchSite(string sName, string sAuthor, SiteType sType, Texture sLogo, Texture sIcon,
-			string sDescription, string sDevice, float fOpenCost, float fCloseValue, string sOpenCloseState, CelestialBody vbody, float fRefLon, 
-			float fRefLat, float fRefAlt, float fLength, float fWidth, float fRefund, float fRecoveryFactor, float fRecoveryRange,
-			GameObject gameObject, PSystemSetup.SpaceCenterFacility newFacility = null, 
-			string sMissionLog = "Too busy to keep this log. Signed Gene Kerman.", 
-			string sNation = "United Kerbin", string sFavourite = "No", float fMissionCount = 0)
-		{
-			name = sName;
-			author = sAuthor;
-			type = sType;
-			logo = sLogo;
-			icon = sIcon;
-			description = sDescription;
-			category = sDevice;
-			opencost = fOpenCost;
-			closevalue = fCloseValue;
-			openclosestate = sOpenCloseState;
-			GameObject = gameObject;
-			facility = newFacility;
-			reflon = fRefLon;
-            body = vbody;
-            reflat = fRefLat;
-			refalt = fRefAlt;
-			sitelength = fLength;
-			sitewidth = fWidth;
-			launchrefund = fRefund;
-			recoveryfactor = fRecoveryFactor;
-			recoveryrange = fRecoveryRange;
-			favouritesite = sFavourite;
-			missioncount = fMissionCount;
-			nation = sNation;
-			missionlog = sMissionLog;
+        internal bool isHidden = false;
+
+		public LaunchSite()
+        { 
 		}
-	}
+
+        /// <summary>
+        /// Creates an Launchsite out of an StaticInstance (and its settings)
+        /// </summary>
+        /// <param name="instance"></param>
+        public LaunchSite(StaticObject instance, PSystemSetup.SpaceCenterFacility newFacility)
+        {
+            Texture logo = null;
+            Texture icon = null;
+
+            if (instance.settings.ContainsKey("LaunchSiteLogo"))
+            {
+                string sLogoPath = (string)instance.getSetting("LaunchSiteLogo");
+                logo = GameDatabase.Instance.GetTexture(sLogoPath, false);
+
+                if (logo == null)
+                    logo = GameDatabase.Instance.GetTexture(instance.model.path + "/" + instance.getSetting("LaunchSiteLogo"), false);
+            }
+            // use default logo
+            if (logo == null)
+                logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false); 
+
+            if (instance.settings.ContainsKey("LaunchSiteIcon"))
+            {
+                string sIconPath = (string)instance.getSetting("LaunchSiteIcon");
+                icon = GameDatabase.Instance.GetTexture(sIconPath, false);
+
+                if (icon == null)
+                    icon = GameDatabase.Instance.GetTexture(instance.model.path + "/" + instance.getSetting("LaunchSiteIcon"), false);
+            }
+
+            this.name = (string)instance.getSetting("LaunchSiteName");
+            this.author = (instance.settings.ContainsKey("LaunchSiteAuthor")) ? (string)instance.getSetting("LaunchSiteAuthor") : (string)instance.model.getSetting("author");
+            this.type = (SiteType)instance.getSetting("LaunchSiteType");
+            this.logo = logo;
+            this.icon = icon;
+            this.description = (string)instance.getSetting("LaunchSiteDescription");
+            this.category = (string)instance.getSetting("Category");
+            this.openCost = (float)instance.getSetting("OpenCost");
+            this.closeValue = (float)instance.getSetting("CloseValue");
+            this.body = instance.body;
+            this.refLon = (float)Math.Round((NavUtils.GetLongitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg),2);
+            this.refLat = (float)Math.Round((NavUtils.GetLatitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 2);
+            this.refAlt = (float)instance.getSetting("RadiusOffset");
+            this.siteLength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
+                                    (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.getSetting("DefaultLaunchSiteLength");
+            this.siteWidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
+                                    (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.getSetting("DefaultLaunchSiteWidth");
+            this.launchRefund = (float)instance.getSetting("LaunchRefund");
+            this.recoveryFactor = (float)instance.getSetting("RecoveryFactor");
+            this.recoveryRange = (float)instance.getSetting("RecoveryRange");
+            this.gameObject = instance.gameObject;
+            this.facility = newFacility;
+            this.missionLog = "No log";
+
+            if (string.Equals((string)instance.getSetting("LaunchSiteIsHidden"), "true", StringComparison.CurrentCultureIgnoreCase))
+                this.isHidden = true;
+
+        }
+    }
 
 	public enum SiteType
 	{

@@ -255,7 +255,7 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.Space(1);
 
-			isFavourite = (selectedSite.favouritesite == "Yes");
+			isFavourite = (selectedSite.favouriteSite == "Yes");
 
 			GUILayout.BeginHorizontal();
 			{
@@ -283,9 +283,9 @@ namespace KerbalKonstructs.UI
 				if (GUILayout.Button(tFaveTemp, GUILayout.Height(23), GUILayout.Width(23)))
 				{
 					if (isFavourite)
-						selectedSite.favouritesite = "No";							
+						selectedSite.favouriteSite = "No";							
 					else
-						selectedSite.favouritesite = "Yes";
+						selectedSite.favouriteSite = "Yes";
 				}
 
 				if (foldedIn) tFolded = tFoldOut;
@@ -328,18 +328,18 @@ namespace KerbalKonstructs.UI
 					GUILayout.EndHorizontal();
 				}
 
-				GUILayout.Label("Altitude: " + selectedSite.refalt.ToString("#0.0") + " m", LabelInfo);
-				GUILayout.Label("Longitude: " + selectedSite.reflon.ToString("#0.000"), LabelInfo);
-				GUILayout.Label("Latitude: " + selectedSite.reflat.ToString("#0.000"), LabelInfo);
+				GUILayout.Label("Altitude: " + selectedSite.refAlt.ToString("#0.0") + " m", LabelInfo);
+				GUILayout.Label("Longitude: " + selectedSite.refLon.ToString("#0.000"), LabelInfo);
+				GUILayout.Label("Latitude: " + selectedSite.refLat.ToString("#0.000"), LabelInfo);
 				GUILayout.Space(3);
-				GUILayout.Label("Length: " + selectedSite.sitelength.ToString("#0" + " m"), LabelInfo);
-				GUILayout.Label("Width: " + selectedSite.sitewidth.ToString("#0" + " m"), LabelInfo);
+				GUILayout.Label("Length: " + selectedSite.siteLength.ToString("#0" + " m"), LabelInfo);
+				GUILayout.Label("Width: " + selectedSite.siteWidth.ToString("#0" + " m"), LabelInfo);
 
 				GUILayout.FlexibleSpace();
 			}
 
-			iFundsOpen = selectedSite.opencost;
-			iFundsClose = selectedSite.closevalue;
+			iFundsOpen = selectedSite.openCost;
+			iFundsClose = selectedSite.closeValue;
 
 			bool isAlwaysOpen = false;
 			bool cannotBeClosed = false;
@@ -356,13 +356,13 @@ namespace KerbalKonstructs.UI
 				{
 					if (!KerbalKonstructs.instance.disableRemoteRecovery)
 					{
-						if (selectedSite.recoveryfactor > 0)
+						if (selectedSite.recoveryFactor > 0)
 						{
-							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryfactor.ToString() + "%", LabelInfo);
+							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryFactor.ToString() + "%", LabelInfo);
 							if (selectedSite.name != "Runway" && selectedSite.name != "LaunchPad")
 							{
-								if (selectedSite.recoveryrange > 0)
-									rangekm = selectedSite.recoveryrange / 1000;
+								if (selectedSite.recoveryRange > 0)
+									rangekm = selectedSite.recoveryRange / 1000;
 								else
 									rangekm = 0;
 
@@ -376,7 +376,7 @@ namespace KerbalKonstructs.UI
 					}
 
 					GUILayout.FlexibleSpace();
-					GUILayout.Label("Launch Refund: " + selectedSite.launchrefund.ToString() + "%", LabelInfo);
+					GUILayout.Label("Launch Refund: " + selectedSite.launchRefund.ToString() + "%", LabelInfo);
 				}
 
 				if (displayLog)
@@ -384,7 +384,7 @@ namespace KerbalKonstructs.UI
 					logScrollPosition = GUILayout.BeginScrollView(logScrollPosition, GUILayout.Height(120));
 					{
 						Char csep = '|';
-						string[] sLogEntries = selectedSite.missionlog.Split(csep);
+						string[] sLogEntries = selectedSite.missionLog.Split(csep);
 						foreach (string sEntry in sLogEntries)
 						{
 							GUILayout.Label(sEntry, LabelInfo);
@@ -395,9 +395,9 @@ namespace KerbalKonstructs.UI
 					GUILayout.FlexibleSpace();
 				}
 
-				isOpen = (selectedSite.openclosestate == "Open");
-				isLocked = (selectedSite.openclosestate == "OpenLocked" || selectedSite.openclosestate == "ClosedLocked");
-				isLaunch = (selectedSite.openclosestate == "OpenLocked" || selectedSite.openclosestate == "Open");
+				isOpen = (selectedSite.openCloseState == "Open");
+				isLocked = (selectedSite.openCloseState == "OpenLocked" || selectedSite.openCloseState == "ClosedLocked");
+				isLaunch = (selectedSite.openCloseState == "OpenLocked" || selectedSite.openCloseState == "Open");
 				GUI.enabled = !isOpen && !isLocked;
 				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				if (!isAlwaysOpen)
@@ -413,7 +413,7 @@ namespace KerbalKonstructs.UI
 									3);
 							else
 							{
-								selectedSite.openclosestate = "Open";
+								selectedSite.openCloseState = "Open";
 								Funding.Instance.AddFunds(-iFundsOpen, TransactionReasons.Cheating);
 							}
 						}
@@ -427,7 +427,7 @@ namespace KerbalKonstructs.UI
 					if (GUILayout.Button("Close Base for \n" + iFundsClose + " funds", GUILayout.Height(38)))
 					{
 						Funding.Instance.AddFunds(iFundsClose, TransactionReasons.Cheating);
-						selectedSite.openclosestate = "Closed";
+						selectedSite.openCloseState = "Closed";
 					}
 				}
 				GUI.enabled = true;

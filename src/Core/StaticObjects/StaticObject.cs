@@ -167,13 +167,14 @@ namespace KerbalKonstructs.Core
 
             body = (CelestialBody)getSetting("CelestialBody");
 
-      /*      // Add them to the bodys objectlist, so tey show up as anomalies 
-            PQSSurfaceObject pqsSrfObj = new PQSSurfaceObject();
-            pqsSrfObj = (PQSSurfaceObject)pqsCity;
-            var pqsObjectList = body.pqsSurfaceObjects.ToList();
-            pqsObjectList.Add(pqsSrfObj);
-            body.pqsSurfaceObjects = pqsObjectList.ToArray();
-            */
+            // Add them to the bodys objectlist, so they show up as anomalies
+            if (bool.Parse((string)getSetting("isScanable")))
+            {
+                Log.Normal("Added " + gameObject.name + " to scanable Objects");
+                var pqsObjectList = body.pqsSurfaceObjects.ToList();
+                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                body.pqsSurfaceObjects = pqsObjectList.ToArray();
+            }
 
             foreach (StaticModule module in model.modules)
 			{

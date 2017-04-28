@@ -27,7 +27,7 @@ namespace KerbalKonstructs
         // Hello
         public static KerbalKonstructs instance;
         public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
-        private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
+        //private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
 
         public static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
@@ -182,6 +182,9 @@ namespace KerbalKonstructs
             KKAPI.addModelSetting("pointername", new ConfigGenericString());
             KKAPI.addModelSetting("name", new ConfigGenericString());
             KKAPI.addModelSetting("keepConvex", new ConfigGenericString());
+            ConfigGenericString isScanable = new ConfigGenericString();
+            isScanable.setDefaultValue("false");
+            KKAPI.addInstanceSetting("isScanable", isScanable);
             #endregion
 
             #region Instance API
@@ -224,6 +227,11 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("LaunchSiteLength", new ConfigFloat());
             KKAPI.addInstanceSetting("LaunchSiteWidth", new ConfigFloat());
             KKAPI.addInstanceSetting("LaunchSiteNation", new ConfigGenericString());
+            ConfigGenericString launchSiteHidden = new ConfigGenericString();
+            launchSiteHidden.setDefaultValue("false");
+            KKAPI.addInstanceSetting("LaunchSiteIsHidden", launchSiteHidden);
+
+
 
             // Career Mode Strategy Instances
             ConfigFloat openCost = new ConfigFloat();
@@ -426,8 +434,8 @@ namespace KerbalKonstructs
                 if (sitename == "") return;
 
                 LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
-                float fMissionCount = lsSite.missioncount;
-                lsSite.missioncount = fMissionCount + 1;
+                float fMissionCount = lsSite.missionCount;
+                lsSite.missionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
 
                 double hours = dSecs / 60.0 / 60.0;
@@ -441,8 +449,8 @@ namespace KerbalKonstructs
 
                 string sCraft = vVessel.shipName;
                 string sWeight = vVessel.GetTotalMass().ToString();
-                string sLogEntry = lsSite.missionlog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
-                lsSite.missionlog = sLogEntry;
+                string sLogEntry = lsSite.missionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
+                lsSite.missionLog = sLogEntry;
 
                 VesselLaunched = true;
 

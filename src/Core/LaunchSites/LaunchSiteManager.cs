@@ -15,20 +15,14 @@ namespace KerbalKonstructs.Core
     {
         private static List<LaunchSite> launchSites = new List<LaunchSite>();
         private static string lastLaunchSite = "Runway";
-        public static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
-        public static float RangeNearestOpenBase = 0f;
-        public static string NearestOpenBase = "";
-        public static float RangeNearestBase = 0f;
-        public static string NearestBase = "";
+        private static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+        public static float rangeNearestOpenBase = 0f;
+        public static string nearestOpenBase = "";
+        public static float rangeNearestBase = 0f;
+        public static string nearestBase = "";
 
-        public static LaunchSite runway = new LaunchSite("Runway", "Squad", SiteType.SPH,
-            GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false), null,
-            "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.",
-            "Runway", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), getKSCLon, getKSCLat, 69, 2500f, 75f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
-        public static LaunchSite launchpad = new LaunchSite("LaunchPad", "Squad", SiteType.VAB,
-            GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false), null,
-            "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...",
-            "RocketPad", 0, 0, "Open", KKAPI.getCelestialBody("HomeWorld"), getKSCLon, getKSCLat, 72, 20f, 20f, 0f, 100f, 0f, SpaceCenter.Instance.gameObject);
+        internal static LaunchSite runway = new LaunchSite();
+        internal static LaunchSite launchpad = new LaunchSite();
 
 
 
@@ -74,10 +68,54 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        static LaunchSiteManager()
+        /// <summary>
+        /// prefills LaunchSiteManager with the runway and the KSC
+        /// </summary>
+        private static void AddKSC ()
         {
+
+            runway.name = "Runway";
+            runway.author = "Squad";
+            runway.type = SiteType.SPH;
+            runway.category = "Runway";
+            runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
+            runway.description = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
+            runway.openCloseState = "Open";
+            runway.body = KKAPI.getCelestialBody("HomeWorld");
+            runway.refLat = getKSCLat;
+            runway.refLon = getKSCLon;
+            runway.refAlt = 69f;
+            runway.siteLength = 2500f;
+            runway.siteWidth = 75f;
+            runway.recoveryFactor = 100f;
+            runway.recoveryRange = 0f;
+            runway.gameObject = SpaceCenter.Instance.gameObject;
+
+            launchpad.name = "LaunchPad";
+            launchpad.author = "Squad";
+            launchpad.type = SiteType.VAB;
+            launchpad.category = "RocketPad";
+            launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
+            launchpad.description = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
+            launchpad.openCloseState = "Open";
+            launchpad.body = KKAPI.getCelestialBody("HomeWorld");
+            launchpad.refLat = getKSCLat;
+            launchpad.refLon = getKSCLon;
+            launchpad.refAlt = 72;
+            launchpad.siteLength = 20f;
+            launchpad.siteWidth = 20f;
+            launchpad.recoveryFactor = 100f;
+            launchpad.recoveryRange = 0f;
+            launchpad.gameObject = SpaceCenter.Instance.gameObject;
+
+
             launchSites.Add(runway);
             launchSites.Add(launchpad);
+        }
+
+        static LaunchSiteManager()
+        {
+            AddKSC();
         }
 
 
@@ -133,58 +171,8 @@ namespace KerbalKonstructs.Core
 							fi.SetValue(PSystemSetup.Instance, newFacilities);
 							facilities = newFacilities;
 							
-							Texture logo = null;
-							Texture icon = null;
 
-							if (obj.settings.ContainsKey("LaunchSiteLogo"))
-							{
-								string sLogoPath = (string)obj.getSetting("LaunchSiteLogo");
-								logo = GameDatabase.Instance.GetTexture(sLogoPath, false);
-							
-								if (logo == null)
-									logo = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteLogo"), false);
-							}
-							
-							if (logo == null)
-								logo = defaultLaunchSiteLogo;
-
-							if(obj.settings.ContainsKey("LaunchSiteIcon"))
-							{
-								string sIconPath = (string)obj.getSetting("LaunchSiteIcon");
-								icon = GameDatabase.Instance.GetTexture(sIconPath, false);
-
-								if (icon == null)
-									icon = GameDatabase.Instance.GetTexture(obj.model.path + "/" + obj.getSetting("LaunchSiteIcon"), false);
-							}							
-							
-							// TODO This is still hard-code and needs to use an API properly
-							launchSites.Add(new LaunchSite(
-								(string)obj.getSetting("LaunchSiteName"), 
-								(obj.settings.ContainsKey("LaunchSiteAuthor")) ? (string)obj.getSetting("LaunchSiteAuthor") : (string)obj.model.getSetting("author"), 
-								(SiteType)obj.getSetting("LaunchSiteType"), 
-								logo, 
-								icon, 
-								(string)obj.getSetting("LaunchSiteDescription"), 
-								(string)obj.getSetting("Category"), 
-								(float)obj.getSetting("OpenCost"), 
-								(float)obj.getSetting("CloseValue"), 
-								"Closed", 
-                                (CelestialBody)obj.getSetting("CelestialBody"),
-								(float)obj.getSetting("RefLongitude"), 
-								(float)obj.getSetting("RefLatitude"), 
-								(float)obj.getSetting("RadiusOffset"), 
-								(obj.settings.ContainsKey("LaunchSiteLength")) ? 
-									(float)obj.getSetting("LaunchSiteLength") : (float)obj.model.getSetting("DefaultLaunchSiteLength"), 
-								(obj.settings.ContainsKey("LaunchSiteWidth")) ? 
-									(float)obj.getSetting("LaunchSiteWidth") : (float)obj.model.getSetting("DefaultLaunchSiteWidth"),
-								(float)obj.getSetting("LaunchRefund"),
-								(float)obj.getSetting("RecoveryFactor"),
-								(float)obj.getSetting("RecoveryRange"),
-								obj.gameObject, 
-								newFacility,
-								"No log",
-								(string)obj.getSetting("LaunchSiteNation")
-								));
+                            launchSites.Add(new LaunchSite(obj, newFacility));
 						}
 						else
 						{
@@ -261,7 +249,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					site.openclosestate = sState;
+					site.openCloseState = sState;
 					return;
 				}
 			}
@@ -275,7 +263,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					site.openclosestate = site.openclosestate + "Locked";
+					site.openCloseState = site.openCloseState + "Locked";
 					return;
 				}
 			}
@@ -289,10 +277,10 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					if (site.openclosestate == "OpenLocked")
-						site.openclosestate = "Open";
+					if (site.openCloseState == "OpenLocked")
+						site.openCloseState = "Open";
 					else
-						site.openclosestate = "Closed";
+						site.openCloseState = "Closed";
 					return;
 				}
 			}
@@ -306,8 +294,8 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					sOpenCloseState = site.openclosestate;
-					fOpenCost = site.opencost;
+					sOpenCloseState = site.openCloseState;
+					fOpenCost = site.openCost;
 					return;
 				}
 			}
@@ -324,7 +312,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					if (site.openclosestate == "OpenLocked" || site.openclosestate == "ClosedLocked")
+					if (site.openCloseState == "OpenLocked" || site.openCloseState == "ClosedLocked")
 						return true;
 				}
 			}
@@ -339,7 +327,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					if ( (site.openclosestate == "Open") || (site.openclosestate == "OpenLocked") ) 
+					if ( (site.openCloseState == "Open") || (site.openCloseState == "OpenLocked") ) 
                         return true;
 				}
 			}
@@ -354,7 +342,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					if (site.openclosestate == "Closed")
+					if (site.openCloseState == "Closed")
 						return true;
 				}
 			}
@@ -369,7 +357,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					fRefund = site.launchrefund;
+					fRefund = site.launchRefund;
 					return;
 				}
 			}
@@ -385,7 +373,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site.name == sSiteName)
 				{
-					return site.GameObject;
+					return site.gameObject;
 				}
 			}
 
@@ -469,7 +457,7 @@ namespace KerbalKonstructs.Core
 			List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 			foreach (LaunchSite site in sites)
 			{
-				site.openclosestate = "Closed";
+				site.openCloseState = "Closed";
 			}
 		}
 
@@ -483,7 +471,7 @@ namespace KerbalKonstructs.Core
 			{
 				if (site == lTarget)
 				{
-					var radialposition = site.GameObject.transform.position;
+					var radialposition = site.gameObject.transform.position;
 					var dist = Vector3.Distance(position, radialposition);
 					flRange = dist;
 				}
@@ -494,7 +482,7 @@ namespace KerbalKonstructs.Core
 
 		// Returns the nearest open Launchsite to a position and range to the Launchsite in m
 		// The basic ATC feature is in here for now
-		public static void getNearestOpenBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lNearest)
+		public static void GetNearestOpenBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lNearest)
 		{
 			SpaceCenter KSC = SpaceCenter.Instance;
 			var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
@@ -507,14 +495,14 @@ namespace KerbalKonstructs.Core
 
 			foreach (LaunchSite site in basesites)
 			{
-				sOpenCloseState = site.openclosestate;
+				sOpenCloseState = site.openCloseState;
 
 				if (!MiscUtils.isCareerGame())
 					sOpenCloseState = "Open";
 
 				if (sOpenCloseState == "Open")
 				{
-					var radialposition = site.GameObject.transform.position;
+					var radialposition = site.gameObject.transform.position;
 					var dist = Vector3.Distance(position, radialposition);
 
 					if (site.name == "Runway")
@@ -548,34 +536,34 @@ namespace KerbalKonstructs.Core
 				lNearestBase = lKSC;
 			}
 
-			RangeNearestOpenBase = (float)smallestDist;
+			rangeNearestOpenBase = (float)smallestDist;
 
 			// Air traffic control messaging
 			if (KerbalKonstructs.GUI_Landinguide.IsOpen())
 			{
-				if (sNearestBase != NearestOpenBase)
+				if (sNearestBase != nearestOpenBase)
 				{
-					if (RangeNearestOpenBase < 25000)
+					if (rangeNearestOpenBase < 25000)
 					{
-						NearestOpenBase = sNearestBase;
+						nearestOpenBase = sNearestBase;
 						MessageSystemButton.MessageButtonColor color = MessageSystemButton.MessageButtonColor.BLUE;
 						MessageSystem.Message m = new MessageSystem.Message("KK ATC", "You have entered the airspace of " + sNearestBase + " ATC. Please keep this channel open and obey all signal lights. Thank you. " + sNearestBase + " Air Traffic Control out.", color, MessageSystemButton.ButtonIcons.MESSAGE);
 						MessageSystem.Instance.AddMessage(m);
 					}
 					else
-						if (NearestOpenBase != "")
+						if (nearestOpenBase != "")
 						{
 							// you have left ...
 							MessageSystemButton.MessageButtonColor color = MessageSystemButton.MessageButtonColor.GREEN;
 							MessageSystem.Message m = new MessageSystem.Message("KK ATC", "You are now leaving the airspace of " + sNearestBase + ". Safe journey. " + sNearestBase + " Air Traffic Control out.", color, MessageSystemButton.ButtonIcons.MESSAGE);
 							MessageSystem.Instance.AddMessage(m);
-							NearestOpenBase = "";
+							nearestOpenBase = "";
 						}
 				}
 			}
 
 			sBase = sNearestBase;
-			flRange = RangeNearestOpenBase;
+			flRange = rangeNearestOpenBase;
 			lNearest = lNearestBase;
 		}
 
@@ -595,9 +583,9 @@ namespace KerbalKonstructs.Core
 
 			foreach (LaunchSite site in basesites)
 			{
-				if (site.GameObject == null) continue;
+				if (site.gameObject == null) continue;
 
-				var radialposition = site.GameObject.transform.position;
+				var radialposition = site.gameObject.transform.position;
 				var dist = Vector3.Distance(position, radialposition);
 
 				if (radialposition == position) continue;
@@ -637,11 +625,11 @@ namespace KerbalKonstructs.Core
 				lLastSite = lKSC;
 			}
 
-			RangeNearestBase = (float)smallestDist;
+			rangeNearestBase = (float)smallestDist;
 
 			sBase = sNearestBase;
 			sBase2 = sLastNearest;
-			flRange = RangeNearestBase;
+			flRange = rangeNearestBase;
 			lSite = lTargetSite;
 			lSite2 = lLastSite;
 		}
