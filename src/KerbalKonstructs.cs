@@ -18,6 +18,7 @@ using KerbalKonstructs.Addons;
 using KerbalKonstructs.Modules;
 
 using Debug = UnityEngine.Debug;
+using System.Collections;
 
 namespace KerbalKonstructs
 {
@@ -493,7 +494,6 @@ namespace KerbalKonstructs
             }
             RemoteNet.LoadGroundStations();
             
-            //LoadSquadModels();
         }
 
         public void SaveState(ConfigNode configNode)
@@ -977,7 +977,6 @@ namespace KerbalKonstructs
                 obj.model = model;
                 obj.configUrl = configurl;
                 obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
-                //obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
                 Log.Normal("Load Instance: " + obj.configPath);
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
@@ -1129,34 +1128,49 @@ namespace KerbalKonstructs
         /// </summary>
         public void LoadSquadModels ()
         {
-            // first we find any potential PQSCity Objects
+            // first we find get all upgradeable facilities
+            Upgradeables.UpgradeableFacility[] upgradeablefacilities;
+            upgradeablefacilities = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>();
 
-            PQSMod_MapDecalTangent[] statics = UnityEngine.Object.FindObjectsOfType<PQSMod_MapDecalTangent>();
-            // Component[] allComponents;
-            foreach (var pqs in statics)
+            foreach (var facility in upgradeablefacilities)
             {
-                Log.Normal("Found PQSCity: " + pqs.name);
-                Log.Normal("radius: " + pqs.radius);
-                Log.Normal("removeScatter: " + pqs.removeScatter );
-                Log.Normal("angle: "  + pqs.angle );
-                Log.Normal("absolute: " + pqs.absolute );
-                Log.Normal("absOffset: " + pqs.absoluteOffset );
-               // Log.Normal("colorMapName: " + pqs.colorMap.MapName );
-                Log.Normal("hightMapName: " + pqs.heightMap.MapName );
-                Log.Normal("heightMapDeformity: " + pqs.heightMapDeformity );
-                Log.Normal("smoothColor: " + pqs.smoothColor );
-                Log.Normal("smoothHeight: " + pqs.smoothHeight);
-                Log.Normal("useAlphaHeightSmoothing: " + pqs.useAlphaHeightSmoothing);
-                Log.Normal("");
+                for (int i = 0; i  < facility.UpgradeLevels.Length; i++ )
+                {
 
-                //      allComponents = statics[i].gameObject.GetComponents<Component>();
-                //     foreach (var component in allComponents)
-                //    {
-                //       Debug.Log(component.GetType().ToString());
-                //   } 
+                    string modelName = "KSC_" + facility.name + "_level_" + (i + 1).ToString();
+                    string modelTitle = "KSC " + facility.name + " level " + (i + 1).ToString();
 
-                //statics[i].gameObject
+                    // don't double register the models a second time (they will do this) 
+                    // maybe with a "without green flag" and filter that our later at spawn in mangle
+                    if (staticDB.getModels().Select(x => x.name).Contains(modelName))
+                        continue;
+
+                    StaticModel model = new StaticModel();
+                    model.name = modelName;
+
+                    // Fill in FakeNews errr values
+                    model.path = "KerbalKonstructs/" + modelName;
+                    model.configPath = model.path + ".cfg";
+                    model.setSetting("keepConvex","true");
+                    model.setSetting("title", modelTitle);
+                    model.setSetting("mesh", modelName);
+                    model.setSetting("category", "Squad KSC");
+                    model.setSetting("Author", "Squad");
+                    model.setSetting("manufacturer", "Squad");
+                    model.setSetting("description", "Squad original " + modelTitle);
+
+                    model.isSquad = true;
+
+                    // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                    model.prefab = facility.UpgradeLevels[i].facilityPrefab;
+
+                    Log.Normal("Squad Model: " + modelName + " found: " );
+
+                    staticDB.registerModel(model, modelName);
+
+                }
             }
+        
 
         }
 

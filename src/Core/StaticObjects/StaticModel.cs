@@ -11,6 +11,8 @@ namespace KerbalKonstructs.Core
 		public string configPath;
 		public string path;
         public string name;
+        //needed for postprocessing after spawn
+        internal bool isSquad;
 
         public GameObject  prefab;
 		public Dictionary<string, object> settings = new Dictionary<string, object>();

@@ -119,13 +119,41 @@ namespace KerbalKonstructs.Core
 			return fDistance;
 		}
 
-		public void spawnObject(Boolean editing, Boolean bPreview)
+        /// <summary>
+        /// Removes the wreck model from an KSC Object.
+        /// </summary>
+        private void MangleSquadStatic()
+        {
+            Log.Normal("Mangle: "+ model.name + " parent: " + gameObject.transform.name);
+            gameObject.transform.parent = null;
+            var transforms = gameObject.transform.GetComponentsInChildren<Transform>(true);
+            foreach (var transform in transforms)
+            {
+
+                if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Log.Normal("deleting wreck 0");
+                    transform.parent = null;
+                    GameObject.Destroy(transform.gameObject);
+                }
+            }
+        }
+
+
+
+        public void spawnObject(Boolean editing, Boolean bPreview)
 		{
+            // mangle Squads statics
+            if (model.isSquad)
+            {
+                MangleSquadStatic();
+            }
+
             // Objects spawned at runtime should be active, ones spawned at loading not
             gameObject.SetActive(editing);
-			
-			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
-			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
+
+            Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
+            List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
 
             SetColliderLayer(15);
 
@@ -253,10 +281,9 @@ namespace KerbalKonstructs.Core
                 foreach (StaticModule module in this.gameObject.GetComponents<StaticModule>())
                     module.StaticObjectUpdate();
 
-                SetActiveRecursively(this.gameObject, newState);
+                SetActiveRecursively(gameObject,newState);
             }
         }
-
 
         /// <summary>
         /// iterates through the gameobject and its childs and set them active
@@ -264,16 +291,16 @@ namespace KerbalKonstructs.Core
         /// <param name="rootObject"></param>
         /// <param name="active"></param>
         private void SetActiveRecursively(GameObject rootObject, bool active)
-		{
-			rootObject.SetActive(active);
+        {
+            rootObject.SetActive(active);
 
-			foreach (Transform childTransform in rootObject.transform)
-			{
-				SetActiveRecursively(childTransform.gameObject, active);
-			}
-		}
+            foreach (Transform childTransform in rootObject.transform)
+            {
+                SetActiveRecursively(childTransform.gameObject, active);
+            }
+        }
 
-		public void deselectObject(Boolean enableColliders)
+        public void deselectObject(Boolean enableColliders)
 		{
 			this.editing = false;
 			if (enableColliders) this.ToggleAllColliders(true);
