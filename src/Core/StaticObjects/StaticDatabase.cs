@@ -70,7 +70,7 @@ namespace KerbalKonstructs.Core
 
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
 			{
-				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
+				if (obj.body == cBody)
 					obj.SetActive(bActive);
 				else
 					if (bOpposite)
