@@ -1376,7 +1376,7 @@ namespace KerbalKonstructs.UI
         public void spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
         {
             StaticObject obj = new StaticObject();
-            obj.gameObject = UnityEngine.Object.Instantiate(KerbalKonstructs.instance.staticDB.GetModel(model.name).prefab);
+            obj.gameObject = UnityEngine.Object.Instantiate(model.prefab);
             obj.setSetting("RadiusOffset", fOffset);
             obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
             string newGroup = (selectedObject != null) ? (string)selectedObject.getSetting("Group") : "Ungrouped";
