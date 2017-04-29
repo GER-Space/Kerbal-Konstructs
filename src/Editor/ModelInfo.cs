@@ -598,7 +598,7 @@ namespace KerbalKonstructs.UI
 		public void CreatePreviewInstance(StaticModel model)
 		{
 			StaticObject obj = new StaticObject();
-			obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
+			obj.gameObject = GameObject.Instantiate(model.prefab);
 			obj.setSetting("RadiusOffset", (float)FlightGlobals.ActiveVessel.altitude);
 			obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
 			obj.setSetting("Group", "Ungrouped");
