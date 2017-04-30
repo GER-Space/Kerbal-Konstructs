@@ -128,6 +128,7 @@ namespace KerbalKonstructs.Core
         /// <param name="obj"></param>
         public static void createLaunchSite(StaticObject obj)
 		{
+
 			if (obj.settings.ContainsKey("LaunchSiteName") && obj.gameObject.transform.Find((string) obj.getSetting("LaunchPadTransform")) != null)
 			{
 				obj.gameObject.transform.name = (string) obj.getSetting("LaunchSiteName");

@@ -977,7 +977,7 @@ namespace KerbalKonstructs
                 obj.model = model;
                 obj.configUrl = configurl;
                 obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
-                Log.Normal("Load Instance: " + obj.configPath);
+                //Log.Normal("Load Instance: " + obj.configPath);
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
                 {
@@ -1097,7 +1097,7 @@ namespace KerbalKonstructs
                             }
                             else
                             {
-                                Log.Error("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
+                                Log.UserError("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
                             }
                         }
                     }
@@ -1126,16 +1126,23 @@ namespace KerbalKonstructs
         /// <summary>
         /// Tes for getting information out of the prebuild static models.
         /// </summary>
-        public void LoadSquadModels ()
+        public void LoadSquadModels()
         {
             // first we find get all upgradeable facilities
-            Upgradeables.UpgradeableFacility[] upgradeablefacilities;
-            upgradeablefacilities = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>();
+            Upgradeables.UpgradeableObject[] upgradeablefacilities;
+            upgradeablefacilities = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>();
 
             foreach (var facility in upgradeablefacilities)
             {
-                for (int i = 0; i  < facility.UpgradeLevels.Length; i++ )
+                for (int i = 0; i < facility.UpgradeLevels.Length; i++)
                 {
+
+                    //foreach (Transform transFrm in facility.UpgradeLevels[i].facilityPrefab.GetComponentsInChildren<Transform>(true))
+                    //{
+                    //    Log.Normal("XXX " + facility.name + "_" + (i + 1).ToString() + " " + transFrm.name);
+                    //} 
+                    //if (facility.name.Contains("_"))
+                    //    continue;
 
                     string modelName = "KSC_" + facility.name + "_level_" + (i + 1).ToString();
                     string modelTitle = "KSC " + facility.name + " level " + (i + 1).ToString();
@@ -1151,7 +1158,7 @@ namespace KerbalKonstructs
                     // Fill in FakeNews errr values
                     model.path = "KerbalKonstructs/" + modelName;
                     model.configPath = model.path + ".cfg";
-                    model.setSetting("keepConvex","true");
+                    model.setSetting("keepConvex", "true");
                     model.setSetting("title", modelTitle);
                     model.setSetting("mesh", modelName);
                     model.setSetting("category", "Squad KSC");
@@ -1161,17 +1168,23 @@ namespace KerbalKonstructs
 
                     model.isSquad = true;
 
+                    // the runways have all the same spawnpoint.
+                    if (facility.name.Equals("Runway", StringComparison.CurrentCultureIgnoreCase))
+                        model.setSetting("DefaultLaunchPadTransform", "End09/SpawnPoint");
+
+                    // Launchpads also 
+                    if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
+                        model.setSetting("DefaultLaunchPadTransform", "LaunchPad_spawn");
+
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
-                    Log.Normal("Squad Model: " + modelName + " found: " );
+                  //  Log.Normal("Squad Model: " + modelName + " found: ");
 
                     staticDB.registerModel(model, modelName);
 
                 }
             }
-        
-
         }
 
         /// <summary>
