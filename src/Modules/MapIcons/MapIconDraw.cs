@@ -31,7 +31,7 @@ namespace KerbalKonstructs.Modules
             if ((!KerbalKonstructs.instance.toggleIconsWithBB) || (KerbalKonstructs.instance.toggleIconsWithBB && this.IsOpen()))
             {
                 drawTrackingStations();
-                drawLaunchsites();
+                DrawLaunchsites();
             }
         }
 
@@ -98,7 +98,7 @@ namespace KerbalKonstructs.Modules
             for (int i = 0; i < groundStations.Count; i++ )
             {
                 groundStation = groundStations[i];
-                if ((mapHideIconsBehindBody) && (isOccluded(groundStation.gameObject.transform.position, body)))
+                if ((mapHideIconsBehindBody) && (IsOccluded(groundStation.gameObject.transform.position, body)))
                 {
                         continue;
                 }
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Modules
                     if (disObjectLon2 < 0) disObjectLon2 = disObjectLon2 + 360;
 
                     //Only display one tooltip at a time
-                    displayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    DisplayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
@@ -155,7 +155,7 @@ namespace KerbalKonstructs.Modules
         }
 
 
-        public void drawLaunchsites()
+        public void DrawLaunchsites()
         {
             displayingTooltip = false;
             LaunchSite launchSite;
@@ -196,7 +196,7 @@ namespace KerbalKonstructs.Modules
 
                 Vector3 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon,launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
-                if (mapHideIconsBehindBody && isOccluded(launchSitePosition, body))
+                if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
                 {
                         continue;
                 }
@@ -250,7 +250,7 @@ namespace KerbalKonstructs.Modules
                     sToolTip = launchSite.name;
                     if (launchSite.name == "Runway") sToolTip = "KSC Runway";
                     if (launchSite.name == "LaunchPad") sToolTip = "KSC LaunchPad";
-                    displayMapIconToolTip(sToolTip, pos);
+                    DisplayMapIconToolTip(sToolTip, pos);
 
                     // Select a base by clicking on the icon
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
@@ -266,7 +266,7 @@ namespace KerbalKonstructs.Modules
         }
 
 
-        private bool isOccluded(Vector3d loc, CelestialBody body)
+        private bool IsOccluded(Vector3d loc, CelestialBody body)
         {
             Vector3d camPos = ScaledSpace.ScaledToLocalSpace(PlanetariumCamera.Camera.transform.position);
 
@@ -282,7 +282,7 @@ namespace KerbalKonstructs.Modules
             return thisSite;
         }
 
-        public void displayMapIconToolTip(string sitename, Vector3 pos)
+        public void DisplayMapIconToolTip(string sitename, Vector3 pos)
         {
             displayingTooltip = true;
             GUI.Label(new Rect((float)(pos.x) + 16, (float)(Screen.height - pos.y) - 8, 210, 25), sitename);

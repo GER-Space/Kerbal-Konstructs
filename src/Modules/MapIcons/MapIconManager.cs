@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Modules
         {
             if (MapView.MapIsEnabled)
             {
-                drawManager();
+                DrawManager();
             }
             else
             {
@@ -47,12 +47,12 @@ namespace KerbalKonstructs.Modules
             }
         }
 
-        public void drawManager()
+        public void DrawManager()
         {
-            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", UIMain.navStyle);
+            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, DrawMapManagerWindow, "", UIMain.navStyle);
         }
 
-        void drawMapManagerWindow(int windowID)
+        void DrawMapManagerWindow(int windowID)
         {
 
             GUILayout.BeginHorizontal();
