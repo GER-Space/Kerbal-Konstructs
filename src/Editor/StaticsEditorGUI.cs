@@ -69,13 +69,18 @@ namespace KerbalKonstructs.UI
 		public Boolean bSortCategory = false;
 		public Boolean bSortTitle = false;
 
-		public List<StaticModel> lStaticModels;
+        // models change only once
+		private static List<StaticModel> allStaticModels;
+        //static need only be loaded once per three seconnds
+        private static float lastloaded = 0f;
+        internal static List<StaticObject> allStaticInstances;
+
 
 
         public void ToggleEditor()
         {
             if (KerbalKonstructs.instance.selectedObject != null)
-                KerbalKonstructs.instance.deselectObject(true, true);
+                KerbalKonstructs.instance.DeselectObject(true, true);
 
             this.Toggle();
 
@@ -102,6 +107,7 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
+            allStaticModels = KerbalKonstructs.instance.getStaticDB().GetModels();
             base.Open();
             KerbalKonstructs.GUI_Editor.Open();
         }
@@ -284,8 +290,8 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 				if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(fButtonWidth - 10), GUILayout.Height(23)))
 				{
-					KerbalKonstructs.instance.saveObjects();
-					KerbalKonstructs.instance.updateCache();
+					KerbalKonstructs.instance.SaveObjects();
+					KerbalKonstructs.instance.UpdateCache();
 					smessage = "Saved all changes to all objects.";
 					MiscUtils.HUDMessage(smessage, 10, 2);
 				}
@@ -321,11 +327,11 @@ namespace KerbalKonstructs.UI
 			scrollPos = GUILayout.BeginScrollView(scrollPos);
 			if (creatingInstance)
 			{
-				lStaticModels = KerbalKonstructs.instance.getStaticDB().getModels();
+                
 
 				if (bSortCategory)
 				{
-					lStaticModels.Sort(delegate(StaticModel a, StaticModel b)
+                    allStaticModels.Sort(delegate(StaticModel a, StaticModel b)
 					{
 						return ((string)a.getSetting("category")).CompareTo((string)b.getSetting("category"));
 					});
@@ -333,20 +339,20 @@ namespace KerbalKonstructs.UI
 
 				if (bSortTitle)
 				{
-					lStaticModels.Sort(delegate(StaticModel a, StaticModel b)
+                    allStaticModels.Sort(delegate(StaticModel a, StaticModel b)
 					{
 						return ((string)a.getSetting("title")).CompareTo((string)b.getSetting("title"));
 					});
 				}
 
-				foreach (StaticModel model in lStaticModels)
+				for (int idx = 0; idx < allStaticModels.Count; idx++)
 				{
 					if (titlefilterset == "" && categoryfilterset == "")
 						showStatic = true;
 
 					if (titlefilterset != "")
 					{
-						sTitleHolder = (string)model.getSetting("title");
+						sTitleHolder = (string)allStaticModels[idx].getSetting("title");
 						if (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0)
 							showStatic = true;
 						else
@@ -355,7 +361,7 @@ namespace KerbalKonstructs.UI
 
 					if (categoryfilterset != "")
 					{
-						sCategoryHolder = (string)model.getSetting("category");
+						sCategoryHolder = (string)allStaticModels[idx].getSetting("category");
 						if (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0)
 							showStatic = true;
 						else
@@ -364,8 +370,8 @@ namespace KerbalKonstructs.UI
 
 					if (categoryfilterset != "" && titlefilterset != "")
 					{
-						sTitleHolder = (string)model.getSetting("title");
-						sCategoryHolder = (string)model.getSetting("category");
+						sTitleHolder = (string)allStaticModels[idx].getSetting("title");
+						sCategoryHolder = (string)allStaticModels[idx].getSetting("category");
 						if ( (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0 ) && (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0) )
 							showStatic = true;
 						else
@@ -378,9 +384,9 @@ namespace KerbalKonstructs.UI
 
 						if (!foldedIn)
 						{
-							if (GUILayout.Button(new GUIContent("" + model.getSetting("category"), "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
+							if (GUILayout.Button(new GUIContent("" + allStaticModels[idx].getSetting("category"), "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
 							{
-								categoryfilter = (string)model.getSetting("category");
+								categoryfilter = (string)allStaticModels[idx].getSetting("category");
 								categoryfilterset = categoryfilter;
 								titlefilterset = titlefilter;
 							}
@@ -388,22 +394,22 @@ namespace KerbalKonstructs.UI
 							GUILayout.Space(5);
 						}
 
-						if (GUILayout.Button(new GUIContent("" + "" + model.getSetting("title"), "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
+						if (GUILayout.Button(new GUIContent("" + "" + allStaticModels[idx].getSetting("title"), "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
 						{
 							EditorGUI.CloseEditors();
 							KerbalKonstructs.instance.DeletePreviewObject();
                             KerbalKonstructs.instance.bDisablePositionEditing = false;
-                            spawnInstance(model);
-							smessage = "Spawned " + model.getSetting("title");
+                            spawnInstance(allStaticModels[idx]);
+							smessage = "Spawned " + allStaticModels[idx].getSetting("title");
 							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
 
 						if (!foldedIn)
 						{
 							GUILayout.FlexibleSpace();
-							if (GUILayout.Button(new GUIContent(" " + model.getSetting("mesh") + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
+							if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].getSetting("mesh") + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
 							{
-								KerbalKonstructs.instance.selectedModel = model;
+								KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
 								KerbalKonstructs.GUI_ModelInfo.Open();
 							}
 						}
@@ -416,15 +422,17 @@ namespace KerbalKonstructs.UI
 
 			if (!creatingInstance)
 			{
-				foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+                UpdateInstances();
+                 for (int ix = 0 ; ix < allStaticInstances.Count ; ix++ )
+                //foreach (StaticObject obj in allStaticInstances)
 				{
 					bool isLocal = true;
 
 					if (showLocal)
 					{
-						if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+						if (allStaticInstances[ix].pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 						{
-							var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
+							var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
 							isLocal = dist < localRange;
 						}
 						else
@@ -436,7 +444,7 @@ namespace KerbalKonstructs.UI
 					{
 						if (groupfilterset != "")
 						{
-							sGroupHolder = (string)obj.getSetting("Group");
+							sGroupHolder = (string)allStaticInstances[ix].getSetting("Group");
 							if (!sGroupHolder.Contains(groupfilterset))
 							{
 								isLocal = false;
@@ -451,10 +459,10 @@ namespace KerbalKonstructs.UI
 						GUILayout.BeginHorizontal();
 						if (!foldedIn)
 						{
-							GUILayout.Button("" + obj.getSetting("Group"), DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
-                            if (obj.settings.ContainsKey("LaunchSiteName"))
+							GUILayout.Button("" + allStaticInstances[ix].getSetting("Group"), DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
+                            if (allStaticInstances[ix].settings.ContainsKey("LaunchSiteName"))
                             {
-                                sLaunchType = (string)obj.getSetting("Category");
+                                sLaunchType = (string)allStaticInstances[ix].getSetting("Category");
                             }
                             switch (sLaunchType)
                             {
@@ -480,7 +488,7 @@ namespace KerbalKonstructs.UI
 						}
 
 						//GUI.enabled = (obj != selectedObject);
-						if (GUILayout.Button(new GUIContent("" + obj.model.getSetting("title"), "Edit this instance."), GUILayout.Height(23)))
+						if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.getSetting("title"), "Edit this instance."), GUILayout.Height(23)))
 						{
 							KerbalKonstructs.instance.bDisablePositionEditing = false;
 							enableColliders = true;
@@ -490,39 +498,39 @@ namespace KerbalKonstructs.UI
 							{
 								selectedObjectPrevious = selectedObject;
 								Color highlightColor = new Color(0, 0, 0, 0);
-								obj.HighlightObject(highlightColor);
+                                allStaticInstances[ix].HighlightObject(highlightColor);
 							}
 
-							if (snapTargetInstance == obj)
+							if (snapTargetInstance == allStaticInstances[ix])
 							{
 								snapTargetInstance = null;
 								KerbalKonstructs.instance.snapTargetInstance = null;
 							}
 
 							if (!KerbalKonstructs.instance.disableAllInstanceEditing)
-								KerbalKonstructs.instance.selectObject(obj, false, true, false);
+								KerbalKonstructs.instance.SelectObject(allStaticInstances[ix], false, true, false);
 							else
 							{
 								if (!showLocal)
 								{
 									KerbalKonstructs.instance.bDisablePositionEditing = true;
-									KerbalKonstructs.instance.selectObject(obj, false, false, false);
+									KerbalKonstructs.instance.SelectObject(allStaticInstances[ix], false, false, false);
 								}
 								else
 								{
-									KerbalKonstructs.instance.selectObject(obj, false, true, false);
+									KerbalKonstructs.instance.SelectObject(allStaticInstances[ix], false, true, false);
 								}
 							}
 							//obj.selectObject(false);
 
 							Color highlightColor2 = XKCDColors.Green_Yellow;
-							obj.HighlightObject(highlightColor2);
+                            allStaticInstances[ix].HighlightObject(highlightColor2);
 						}
 						//GUI.enabled = true;
 
 						if (showLocal)
 						{
-							GUI.enabled = (snapTargetInstance != obj && obj != selectedObject);
+							GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
 							if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
 							{
 								if (snapTargetInstance != null)
@@ -532,11 +540,11 @@ namespace KerbalKonstructs.UI
 									snapTargetInstance.HighlightObject(highlightColor3);
 								}
 
-								snapTargetInstance = obj;
-								KerbalKonstructs.instance.setSnapTarget(obj);
+								snapTargetInstance = allStaticInstances[ix];
+								KerbalKonstructs.instance.SetSnapTarget(allStaticInstances[ix]);
 
 								Color highlightColor4 = XKCDColors.RedPink;
-								obj.HighlightObject(highlightColor4);
+                                allStaticInstances[ix].HighlightObject(highlightColor4);
 							}
 							GUI.enabled = true;
 						}
@@ -617,7 +625,7 @@ namespace KerbalKonstructs.UI
 							//Validate the groupfilter to see if it is a Group name
 							bool bValidGroupName = false;
 
-							foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+							foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 							{
 								if ((string)obj.getSetting("Group") == groupfilter)
 								{
@@ -628,7 +636,7 @@ namespace KerbalKonstructs.UI
 
 							if (bValidGroupName)
 							{
-								KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
+								KerbalKonstructs.instance.ExportCustomInstances(sPackName, "", groupfilter);
 								smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
 								MiscUtils.HUDMessage(smessage, 10, 2);
 							}
@@ -643,7 +651,7 @@ namespace KerbalKonstructs.UI
 						GUI.enabled = (sPackName != "");
 						if (GUILayout.Button("Export All"))
 						{
-							KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
+							KerbalKonstructs.instance.ExportCustomInstances(sPackName, "All");
 							smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
 							MiscUtils.HUDMessage(smessage, 10, 2);
 						}
@@ -756,14 +764,14 @@ namespace KerbalKonstructs.UI
 			if (sGroup == "")
 				return;
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 				{
 					var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
 					if (dist < fRange)
 					{
-						KerbalKonstructs.instance.getStaticDB().changeGroup(obj, sGroup);
+						KerbalKonstructs.instance.getStaticDB().ChangeGroup(obj, sGroup);
 					}
 				}
 			}
@@ -782,5 +790,69 @@ namespace KerbalKonstructs.UI
 
 		}
 
-	}
+        private static void UpdateInstances()
+        {
+            if ((Time.time - lastloaded) > 2f )
+            {
+                lastloaded = Time.time;
+                allStaticInstances = KerbalKonstructs.instance.getStaticDB().GetAllStatics();
+            }
+        }
+
+        /// <summary>
+        /// Selects Object under the mouse curser.
+        /// </summary>
+        internal void SelectMouseObject()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);;
+            int layerMask = ~0;
+
+            RaycastHit hit;
+            if (!Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+            {
+                return;
+            }
+
+            StaticObject myHitinstance = GetRootFromHit(hit.collider.gameObject);
+
+            if (myHitinstance == null)
+            {
+                Log.Normal("No RootObject found");
+                return;
+            }
+            else
+            {
+                Log.Normal("Try to select Object: " + myHitinstance.gameObject.name);
+                myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
+                KerbalKonstructs.instance.SelectObject(myHitinstance,true, true, false);
+            }
+
+        }
+
+        /// <summary>
+        /// tries to find a Static Object attached to a child GameObject.
+        /// </summary>
+        /// <param name="foundObject"></param>
+        /// <returns></returns>
+        private StaticObject GetRootFromHit(GameObject foundObject)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                if (allStaticInstances.Where(x => x.gameObject == foundObject).FirstOrDefault() == null)
+                {
+                    if (foundObject.transform.parent != null)
+                        foundObject = foundObject.transform.parent.gameObject;
+                }
+                else
+                {
+                    return allStaticInstances.Where(x => x.gameObject == foundObject).First();
+                }
+
+            }
+            // we didn't find any root object, so we return null
+            return null;
+        }
+
+
+    }
 }

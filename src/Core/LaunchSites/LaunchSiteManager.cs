@@ -395,7 +395,7 @@ namespace KerbalKonstructs.Core
 
 			string sName = "";
 			object oName = null;
-			foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.GetAllStatics())
 			{
 				oName = obj.getSetting("LaunchSiteName");
 				if (oName == null) continue;

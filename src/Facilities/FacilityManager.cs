@@ -69,7 +69,7 @@ namespace KerbalKonstructs.UI
         public override void Close()
         {
             if (KerbalKonstructs.instance.selectedObject != null)
-                KerbalKonstructs.instance.deselectObject(true, true);
+                KerbalKonstructs.instance.DeselectObject(true, true);
             base.Close();
         }
 
@@ -78,7 +78,7 @@ namespace KerbalKonstructs.UI
             if (MapView.MapIsEnabled)
             {
                 if (KerbalKonstructs.instance.selectedObject != null)
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.instance.DeselectObject(true, true);
             }
 
 

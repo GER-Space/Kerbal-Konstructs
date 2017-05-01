@@ -49,7 +49,7 @@ namespace KerbalKonstructs.Modules
         {
             groundStations = new List<StaticObject>();
 
-            StaticObject[] allObjects = KerbalKonstructs.instance.getStaticDB().getAllStatics().ToArray();
+            StaticObject[] allObjects = KerbalKonstructs.instance.getStaticDB().GetAllStatics().ToArray();
 
             for (int i = 0; i < allObjects.Length; i++)
             {

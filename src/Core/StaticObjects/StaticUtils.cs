@@ -8,24 +8,24 @@ using KSP.UI.Screens;
 
 namespace KerbalKonstructs.Core
 {
-	public class StaticUtils
-	{
-		public static StaticObject getStaticFromGameObject(GameObject gameObject)
-		{
-			List<StaticObject> objList = (from obj in KerbalKonstructs.instance.staticDB.getAllStatics() where obj.gameObject == gameObject select obj).ToList();
+    public class StaticUtils
+    {
+        public static StaticObject getStaticFromGameObject(GameObject gameObject)
+        {
+            List<StaticObject> objList = (from obj in KerbalKonstructs.instance.staticDB.GetAllStatics() where obj.gameObject == gameObject select obj).ToList();
 
-			if (objList.Count >= 1)
-			{
-				if (objList.Count > 1)
-					Debug.Log("KK: WARNING: More than one StaticObject references to GameObject " + gameObject.name);
+            if (objList.Count >= 1)
+            {
+                if (objList.Count > 1)
+                    Debug.Log("KK: WARNING: More than one StaticObject references to GameObject " + gameObject.name);
 
-				return objList[0];
-			}
+                return objList[0];
+            }
 
-			Debug.Log("KK: WARNING: StaticObject doesn't exist for " + gameObject.name);
-			return null;
-		}
-	}
+            Debug.Log("KK: WARNING: StaticObject doesn't exist for " + gameObject.name);
+            return null;
+        }
+    }
 }
 
 

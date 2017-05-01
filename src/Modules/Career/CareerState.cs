@@ -77,7 +77,7 @@ namespace KerbalKonstructs.Modules
         internal static void LoadFacilities()
         {
             ParseFacConfig();
-            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
             {
 
                 if (String.IsNullOrEmpty((string)instance.getSetting("FacilityType")) || String.Equals(((string)instance.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
@@ -230,7 +230,7 @@ namespace KerbalKonstructs.Modules
             ConfigNode gameNode = rootNode.AddNode("GAME");
             ConfigNode scenarioNode = gameNode.AddNode("SCENARIO");
 
-            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
             {
                 string facilityType = (string)instance.getSetting("FacilityType");
                 if (String.IsNullOrEmpty(facilityType) || String.Equals(facilityType, "None", StringComparison.CurrentCultureIgnoreCase))

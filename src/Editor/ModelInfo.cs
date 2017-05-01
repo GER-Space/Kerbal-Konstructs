@@ -447,7 +447,7 @@ namespace KerbalKonstructs.UI
 			if (GUILayout.Button("Save", GUILayout.Height(23), GUILayout.Width(120)))
 			{
 				updateSettings(mModel);
-				KerbalKonstructs.instance.saveModelConfig(mModel);
+				KerbalKonstructs.instance.SaveModelConfig(mModel);
 				smessage = "Saved changes to static models config.";
 				MiscUtils.HUDMessage(smessage, 10, 2);
 			}
@@ -582,14 +582,14 @@ namespace KerbalKonstructs.UI
 						currPreview = null;
 				}				
 				
-				KerbalKonstructs.instance.deleteObject(soInstance);
+				KerbalKonstructs.instance.DeleteObject(soInstance);
 
 			}
 			else
 			{
 				if (currPreview != null)
 				{
-					KerbalKonstructs.instance.deleteObject(currPreview);
+					KerbalKonstructs.instance.DeleteObject(currPreview);
 					currPreview = null;
 				}
 			}
@@ -609,7 +609,7 @@ namespace KerbalKonstructs.UI
 
 			obj.model = model;
 
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
+			KerbalKonstructs.instance.getStaticDB().AddStatic(obj);
 			obj.spawnObject(true, true);
 			// KerbalKonstructs.instance.selectObject(obj, false);
 			currPreview = obj;

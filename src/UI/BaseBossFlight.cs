@@ -160,7 +160,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
                 {
-                    KerbalKonstructs.instance.updateCache();
+                    KerbalKonstructs.instance.UpdateCache();
                     KerbalKonstructs.GUI_Landinguide.Toggle();
                 }
 
@@ -399,7 +399,7 @@ namespace KerbalKonstructs.UI
                             if (GUILayout.Button((string)allFacilities[i].model.getSetting("title"), GUILayout.Height(23)))
                             {
                                 selectedObject = allFacilities[i];
-                                KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
+                                KerbalKonstructs.instance.SelectObject(allFacilities[i], false, true, false);
                                 FacilityManager.selectedFacility = allFacilities[i];
                                 KerbalKonstructs.GUI_FacilityManager.Open();
                             }
@@ -484,7 +484,7 @@ namespace KerbalKonstructs.UI
         private void CacheFacilities()
         {
 
-            List<StaticObject> allStatics = KerbalKonstructs.instance.getStaticDB().getAllStatics();
+            List<StaticObject> allStatics = KerbalKonstructs.instance.getStaticDB().GetAllStatics();
 
             for (int i = 0; i < allStatics.Count; i++)
             {

@@ -21,7 +21,7 @@ namespace KerbalKonstructs
 
         public override void StaticObjectUpdate()
         {
-            Log.Normal("FlagDeclal: Set Texture Called");
+            //Log.Normal("FlagDeclal: Set Texture Called");
             setTexture();
         }
         internal void setTexture ()

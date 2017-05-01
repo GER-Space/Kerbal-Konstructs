@@ -7,39 +7,39 @@ using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
-	class StaticGroup
-	{
-		public String groupName;
-		public String bodyName;
+    class StaticGroup
+    {
+        public String groupName;
+        public String bodyName;
 
         public List<StaticObject> childObjects = new List<StaticObject>();
         public Vector3 centerPoint = Vector3.zero;
-		public float visibilityRange = 0;
-		public Boolean alwaysActive = false;
-		public Boolean active = false;
-		public Boolean bLiveUpdate = false;
+        public float visibilityRange = 0;
+        public Boolean alwaysActive = false;
+        public Boolean active = false;
+        public Boolean bLiveUpdate = false;
 
-		public StaticGroup(String name, String body)
-		{
-			groupName = name;
-			bodyName = body;
-			centerPoint = Vector3.zero;
-			visibilityRange = 0f; 
-		}
+        public StaticGroup(String name, String body)
+        {
+            groupName = name;
+            bodyName = body;
+            centerPoint = Vector3.zero;
+            visibilityRange = 0f;
+        }
 
-		public void addStatic(StaticObject obj)
-		{
-			childObjects.Add(obj);
-			updateCacheSettings();
-		}
+        public void AddStatic(StaticObject obj)
+        {
+            childObjects.Add(obj);
+            UpdateCacheSettings();
+        }
 
-		public void removeStatic(StaticObject obj)
-		{
-			childObjects.Remove(obj);
-			updateCacheSettings();
-		}
+        public void RemoveStatic(StaticObject obj)
+        {
+            childObjects.Remove(obj);
+            UpdateCacheSettings();
+        }
 
-        public void updateCacheSettings()
+        public void UpdateCacheSettings()
         {
             float highestVisibility = 0;
             float furthestDist = 0;
@@ -76,103 +76,103 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Makes all objects invisible
         /// </summary>
-		public void cacheAll()
-		{
-            for (int i = 0 ; i < childObjects.Count; i++ )
-			{
+		public void CacheAll()
+        {
+            for (int i = 0; i < childObjects.Count; i++)
+            {
                 childObjects[i].SetActive(false);
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating)
         /// </summary>
         /// <param name="playerPos"></param>
-		public void updateCache(Vector3 playerPos)
-		{
+		public void UpdateCache(Vector3 playerPos)
+        {
             float dist = 0f;
             bool visible = false;
             string sFacType = "";
 
             for (int i = 0; i < childObjects.Count; i++)
             {
-				dist = Vector3.Distance(childObjects[i].gameObject.transform.position, playerPos);
-				visible = (dist < (float)childObjects[i].getSetting("VisibilityRange"));
+                dist = Vector3.Distance(childObjects[i].gameObject.transform.position, playerPos);
+                visible = (dist < (float)childObjects[i].getSetting("VisibilityRange"));
 
-				sFacType = (string)childObjects[i].getSetting("FacilityType");
+                sFacType = (string)childObjects[i].getSetting("FacilityType");
 
-				if (sFacType == "Hangar")
-				{
-					if (visible) HangarGUI.CacheHangaredCraft(childObjects[i]);
-				}
+                if (sFacType == "Hangar")
+                {
+                    if (visible) HangarGUI.CacheHangaredCraft(childObjects[i]);
+                }
 
-				if (sFacType == "LandingGuide")
-				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(childObjects[i]);
-					else
-						KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
-				}
+                if (sFacType == "LandingGuide")
+                {
+                    if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(childObjects[i]);
+                    else
+                        KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
+                }
 
-				if (sFacType == "TouchdownGuideL")
-				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(childObjects[i]);
-					else
-						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
-				}
+                if (sFacType == "TouchdownGuideL")
+                {
+                    if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(childObjects[i]);
+                    else
+                        KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
+                }
 
-				if (sFacType == "TouchdownGuideR")
-				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(childObjects[i]);
-					else
-						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
-				}
+                if (sFacType == "TouchdownGuideR")
+                {
+                    if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(childObjects[i]);
+                    else
+                        KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
+                }
 
-				if (sFacType == "CityLights")
-				{
-					if (dist < 65000f)
-					{
+                if (sFacType == "CityLights")
+                {
+                    if (dist < 65000f)
+                    {
                         visible = true;
                     }
-				}
+                }
 
                 if (visible)
                     childObjects[i].SetActive(true);
-				else
+                else
                     childObjects[i].SetActive(false);
-			}
-		}
+            }
+        }
 
-		public Vector3 getCenter()
-		{
-			return centerPoint;
-		}
+        public Vector3 GetCenter()
+        {
+            return centerPoint;
+        }
 
-		public float getVisibilityRange()
-		{
-			return visibilityRange;
-		}
+        public float GetVisibilityRange()
+        {
+            return visibilityRange;
+        }
 
-		public String getGroupName()
-		{
-			return groupName;
-		}
+        public String GetGroupName()
+        {
+            return groupName;
+        }
 
-		internal void deleteObject(StaticObject obj)
-		{
-			if (childObjects.Contains(obj))
-			{
-				childObjects.Remove(obj);
-				MonoBehaviour.Destroy(obj.gameObject);
-			}
-			else
-			{
+        internal void DeleteObject(StaticObject obj)
+        {
+            if (childObjects.Contains(obj))
+            {
+                childObjects.Remove(obj);
+                MonoBehaviour.Destroy(obj.gameObject);
+            }
+            else
+            {
                 Log.Debug("StaticGroup deleteObject tried to delete an object that doesn't exist in this group!");
-			}
-		}
+            }
+        }
 
-		public List<StaticObject> getStatics()
-		{
-			return childObjects;
-		}
-	}
+        public List<StaticObject> GetStatics()
+        {
+            return childObjects;
+        }
+    }
 }

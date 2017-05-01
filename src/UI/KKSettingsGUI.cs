@@ -793,23 +793,23 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("Export Masters", GUILayout.Height(23)))
 				{
-					KerbalKonstructs.instance.saveObjects();
-					KerbalKonstructs.instance.exportMasters();
+					KerbalKonstructs.instance.SaveObjects();
+					KerbalKonstructs.instance.ExportMasters();
 				}
 
 				GUILayout.Label("WARNING: If you are not a developer and don't know what you're doing, don't click the button below. It deletes all current instances and then re-writes all core config files without instances.", LabelInfo);
 
 				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
 				{
-					foreach (StaticModel model in KerbalKonstructs.instance.staticDB.getModels())
+					foreach (StaticModel model in KerbalKonstructs.instance.staticDB.GetModels())
 					{
-						foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.getObjectsFromModel(model))
+						foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.GetObjectsFromModel(model))
 						{
-							KerbalKonstructs.instance.deleteObject(obj);
+							KerbalKonstructs.instance.DeleteObject(obj);
 						}
 					}
 
-					KerbalKonstructs.instance.saveObjects();
+					KerbalKonstructs.instance.SaveObjects();
 				}
 			}
 
@@ -820,11 +820,11 @@ namespace KerbalKonstructs.UI
 			GUILayout.Space(2);
 			if (GUILayout.Button("Save Config Settings", GUILayout.Height(23)))
 			{
-				KerbalKonstructs.instance.saveConfig();
+				KerbalKonstructs.instance.SaveConfig();
 			}
 			if (GUILayout.Button("Reload Saved Settings", GUILayout.Height(23)))
 			{
-				KerbalKonstructs.instance.loadConfig();
+				KerbalKonstructs.instance.LoadConfig();
 			}
 			if (GUILayout.Button("Reset To Factory Settings", GUILayout.Height(23)))
 			{
@@ -852,7 +852,7 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.DebugMode = false;	
 				KerbalKonstructs.instance.DevMode = false;
 				
-				KerbalKonstructs.instance.saveConfig();
+				KerbalKonstructs.instance.SaveConfig();
 			}
 			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));

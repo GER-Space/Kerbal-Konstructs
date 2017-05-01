@@ -47,7 +47,7 @@ namespace KerbalKonstructs.Addons
 
             group2Center.Add("KSCUpgrades", new Vector3(157000, -1000, -570000) ) ;
 
-            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().getAllStatics() )
+            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().GetAllStatics() )
             {
                 group = (string)instance.getSetting("Group");
                 key = instance.pqsCity.repositionRadial.ToString();
