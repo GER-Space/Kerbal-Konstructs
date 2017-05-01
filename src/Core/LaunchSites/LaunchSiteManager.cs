@@ -177,14 +177,14 @@ namespace KerbalKonstructs.Core
 						}
 						else
 						{
-							Debug.Log("KK: Launch site " + obj.getSetting("LaunchSiteName") + " already exists.");
+							Log.Error("Launch site " + obj.getSetting("LaunchSiteName") + " already exists.");
 						}
 					}
 				}
 
 				MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
 				if (updateSitesMI == null)
-					Debug.Log("KK: You are screwed. Failed to find SetupFacilities().");
+					Log.UserError("You are screwed. Failed to find SetupFacilities().");
 				else
 					updateSitesMI.Invoke(PSystemSetup.Instance, null);
 
@@ -193,7 +193,7 @@ namespace KerbalKonstructs.Core
 			}
 			else
 			{
-				Debug.Log("KK: Launch pad transform \"" + obj.getSetting("LaunchPadTransform") + "\" missing for " + obj.getSetting("LaunchSiteName"));
+				Log.UserWarning("Launch pad transform \"" + obj.getSetting("LaunchPadTransform") + "\" missing for " + obj.getSetting("LaunchSiteName"));
 			}
 		}
 
