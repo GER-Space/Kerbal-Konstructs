@@ -15,7 +15,7 @@ namespace KerbalKonstructs
 
         public void Awake()
         {
-            Log.Normal("FlagDeclal: Awake called");
+            //Log.Normal("FlagDeclal: Awake called");
             //setTexture();
         }
 
@@ -24,13 +24,20 @@ namespace KerbalKonstructs
             //Log.Normal("FlagDeclal: Set Texture Called");
             setTexture();
         }
-        internal void setTexture ()
-        {
-            Transform transform = gameObject.transform.FindChild(textureQuadName);
-            Renderer flagRenderer = transform.GetComponent<Renderer>();
-            flagRenderer.material.mainTexture = GameDatabase.Instance.GetTexture(HighLogic.CurrentGame.flagURL, false);
-        }
 
+        /// <summary>
+        /// Sets the texture in all transforms of the right name
+        /// </summary>
+        internal void setTexture()
+        {
+            Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == textureQuadName).ToArray();
+
+            foreach (var transform in allTransforms)
+            {
+                Renderer flagRenderer = transform.GetComponent<Renderer>();
+                flagRenderer.material.mainTexture = GameDatabase.Instance.GetTexture(HighLogic.CurrentGame.flagURL, false);
+            }
+        }
 
 
     }
