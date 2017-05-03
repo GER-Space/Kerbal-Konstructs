@@ -41,7 +41,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -90,6 +90,7 @@
     <Compile Include="API\KKAPI.cs" />
     <Compile Include="Core\KKMath.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Editor\FacilityEditor.cs" />
     <Compile Include="Editor\VectorRenderer.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />

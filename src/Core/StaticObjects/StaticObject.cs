@@ -31,6 +31,7 @@ namespace KerbalKonstructs.Core
 		public Boolean preview;
 
         private Vector3 origScale;
+        public bool isActive ;
 
 		private List<Renderer> _rendererComponents; 
 
@@ -38,7 +39,7 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Updates the static instance with new settings
         /// </summary>
-		public void update()
+		internal void update()
 		{
 			if (pqsCity != null)
 			{
@@ -54,7 +55,7 @@ namespace KerbalKonstructs.Core
 			    module.StaticObjectUpdate();
 		}
 
-		public object getSetting(string setting)
+        internal object getSetting(string setting)
 		{
 			if (settings.ContainsKey(setting))
 				return settings[setting];
@@ -73,7 +74,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void setSetting(string setting, object value)
+        internal void setSetting(string setting, object value)
 		{
 			if (settings.ContainsKey(setting))
 			{
@@ -85,7 +86,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void HighlightObject(Color highlightColor)
+        internal void HighlightObject(Color highlightColor)
 		{
 			Renderer[] rendererList = gameObject.GetComponentsInChildren<Renderer>();
 			_rendererComponents = new List<Renderer>(rendererList);
@@ -97,7 +98,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void ToggleAllColliders(bool enable)
+        internal void ToggleAllColliders(bool enable)
 		{
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			
@@ -109,14 +110,14 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public float GetDistanceToObject(Vector3 vPosition)
+        internal float GetDistanceToObject(Vector3 vPosition)
 		{
 			float fDistance = 0f;
 			fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
 			return fDistance;
 		}
 
-		public void spawnObject(Boolean editing, Boolean bPreview)
+        internal void spawnObject(Boolean editing, Boolean bPreview)
 		{
 			// Objects spawned at runtime should be active, ones spawned at loading not
 			SetActiveRecursively(gameObject, editing);
@@ -204,35 +205,38 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
+        internal void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
 		{
-			if (sGameObject.GetComponent<Collider>() == null) sGameObject.layer = newLayerNumber;
-			else
-				if (!sGameObject.GetComponent<Collider>().isTrigger) sGameObject.layer = newLayerNumber;
 
-
-			/* if ((sGameObject.GetComponent<Collider>() != null && sGameObject.GetComponent<Collider>().enabled && !sGameObject.GetComponent<Collider>().isTrigger) || sGameObject.GetComponent<Collider>() == null)
-			{
-				sGameObject.layer = newLayerNumber;
-			} */
-
-			foreach (Transform child in sGameObject.transform)
-			{
-				setLayerRecursively(child.gameObject, newLayerNumber);
-			}
+            var transforms = gameObject.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                if (transforms[i].gameObject.GetComponent<Collider>() == null) transforms[i].gameObject.layer = newLayerNumber;
+                else
+                if (!transforms[i].gameObject.GetComponent<Collider>().isTrigger) transforms[i].gameObject.layer = newLayerNumber;
+            }
 		}
 
-		public void SetActiveRecursively(GameObject rootObject, bool active)
+        internal void SetActiveRecursively(GameObject rootObject, bool active)
 		{
-			rootObject.SetActive(active);
 
-			foreach (Transform childTransform in rootObject.transform)
-			{
-				SetActiveRecursively(childTransform.gameObject, active);
-			}
-		}
+            if (isActive != active)
+            {
+                isActive = active;
+                rootObject.SetActive(active);
 
-		public void deselectObject(Boolean enableColliders)
+                foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
+                    module.StaticObjectUpdate();
+
+                var transforms = rootObject.GetComponentsInChildren<Transform>(true);
+                for (int i = 0; i < transforms.Length; i++)
+                {
+                    transforms[i].gameObject.SetActive(active);
+                }
+            }
+        }
+
+        internal void deselectObject(Boolean enableColliders)
 		{
 			this.editing = false;
 			if (enableColliders) this.ToggleAllColliders(true);

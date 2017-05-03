@@ -321,7 +321,7 @@ namespace KerbalKonstructs.UI
 			scrollPos = GUILayout.BeginScrollView(scrollPos);
 			if (creatingInstance)
 			{
-				lStaticModels = KerbalKonstructs.instance.getStaticDB().getModels();
+				lStaticModels = KerbalKonstructs.instance.getStaticDB().GetModels();
 
 				if (bSortCategory)
 				{
@@ -416,7 +416,7 @@ namespace KerbalKonstructs.UI
 
 			if (!creatingInstance)
 			{
-				foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+				foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 				{
 					bool isLocal = true;
 
@@ -617,7 +617,7 @@ namespace KerbalKonstructs.UI
 							//Validate the groupfilter to see if it is a Group name
 							bool bValidGroupName = false;
 
-							foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+							foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 							{
 								if ((string)obj.getSetting("Group") == groupfilter)
 								{
@@ -756,14 +756,14 @@ namespace KerbalKonstructs.UI
 			if (sGroup == "")
 				return;
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 				{
 					var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
 					if (dist < fRange)
 					{
-						KerbalKonstructs.instance.getStaticDB().changeGroup(obj, sGroup);
+						KerbalKonstructs.instance.getStaticDB().ChangeGroup(obj, sGroup);
 					}
 				}
 			}

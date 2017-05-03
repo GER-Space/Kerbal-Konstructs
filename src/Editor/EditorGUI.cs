@@ -1374,7 +1374,7 @@ namespace KerbalKonstructs.UI
             obj.configPath= "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
             obj.configUrl = null;
 
-            KerbalKonstructs.instance.staticDB.addStatic(obj);
+            KerbalKonstructs.instance.staticDB.AddStatic(obj);
             enableColliders = false;
             obj.spawnObject(true, false);
         }

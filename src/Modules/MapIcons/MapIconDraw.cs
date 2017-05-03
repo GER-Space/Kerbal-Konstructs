@@ -129,7 +129,7 @@ namespace KerbalKonstructs.Modules
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
 
             // Do tracking stations first
-            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
             {
                 if (!MiscUtils.isCareerGame()) break;
 

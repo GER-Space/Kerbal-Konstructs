@@ -801,9 +801,9 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
 				{
-					foreach (StaticModel model in KerbalKonstructs.instance.staticDB.getModels())
+					foreach (StaticModel model in KerbalKonstructs.instance.staticDB.GetModels())
 					{
-						foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.getObjectsFromModel(model))
+						foreach (StaticObject obj in KerbalKonstructs.instance.staticDB.GetObjectsFromModel(model))
 						{
 							KerbalKonstructs.instance.deleteObject(obj);
 						}

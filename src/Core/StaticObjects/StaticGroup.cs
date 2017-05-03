@@ -27,70 +27,69 @@ namespace KerbalKonstructs.Core
 			visibilityRange = 0f; 
 		}
 
-		public void addStatic(StaticObject obj)
+		public void AddStatic(StaticObject obj)
 		{
 			childObjects.Add(obj);
-			updateCacheSettings();
+			UpdateCacheSettings();
 		}
 
-		public void removeStatic(StaticObject obj)
+		public void RemoveStatic(StaticObject obj)
 		{
 			childObjects.Remove(obj);
-			updateCacheSettings();
+			UpdateCacheSettings();
 		}
 
-		public void updateCacheSettings()
-		{
-			float highestVisibility = 0;
-			float furthestDist = 0;
+        public void UpdateCacheSettings()
+        {
+            float highestVisibility = 0;
+            float furthestDist = 0;
 
-			centerPoint = Vector3.zero;
-			StaticObject soCenter = null;
-			Vector3 vRadPos = Vector3.zero;
+            centerPoint = Vector3.zero;
+            StaticObject soCenter = null;
+            Vector3 vRadPos = Vector3.zero;
 
-			foreach (StaticObject obj in childObjects)
-			{
-				// FIRST ONE IS THE CENTER
-				centerPoint = obj.gameObject.transform.position;
-				vRadPos = (Vector3)obj.getSetting("RadialPosition");
-				obj.setSetting("GroupCenter", "true");
-				soCenter = obj;
-				break;
-			}
 
-			foreach (StaticObject obj in childObjects)
-			{
-				obj.setSetting("RefCenter", vRadPos);
+            // FIRST ONE IS THE CENTER
+            centerPoint = childObjects[0].gameObject.transform.position;
+            vRadPos = (Vector3)childObjects[0].getSetting("RadialPosition");
+            childObjects[0].setSetting("GroupCenter", "true");
+            soCenter = childObjects[0];
 
-				if (obj != soCenter) obj.setSetting("GroupCenter", "false");
 
-				if ((float)obj.getSetting("VisibilityRange") > highestVisibility)
-					highestVisibility = (float)obj.getSetting("VisibilityRange");
 
-				float dist = Vector3.Distance(centerPoint, obj.gameObject.transform.position);
-				
-				if (dist > furthestDist)
-					furthestDist = dist;
-			}
+            for (int i = 0; i < childObjects.Count; i++)
+            {
+                childObjects[i].setSetting("RefCenter", vRadPos);
 
-			visibilityRange = highestVisibility + (furthestDist * 2);
-		}
+                if (childObjects[i] != soCenter) childObjects[i].setSetting("GroupCenter", "false");
+
+                if ((float)childObjects[i].getSetting("VisibilityRange") > highestVisibility)
+                    highestVisibility = (float)childObjects[i].getSetting("VisibilityRange");
+
+                float dist = Vector3.Distance(centerPoint, childObjects[i].gameObject.transform.position);
+
+                if (dist > furthestDist)
+                    furthestDist = dist;
+            }
+
+            visibilityRange = highestVisibility + (furthestDist * 2);
+        }
 
 		public static void SetActiveRecursively(GameObject rootObject, bool active)
 		{
 			rootObject.SetActive(active);
-
-			foreach (Transform childTransform in rootObject.transform)
+            var transforms = rootObject.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
 			{
-				SetActiveRecursively(childTransform.gameObject, active);
+                transforms[i].gameObject.SetActive(active);
 			}
 		}
 
-		public void cacheAll()
+		public void CacheAll()
 		{
-			foreach (StaticObject obj in childObjects)
-			{
-				SetActiveRecursively(obj.gameObject, false);
+            for (int i = 0; i < childObjects.Count; i++)
+            {
+                SetActive(childObjects[i], false);
 			}
 		}
 
@@ -98,7 +97,7 @@ namespace KerbalKonstructs.Core
         /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating)
         /// </summary>
         /// <param name="playerPos"></param>
-		public void updateCache(Vector3 playerPos)
+		public void UpdateCache(Vector3 playerPos)
 		{
             float dist = 0f;
             bool visible = false;
@@ -141,17 +140,33 @@ namespace KerbalKonstructs.Core
 				{
 					if (dist < 65000f)
 					{
-						SetActiveRecursively(obj.gameObject, false);
+                        SetActive(obj, false);
 						return;
 					}
 				}
 			
 				if (visible)
-					SetActiveRecursively(obj.gameObject, true);
+                    SetActive(obj, true);
 				else
-					SetActiveRecursively(obj.gameObject, false);
+                    SetActive(obj, false);
 			}
 		}
+
+
+        internal void SetActive(StaticObject instance, bool newState)
+        {
+
+            if (instance.isActive != newState)
+            {
+                instance.isActive = newState;
+
+                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
+                    module.StaticObjectUpdate();
+
+                SetActiveRecursively(instance.gameObject, newState);
+            }
+        }
+
 
 		public Vector3 getCenter()
 		{
@@ -168,7 +183,7 @@ namespace KerbalKonstructs.Core
 			return groupName;
 		}
 
-		internal void deleteObject(StaticObject obj)
+		internal void DeleteObject(StaticObject obj)
 		{
 			if (childObjects.Contains(obj))
 			{
@@ -181,7 +196,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public List<StaticObject> getStatics()
+		public List<StaticObject> GetStatics()
 		{
 			return childObjects;
 		}

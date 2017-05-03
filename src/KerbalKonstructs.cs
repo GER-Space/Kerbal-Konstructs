@@ -406,7 +406,7 @@ namespace KerbalKonstructs
 
             Log.UserInfo("Version is " + sKKVersion + " .");
 
-            Log.UserInfo("StaticDB has: " + staticDB.getAllStatics().Count() + "Entries");
+            Log.UserInfo("StaticDB has: " + staticDB.GetAllStatics().Count() + "Entries");
             UIMain.setTextures();
             Log.PerfStop("Awake Function");
 
@@ -528,7 +528,7 @@ namespace KerbalKonstructs
                 {
                     staticDB.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
                     currentBody = FlightGlobals.ActiveVessel.mainBody;
-                    staticDB.onBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+                    staticDB.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
                     DoHangaredCraftCheck();
                 }
                 else
@@ -603,14 +603,14 @@ namespace KerbalKonstructs
                 }
             }
 
-            if (bTreatBodyAsNullForStatics) staticDB.onBodyChanged(null);
+            if (bTreatBodyAsNullForStatics) staticDB.OnBodyChanged(null);
         }
 
         void onDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
         {
             staticDB.ToggleActiveStaticsOnPlanet(data.to, true, true);
             currentBody = data.to;
-            staticDB.onBodyChanged(data.to);
+            staticDB.OnBodyChanged(data.to);
             updateCache();
         }
 
@@ -781,7 +781,7 @@ namespace KerbalKonstructs
 
         public void DoHangaredCraftCheck()
         {
-            foreach (StaticObject obj in getStaticDB().getAllStatics())
+            foreach (StaticObject obj in getStaticDB().GetAllStatics())
             {
                 string sFacType = (string)obj.getSetting("FacilityType");
 
@@ -946,7 +946,7 @@ namespace KerbalKonstructs
                     Log.Debug("KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
                 }
 
-                staticDB.updateCache(playerPos);
+                staticDB.UpdateCache(playerPos);
             }
         }
 
@@ -1022,7 +1022,7 @@ namespace KerbalKonstructs
                     Vector3 secondInstanceKey = (Vector3)obj.getSetting("RadialPosition");
                     bool bSpaceOccupied = false;
 
-                    foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+                    foreach (StaticObject soThis in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
                     {
                         Vector3 firstInstanceKey = (Vector3)soThis.getSetting("RadialPosition");
 
@@ -1102,7 +1102,7 @@ namespace KerbalKonstructs
                         }
                     }
                 }
-                staticDB.addStatic(obj);
+                staticDB.AddStatic(obj);
                 obj.spawnObject(false, false);
 
                 if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
@@ -1242,7 +1242,7 @@ namespace KerbalKonstructs
                         collider.convex = false;
                     }
                 }
-                staticDB.registerModel(model, modelName);
+                staticDB.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
                 loadInstances(conf, model, false);
             }
@@ -1327,7 +1327,7 @@ namespace KerbalKonstructs
         /// <param name="pathname"></param>
         internal void SaveInstanceByCfg(string pathname)
         {
-            List<StaticObject> allInstances = staticDB.getAllStatics().Where(instance => instance.configPath == pathname).ToList();
+            List<StaticObject> allInstances = staticDB.GetAllStatics().Where(instance => instance.configPath == pathname).ToList();
             StaticObject firstInstance = allInstances.First();
             ConfigNode instanceConfig = null;
 
@@ -1367,7 +1367,7 @@ namespace KerbalKonstructs
         public void saveObjects()
         {
             List<String> processedInstances = new List<string>();
-            List<StaticObject> allInstances = staticDB.getAllStatics();
+            List<StaticObject> allInstances = staticDB.GetAllStatics();
             foreach (StaticObject instance in allInstances)
             {
                 // ignore allready processed cfg files
@@ -1419,7 +1419,7 @@ namespace KerbalKonstructs
             else
                 sBase = sBaseName;
 
-            foreach (StaticModel model in staticDB.getModels())
+            foreach (StaticModel model in staticDB.GetModels())
             {
                 HasCustom = false;
                 ConfigNode staticNode = new ConfigNode("STATIC");
@@ -1427,7 +1427,7 @@ namespace KerbalKonstructs
 
                 modelConfig.RemoveNodes("Instances");
 
-                foreach (StaticObject obj in staticDB.getObjectsFromModel(model))
+                foreach (StaticObject obj in staticDB.GetObjectsFromModel(model))
                 {
                     string sCustom = (string)obj.getSetting("CustomInstance");
                     string sInstGroup = (string)obj.getSetting("Group");
@@ -1489,7 +1489,7 @@ namespace KerbalKonstructs
 
             Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
 
-            foreach (StaticObject obj in getStaticDB().getAllStatics())
+            foreach (StaticObject obj in getStaticDB().GetAllStatics())
             {
                 String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
                 String groupName = (string)obj.getSetting("Group");
@@ -1520,7 +1520,7 @@ namespace KerbalKonstructs
                     sBase = group.groupName;
                     Debug.Log("sBase is " + sBase);
 
-                    foreach (StaticModel model in staticDB.getModels())
+                    foreach (StaticModel model in staticDB.GetModels())
                     {
                         ConfigNode staticNode = new ConfigNode("STATIC");
                         ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
@@ -1530,7 +1530,7 @@ namespace KerbalKonstructs
                         modelConfig.RemoveNodes("Instances");
                         bool bNoInstances = true;
 
-                        foreach (StaticObject obj in staticDB.getObjectsFromModel(model))
+                        foreach (StaticObject obj in staticDB.GetObjectsFromModel(model))
                         {
                             string sObjGroup = (string)obj.getSetting("Group");
                             if (sObjGroup != sBase) continue;
@@ -1582,7 +1582,7 @@ namespace KerbalKonstructs
             // check later when saving if this file is empty
             deletedInstances.Add(obj);
 
-            staticDB.deleteObject(obj);
+            staticDB.DeleteObject(obj);
         }
 
         public void setSnapTarget(StaticObject obj)

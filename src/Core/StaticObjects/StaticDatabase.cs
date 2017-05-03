@@ -15,17 +15,17 @@ namespace KerbalKonstructs.Core
 
 		private string activeBodyName = "";
 
-		public void changeGroup(StaticObject obj, string newGroup)
+		public void ChangeGroup(StaticObject obj, string newGroup)
 		{
 			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string)obj.getSetting("Group");
 
-			groupList[bodyName][groupName].removeStatic(obj);
+			groupList[bodyName][groupName].RemoveStatic(obj);
 			obj.setSetting("Group", newGroup);
-			addStatic(obj);
+			AddStatic(obj);
 		}
 
-		public void addStatic(StaticObject obj)
+		public void AddStatic(StaticObject obj)
 		{
 			String bodyName = ((CelestialBody) obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string) obj.getSetting("Group");
@@ -51,14 +51,14 @@ namespace KerbalKonstructs.Core
 				groupList[bodyName].Add(groupName, group);
 			}
 
-			groupList[bodyName][groupName].addStatic(obj);
+			groupList[bodyName][groupName].AddStatic(obj);
 		}
 
 		public void ToggleActiveAllStatics(bool bActive = true)
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				obj.SetActiveRecursively(obj.gameObject, bActive);
 			}
@@ -68,7 +68,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
 					obj.SetActiveRecursively(obj.gameObject, bActive);
@@ -82,7 +82,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if ((string)obj.getSetting("Group") == sGroup)
 					obj.SetActiveRecursively(obj.gameObject, bActive);
@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void cacheAll()
+		public void CacheAll()
 		{
 			if (activeBodyName == "")
 			{
@@ -110,7 +110,7 @@ namespace KerbalKonstructs.Core
                     Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
 					
 					if (group.active)
-						group.cacheAll();
+						group.CacheAll();
 
 					if (!group.alwaysActive)
 					{
@@ -125,7 +125,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void loadObjectsForBody(String bodyName)
+		public void LoadObjectsForBody(String bodyName)
 		{
 			activeBodyName = bodyName;
 
@@ -138,7 +138,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void onBodyChanged(CelestialBody body)
+		public void OnBodyChanged(CelestialBody body)
 		{
 			if (body != null)
 			{
@@ -149,20 +149,20 @@ namespace KerbalKonstructs.Core
                     Log.Debug("StaticDatabase.onBodyChanged(): bodyName is not activeBodyName. cacheAll(). Load objects for body. Set activeBodyName to body.");
                     Log.Debug("bodyName " + body.bodyName + " activeBodyName " + activeBodyName);
 
-					cacheAll();
-					loadObjectsForBody(body.bodyName);
+					CacheAll();
+					LoadObjectsForBody(body.bodyName);
 					activeBodyName = body.bodyName;
 				}
 			}
 			else
 			{
                 Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
-				cacheAll();
+				CacheAll();
 				activeBodyName = "";
 			}
 		}
 
-		public void updateCache(Vector3 playerPos)
+		public void UpdateCache(Vector3 playerPos)
 		{
             Log.Debug("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
 
@@ -189,7 +189,7 @@ namespace KerbalKonstructs.Core
 					{
                         Log.Debug("StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
 						
-						group.updateCacheSettings();
+						group.UpdateCacheSettings();
 						group.bLiveUpdate = true;
 					}
 
@@ -222,7 +222,7 @@ namespace KerbalKonstructs.Core
 						if (!bGroupIsClose)
 						{
                             Log.Debug("StaticDatabase.updateCache(): Group is not close. cacheAll()  " + group.groupName);
-							group.cacheAll();
+							group.CacheAll();
 						}
 						
 						group.active = bGroupIsClose;
@@ -236,7 +236,7 @@ namespace KerbalKonstructs.Core
 					if (group.active)
 					{
                         Log.Debug("StaticDatabase.updateCache(): Group is active. group.updateCache() " + group.groupName);
-						group.updateCache(vPlayerPos);
+						group.UpdateCache(vPlayerPos);
 					}
 					else
 					{
@@ -247,7 +247,7 @@ namespace KerbalKonstructs.Core
 
 		}
 
-		public void deleteObject(StaticObject obj)
+		public void DeleteObject(StaticObject obj)
 		{
 			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string)obj.getSetting("Group");
@@ -257,19 +257,19 @@ namespace KerbalKonstructs.Core
 				if (groupList[bodyName].ContainsKey(groupName))
 				{
 					Debug.Log("KK: StaticDatabase deleteObject");
-					groupList[bodyName][groupName].deleteObject(obj);
+					groupList[bodyName][groupName].DeleteObject(obj);
 				}
 			}
 		}
 
-		public List<StaticObject> getAllStatics()
+		public List<StaticObject> GetAllStatics()
 		{
 			List<StaticObject> objects = new List<StaticObject>();
 			foreach (Dictionary<string, StaticGroup> groups in groupList.Values)
 			{
 				foreach (StaticGroup group in groups.Values)
 				{
-					foreach (StaticObject obj in group.getStatics())
+					foreach (StaticObject obj in group.GetStatics())
 					{
 						objects.Add(obj);
 					}
@@ -278,7 +278,7 @@ namespace KerbalKonstructs.Core
 			return objects;
 		}
 
-		public void registerModel(StaticModel model, string name)
+		public void RegisterModel(StaticModel model, string name)
 		{
             allStaticModels.Add(model);
             if (modelList.ContainsKey(name))
@@ -292,7 +292,7 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-		public List<StaticModel> getModels()
+		public List<StaticModel> GetModels()
 		{
 			return allStaticModels;
 		}
@@ -312,12 +312,12 @@ namespace KerbalKonstructs.Core
 
         public List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
         {
-            return (from obj in getAllStatics() where obj.configPath == model.configPath select obj).ToList();
+            return (from obj in GetAllStatics() where obj.configPath == model.configPath select obj).ToList();
         }
 
-        public List<StaticObject> getObjectsFromModel(StaticModel model)
+        public List<StaticObject> GetObjectsFromModel(StaticModel model)
 		{
-			return (from obj in getAllStatics() where obj.model == model select obj).ToList();
+			return (from obj in GetAllStatics() where obj.model == model select obj).ToList();
 		}
 	}
 }

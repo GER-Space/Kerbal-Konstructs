@@ -379,7 +379,7 @@ namespace KerbalKonstructs.UI
 				if (bShowFacilities)
 				{
 					scrollPos = GUILayout.BeginScrollView(scrollPos);
-					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().getAllStatics())
+					foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 					{
 						bool isLocal = true;
 						if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)

@@ -609,7 +609,7 @@ namespace KerbalKonstructs.UI
 
 			obj.model = model;
 
-			KerbalKonstructs.instance.getStaticDB().addStatic(obj);
+			KerbalKonstructs.instance.getStaticDB().AddStatic(obj);
 			obj.spawnObject(true, true);
 			// KerbalKonstructs.instance.selectObject(obj, false);
 			currPreview = obj;

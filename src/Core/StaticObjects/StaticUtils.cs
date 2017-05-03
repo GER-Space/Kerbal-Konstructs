@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Core
 	{
 		public static StaticObject getStaticFromGameObject(GameObject gameObject)
 		{
-			List<StaticObject> objList = (from obj in KerbalKonstructs.instance.staticDB.getAllStatics() where obj.gameObject == gameObject select obj).ToList();
+			List<StaticObject> objList = (from obj in KerbalKonstructs.instance.staticDB.GetAllStatics() where obj.gameObject == gameObject select obj).ToList();
 
 			if (objList.Count >= 1)
 			{
