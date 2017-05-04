@@ -85,10 +85,10 @@ namespace KerbalKonstructs.Core
             runway.refLat = getKSCLat;
             runway.refLon = getKSCLon;
             runway.refAlt = 69f;
-            runway.sitelength = 2500f;
-            runway.sitewidth = 75f;
-            runway.recoveryfactor = 100f;
-            runway.recoveryrange = 0f;
+            runway.siteLength = 2500f;
+            runway.siteWidth = 75f;
+            runway.recoveryFactor = 100f;
+            runway.recoveryRange = 0f;
             runway.gameObject = SpaceCenter.Instance.gameObject;
 
             launchpad.name = "LaunchPad";
@@ -102,10 +102,10 @@ namespace KerbalKonstructs.Core
             launchpad.refLat = getKSCLat;
             launchpad.refLon = getKSCLon;
             launchpad.refAlt = 72;
-            launchpad.sitelength = 20f;
-            launchpad.sitewidth = 20f;
-            launchpad.recoveryfactor = 100f;
-            launchpad.recoveryrange = 0f;
+            launchpad.siteLength = 20f;
+            launchpad.siteWidth = 20f;
+            launchpad.recoveryFactor = 100f;
+            launchpad.recoveryRange = 0f;
             launchpad.gameObject = SpaceCenter.Instance.gameObject;
 
 
@@ -358,7 +358,7 @@ namespace KerbalKonstructs.Core
             {
                 if (site.name == sSiteName)
                 {
-                    fRefund = site.launchrefund;
+                    fRefund = site.launchRefund;
                     return;
                 }
             }

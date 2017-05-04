@@ -27,11 +27,11 @@ namespace KerbalKonstructs.Core
         public float refLon;
         public float refLat;
         public float refAlt;
-        public float sitelength;
-        public float sitewidth;
-        public float launchrefund = 0f;
-        public float recoveryfactor = 0f;
-        public float recoveryrange = 0f;
+        public float siteLength;
+        public float siteWidth;
+        public float launchRefund = 0f;
+        public float recoveryFactor = 0f;
+        public float recoveryRange = 0f;
         public CelestialBody body;
 
         public string nation = "United Kerbin";
@@ -88,13 +88,13 @@ namespace KerbalKonstructs.Core
             this.refLon = (float)Math.Round((NavUtils.GetLongitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 2);
             this.refLat = (float)Math.Round((NavUtils.GetLatitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 2);
             this.refAlt = (float)instance.getSetting("RadiusOffset");
-            this.sitelength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
+            this.siteLength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
                                     (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.getSetting("DefaultLaunchSiteLength");
-            this.sitewidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
+            this.siteWidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
                                     (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.getSetting("DefaultLaunchSiteWidth");
-            this.launchrefund = (float)instance.getSetting("LaunchRefund");
-            this.recoveryfactor = (float)instance.getSetting("RecoveryFactor");
-            this.recoveryrange = (float)instance.getSetting("RecoveryRange");
+            this.launchRefund = (float)instance.getSetting("LaunchRefund");
+            this.recoveryFactor = (float)instance.getSetting("RecoveryFactor");
+            this.recoveryRange = (float)instance.getSetting("RecoveryRange");
             this.gameObject = instance.gameObject;
             this.facility = newFacility;
             this.missionLog = "No log";

@@ -332,8 +332,8 @@ namespace KerbalKonstructs.UI
 				GUILayout.Label("Longitude: " + selectedSite.refLon.ToString("#0.000"), LabelInfo);
 				GUILayout.Label("Latitude: " + selectedSite.refLat.ToString("#0.000"), LabelInfo);
 				GUILayout.Space(3);
-				GUILayout.Label("Length: " + selectedSite.sitelength.ToString("#0" + " m"), LabelInfo);
-				GUILayout.Label("Width: " + selectedSite.sitewidth.ToString("#0" + " m"), LabelInfo);
+				GUILayout.Label("Length: " + selectedSite.siteLength.ToString("#0" + " m"), LabelInfo);
+				GUILayout.Label("Width: " + selectedSite.siteWidth.ToString("#0" + " m"), LabelInfo);
 
 				GUILayout.FlexibleSpace();
 			}
@@ -356,13 +356,13 @@ namespace KerbalKonstructs.UI
 				{
 					if (!KerbalKonstructs.instance.disableRemoteRecovery)
 					{
-						if (selectedSite.recoveryfactor > 0)
+						if (selectedSite.recoveryFactor > 0)
 						{
-							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryfactor.ToString() + "%", LabelInfo);
+							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryFactor.ToString() + "%", LabelInfo);
 							if (selectedSite.name != "Runway" && selectedSite.name != "LaunchPad")
 							{
-								if (selectedSite.recoveryrange > 0)
-									rangekm = selectedSite.recoveryrange / 1000;
+								if (selectedSite.recoveryRange > 0)
+									rangekm = selectedSite.recoveryRange / 1000;
 								else
 									rangekm = 0;
 
@@ -376,7 +376,7 @@ namespace KerbalKonstructs.UI
 					}
 
 					GUILayout.FlexibleSpace();
-					GUILayout.Label("Launch Refund: " + selectedSite.launchrefund.ToString() + "%", LabelInfo);
+					GUILayout.Label("Launch Refund: " + selectedSite.launchRefund.ToString() + "%", LabelInfo);
 				}
 
 				if (displayLog)

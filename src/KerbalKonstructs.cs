@@ -190,6 +190,9 @@ namespace KerbalKonstructs
             KKAPI.addModelSetting("pointername", new ConfigGenericString());
             KKAPI.addModelSetting("name", new ConfigGenericString());
             KKAPI.addModelSetting("keepConvex", new ConfigGenericString());
+            ConfigGenericString isScanable = new ConfigGenericString();
+            isScanable.setDefaultValue("false");
+            KKAPI.addInstanceSetting("isScanable", isScanable);
             #endregion
 
             #region Instance API
