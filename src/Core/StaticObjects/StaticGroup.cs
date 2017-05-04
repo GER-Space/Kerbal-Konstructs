@@ -77,19 +77,19 @@ namespace KerbalKonstructs.Core
 
 		public static void SetActiveRecursively(GameObject rootObject, bool active)
 		{
-			rootObject.SetActive(active);
+            rootObject.SetActive(active);
             var transforms = rootObject.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < transforms.Length; i++)
-			{
+            {
                 transforms[i].gameObject.SetActive(active);
-			}
-		}
+            }
+        }
 
 		public void CacheAll()
 		{
             for (int i = 0; i < childObjects.Count; i++)
             {
-                SetActive(childObjects[i], false);
+                InstanceUtil.SetActiveRecursively(childObjects[i], false);
 			}
 		}
 
@@ -140,32 +140,17 @@ namespace KerbalKonstructs.Core
 				{
 					if (dist < 65000f)
 					{
-                        SetActive(obj, false);
+                        InstanceUtil.SetActiveRecursively(obj, false);
 						return;
 					}
 				}
 			
 				if (visible)
-                    SetActive(obj, true);
+                    InstanceUtil.SetActiveRecursively(obj, true);
 				else
-                    SetActive(obj, false);
+                    InstanceUtil.SetActiveRecursively(obj, false);
 			}
 		}
-
-
-        internal void SetActive(StaticObject instance, bool newState)
-        {
-
-            if (instance.isActive != newState)
-            {
-                instance.isActive = newState;
-
-                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
-                    module.StaticObjectUpdate();
-
-                SetActiveRecursively(instance.gameObject, newState);
-            }
-        }
 
 
 		public Vector3 getCenter()

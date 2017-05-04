@@ -60,7 +60,7 @@ namespace KerbalKonstructs.Core
 
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
-				obj.SetActiveRecursively(obj.gameObject, bActive);
+				InstanceUtil.SetActiveRecursively(obj, bActive);
 			}
 		}
 
@@ -71,10 +71,10 @@ namespace KerbalKonstructs.Core
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
-					obj.SetActiveRecursively(obj.gameObject, bActive);
+					InstanceUtil.SetActiveRecursively(obj, bActive);
 				else
 					if (bOpposite)
-						obj.SetActiveRecursively(obj.gameObject, !bActive);
+						InstanceUtil.SetActiveRecursively(obj, !bActive);
 			}
 		}
 
@@ -85,10 +85,10 @@ namespace KerbalKonstructs.Core
 			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
 			{
 				if ((string)obj.getSetting("Group") == sGroup)
-					obj.SetActiveRecursively(obj.gameObject, bActive);
+					InstanceUtil.SetActiveRecursively(obj, bActive);
 				else
 					if (bOpposite)
-						obj.SetActiveRecursively(obj.gameObject, !bActive);
+						InstanceUtil.SetActiveRecursively(obj, !bActive);
 			}
 		}
 

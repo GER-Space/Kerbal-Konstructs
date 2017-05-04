@@ -122,11 +122,11 @@ namespace KerbalKonstructs.Core
             // mangle Squads statics
             if (model.isSquad)
             {
-                StaticUtils.MangleSquadStatic(gameObject);
+                InstanceUtil.MangleSquadStatic(gameObject);
             }
 
             // Objects spawned at runtime should be active, ones spawned at loading not
-            SetActiveRecursively(gameObject, editing);
+            InstanceUtil.SetActiveRecursively(this,editing);
 			
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
@@ -225,24 +225,6 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-        internal void SetActiveRecursively(GameObject rootObject, bool active)
-		{
-
-            if (isActive != active)
-            {
-                isActive = active;
-                rootObject.SetActive(active);
-
-                foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
-                    module.StaticObjectUpdate();
-
-                var transforms = rootObject.GetComponentsInChildren<Transform>(true);
-                for (int i = 0; i < transforms.Length; i++)
-                {
-                    transforms[i].gameObject.SetActive(active);
-                }
-            }
-        }
 
         internal void deselectObject(Boolean enableColliders)
 		{
