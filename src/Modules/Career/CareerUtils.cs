@@ -28,7 +28,7 @@ namespace KerbalKonstructs.Modules
         private static List<string> boolAttributes = new List<string>();
 
 
-        internal static bool isCarrerGame
+        internal static bool isCareerGame
         {
             get
             {
@@ -118,7 +118,7 @@ namespace KerbalKonstructs.Modules
             {
                 return true;
             }
-            if (isCarrerGame)
+            if (isCareerGame)
             {
                 if ((string)instance.getSetting("OpenCloseState") == "Open" || (string)instance.getSetting("OpenCloseState") == "OpenLocked" )
                 {

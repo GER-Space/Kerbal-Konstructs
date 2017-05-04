@@ -31,7 +31,23 @@ namespace KerbalKonstructs.Core
             return null;
         }
 
+        /// <summary>
+        /// Removes the wreck model from an KSC Object.
+        /// </summary>
+        internal static void MangleSquadStatic(GameObject gameObject)
+        {
+            gameObject.transform.parent = null;
+            var transforms = gameObject.transform.GetComponentsInChildren<Transform>(true);
+            foreach (var transform in transforms)
+            {
 
+                if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    transform.parent = null;
+                    GameObject.Destroy(transform.gameObject);
+                }
+            }
+        }
 
 
     }

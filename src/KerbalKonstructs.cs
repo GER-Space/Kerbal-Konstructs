@@ -491,7 +491,7 @@ namespace KerbalKonstructs
         public void LoadState(ConfigNode node)
         {
             Log.Normal("Load State");
-            if (CareerUtils.isCarrerGame)
+            if (CareerUtils.isCareerGame)
             {
                 Log.Normal("Load openclose states for career game");
                 Log.PerfStart("Load Fac");

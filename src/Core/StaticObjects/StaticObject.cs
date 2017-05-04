@@ -119,8 +119,14 @@ namespace KerbalKonstructs.Core
 
         internal void spawnObject(Boolean editing, Boolean bPreview)
 		{
-			// Objects spawned at runtime should be active, ones spawned at loading not
-			SetActiveRecursively(gameObject, editing);
+            // mangle Squads statics
+            if (model.isSquad)
+            {
+                StaticUtils.MangleSquadStatic(gameObject);
+            }
+
+            // Objects spawned at runtime should be active, ones spawned at loading not
+            SetActiveRecursively(gameObject, editing);
 			
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();

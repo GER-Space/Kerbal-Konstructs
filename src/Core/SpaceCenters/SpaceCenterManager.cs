@@ -33,7 +33,7 @@ namespace KerbalKonstructs.Core
             var smallestDist = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
             Log.Normal("Distance to KSC is " + smallestDist);
 
-			bool isCareer = CareerUtils.isCarrerGame;
+			bool isCareer = CareerUtils.isCareerGame;
 
 
 			string sOpenCloseState = "Closed";
