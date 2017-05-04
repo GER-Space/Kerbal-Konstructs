@@ -21,7 +21,8 @@ using Debug = UnityEngine.Debug;
 
 namespace KerbalKonstructs
 {
-    [KSPAddonFixed(KSPAddon.Startup.MainMenu, true, typeof(KerbalKonstructs))]
+
+    [KSPAddon(KSPAddon.Startup.MainMenu,true)]
     public class KerbalKonstructs : MonoBehaviour
     {
         // Hello
