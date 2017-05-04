@@ -14,7 +14,7 @@ namespace KerbalKonstructs.Core
 		
 		public static void CreateFromLaunchsite(string name, GameObject go)
 		{
-			StaticObject staticObject = StaticUtils.getStaticFromGameObject(go);
+			StaticObject staticObject = InstanceUtil.GetStaticInstanceForGameObject(go);
 			if (staticObject != null)
 			{
 				var csc = new CustomSpaceCenter();

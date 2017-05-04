@@ -387,7 +387,7 @@ namespace KerbalKonstructs.Core
             StaticObject soSite = null;
             if (go != null)
             {
-                soSite = StaticUtils.getStaticFromGameObject(go);
+                soSite = InstanceUtil.GetStaticInstanceForGameObject(go);
 
                 if (soSite == null) return null;
                 return soSite;
