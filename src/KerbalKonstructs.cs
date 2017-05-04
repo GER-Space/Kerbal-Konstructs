@@ -746,6 +746,9 @@ namespace KerbalKonstructs
             }
         }
 
+        /// <summary>
+        /// Unity Late Update
+        /// </summary>
         void LateUpdate()
         {
             // Check if we don't have the KSC Buildings in the savegame and save them there if missing.
@@ -758,7 +761,10 @@ namespace KerbalKonstructs
             {
                 GUI_StaticsEditor.ToggleEditor();
             }
-
+            if (Input.GetKeyDown(KeyCode.LeftShift) && GUI_StaticsEditor.IsOpen())
+            {
+                GUI_StaticsEditor.SelectMouseObject();
+            }
 
         }
 
