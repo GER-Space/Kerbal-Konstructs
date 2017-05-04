@@ -77,7 +77,7 @@ namespace KerbalKonstructs.UI
 				if (fRangeToTarget > fOldRange) bClosing = false;
 				if (fRangeToTarget < fOldRange) bClosing = true;
 
-				var basepos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(lTargetSite.GameObject.transform.position);
+				var basepos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(lTargetSite.gameObject.transform.position);
 				var dBaseLat = NavUtils.GetLatitude(basepos);
 				var dBaseLon = NavUtils.GetLongitude(basepos);
 				disBaseLat = dBaseLat * 180 / Math.PI;
@@ -96,7 +96,7 @@ namespace KerbalKonstructs.UI
 
 				Vector3 vcraftpos = FlightGlobals.ActiveVessel.GetTransform().position;
 				vCrft = vcraftpos;
-				Vector3 vsitepos = lTargetSite.GameObject.transform.position;
+				Vector3 vsitepos = lTargetSite.gameObject.transform.position;
 				vSPos = vsitepos;
 				Vector3 vHeading = FlightGlobals.ActiveVessel.transform.up;
 				vHead = vHeading;

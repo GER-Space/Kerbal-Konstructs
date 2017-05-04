@@ -312,7 +312,7 @@ namespace KerbalKonstructs.UI
 				{
 					if (bFavesOnly)
 					{
-						if (site.favouritesite != "Yes")
+						if (site.favouriteSite != "Yes")
 							continue;
 					}
 
@@ -320,20 +320,20 @@ namespace KerbalKonstructs.UI
 					{
 						if (!bOpenOn)
 						{
-							if (site.openclosestate == "Open" || site.opencost == 0)
+							if (site.openCloseState == "Open" || site.openCost == 0)
 								continue;
 						}
 
 						if (!bClosedOn)
 						{
-							if (site.openclosestate == "Closed")
+							if (site.openCloseState == "Closed")
 								continue;
 						}
 
 						GUILayout.BeginHorizontal();
-						if (site.openclosestate == "Open" || site.opencost == 0 && site.openclosestate != "OpenLocked" && site.openclosestate != "ClosedLocked")
+						if (site.openCloseState == "Open" || site.openCost == 0 && site.openCloseState != "OpenLocked" && site.openCloseState != "ClosedLocked")
 						{
-							site.openclosestate = "Open";
+							site.openCloseState = "Open";
 							GUILayout.Label(tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
 						}
 						else
@@ -362,9 +362,9 @@ namespace KerbalKonstructs.UI
 
 					if (MiscUtils.isCareerGame())
 					{
-						if (site.openclosestate == "Open" || site.opencost == 0 && site.openclosestate != "OpenLocked" && site.openclosestate != "ClosedLocked")
+						if (site.openCloseState == "Open" || site.openCost == 0 && site.openCloseState != "OpenLocked" && site.openCloseState != "ClosedLocked")
 						{
-							site.openclosestate = "Open";
+							site.openCloseState = "Open";
 							GUILayout.Label(tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
 						}
 						else
@@ -440,7 +440,7 @@ namespace KerbalKonstructs.UI
 						{
 							if (MiscUtils.isCareerGame())
 							{
-								if (DefaultSite.openclosestate == "OpenLocked" || DefaultSite.openclosestate == "ClosedLocked" || (DefaultSite.openclosestate != "Open" && DefaultSite.opencost != 0))
+								if (DefaultSite.openCloseState == "OpenLocked" || DefaultSite.openCloseState == "ClosedLocked" || (DefaultSite.openCloseState != "Open" && DefaultSite.openCost != 0))
 								{
 									smessage = "Default site is closed.";
 									MiscUtils.HUDMessage(smessage, 10, 0);
@@ -465,7 +465,7 @@ namespace KerbalKonstructs.UI
 						{
 							if (MiscUtils.isCareerGame())
 							{
-								if (DefaultSite.openclosestate == "OpenLocked" || DefaultSite.openclosestate == "ClosedLocked" || (DefaultSite.openclosestate != "Open" && DefaultSite.opencost != 0))
+								if (DefaultSite.openCloseState == "OpenLocked" || DefaultSite.openCloseState == "ClosedLocked" || (DefaultSite.openCloseState != "Open" && DefaultSite.openCost != 0))
 								{
 									smessage = "Default site is closed.";
 									MiscUtils.HUDMessage(smessage, 10, 0);

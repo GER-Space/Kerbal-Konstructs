@@ -31,7 +31,7 @@ namespace KerbalKonstructs.UI
 
         private bool bChangeFacilityType = false;
         private static String facType = "None";
-        private string infTrackingShort, infTrackingAngle, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax = "";
+        private string infTrackingShort, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax = "";
 
         String infFacMassCap = "";
         String infFacCraftCap = "";
@@ -207,13 +207,6 @@ namespace KerbalKonstructs.UI
                 infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
                 GUILayout.Label("m", LabelWhite);
                 GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Angle: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infTrackingAngle = GUILayout.TextField(infTrackingAngle, 3, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("°", LabelWhite);
-                GUILayout.EndHorizontal();
             }
 
 
@@ -314,10 +307,10 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Save Facility", GUILayout.Width(115), GUILayout.Height(23)))
             {
-                    MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
-                    updateSettings();
-                    updateSelection();
-                
+                MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
+                updateSettings();
+                updateSelection();
+
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
@@ -429,14 +422,14 @@ namespace KerbalKonstructs.UI
                 "ProductionRateMax",
                 "ScienceOMax",
                 "FundsOMax"
-            } ;
+            };
 
             foreach (String setting in allFacSettings)
             {
                 if (selectedObject.settings.ContainsKey(setting))
                     selectedObject.settings.Remove(setting);
             }
-                        
+
         }
 
 
@@ -457,7 +450,6 @@ namespace KerbalKonstructs.UI
                     break;
                 case "TrackingStation":
                     selectedObject.setSetting("TrackingShort", float.Parse(infTrackingShort));
-                    selectedObject.setSetting("TrackingAngle", float.Parse(infTrackingAngle));
                     break;
                 case "Hangar":
                     if (infFacMassCap != "") selectedObject.setSetting("FacilityMassCapacity", float.Parse(infFacMassCap));
@@ -487,8 +479,6 @@ namespace KerbalKonstructs.UI
         {
 
             infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
-
-            infTrackingAngle = selectedObject.getSetting("TrackingAngle").ToString();
 
 
             infFacMassCap = selectedObject.getSetting("FacilityMassCapacity").ToString();

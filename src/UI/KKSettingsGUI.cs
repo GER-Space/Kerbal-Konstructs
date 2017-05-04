@@ -156,7 +156,7 @@ namespace KerbalKonstructs.UI
 				{
 					if (MiscUtils.isCareerGame())
 					{
-						if (site.openclosestate != "Open" && site.opencost != 0)
+						if (site.openCloseState != "Open" && site.openCost != 0)
 							continue;
 					}
 
@@ -204,7 +204,7 @@ namespace KerbalKonstructs.UI
 				{
 					if (MiscUtils.isCareerGame())
 					{
-						if (site.openclosestate != "Open" && site.opencost != 0)
+						if (site.openCloseState != "Open" && site.openCost != 0)
 							continue;
 					}
 

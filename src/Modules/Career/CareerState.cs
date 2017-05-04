@@ -164,19 +164,19 @@ namespace KerbalKonstructs.Modules
 
                     if (config.ContainsKey("openclosestate"))
                     {
-                        site.openclosestate = config["openclosestate"];
+                        site.openCloseState = config["openclosestate"];
                     }
                     if (config.ContainsKey("favouritesite"))
                     {
-                        site.favouritesite = config["favouritesite"];
+                        site.favouriteSite = config["favouritesite"];
                     }
                     if (config.ContainsKey("missionlog"))
                     {
-                        site.missionlog = config["missionlog"];
+                        site.missionLog = config["missionlog"];
                     }
                     if (config.ContainsKey("missioncount"))
                     {
-                        site.missioncount = float.Parse(config["missioncount"]);
+                        site.missionCount = float.Parse(config["missioncount"]);
                     }
                 }
 
@@ -270,10 +270,10 @@ namespace KerbalKonstructs.Modules
             {
                 name = CareerUtils.LSKeyFromName(site.name);
                 ConfigNode lsNode = lsNodes.AddNode(name);
-                lsNode.SetValue("openclosestate", site.openclosestate, true);
-                lsNode.SetValue("favouritesite", site.favouritesite, true);
-                lsNode.SetValue("missioncount", site.missioncount.ToString(), true);
-                lsNode.SetValue("missionlog", site.missionlog, true);
+                lsNode.SetValue("openclosestate", site.openCloseState, true);
+                lsNode.SetValue("favouritesite", site.favouriteSite, true);
+                lsNode.SetValue("missioncount", site.missionCount.ToString(), true);
+                lsNode.SetValue("missionlog", site.missionLog, true);
             }
             rootNode.Save(saveConfigPath);
         }

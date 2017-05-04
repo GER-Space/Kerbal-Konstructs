@@ -7,6 +7,8 @@ namespace KerbalKonstructs.Core
 {
 	public class StaticModel
 	{
+
+        public bool isSquad = false;
 		public string config;
 		public string configPath;
 		public string path;

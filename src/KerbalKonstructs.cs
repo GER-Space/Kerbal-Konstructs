@@ -232,6 +232,9 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("LaunchSiteLength", new ConfigFloat());
             KKAPI.addInstanceSetting("LaunchSiteWidth", new ConfigFloat());
             KKAPI.addInstanceSetting("LaunchSiteNation", new ConfigGenericString());
+            ConfigGenericString launchSiteHidden = new ConfigGenericString();
+            launchSiteHidden.setDefaultValue("false");
+            KKAPI.addInstanceSetting("LaunchSiteIsHidden", launchSiteHidden);
 
             // Career Mode Strategy Instances
             ConfigFloat openCost = new ConfigFloat();
@@ -436,8 +439,8 @@ namespace KerbalKonstructs
                 if (sitename == "") return;
 
                 LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
-                float fMissionCount = lsSite.missioncount;
-                lsSite.missioncount = fMissionCount + 1;
+                float fMissionCount = lsSite.missionCount;
+                lsSite.missionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
 
                 double hours = dSecs / 60.0 / 60.0;
@@ -451,8 +454,8 @@ namespace KerbalKonstructs
 
                 string sCraft = vVessel.shipName;
                 string sWeight = vVessel.GetTotalMass().ToString();
-                string sLogEntry = lsSite.missionlog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
-                lsSite.missionlog = sLogEntry;
+                string sLogEntry = lsSite.missionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
+                lsSite.missionLog = sLogEntry;
 
                 VesselLaunched = true;
 
@@ -1128,33 +1131,54 @@ namespace KerbalKonstructs
         /// </summary>
         public void LoadSquadModels ()
         {
-            // first we find any potential PQSCity Objects
 
-            PQSMod_MapDecalTangent[] statics = UnityEngine.Object.FindObjectsOfType<PQSMod_MapDecalTangent>();
-            // Component[] allComponents;
-            foreach (var pqs in statics)
+            // first we find get all upgradeable facilities
+            Upgradeables.UpgradeableObject[] upgradeablefacilities;
+            upgradeablefacilities = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>();
+
+            foreach (var facility in upgradeablefacilities)
             {
-                Log.Normal("Found PQSCity: " + pqs.name);
-                Log.Normal("radius: " + pqs.radius);
-                Log.Normal("removeScatter: " + pqs.removeScatter );
-                Log.Normal("angle: "  + pqs.angle );
-                Log.Normal("absolute: " + pqs.absolute );
-                Log.Normal("absOffset: " + pqs.absoluteOffset );
-               // Log.Normal("colorMapName: " + pqs.colorMap.MapName );
-                Log.Normal("hightMapName: " + pqs.heightMap.MapName );
-                Log.Normal("heightMapDeformity: " + pqs.heightMapDeformity );
-                Log.Normal("smoothColor: " + pqs.smoothColor );
-                Log.Normal("smoothHeight: " + pqs.smoothHeight);
-                Log.Normal("useAlphaHeightSmoothing: " + pqs.useAlphaHeightSmoothing);
-                Log.Normal("");
+                for (int i = 0; i < facility.UpgradeLevels.Length; i++)
+                {
 
-                //      allComponents = statics[i].gameObject.GetComponents<Component>();
-                //     foreach (var component in allComponents)
-                //    {
-                //       Debug.Log(component.GetType().ToString());
-                //   } 
+                    string modelName = "KSC_" + facility.name + "_level_" + (i + 1).ToString();
+                    string modelTitle = "KSC " + facility.name + " level " + (i + 1).ToString();
 
-                //statics[i].gameObject
+                    // don't double register the models a second time (they will do this) 
+                    // maybe with a "without green flag" and filter that our later at spawn in mangle
+                    if (staticDB.GetModels().Select(x => x.name).Contains(modelName))
+                        continue;
+
+                    StaticModel model = new StaticModel();
+                    model.name = modelName;
+
+                    // Fill in FakeNews errr values
+                    model.path = "KerbalKonstructs/" + modelName;
+                    model.configPath = model.path + ".cfg";
+                    model.setSetting("keepConvex", "true");
+                    model.setSetting("title", modelTitle);
+                    model.setSetting("mesh", modelName);
+                    model.setSetting("category", "Squad KSC");
+                    model.setSetting("Author", "Squad");
+                    model.setSetting("manufacturer", "Squad");
+                    model.setSetting("description", "Squad original " + modelTitle);
+
+                    model.isSquad = true;
+
+                    // the runways have all the same spawnpoint.
+                    if (facility.name.Equals("Runway", StringComparison.CurrentCultureIgnoreCase))
+                        model.setSetting("DefaultLaunchPadTransform", "End09/SpawnPoint");
+
+                    // Launchpads also 
+                    if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
+                        model.setSetting("DefaultLaunchPadTransform", "LaunchPad_spawn");
+
+                    // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                    model.prefab = facility.UpgradeLevels[i].facilityPrefab;
+
+
+                    staticDB.RegisterModel(model, modelName);
+                }
             }
 
         }
