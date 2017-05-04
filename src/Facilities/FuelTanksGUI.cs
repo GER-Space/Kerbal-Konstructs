@@ -48,7 +48,7 @@ namespace KerbalKonstructs.UI
 
             if (sOriginal == "LiquidFuel") sAlt = (string)obj.getSetting("LqFAlt");
             if (sOriginal == "Oxidizer") sAlt = (string)obj.getSetting("OxFAlt");
-            if (sOriginal == "Monopropellant") sAlt = (string)obj.getSetting("MoFAlt");
+            if (sOriginal == "MonoPropellant") sAlt = (string)obj.getSetting("MoFAlt");
 
             if (sAlt != "") return sAlt;
             else
@@ -64,7 +64,7 @@ namespace KerbalKonstructs.UI
 
             string sResource1 = "LiquidFuel";
             string sResource2 = "Oxidizer";
-            string sResource3 = "Monopropellant";
+            string sResource3 = "MonoPropellant";
 
             fLqFMax = (selectedObject.settings.ContainsKey("LqFMax")) ? (float)selectedObject.getSetting("LqFMax") : (float)selectedObject.model.getSetting("LqFMax");
             fLqFCurrent = (float)selectedObject.getSetting("LqFCurrent");
@@ -111,7 +111,7 @@ namespace KerbalKonstructs.UI
 
             sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
             sResource2 = getResourceAlt(selectedObject, "Oxidizer");
-            sResource3 = getResourceAlt(selectedObject, "Monopropellant");
+            sResource3 = getResourceAlt(selectedObject, "MonoPropellant");
 
             GUILayout.Space(3);
             GUILayout.Label("Fuel Stores", LabelInfo);
@@ -558,7 +558,7 @@ namespace KerbalKonstructs.UI
 
             string sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
             string sResource2 = getResourceAlt(selectedObject, "Oxidizer");
-            string sResource3 = getResourceAlt(selectedObject, "Monopropellant");
+            string sResource3 = getResourceAlt(selectedObject, "MonoPropellant");
 
             if (SelectedResource.resourceName == sResource3 && !bMoFOut) return;
             if (SelectedResource.resourceName == sResource1 && !bLqFOut) return;
@@ -602,7 +602,7 @@ namespace KerbalKonstructs.UI
 
             string sResource1 = getResourceAlt(selectedObject, "LiquidFuel");
             string sResource2 = getResourceAlt(selectedObject, "Oxidizer");
-            string sResource3 = getResourceAlt(selectedObject, "Monopropellant");
+            string sResource3 = getResourceAlt(selectedObject, "MonoPropellant");
 
             if (SelectedResource.resourceName == sResource3 && !bMoFIn) return;
             if (SelectedResource.resourceName == sResource1 && !bLqFIn) return;
