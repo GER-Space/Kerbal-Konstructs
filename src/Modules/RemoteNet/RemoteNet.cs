@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Modules
     internal class RemoteNet
     {
         static List<StaticObject> openCNStations = new List<StaticObject>();
-        static Dictionary<StaticObject,Guid> openRTStations = new Dictionary<StaticObject, Guid>();
+        static Dictionary<StaticObject, Guid> openRTStations = new Dictionary<StaticObject, Guid>();
 
         /// <summary>
         /// iterates through all potential open TrackingStations and attaches GroundStations
@@ -45,7 +45,7 @@ namespace KerbalKonstructs.Modules
             if (KerbalKonstructs.instance.enableRT)
             {
                 // nothing to do, as RT saves the groundstations an we query them later.
-                
+
             }
 
             foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
@@ -79,7 +79,8 @@ namespace KerbalKonstructs.Modules
         /// <param name="instance"></param>
         internal static void AttachGroundStation(StaticObject instance)
         {
-            float antennaPower = (float)instance.getSetting("TrackingShort") * 600;
+            // we use a messure of 1000km from the settings.
+            float antennaPower = (float)instance.getSetting("TrackingShort") * 1000000;
             if (antennaPower == 0f || (string)instance.getSetting("Group") == "KSCUpgrades")
             {
                 return;
@@ -89,7 +90,7 @@ namespace KerbalKonstructs.Modules
             if (KerbalKonstructs.instance.enableCommNet)
             {
 
-                Log.Normal("Adding Groundstation: " + (string)instance.getSetting("Group") );
+                Log.Normal("Adding Groundstation: " + (string)instance.getSetting("Group"));
                 if (openCNStations.Contains(instance) == false)
                 {
                     CommNetHome commNetGroudStation = instance.gameObject.AddComponent<CommNetHome>();
@@ -105,7 +106,7 @@ namespace KerbalKonstructs.Modules
                 }
             }
             // Add RemoteTech Groundstation
-            if (KerbalKonstructs.instance.enableRT )
+            if (KerbalKonstructs.instance.enableRT)
             {
 
                 Guid stationID = RemoteTechAddon.GetGroundStationGuid((instance.body.name) + " " + (string)instance.getSetting("Group"));

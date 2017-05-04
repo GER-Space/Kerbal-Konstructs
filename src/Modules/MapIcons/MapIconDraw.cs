@@ -47,7 +47,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         private void CacheGroundStations()
         {
-            groundStations = new List<StaticObject>();
+            groundStations = new List<StaticObject>(15);
 
             StaticObject[] allObjects = KerbalKonstructs.instance.getStaticDB().GetAllStatics().ToArray();
 

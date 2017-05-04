@@ -11,7 +11,7 @@ namespace KerbalKonstructs.Modules
 {
     class MapIconManager : KKWindow
     {
-        Rect mapManagerRect = new Rect(250, 40, 515, 75);
+        Rect mapManagerRect = new Rect(250, 40, 380, 75);
 
         public float iFundsOpen = 0;
         public float iFundsClose = 0;
@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Modules
         {
             if (MapView.MapIsEnabled)
             {
-                drawManager();
+                DrawManager();
             }
             else
             {
@@ -47,12 +47,12 @@ namespace KerbalKonstructs.Modules
             }
         }
 
-        public void drawManager()
+        public void DrawManager()
         {
-            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, drawMapManagerWindow, "", UIMain.navStyle);
+            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, DrawMapManagerWindow, "", UIMain.navStyle);
         }
 
-        void drawMapManagerWindow(int windowID)
+        void DrawMapManagerWindow(int windowID)
         {
 
             GUILayout.BeginHorizontal();
@@ -156,62 +156,62 @@ namespace KerbalKonstructs.Modules
 
             GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
 
-            GUI.enabled = (MiscUtils.isCareerGame());
-            if (!MiscUtils.isCareerGame())
-            {
-                GUILayout.Button(UIMain.tDownlinksOff, GUILayout.Width(32), GUILayout.Height(32));
-                GUILayout.Button(UIMain.tUplinksOff, GUILayout.Width(32), GUILayout.Height(32));
-                GUILayout.Button(UIMain.tRadarOff, GUILayout.Width(32), GUILayout.Height(32));
-                GUILayout.Button(UIMain.tGroundCommsOff, GUILayout.Width(32), GUILayout.Height(32));
-            }
-            else
-            {
-                if (KerbalKonstructs.instance.mapShowDownlinks)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tDownlinksOn, "Downlinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowDownlinks = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tDownlinksOff, "Downlinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowDownlinks = true;
-                }
+            //GUI.enabled = (MiscUtils.isCareerGame());
+            //if (!MiscUtils.isCareerGame())
+            //{
+            //    GUILayout.Button(UIMain.tDownlinksOff, GUILayout.Width(32), GUILayout.Height(32));
+            //    GUILayout.Button(UIMain.tUplinksOff, GUILayout.Width(32), GUILayout.Height(32));
+            //    GUILayout.Button(UIMain.tRadarOff, GUILayout.Width(32), GUILayout.Height(32));
+            //    GUILayout.Button(UIMain.tGroundCommsOff, GUILayout.Width(32), GUILayout.Height(32));
+            //}
+            //else
+            //{
+            //    if (KerbalKonstructs.instance.mapShowDownlinks)
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tDownlinksOn, "Downlinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowDownlinks = false;
+            //    }
+            //    else
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tDownlinksOff, "Downlinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowDownlinks = true;
+            //    }
 
-                if (KerbalKonstructs.instance.mapShowUplinks)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tUplinksOn, "Uplinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowUplinks = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tUplinksOff, "Uplinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowUplinks = true;
-                }
+            //    if (KerbalKonstructs.instance.mapShowUplinks)
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tUplinksOn, "Uplinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowUplinks = false;
+            //    }
+            //    else
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tUplinksOff, "Uplinks"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowUplinks = true;
+            //    }
 
-                if (KerbalKonstructs.instance.mapShowRadar)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tRadarOn, "Radar"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRadar = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tRadarOff, "Radar"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRadar = true;
-                }
+            //    if (KerbalKonstructs.instance.mapShowRadar)
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tRadarOn, "Radar"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowRadar = false;
+            //    }
+            //    else
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tRadarOff, "Radar"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowRadar = true;
+            //    }
 
-                if (KerbalKonstructs.instance.mapShowGroundComms)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tGroundCommsOn, "Ground Comms"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowGroundComms = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tGroundCommsOff, "Ground Comms"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowGroundComms = true;
-                }
+            //    if (KerbalKonstructs.instance.mapShowGroundComms)
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tGroundCommsOn, "Ground Comms"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowGroundComms = false;
+            //    }
+            //    else
+            //    {
+            //        if (GUILayout.Button(new GUIContent(UIMain.tGroundCommsOff, "Ground Comms"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+            //            KerbalKonstructs.instance.mapShowGroundComms = true;
+            //    }
 
-            }
-            GUI.enabled = true;
+            //}
+            //GUI.enabled = true;
 
             GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
 
