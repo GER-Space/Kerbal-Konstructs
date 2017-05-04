@@ -143,9 +143,11 @@ namespace KerbalKonstructs.Core
 			
 			if (objvisibleRange < 1) objvisibleRange = 25000f;
 
-			PQSCity.LODRange range = new PQSCity.LODRange
+            body = (CelestialBody)getSetting("CelestialBody");
+
+            PQSCity.LODRange range = new PQSCity.LODRange
 			{
-				renderers = rendererList.ToArray(),
+				renderers = new GameObject[0],
 				objects = new GameObject[0],
 				visibleRange = objvisibleRange
 			};
@@ -160,8 +162,8 @@ namespace KerbalKonstructs.Core
 			pqsCity.reorientInitialUp = (Vector3)getSetting("Orientation"); //orientation
 			pqsCity.reorientFinalAngle = (float)getSetting("RotationAngle"); //rotation x axis
 			pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-			gameObject.transform.parent = ((CelestialBody)getSetting("CelestialBody")).pqsController.transform;
-			pqsCity.sphere = ((CelestialBody)getSetting("CelestialBody")).pqsController;
+			gameObject.transform.parent = body.pqsController.transform;
+			pqsCity.sphere = body.pqsController;
             origScale = pqsCity.transform.localScale;             // save the original scale for later use
             pqsCity.transform.localScale *= (float)getSetting("ModelScale");
             pqsCity.order = 100;
@@ -169,15 +171,15 @@ namespace KerbalKonstructs.Core
             pqsCity.OnSetup();
 			pqsCity.Orientate();
 
-            body = (CelestialBody)getSetting("CelestialBody");
 
-      /*      // Add them to the bodys objectlist, so tey show up as anomalies 
-            PQSSurfaceObject pqsSrfObj = new PQSSurfaceObject();
-            pqsSrfObj = (PQSSurfaceObject)pqsCity;
-            var pqsObjectList = body.pqsSurfaceObjects.ToList();
-            pqsObjectList.Add(pqsSrfObj);
-            body.pqsSurfaceObjects = pqsObjectList.ToArray();
-            */
+            // Add them to the bodys objectlist, so they show up as anomalies
+            if (bool.Parse((string)getSetting("isScanable")))
+            {
+                Log.Normal("Added " + gameObject.name + " to scanable Objects");
+                var pqsObjectList = body.pqsSurfaceObjects.ToList();
+                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                body.pqsSurfaceObjects = pqsObjectList.ToArray();
+            }
 
             foreach (StaticModule module in model.modules)
 			{
