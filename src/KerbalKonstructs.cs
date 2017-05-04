@@ -287,8 +287,6 @@ namespace KerbalKonstructs
 
             // Tracking station max short range in m
             KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
-            // Max tracking angle
-            KKAPI.addInstanceSetting("TrackingAngle", new ConfigFloat());
 
             // Target Type and ID
             KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());

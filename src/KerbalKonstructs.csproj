@@ -138,7 +138,6 @@
     <Compile Include="KerbalKonstructs.cs" />
     <Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
     <Compile Include="Core\StaticObjects\StaticObject.cs" />
-    <Compile Include="Utilities\KSPAddonFixed.cs" />
     <Compile Include="Core\StaticObjects\StaticDatabase.cs" />
     <Compile Include="Core\StaticObjects\StaticGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
