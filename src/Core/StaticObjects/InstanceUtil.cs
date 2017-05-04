@@ -8,14 +8,14 @@ using KSP.UI.Screens;
 
 namespace KerbalKonstructs.Core
 {
-    internal static class StaticUtils
+    internal static class InstanceUtil
     {
         /// <summary>
         /// Returns a StaticObject object for a gives GameObject
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-		internal static StaticObject getStaticFromGameObject(GameObject gameObject)
+		internal static StaticObject GetStaticInstanceForGameObject(GameObject gameObject)
         {
             List<StaticObject> objList = (from obj in KerbalKonstructs.instance.staticDB.GetAllStatics() where obj.gameObject == gameObject select obj).ToList();
 
@@ -49,7 +49,26 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal static void SetActiveRecursively(StaticObject instance, bool active)
+        {
 
+            if (instance.isActive != active)
+            {
+                instance.isActive = active;
+                instance.gameObject.SetActive(active);
+
+                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
+                    module.StaticObjectUpdate();
+
+                var transforms = instance.gameObject.GetComponentsInChildren<Transform>(true);
+                for (int i = 0; i < transforms.Length; i++)
+                {
+                    transforms[i].gameObject.SetActive(active);
+                }
+            }
+
+
+        }
     }
 }
 

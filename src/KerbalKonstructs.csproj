@@ -38,8 +38,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Kerbal Space Program\GameData\KerbalKonstructs\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -111,7 +110,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\Compat\AnimateOnClick.cs" />
     <Compile Include="Core\SpaceCenters\CustomSpaceCenter.cs" />
     <Compile Include="Core\SpaceCenters\SpaceCenterManager.cs" />
-    <Compile Include="Core\StaticObjects\StaticUtils.cs" />
+    <Compile Include="Core\StaticObjects\InstanceUtil.cs" />
     <Compile Include="UI\KKWindow.cs" />
     <Compile Include="UI\ToolbarController.cs" />
     <Compile Include="UI\UIMain.cs" />
