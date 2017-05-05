@@ -314,11 +314,6 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("OxFAlt", new ConfigGenericString());
             KKAPI.addInstanceSetting("MoFAlt", new ConfigGenericString());
 
-            KKAPI.addModelSetting("ECMax", new ConfigFloat());
-            KKAPI.addModelSetting("ECRechargeRate", new ConfigFloat());
-            KKAPI.addInstanceSetting("ECMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("ECRechargeRate", new ConfigFloat());
-            KKAPI.addInstanceSetting("ECCurrent", new ConfigFloat());
 
             // Industry
             KKAPI.addModelSetting("DefaultProductionRateMax", new ConfigFloat());

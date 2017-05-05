@@ -795,7 +795,7 @@ namespace KerbalKonstructs.UI
             if ((Time.time - lastloaded) > 2f)
             {
                 lastloaded = Time.time;
-                allStaticInstances = StaticDatabase.GetAllStatics();
+                allStaticInstances = StaticDatabase.allStaticInstances;
             }
         }
 
