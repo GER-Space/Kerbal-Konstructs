@@ -73,7 +73,7 @@ namespace KerbalKonstructs.UI
         private static List<StaticModel> allStaticModels;
         //static need only be loaded once per three seconnds
         private static float lastloaded = 0f;
-        internal static List<StaticObject> allStaticInstances;
+        internal static StaticObject [] allStaticInstances;
 
 
 
@@ -423,7 +423,7 @@ namespace KerbalKonstructs.UI
             if (!creatingInstance)
             {
                 UpdateInstances();
-                for (int ix = 0; ix < allStaticInstances.Count; ix++)
+                for (int ix = 0; ix < allStaticInstances.Length; ix++)
                 //foreach (StaticObject obj in allStaticInstances)
                 {
                     bool isLocal = true;

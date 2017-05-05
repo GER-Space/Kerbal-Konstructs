@@ -410,7 +410,7 @@ namespace KerbalKonstructs
 
             Log.UserInfo("Version is " + sKKVersion + " .");
 
-            Log.UserInfo("StaticDatabase has: " + StaticDatabase.GetAllStatics().Count() + "Entries");
+            Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
             UIMain.setTextures();
             Log.PerfStop("Awake Function");
 
@@ -1298,7 +1298,7 @@ namespace KerbalKonstructs
                     //modelname = conf.config.GetValue("name");
                 }
 
-                StaticModel model = StaticDatabase.GetModel(modelname);
+                StaticModel model = StaticDatabase.GetModelByName(modelname);
                 if (model != null)
                 {
                     loadInstances(conf, model, true);
@@ -1313,7 +1313,7 @@ namespace KerbalKonstructs
         /// <param name="mModelToSave"></param>
         public void saveModelConfig(StaticModel mModelToSave)
         {
-            StaticModel model = StaticDatabase.GetModel(mModelToSave.name);
+            StaticModel model = StaticDatabase.GetModelByName(mModelToSave.name);
 
 
             ConfigNode staticNode = new ConfigNode("STATIC");
@@ -1358,7 +1358,7 @@ namespace KerbalKonstructs
         /// <param name="pathname"></param>
         internal void SaveInstanceByCfg(string pathname)
         {
-            List<StaticObject> allInstances = StaticDatabase.GetAllStatics().Where(instance => instance.configPath == pathname).ToList();
+            List<StaticObject> allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToList();
             StaticObject firstInstance = allInstances.First();
             ConfigNode instanceConfig = null;
 
@@ -1398,8 +1398,7 @@ namespace KerbalKonstructs
         public void saveObjects()
         {
             List<String> processedInstances = new List<string>();
-            List<StaticObject> allInstances = StaticDatabase.GetAllStatics();
-            foreach (StaticObject instance in allInstances)
+            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
             {
                 // ignore allready processed cfg files
                 if (processedInstances.Contains(instance.configPath)) { continue; }
@@ -1551,7 +1550,7 @@ namespace KerbalKonstructs
                     sBase = group.groupName;
                     Debug.Log("sBase is " + sBase);
 
-                    foreach (StaticModel model in StaticDatabase.GetModels())
+                    foreach (StaticModel model in StaticDatabase.allStaticModels)
                     {
                         ConfigNode staticNode = new ConfigNode("STATIC");
                         ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
@@ -1613,7 +1612,7 @@ namespace KerbalKonstructs
             // check later when saving if this file is empty
             deletedInstances.Add(obj);
 
-            StaticDatabase.DeleteObject(obj);
+            StaticDatabase.RemoveStatic(obj);
         }
 
         public void setSnapTarget(StaticObject obj)

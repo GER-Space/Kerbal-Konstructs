@@ -801,7 +801,7 @@ namespace KerbalKonstructs.UI
 
 				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
 				{
-					foreach (StaticModel model in StaticDatabase.GetModels())
+					foreach (StaticModel model in StaticDatabase.allStaticModels)
 					{
 						foreach (StaticObject obj in StaticDatabase.GetObjectsFromModel(model))
 						{

@@ -11,9 +11,15 @@ namespace KerbalKonstructs.Core
 		//Groups are stored by name within the body name
 		private static Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
         private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
+
         internal static List<StaticModel> allStaticModels = new List<StaticModel>();
 
-		private static string activeBodyName = "";
+        //make the list private, so nobody does easily add or remove from it. the array is updated in the Add and Remove functions
+        // arrays are always optimized (also in foreach loops)
+        private static List<StaticObject> _allStaticInstances = new List<StaticObject>();
+        internal static StaticObject [] allStaticInstances ;
+
+        private static string activeBodyName = "";
 
         internal static void ChangeGroup(StaticObject obj, string newGroup)
 		{
@@ -25,10 +31,19 @@ namespace KerbalKonstructs.Core
 			AddStatic(obj);
 		}
 
+
+        /// <summary>
+        /// Adds the Instance to the instances and Group lists
+        /// </summary>
+        /// <param name="obj"></param>
         internal static void AddStatic(StaticObject obj)
 		{
-			String bodyName = ((CelestialBody) obj.getSetting("CelestialBody")).bodyName;
+            _allStaticInstances.Add(obj);
+            allStaticInstances = _allStaticInstances.ToArray();
+
+            String bodyName = ((CelestialBody) obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string) obj.getSetting("Group");
+
 
 			//Debug.Log("Creating object in group " + obj.groupName);
 
@@ -54,11 +69,36 @@ namespace KerbalKonstructs.Core
 			groupList[bodyName][groupName].AddStatic(obj);
 		}
 
+
+        /// <summary>
+        /// Removes a Instance from the group and instance lists.
+        /// </summary>
+        /// <param name="instance"></param>
+        internal static void RemoveStatic(StaticObject instance)
+        {
+            if (_allStaticInstances.Contains(instance))
+            {
+                _allStaticInstances.Remove(instance);
+                allStaticInstances = _allStaticInstances.ToArray();
+            }
+            String bodyName = ((CelestialBody)instance.getSetting("CelestialBody")).bodyName;
+            String groupName = (string)instance.getSetting("Group");
+
+            if (groupList.ContainsKey(bodyName))
+            {
+                if (groupList[bodyName].ContainsKey(groupName))
+                {
+                    Debug.Log("KK: StaticDatabase deleteObject");
+                    groupList[bodyName][groupName].DeleteObject(instance);
+                }
+            }
+        }
+
         internal static void ToggleActiveAllStatics(bool bActive = true)
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-			foreach (StaticObject obj in GetAllStatics())
+			foreach (StaticObject obj in allStaticInstances)
 			{
 				InstanceUtil.SetActiveRecursively(obj, bActive);
 			}
@@ -68,7 +108,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticObject obj in GetAllStatics())
+			foreach (StaticObject obj in allStaticInstances)
 			{
 				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
 					InstanceUtil.SetActiveRecursively(obj, bActive);
@@ -82,7 +122,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject obj in GetAllStatics())
+			foreach (StaticObject obj in allStaticInstances)
 			{
 				if ((string)obj.getSetting("Group") == sGroup)
 					InstanceUtil.SetActiveRecursively(obj, bActive);
@@ -247,35 +287,9 @@ namespace KerbalKonstructs.Core
 
 		}
 
-        internal static void DeleteObject(StaticObject obj)
+        internal static StaticObject[] GetAllStatics()
 		{
-			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
-			String groupName = (string)obj.getSetting("Group");
-
-			if (groupList.ContainsKey(bodyName))
-			{
-				if (groupList[bodyName].ContainsKey(groupName))
-				{
-					Debug.Log("KK: StaticDatabase deleteObject");
-					groupList[bodyName][groupName].DeleteObject(obj);
-				}
-			}
-		}
-
-        internal static List<StaticObject> GetAllStatics()
-		{
-			List<StaticObject> objects = new List<StaticObject>();
-			foreach (Dictionary<string, StaticGroup> groups in groupList.Values)
-			{
-				foreach (StaticGroup group in groups.Values)
-				{
-					foreach (StaticObject obj in group.GetStatics())
-					{
-						objects.Add(obj);
-					}
-				}
-			}
-			return objects;
+            return allStaticInstances;
 		}
 
         internal static void RegisterModel(StaticModel model, string name)
@@ -292,12 +306,7 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-        internal static List<StaticModel> GetModels()
-		{
-			return allStaticModels;
-		}
-
-        internal static StaticModel GetModel(string name)
+        internal static StaticModel GetModelByName(string name)
         {
             if (!modelList.ContainsKey(name))
             {
@@ -312,12 +321,12 @@ namespace KerbalKonstructs.Core
 
         internal static List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
         {
-            return (from obj in GetAllStatics() where obj.configPath == model.configPath select obj).ToList();
+            return (from obj in allStaticInstances where obj.configPath == model.configPath select obj).ToList();
         }
 
         internal static List<StaticObject> GetObjectsFromModel(StaticModel model)
 		{
-			return (from obj in GetAllStatics() where obj.model == model select obj).ToList();
+			return (from obj in allStaticInstances where obj.model == model select obj).ToList();
 		}
 	}
 }

@@ -486,9 +486,9 @@ namespace KerbalKonstructs.UI
         private void CacheFacilities()
         {
 
-            List<StaticObject> allStatics = StaticDatabase.GetAllStatics();
+            StaticObject [] allStatics = StaticDatabase.GetAllStatics();
 
-            for (int i = 0; i < allStatics.Count; i++)
+            for (int i = 0; i < allStatics.Length; i++)
             {
                 //not anywhere here
                 if (!allStatics[i].isActive)
