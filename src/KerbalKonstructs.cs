@@ -1077,9 +1077,9 @@ namespace KerbalKonstructs
 
                 if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
                 {
-                    if (!string.IsNullOrEmpty(model.defaultLaunchPadTransform))
+                    if (!string.IsNullOrEmpty(model.DefaultLaunchPadTransform))
                     {
-                        obj.settings.Add("LaunchPadTransform", model.defaultLaunchPadTransform);
+                        obj.settings.Add("LaunchPadTransform", model.DefaultLaunchPadTransform);
                     }
                     else
                     {
@@ -1168,11 +1168,11 @@ namespace KerbalKonstructs
 
                     // the runways have all the same spawnpoint.
                     if (facility.name.Equals("Runway", StringComparison.CurrentCultureIgnoreCase))
-                        model.defaultLaunchPadTransform = "End09/SpawnPoint";
+                        model.DefaultLaunchPadTransform = "End09/SpawnPoint";
 
                     // Launchpads also 
                     if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
-                        model.defaultLaunchPadTransform = "LaunchPad_spawn";
+                        model.DefaultLaunchPadTransform = "LaunchPad_spawn";
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;

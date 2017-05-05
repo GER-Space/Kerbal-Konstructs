@@ -74,9 +74,9 @@ namespace KerbalKonstructs.UI
 			sInStorage2 = (string)selectedFacility.getSetting("TargetID");
 			sInStorage3 = (string)selectedFacility.getSetting("TargetType");
 
-			float fMaxMass = (float)selectedFacility.model.defaultFacilityMassCapacity;
+			float fMaxMass = (float)selectedFacility.model.DefaultFacilityMassCapacity;
 			if (fMaxMass < 1) fMaxMass = 25f;
-			float fMaxCrafts = (float)selectedFacility.model.defaultFacilityCraftCapacity;
+			float fMaxCrafts = (float)selectedFacility.model.DefaultFacilityCraftCapacity;
 			if (fMaxCrafts < 1 || fMaxCrafts > 3) fMaxCrafts = 2;
 
 			GUILayout.Space(2);
@@ -220,7 +220,7 @@ namespace KerbalKonstructs.UI
 					}
 					else
 					{
-						float fMaxCraft = (float)selectedFacility.model.defaultFacilityCraftCapacity;
+						float fMaxCraft = (float)selectedFacility.model.DefaultFacilityCraftCapacity;
 						if (fMaxCraft < 1 || fMaxCraft > 3) fMaxCraft = 2;
 
 						int iNumberCraft = NumberCraftHangared(selectedFacility);

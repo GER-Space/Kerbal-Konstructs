@@ -23,9 +23,9 @@ namespace KerbalKonstructs.Core
         internal string manufacturer;
         internal string description;
 
-        internal string defaultLaunchPadTransform;
-        internal float defaultLaunchSiteLength;
-        internal float defaultLaunchSiteWidth;
+        internal string DefaultLaunchPadTransform;
+        internal float DefaultLaunchSiteLength;
+        internal float DefaultLaunchSiteWidth;
 
         internal bool keepConvex;
         internal bool isSquad = false;
@@ -34,20 +34,20 @@ namespace KerbalKonstructs.Core
         internal float cost;
 
         // facility settings below
-        internal string defaultFacilityType = "None";
-        internal float defaultFacilityLength;
-        internal float defaultFacilityWidth ;
-        internal float defaultFacilityHeight;
-        internal float defaultFacilityMassCapacity;
-        internal float defaultFacilityCraftCapacity;
+        internal string DefaultFacilityType = "None";
+        internal float DefaultFacilityLength;
+        internal float DefaultFacilityWidth ;
+        internal float DefaultFacilityHeight;
+        internal float DefaultFacilityMassCapacity;
+        internal float DefaultFacilityCraftCapacity;
 
-        internal float defaultStaffMax;
-        internal float lqFMax;
-        internal float oxFMax;
-        internal float moFMax;
-        internal float defaultProductionRateMax;
-        internal float defaultScienceOMax;
-        internal float defaultRepOMax;
-        internal float defaultFundsOMax;
+        internal float DefaultStaffMax;
+        internal float LqFMax;
+        internal float OxFMax;
+        internal float MoFMax;
+        internal float DefaultProductionRateMax;
+        internal float DefaultScienceOMax;
+        internal float DefaultRepOMax;
+        internal float DefaultFundsOMax;
 	}
 }

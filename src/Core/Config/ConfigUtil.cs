@@ -83,7 +83,7 @@ namespace KerbalKonstructs.Core
             {
                 instanceTypes.Add(field.Name, field.GetType());
                 instanceFields.Add(field.Name, field);
-                Log.Normal("Parser Instance: " + field.GetType().ToString());
+                Log.Normal("Parser Instance: " + field.FieldType.ToString());
 
                 if (field.FieldType == typeof(string))
                 {
@@ -125,21 +125,8 @@ namespace KerbalKonstructs.Core
             boolAttributes.AddRange(boolAttributesInstance);
 
             initialized = true;
-
-            Log.Normal("Parser Counts: " + stringAttributesModel.Count + " " + stringAttributesInstance.Count);
         }
 
-
-
-        /// <summary>
-        /// returns a list with the necessarry parameters for a LaunchSite
-        /// </summary>
-        /// <returns></returns>
-        internal static List<string> ParametersForLaunchSite()
-        {
-            List<string> paramList = new List<string> { "openclosestate", "favouritesite", "missioncount", "missionlog" };
-            return paramList;
-        }
 
 
         internal static bool IsString(string parameter)
@@ -188,16 +175,6 @@ namespace KerbalKonstructs.Core
                 InitTypes();
 
             return boolAttributes.Contains(parameter);
-        }
-
-        internal static string KeyFromString(string orginalString)
-        {
-            return Regex.Replace(orginalString, @"\s+", "");
-        }
-
-        internal static string LSKeyFromName(string name)
-        {
-            return name.Replace(' ', '_').ToUpperInvariant();
         }
 
     }

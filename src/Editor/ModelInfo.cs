@@ -210,7 +210,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
             GUILayout.Space(1);
 
-            if (infLaunchTransform != "")
+            if (! string.IsNullOrEmpty(infLaunchTransform))
             {
                 GUILayout.Box("DefaultLaunchPadTransform", BoxNoBorder, GUILayout.Height(19));
                 GUILayout.Box("" + infLaunchTransform, BoxNoBorder2);
@@ -517,26 +517,26 @@ namespace KerbalKonstructs.UI
             mModel.title = infTitle;
             mModel.category = infCategory;
 
-            if (infFacType != "") mModel.defaultFacilityType = infFacType;
+            if (infFacType != "") mModel.DefaultFacilityType = infFacType;
 
-            if (infLaunchLength != "") mModel.defaultLaunchSiteLength =  float.Parse(infLaunchLength);
-            if (infLaunchWidth != "") mModel.defaultLaunchSiteWidth = float.Parse(infLaunchWidth);
-            if (infFacLength != "") mModel.defaultFacilityLength = float.Parse(infFacLength);
-            if (infFacWidth != "") mModel.defaultFacilityWidth = float.Parse(infFacWidth);
-            if (infFacHeight != "") mModel.defaultFacilityHeight = float.Parse(infFacHeight);
-            if (infFacMassCap != "") mModel.defaultFacilityMassCapacity = float.Parse(infFacMassCap);
-            if (infFacCraftCap != "") mModel.defaultFacilityCraftCapacity = float.Parse(infFacCraftCap);
-            if (infStaffMax != "") mModel.defaultStaffMax = float.Parse(infStaffMax);
-            if (infLqFMax != "") mModel.lqFMax = float.Parse(infLqFMax);
-            if (infOxFMax != "") mModel.oxFMax = float.Parse(infOxFMax);
-            if (infMoFMax != "") mModel.moFMax = float.Parse(infMoFMax);
+            if (infLaunchLength != "") mModel.DefaultLaunchSiteLength =  float.Parse(infLaunchLength);
+            if (infLaunchWidth != "") mModel.DefaultLaunchSiteWidth = float.Parse(infLaunchWidth);
+            if (infFacLength != "") mModel.DefaultFacilityLength = float.Parse(infFacLength);
+            if (infFacWidth != "") mModel.DefaultFacilityWidth = float.Parse(infFacWidth);
+            if (infFacHeight != "") mModel.DefaultFacilityHeight = float.Parse(infFacHeight);
+            if (infFacMassCap != "") mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
+            if (infFacCraftCap != "") mModel.DefaultFacilityCraftCapacity = float.Parse(infFacCraftCap);
+            if (infStaffMax != "") mModel.DefaultStaffMax = float.Parse(infStaffMax);
+            if (infLqFMax != "") mModel.LqFMax = float.Parse(infLqFMax);
+            if (infOxFMax != "") mModel.OxFMax = float.Parse(infOxFMax);
+            if (infMoFMax != "") mModel.MoFMax = float.Parse(infMoFMax);
             //	if (infECMax != "") mModel.setSetting("ECMax", float.Parse(infECMax));
             //	if (infOreMax != "") mModel.setSetting("OreMax", float.Parse(infOreMax));
             //	if (infPrOreMax != "") mModel.setSetting("PrOreMax", float.Parse(infPrOreMax));
-            if (infProdRateMax != "") mModel.defaultProductionRateMax = float.Parse(infProdRateMax);
-            if (infScienceMax != "") mModel.defaultScienceOMax = float.Parse(infScienceMax);
-            if (infRepMax != "") mModel.defaultRepOMax = float.Parse(infRepMax);
-            if (infFundsMax != "") mModel.defaultFundsOMax = float.Parse(infFundsMax);
+            if (infProdRateMax != "") mModel.DefaultProductionRateMax = float.Parse(infProdRateMax);
+            if (infScienceMax != "") mModel.DefaultScienceOMax = float.Parse(infScienceMax);
+            if (infRepMax != "") mModel.DefaultRepOMax = float.Parse(infRepMax);
+            if (infFundsMax != "") mModel.DefaultFundsOMax = float.Parse(infFundsMax);
         }
 
         public void updateSelection(StaticModel obj)
@@ -548,27 +548,27 @@ namespace KerbalKonstructs.UI
             infDescription = obj.description;
             infTitle = obj.title;
             infCategory = obj.category;
-            infLaunchTransform = obj.defaultLaunchPadTransform;
+            infLaunchTransform = obj.DefaultLaunchPadTransform;
 
-            infLaunchLength = obj.defaultLaunchSiteLength.ToString();
-            infLaunchWidth = obj.defaultLaunchSiteWidth.ToString();
-            infFacType = obj.defaultFacilityType;
-            infFacLength = obj.defaultFacilityLength.ToString();
-            infFacWidth = obj.defaultFacilityWidth.ToString();
-            infFacHeight = obj.defaultFacilityHeight.ToString();
-            infFacMassCap = obj.defaultFacilityMassCapacity.ToString();
-            infFacCraftCap = obj.defaultFacilityCraftCapacity.ToString();
-            infStaffMax = obj.defaultStaffMax.ToString();
-            infLqFMax = obj.lqFMax.ToString();
-            infOxFMax = obj.oxFMax.ToString();
-            infMoFMax = obj.moFMax.ToString();
+            infLaunchLength = obj.DefaultLaunchSiteLength.ToString();
+            infLaunchWidth = obj.DefaultLaunchSiteWidth.ToString();
+            infFacType = obj.DefaultFacilityType;
+            infFacLength = obj.DefaultFacilityLength.ToString();
+            infFacWidth = obj.DefaultFacilityWidth.ToString();
+            infFacHeight = obj.DefaultFacilityHeight.ToString();
+            infFacMassCap = obj.DefaultFacilityMassCapacity.ToString();
+            infFacCraftCap = obj.DefaultFacilityCraftCapacity.ToString();
+            infStaffMax = obj.DefaultStaffMax.ToString();
+            infLqFMax = obj.LqFMax.ToString();
+            infOxFMax = obj.OxFMax.ToString();
+            infMoFMax = obj.MoFMax.ToString();
             //	infECMax = obj.getSetting("ECMax").ToString();
             //	infOreMax = obj.getSetting("OreMax").ToString();
             //	infPrOreMax = obj.getSetting("PrOreMax").ToString();
-            infProdRateMax = obj.defaultProductionRateMax.ToString();
-            infScienceMax = obj.defaultScienceOMax.ToString();
-            infRepMax = obj.defaultRepOMax.ToString();
-            infFundsMax = obj.defaultFundsOMax.ToString();
+            infProdRateMax = obj.DefaultProductionRateMax.ToString();
+            infScienceMax = obj.DefaultScienceOMax.ToString();
+            infRepMax = obj.DefaultRepOMax.ToString();
+            infFundsMax = obj.DefaultFundsOMax.ToString();
         }
 
 

@@ -14,7 +14,7 @@ namespace KerbalKonstructs.Core
 	{
 		public Vector3 RadialPosition;
 
-		public CelestialBody body;
+		internal CelestialBody body;
 		public float StaffCurrent;
 
 		public GameObject gameObject;

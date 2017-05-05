@@ -1002,11 +1002,11 @@ namespace KerbalKonstructs.UI
             if (!foldedIn)
             {
                 string sLaunchPadTransform = (string)selectedObject.getSetting("LaunchPadTransform");
-                string sDefaultPadTransform = (string)selectedObject.model.defaultLaunchPadTransform;
+                string sDefaultPadTransform = selectedObject.model.DefaultLaunchPadTransform;
                 string sLaunchsiteDesc = (string)selectedObject.getSetting("LaunchSiteDescription");
                 string sModelDesc = (string)selectedObject.model.description;
 
-                if (sLaunchPadTransform == "" && sDefaultPadTransform == "")
+                if (sLaunchPadTransform == "" && string.IsNullOrEmpty(sLaunchPadTransform))
                     GUI.enabled = false;
 
                 if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
@@ -1035,12 +1035,12 @@ namespace KerbalKonstructs.UI
                     flLength = (float)selectedObject.getSetting("LaunchSiteLength");
 
                     if (flLength < 1)
-                        flLength = (float)selectedObject.model.defaultLaunchSiteLength;
+                        flLength = (float)selectedObject.model.DefaultLaunchSiteLength;
 
                     flWidth = (float)selectedObject.getSetting("LaunchSiteWidth");
 
                     if (flWidth < 1)
-                        flWidth = (float)selectedObject.model.defaultLaunchSiteWidth;
+                        flWidth = (float)selectedObject.model.DefaultLaunchSiteWidth;
 
                     stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
                     stRecoveryRange = string.Format("{0}", flRecoveryRange);
@@ -1386,7 +1386,7 @@ namespace KerbalKonstructs.UI
             obj.setSetting("Orientation", Vector3.up);
             obj.setSetting("VisibilityRange", 25000f);
 
-            string sPad = ((string)model.defaultLaunchPadTransform);
+            string sPad = model.DefaultLaunchPadTransform;
             if (!String.IsNullOrEmpty(sPad))
             {
                 obj.setSetting("LaunchPadTransform", sPad);
@@ -1765,7 +1765,7 @@ namespace KerbalKonstructs.UI
 
             if (facType == null || facType == "")
             {
-                string DefaultFacType = obj.model.defaultFacilityType;
+                string DefaultFacType = obj.model.DefaultFacilityType;
 
                 if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
                     facType = "None";

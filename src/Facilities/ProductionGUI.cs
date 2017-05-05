@@ -102,7 +102,7 @@ namespace KerbalKonstructs.UI
 
 					if (fMax < 1)
 					{
-						fMax = (float)selectedFacility.model.defaultScienceOMax;
+						fMax = (float)selectedFacility.model.DefaultScienceOMax;
 
 						if (fMax < 1) fMax = 10f;
 
@@ -118,7 +118,7 @@ namespace KerbalKonstructs.UI
 
 					if (fMax < 1)
 					{
-						fMax = (float)selectedFacility.model.defaultFundsOMax;
+						fMax = (float)selectedFacility.model.DefaultFundsOMax;
 
 						if (fMax < 1) fMax = 10000f;
 

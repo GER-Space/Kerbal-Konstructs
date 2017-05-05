@@ -89,9 +89,9 @@ namespace KerbalKonstructs.Core
             this.refLat = (float)Math.Round((NavUtils.GetLatitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 2);
             this.refAlt = (float)instance.getSetting("RadiusOffset");
             this.siteLength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
-                                    (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.defaultLaunchSiteLength;
+                                    (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.DefaultLaunchSiteLength;
             this.siteWidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
-                                    (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.defaultLaunchSiteWidth;
+                                    (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.DefaultLaunchSiteWidth;
             this.launchRefund = (float)instance.getSetting("LaunchRefund");
             this.recoveryFactor = (float)instance.getSetting("RecoveryFactor");
             this.recoveryRange = (float)instance.getSetting("RecoveryRange");
