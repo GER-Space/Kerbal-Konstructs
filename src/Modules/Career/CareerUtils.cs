@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using KerbalKonstructs.Core;
-using UnityEngine;
 
 namespace KerbalKonstructs.Modules
 {
@@ -80,15 +76,6 @@ namespace KerbalKonstructs.Modules
                 case "Research":
                     paramList.Add("StaffCurrent");
                     paramList.Add("ScienceOCurrent");
-                    break;
-                case "Mining":
-                    paramList.Add("StaffCurrent");
-                    paramList.Add("OreCurrent");
-                    break;
-                case "Manufacturing":
-                    paramList.Add("StaffCurrent");
-                    paramList.Add("Producing");
-                    paramList.Add("PrOreCurrent");
                     break;
                 default:
                     break;
