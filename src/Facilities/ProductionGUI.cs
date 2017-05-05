@@ -76,7 +76,6 @@ namespace KerbalKonstructs.UI
 				float fDefaultRate = 0.01f;
 
 				if (sFacilityType == "Business") fDefaultRate = 0.10f;
-				if (sFacilityType == "Mining") fDefaultRate = 0.05f;
 
 				selectedFacility.setSetting("ProductionRateCurrent", fDefaultRate);
 				fProductionRate = fDefaultRate * (fStaffing / 2f);
@@ -90,7 +89,7 @@ namespace KerbalKonstructs.UI
 				selectedFacility.setSetting("LastCheck", fLastCheck);
 			}
 
-			if (sFacilityType == "Research" || sFacilityType == "Business" || sFacilityType == "Mining")
+			if (sFacilityType == "Research" || sFacilityType == "Business")
 			{
 				string sProduces = "";
 				float fMax = 0f;
@@ -103,7 +102,7 @@ namespace KerbalKonstructs.UI
 
 					if (fMax < 1)
 					{
-						fMax = (float)selectedFacility.model.getSetting("DefaultScienceOMax");
+						fMax = (float)selectedFacility.model.defaultScienceOMax;
 
 						if (fMax < 1) fMax = 10f;
 
@@ -119,7 +118,7 @@ namespace KerbalKonstructs.UI
 
 					if (fMax < 1)
 					{
-						fMax = (float)selectedFacility.model.getSetting("DefaultFundsOMax");
+						fMax = (float)selectedFacility.model.defaultFundsOMax;
 
 						if (fMax < 1) fMax = 10000f;
 
@@ -127,19 +126,7 @@ namespace KerbalKonstructs.UI
 					}
 
 					fCurrent = (float)selectedFacility.getSetting("FundsOCurrent");
-				}
-				if (sFacilityType == "Mining")
-				{
-					sProduces = "Ore";
-					fMax = (float)selectedFacility.model.getSetting("OreMax");
-
-					if (fMax < 1)
-					{
-						fMax = 500f;
-					}
-
-					fCurrent = (float)selectedFacility.getSetting("OreCurrent");
-				}
+				}				
 
 				double dTime = Planetarium.GetUniversalTime();
 
@@ -166,10 +153,6 @@ namespace KerbalKonstructs.UI
 					{
 						selectedFacility.setSetting("FundsOCurrent", fCurrent);
 					}
-					if (sFacilityType == "Mining")
-					{
-						selectedFacility.setSetting("OreCurrent", fCurrent);
-					}
 
 					selectedFacility.setSetting("LastCheck", (float)dTime);
 				}
@@ -179,8 +162,7 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 				GUILayout.Label("Current: " + fCurrent.ToString("#0") + " | Max: " + fMax.ToString("#0"), LabelInfo);
 				GUILayout.EndHorizontal();
-				//if (GUILayout.Button("Upgrade Max Capacity", ButtonSmallText, GUILayout.Height(20)))
-				//{ }
+
 
 				if (sFacilityType == "Research")
 				{
@@ -189,16 +171,7 @@ namespace KerbalKonstructs.UI
 						ResearchAndDevelopment.Instance.AddScience(fCurrent, TransactionReasons.Cheating);
 						selectedFacility.setSetting("ScienceOCurrent", 0f);
 					}
-					/* GUILayout.BeginHorizontal();
-					{
-						if (GUILayout.Button("Assign a Special Project", ButtonSmallText, GUILayout.Height(20)))
-						{ }
-						if (GUILayout.Button("Deliver Research Materials", ButtonSmallText, GUILayout.Height(20)))
-						{ }
-					}
-					GUILayout.EndHorizontal();
-					if (GUILayout.Button("Assign a Kerbonaut Scientist", ButtonSmallText, GUILayout.Height(20)))
-					{ } */
+
 				}
 				if (sFacilityType == "Business")
 				{
@@ -207,88 +180,7 @@ namespace KerbalKonstructs.UI
 						Funding.Instance.AddFunds((double)fCurrent, TransactionReasons.Cheating);
 						selectedFacility.setSetting("FundsOCurrent", 0f);
 					}
-				}
-				/* if (sFacilityType == "Mining")
-				{
-					if (GUILayout.Button("Transfer Ore to/from Craft", ButtonSmallText, GUILayout.Height(20)))
-					{
-						if (bTransferOreToC) bTransferOreToC = false;
-						else bTransferOreToC = true;
-					}
-
-					if (bTransferOreToC)
-					{
-						// Ore transfer to craft GUI
-						GUILayout.Label("Select Craft & Container", LabelInfo);
-						scrollOreTransfer = GUILayout.BeginScrollView(scrollOreTransfer);
-						GUILayout.Label("Select Craft & Container", LabelInfo);
-						GUILayout.Label("Select Craft & Container", LabelInfo);
-						GUILayout.Label("Select Craft & Container", LabelInfo);
-						GUILayout.EndScrollView();
-						GUILayout.BeginHorizontal();
-						if (GUILayout.Button("Into Craft", GUILayout.Height(23)))
-						{
-
-						}
-						if (GUILayout.Button("Out of Craft", GUILayout.Height(23)))
-						{
-
-						}
-						GUILayout.EndHorizontal();
-						GUILayout.BeginHorizontal();
-						GUILayout.Label("Amount: ", LabelInfo);
-						sOreTransferAmount = GUILayout.TextField(sOreTransferAmount, 7, GUILayout.Width(120));
-						if (GUILayout.Button("Max", GUILayout.Height(23)))
-						{
-
-						}
-						GUILayout.EndHorizontal();
-						if (GUILayout.Button("Proceed", GUILayout.Height(23)))
-						{
-
-						}
-
-						GUILayout.FlexibleSpace();
-					}
-
-					if (GUILayout.Button("Transfer Ore to Facility", ButtonSmallText, GUILayout.Height(20)))
-					{
-						if (bTransferOreToF) bTransferOreToF = false;
-						else bTransferOreToF = true;
-						
-					}
-
-					if (bTransferOreToF)
-					{
-						// Ore transfer to Facility GUI
-						GUILayout.Label("Select Destination Facility", LabelInfo);
-						scrollOreTransfer2 = GUILayout.BeginScrollView(scrollOreTransfer2);
-						GUILayout.Label("Select Destination Facility", LabelInfo);
-						GUILayout.Label("Select Destination Facility", LabelInfo);
-						GUILayout.Label("Select Destination Facility", LabelInfo);
-						GUILayout.EndScrollView();
-
-						GUILayout.BeginHorizontal();
-						GUILayout.Label("Amount: ", LabelInfo);
-						sOreTransferAmount = GUILayout.TextField(sOreTransferAmount, 7, GUILayout.Width(120));
-						if (GUILayout.Button("Max", GUILayout.Height(23)))
-						{
-
-						}
-						GUILayout.EndHorizontal();
-						GUILayout.BeginHorizontal();
-						GUILayout.Label("Transfer Cost: X Funds");
-						if (GUILayout.Button("Proceed", GUILayout.Height(23)))
-						{
-
-						}
-						GUILayout.EndHorizontal();
-						GUILayout.FlexibleSpace();
-					}
-
-					if (GUILayout.Button("Assign a Kerbonaut Engineer", ButtonSmallText, GUILayout.Height(20)))
-					{ }
-				} */
+				}				
 
 				GUILayout.Space(5);
 				GUILayout.BeginHorizontal();

@@ -59,18 +59,18 @@ namespace KerbalKonstructs.UI
         {
             string smessage = "";
 
-            string sFacilityName = (string)selectedObject.model.getSetting("title");
+            string sFacilityName = (string)selectedObject.model.title;
             string sFacilityRole = (string)selectedObject.getSetting("FacilityType");
 
             string sResource1 = "LiquidFuel";
             string sResource2 = "Oxidizer";
             string sResource3 = "MonoPropellant";
 
-            fLqFMax = (selectedObject.settings.ContainsKey("LqFMax")) ? (float)selectedObject.getSetting("LqFMax") : (float)selectedObject.model.getSetting("LqFMax");
+            fLqFMax = (selectedObject.settings.ContainsKey("LqFMax")) ? (float)selectedObject.getSetting("LqFMax") : (float)selectedObject.model.lqFMax;
             fLqFCurrent = (float)selectedObject.getSetting("LqFCurrent");
-            fOxFMax = (selectedObject.settings.ContainsKey("OxFMax")) ? (float)selectedObject.getSetting("OxFMax") : (float)selectedObject.model.getSetting("OxFMax");
+            fOxFMax = (selectedObject.settings.ContainsKey("OxFMax")) ? (float)selectedObject.getSetting("OxFMax") : (float)selectedObject.model.oxFMax;
             fOxFCurrent = (float)selectedObject.getSetting("OxFCurrent");
-            fMoFMax = (selectedObject.settings.ContainsKey("MoFMax")) ? (float)selectedObject.getSetting("MoFMax") : (float)selectedObject.model.getSetting("MoFMax");
+            fMoFMax = (selectedObject.settings.ContainsKey("MoFMax")) ? (float)selectedObject.getSetting("MoFMax") : (float)selectedObject.model.moFMax;
             fMoFCurrent = (float)selectedObject.getSetting("MoFCurrent");
 
             float fPurchaseRate = fTransferRate * 100f;

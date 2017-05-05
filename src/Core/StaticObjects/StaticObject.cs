@@ -19,7 +19,7 @@ namespace KerbalKonstructs.Core
 
 		public GameObject gameObject;
 		public PQSCity pqsCity;
-		public StaticModel model;
+		internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;

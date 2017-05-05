@@ -193,7 +193,7 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                    sFacilityName = (string)selectedFacility.model.getSetting("title");
+                    sFacilityName = selectedFacility.model.title;
 
                 GUILayout.Box("" + sFacilityName, Yellowtext);
                 GUILayout.Space(5);
@@ -230,94 +230,43 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                    if (sFacilityType == "RocketAssembly")
-                {
-                    sPurpose = "This facility can construct craft that have been designed in KSC's VAB and can store a constructed craft for launching from the base at a later date.";
-                    bHalfwindow = false;
-                }
-                else
-                        if (sFacilityType == "PlaneAssembly")
-                {
-                    sPurpose = "This facility can construct craft that have been designed in KSC's SPH and can store a constructed craft for launching from the base at a later date.";
-                    bHalfwindow = false;
-                }
-                else
-                            if (sFacilityType == "ControlTower")
-                {
-                    sPurpose = "This facility manages incoming and outgoing air-traffic to and from the base, as well as administrating most other base operations.";
-                }
-                else
-                                if (sFacilityType == "Barracks")
+                if (sFacilityType == "Barracks")
                 {
                     sPurpose = "This facility provides a temporary home for base-staff. Other facilities can draw staff from the pool available at this facility.";
                     bHalfwindow = true;
                 }
                 else
-                                    if (sFacilityType == "RadarStation")
+                if (sFacilityType == "RadarStation")
                 {
                     sPurpose = "This facility tracks craft in the planet's atmosphere at a limited range. It provides bonuses for recovery operations by the nearest open base.";
                     bHalfwindow = true;
                 }
                 else
-                                        if (sFacilityType == "Research")
+                if (sFacilityType == "Research")
                 {
                     sPurpose = "This facility carries out research and generates Science.";
                     bHalfwindow = true;
-                }
+                }             
+                
                 else
-                                            if (sFacilityType == "Mining")
-                {
-                    sPurpose = "This facility excavates useful minerals and materials and thus generates Ore.";
-                }
-                else
-                                                if (sFacilityType == "Refining")
-                {
-                    sPurpose = "This facility converts Ore into fuels.";
-                }
-                else
-                                                    if (sFacilityType == "Manufacturing")
-                {
-                    sPurpose = "This facility converts Ore into Processed Ore, for use in manufacturing craft in lieu of Funds, constructing and upgrading facilities.";
-                }
-                else
-                                                        if (sFacilityType == "Business")
+                if (sFacilityType == "Business")
                 {
                     sPurpose = "This facility carries out business related to the space program in order to generate Funds.";
                     bHalfwindow = true;
                 }
                 else
-                                                            if (sFacilityType == "Training")
-                {
-                    sPurpose = "This facility can provide professional skills and experience to rookie Kerbonauts.";
-                }
-                else
-                                                                if (sFacilityType == "Medical")
-                {
-                    sPurpose = "This facility can aid Kerbonaut recovery after long missions or injury.";
-                }
-                else
-                                                                    if (sFacilityType == "TrackingStation")
+                if (sFacilityType == "TrackingStation")
                 {
                     sPurpose = "This facility can track a variety of off-Kerbin targets, including spacecraft, celestial bodies and asteroids.";
                     bHalfwindow = true;
                 }
                 else
-                                                                        if (sFacilityType == "FuelTanks")
+                if (sFacilityType == "FuelTanks")
                 {
                     sPurpose = "This facility stores fuel for craft.";
                     bHalfwindow = false;
                 }
-                else
-                                                                            if (sFacilityType == "Storage")
-                {
-                    sPurpose = "This facility stores construction materials (Processed Ore).";
-                }
-                else
-                                                                                if (sFacilityType == "CraftAssembly")
-                {
-                    sPurpose = "This facility can construct craft that have been designed in KSC's VAB or SPH and can store a constructed craft for launching from the base at a later date.";
-                    bHalfwindow = false;
-                }
+
 
                 GUILayout.Label(sPurpose, LabelInfo);
                 GUILayout.Space(2);
@@ -328,7 +277,7 @@ namespace KerbalKonstructs.UI
 
                 iFundsOpen2 = (float)selectedFacility.getSetting("OpenCost");
                 isOpen2 = ((string)selectedFacility.getSetting("OpenCloseState") == "Open");
-                float iFundsDefaultCost = (float)selectedFacility.model.getSetting("cost");
+                float iFundsDefaultCost = selectedFacility.model.cost;
                 if (iFundsOpen2 == 0) iFundsOpen2 = iFundsDefaultCost;
 
                 if (iFundsOpen2 == 0) isOpen2 = true;
@@ -344,26 +293,19 @@ namespace KerbalKonstructs.UI
                     TrackingStationGUI.TrackingInterface(selectedFacility);
                 }
 
-                if (sFacilityType == "Hangar" || sFacilityType == "RocketAssembly" || sFacilityType == "PlaneAssembly" || sFacilityType == "CraftAssembly")
+                if (sFacilityType == "Hangar")
                 {
                     HangarGUI.HangarInterface(selectedFacility);
                 }
 
-                // WIP
-                /* if (sFacilityType == "RocketAssembly" || sFacilityType == "PlaneAssembly" || sFacilityType == "CraftAssembly")
-				{
-					CraftConstructionGUI.CraftConstructionInterface(selectedFacility);
-				} */
-
-                if (sFacilityType == "Research" || sFacilityType == "Business" || sFacilityType == "Mining" ||
-                    sFacilityType == "RocketAssembly" || sFacilityType == "PlaneAssembly" || sFacilityType == "CraftAssembly")
+                if (sFacilityType == "Research" || sFacilityType == "Business" )
                 {
                     ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
                 }
 
-                fLqFMax = (float)selectedFacility.model.getSetting("LqFMax");
-                fOxFMax = (float)selectedFacility.model.getSetting("OxFMax");
-                fMoFMax = (float)selectedFacility.model.getSetting("MoFMax");
+                fLqFMax = selectedFacility.model.lqFMax;
+                fOxFMax = selectedFacility.model.oxFMax;
+                fMoFMax = selectedFacility.model.moFMax;
 
                 if (fLqFMax > 0 || fOxFMax > 0 || fMoFMax > 0 || sFacilityType == "FuelTanks")
                 {

@@ -76,7 +76,7 @@ namespace KerbalKonstructs.Core
             }
 
             this.name = (string)instance.getSetting("LaunchSiteName");
-            this.author = (instance.settings.ContainsKey("LaunchSiteAuthor")) ? (string)instance.getSetting("LaunchSiteAuthor") : (string)instance.model.getSetting("author");
+            this.author = (instance.settings.ContainsKey("LaunchSiteAuthor")) ? (string)instance.getSetting("LaunchSiteAuthor") : instance.model.author;
             this.type = (SiteType)instance.getSetting("LaunchSiteType");
             this.logo = logo;
             this.icon = icon;
@@ -89,9 +89,9 @@ namespace KerbalKonstructs.Core
             this.refLat = (float)Math.Round((NavUtils.GetLatitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 2);
             this.refAlt = (float)instance.getSetting("RadiusOffset");
             this.siteLength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
-                                    (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.getSetting("DefaultLaunchSiteLength");
+                                    (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.defaultLaunchSiteLength;
             this.siteWidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
-                                    (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.getSetting("DefaultLaunchSiteWidth");
+                                    (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.defaultLaunchSiteWidth;
             this.launchRefund = (float)instance.getSetting("LaunchRefund");
             this.recoveryFactor = (float)instance.getSetting("RecoveryFactor");
             this.recoveryRange = (float)instance.getSetting("RecoveryRange");

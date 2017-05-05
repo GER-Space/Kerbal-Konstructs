@@ -510,65 +510,65 @@ namespace KerbalKonstructs.UI
 
         public void updateSettings(StaticModel mModel)
         {
-            mModel.setSetting("author", infAuthor);
-            mModel.setSetting("manufacturer", infManufacturer);
-            mModel.setSetting("cost", float.Parse(infCost));
-            mModel.setSetting("description", infDescription);
-            mModel.setSetting("title", infTitle);
-            mModel.setSetting("category", infCategory);
+            mModel.author = infAuthor;
+            mModel.manufacturer = infManufacturer;
+            mModel.cost = float.Parse(infCost);
+            mModel.description = infDescription;
+            mModel.title = infTitle;
+            mModel.category = infCategory;
 
-            if (infFacType != "") mModel.setSetting("DefaultFacilityType", infFacType);
+            if (infFacType != "") mModel.defaultFacilityType = infFacType;
 
-            if (infLaunchLength != "") mModel.setSetting("DefaultLaunchSiteLength", float.Parse(infLaunchLength));
-            if (infLaunchWidth != "") mModel.setSetting("DefaultLaunchSiteWidth", float.Parse(infLaunchWidth));
-            if (infFacLength != "") mModel.setSetting("DefaultFacilityLength", float.Parse(infFacLength));
-            if (infFacWidth != "") mModel.setSetting("DefaultFacilityWidth", float.Parse(infFacWidth));
-            if (infFacHeight != "") mModel.setSetting("DefaultFacilityHeight", float.Parse(infFacHeight));
-            if (infFacMassCap != "") mModel.setSetting("DefaultFacilityMassCapacity", float.Parse(infFacMassCap));
-            if (infFacCraftCap != "") mModel.setSetting("DefaultFacilityCraftCapacity", float.Parse(infFacCraftCap));
-            if (infStaffMax != "") mModel.setSetting("DefaultStaffMax", float.Parse(infStaffMax));
-            if (infLqFMax != "") mModel.setSetting("LqFMax", float.Parse(infLqFMax));
-            if (infOxFMax != "") mModel.setSetting("OxFMax", float.Parse(infOxFMax));
-            if (infMoFMax != "") mModel.setSetting("MoFMax", float.Parse(infMoFMax));
+            if (infLaunchLength != "") mModel.defaultLaunchSiteLength =  float.Parse(infLaunchLength);
+            if (infLaunchWidth != "") mModel.defaultLaunchSiteWidth = float.Parse(infLaunchWidth);
+            if (infFacLength != "") mModel.defaultFacilityLength = float.Parse(infFacLength);
+            if (infFacWidth != "") mModel.defaultFacilityWidth = float.Parse(infFacWidth);
+            if (infFacHeight != "") mModel.defaultFacilityHeight = float.Parse(infFacHeight);
+            if (infFacMassCap != "") mModel.defaultFacilityMassCapacity = float.Parse(infFacMassCap);
+            if (infFacCraftCap != "") mModel.defaultFacilityCraftCapacity = float.Parse(infFacCraftCap);
+            if (infStaffMax != "") mModel.defaultStaffMax = float.Parse(infStaffMax);
+            if (infLqFMax != "") mModel.lqFMax = float.Parse(infLqFMax);
+            if (infOxFMax != "") mModel.oxFMax = float.Parse(infOxFMax);
+            if (infMoFMax != "") mModel.moFMax = float.Parse(infMoFMax);
             //	if (infECMax != "") mModel.setSetting("ECMax", float.Parse(infECMax));
             //	if (infOreMax != "") mModel.setSetting("OreMax", float.Parse(infOreMax));
             //	if (infPrOreMax != "") mModel.setSetting("PrOreMax", float.Parse(infPrOreMax));
-            if (infProdRateMax != "") mModel.setSetting("DefaultProductionRateMax", float.Parse(infProdRateMax));
-            if (infScienceMax != "") mModel.setSetting("DefaultScienceOMax", float.Parse(infScienceMax));
-            if (infRepMax != "") mModel.setSetting("DefaultRepOMax", float.Parse(infRepMax));
-            if (infFundsMax != "") mModel.setSetting("DefaultFundsOMax", float.Parse(infFundsMax));
+            if (infProdRateMax != "") mModel.defaultProductionRateMax = float.Parse(infProdRateMax);
+            if (infScienceMax != "") mModel.defaultScienceOMax = float.Parse(infScienceMax);
+            if (infRepMax != "") mModel.defaultRepOMax = float.Parse(infRepMax);
+            if (infFundsMax != "") mModel.defaultFundsOMax = float.Parse(infFundsMax);
         }
 
         public void updateSelection(StaticModel obj)
         {
-            infAuthor = (string)obj.getSetting("author");
-            infMesh = "" + obj.getSetting("mesh");
-            infManufacturer = (string)obj.getSetting("manufacturer");
-            infCost = obj.getSetting("cost").ToString();
-            infDescription = (string)obj.getSetting("description");
-            infTitle = (string)obj.getSetting("title");
-            infCategory = (string)obj.getSetting("category");
-            infLaunchTransform = (string)obj.getSetting("DefaultLaunchPadTransform");
+            infAuthor = obj.author;
+            infMesh = obj.mesh;
+            infManufacturer = obj.manufacturer;
+            infCost = obj.cost.ToString();
+            infDescription = obj.description;
+            infTitle = obj.title;
+            infCategory = obj.category;
+            infLaunchTransform = obj.defaultLaunchPadTransform;
 
-            infLaunchLength = obj.getSetting("DefaultLaunchSiteLength").ToString();
-            infLaunchWidth = obj.getSetting("DefaultLaunchSiteWidth").ToString();
-            infFacType = (string)obj.getSetting("DefaultFacilityType");
-            infFacLength = obj.getSetting("DefaultFacilityLength").ToString();
-            infFacWidth = obj.getSetting("DefaultFacilityWidth").ToString();
-            infFacHeight = obj.getSetting("DefaultFacilityHeight").ToString();
-            infFacMassCap = obj.getSetting("DefaultFacilityMassCapacity").ToString();
-            infFacCraftCap = obj.getSetting("DefaultFacilityCraftCapacity").ToString();
-            infStaffMax = obj.getSetting("DefaultStaffMax").ToString();
-            infLqFMax = obj.getSetting("LqFMax").ToString();
-            infOxFMax = obj.getSetting("OxFMax").ToString();
-            infMoFMax = obj.getSetting("MoFMax").ToString();
+            infLaunchLength = obj.defaultLaunchSiteLength.ToString();
+            infLaunchWidth = obj.defaultLaunchSiteWidth.ToString();
+            infFacType = obj.defaultFacilityType;
+            infFacLength = obj.defaultFacilityLength.ToString();
+            infFacWidth = obj.defaultFacilityWidth.ToString();
+            infFacHeight = obj.defaultFacilityHeight.ToString();
+            infFacMassCap = obj.defaultFacilityMassCapacity.ToString();
+            infFacCraftCap = obj.defaultFacilityCraftCapacity.ToString();
+            infStaffMax = obj.defaultStaffMax.ToString();
+            infLqFMax = obj.lqFMax.ToString();
+            infOxFMax = obj.oxFMax.ToString();
+            infMoFMax = obj.moFMax.ToString();
             //	infECMax = obj.getSetting("ECMax").ToString();
             //	infOreMax = obj.getSetting("OreMax").ToString();
             //	infPrOreMax = obj.getSetting("PrOreMax").ToString();
-            infProdRateMax = obj.getSetting("DefaultProductionRateMax").ToString();
-            infScienceMax = obj.getSetting("DefaultScienceOMax").ToString();
-            infRepMax = obj.getSetting("DefaultRepOMax").ToString();
-            infFundsMax = obj.getSetting("DefaultFundsOMax").ToString();
+            infProdRateMax = obj.defaultProductionRateMax.ToString();
+            infScienceMax = obj.defaultScienceOMax.ToString();
+            infRepMax = obj.defaultRepOMax.ToString();
+            infFundsMax = obj.defaultFundsOMax.ToString();
         }
 
 

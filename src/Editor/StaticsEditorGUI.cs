@@ -333,7 +333,7 @@ namespace KerbalKonstructs.UI
                 {
                     allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
                     {
-                        return ((string)a.getSetting("category")).CompareTo((string)b.getSetting("category"));
+                        return (a.category).CompareTo(b.category);
                     });
                 }
 
@@ -341,7 +341,7 @@ namespace KerbalKonstructs.UI
                 {
                     allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
                     {
-                        return ((string)a.getSetting("title")).CompareTo((string)b.getSetting("title"));
+                        return (a.title).CompareTo(b.title);
                     });
                 }
 
@@ -352,7 +352,7 @@ namespace KerbalKonstructs.UI
 
                     if (titlefilterset != "")
                     {
-                        sTitleHolder = (string)allStaticModels[idx].getSetting("title");
+                        sTitleHolder = allStaticModels[idx].title;
                         if (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0)
                             showStatic = true;
                         else
@@ -361,7 +361,7 @@ namespace KerbalKonstructs.UI
 
                     if (categoryfilterset != "")
                     {
-                        sCategoryHolder = (string)allStaticModels[idx].getSetting("category");
+                        sCategoryHolder = allStaticModels[idx].category;
                         if (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0)
                             showStatic = true;
                         else
@@ -370,8 +370,8 @@ namespace KerbalKonstructs.UI
 
                     if (categoryfilterset != "" && titlefilterset != "")
                     {
-                        sTitleHolder = (string)allStaticModels[idx].getSetting("title");
-                        sCategoryHolder = (string)allStaticModels[idx].getSetting("category");
+                        sTitleHolder = (string)allStaticModels[idx].title;
+                        sCategoryHolder = (string)allStaticModels[idx].category;
                         if ((sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0) && (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0))
                             showStatic = true;
                         else
@@ -384,9 +384,9 @@ namespace KerbalKonstructs.UI
 
                         if (!foldedIn)
                         {
-                            if (GUILayout.Button(new GUIContent("" + allStaticModels[idx].getSetting("category"), "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
+                            if (GUILayout.Button(new GUIContent("" + allStaticModels[idx].category, "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
                             {
-                                categoryfilter = (string)allStaticModels[idx].getSetting("category");
+                                categoryfilter = allStaticModels[idx].category;
                                 categoryfilterset = categoryfilter;
                                 titlefilterset = titlefilter;
                             }
@@ -394,20 +394,20 @@ namespace KerbalKonstructs.UI
                             GUILayout.Space(5);
                         }
 
-                        if (GUILayout.Button(new GUIContent("" + "" + allStaticModels[idx].getSetting("title"), "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
+                        if (GUILayout.Button(new GUIContent("" + "" + allStaticModels[idx].title, "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
                         {
                             EditorGUI.CloseEditors();
                             KerbalKonstructs.instance.DeletePreviewObject();
                             KerbalKonstructs.instance.bDisablePositionEditing = false;
                             spawnInstance(allStaticModels[idx]);
-                            smessage = "Spawned " + allStaticModels[idx].getSetting("title");
+                            smessage = "Spawned " + allStaticModels[idx].title;
                             MiscUtils.HUDMessage(smessage, 10, 2);
                         }
 
                         if (!foldedIn)
                         {
                             GUILayout.FlexibleSpace();
-                            if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].getSetting("mesh") + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
+                            if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
                             {
                                 KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
                                 KerbalKonstructs.GUI_ModelInfo.Open();
@@ -488,7 +488,7 @@ namespace KerbalKonstructs.UI
                         }
 
                         //GUI.enabled = (obj != selectedObject);
-                        if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.getSetting("title"), "Edit this instance."), GUILayout.Height(23)))
+                        if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title, "Edit this instance."), GUILayout.Height(23)))
                         {
                             KerbalKonstructs.instance.bDisablePositionEditing = false;
                             enableColliders = true;

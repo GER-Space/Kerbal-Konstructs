@@ -34,7 +34,7 @@ namespace KerbalKonstructs
 
         #region Holders
         public StaticObject selectedObject;
-        public StaticModel selectedModel;
+        internal StaticModel selectedModel;
         public StaticObject snapTargetInstance;
         public CameraController camControl = new CameraController();
         private CelestialBody currentBody;
@@ -178,7 +178,7 @@ namespace KerbalKonstructs
             KKAPI.addModelSetting("mesh", new ConfigFile());
             ConfigGenericString authorConfig = new ConfigGenericString();
             authorConfig.setDefaultValue("Unknown");
-            KKAPI.addModelSetting("author", authorConfig);
+            KKAPI.addModelSetting("soThis.model.mesh", authorConfig);
             KKAPI.addModelSetting("DefaultLaunchPadTransform", new ConfigGenericString());
             KKAPI.addModelSetting("title", new ConfigGenericString());
             KKAPI.addModelSetting("category", new ConfigGenericString());
@@ -187,12 +187,9 @@ namespace KerbalKonstructs
             KKAPI.addModelSetting("description", new ConfigGenericString());
             KKAPI.addModelSetting("DefaultLaunchSiteLength", new ConfigFloat());
             KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
-            KKAPI.addModelSetting("pointername", new ConfigGenericString());
             KKAPI.addModelSetting("name", new ConfigGenericString());
             KKAPI.addModelSetting("keepConvex", new ConfigGenericString());
-            ConfigGenericString isScanable = new ConfigGenericString();
-            isScanable.setDefaultValue("false");
-            KKAPI.addInstanceSetting("isScanable", isScanable);
+
             #endregion
 
             #region Instance API
@@ -202,6 +199,10 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("Orientation", new ConfigVector3());
             KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
             KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
+
+            ConfigGenericString isScanable = new ConfigGenericString();
+            isScanable.setDefaultValue("false");
+            KKAPI.addInstanceSetting("isScanable", isScanable);
 
             // Calculated References - do not set, it will not work
             KKAPI.addInstanceSetting("RefLatitude", new ConfigDouble());
@@ -962,7 +963,7 @@ namespace KerbalKonstructs
         /// <param name="configurl"></param>
         /// <param name="model"></param>
         /// <param name="bSecondPass"></param>
-		public void loadInstances(UrlDir.UrlConfig configurl, StaticModel model, bool bSecondPass = false)
+		internal void loadInstances(UrlDir.UrlConfig configurl, StaticModel model, bool bSecondPass = false)
         {
             if (model == null)
             {
@@ -986,7 +987,7 @@ namespace KerbalKonstructs
                 obj.gameObject = Instantiate(model.prefab);
                 if (obj.gameObject == null)
                 {
-                    Log.UserError("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
+                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
 
@@ -994,7 +995,7 @@ namespace KerbalKonstructs
 
                 if (obj.settings == null)
                 {
-                    Log.UserError("KK: Error loading instances for " + model.getSetting("mesh") + ".mu! Check your model and config.");
+                    Log.UserError("KK: Error loading instances for " + model.mesh + ".mu! Check your model and config.");
                     continue;
                 }
 
@@ -1033,16 +1034,14 @@ namespace KerbalKonstructs
 
                         if (firstInstanceKey == secondInstanceKey)
                         {
-                            string sThisMesh = (string)soThis.model.getSetting("mesh");
-                            string sThatMesh = (string)obj.model.getSetting("mesh");
 
                             Log.Debug("Custom instance has a RadialPosition that already has an instance."
-                                + sThisMesh + ":"
+                                + soThis.model.mesh + ":"
                                 + (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
-                                + sThatMesh + ":"
+                                + obj.model.mesh + ":"
                                 + (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
 
-                            if (sThisMesh == sThatMesh)
+                            if (soThis.model.mesh == obj.model.mesh)
                             {
                                 float fThisOffset = (float)soThis.getSetting("RadiusOffset");
                                 float fThatOffset = (float)obj.getSetting("RadiusOffset");
@@ -1053,8 +1052,8 @@ namespace KerbalKonstructs
                                 {
                                     bSpaceOccupied = true;
                                     Log.Debug("KK: Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
-                                    + sThisMesh + " : " + (string)soThis.getSetting("Group") + " : " + firstInstanceKey.ToString() + " | "
-                                    + sThatMesh + " : " + (string)obj.getSetting("Group") + " : " + secondInstanceKey.ToString());
+                                    + soThis.model.mesh + " : " + (string)soThis.getSetting("Group") + " : " + firstInstanceKey.ToString() + " | "
+                                    + obj.model.mesh + " : " + (string)obj.getSetting("Group") + " : " + secondInstanceKey.ToString());
                                     break;
                                 }
                                 else
@@ -1078,9 +1077,9 @@ namespace KerbalKonstructs
 
                 if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
                 {
-                    if (model.settings.Keys.Contains("DefaultLaunchPadTransform"))
+                    if (!string.IsNullOrEmpty(model.defaultLaunchPadTransform))
                     {
-                        obj.settings.Add("LaunchPadTransform", model.getSetting("DefaultLaunchPadTransform"));
+                        obj.settings.Add("LaunchPadTransform", model.defaultLaunchPadTransform);
                     }
                     else
                     {
@@ -1157,23 +1156,23 @@ namespace KerbalKonstructs
                     // Fill in FakeNews errr values
                     model.path = "KerbalKonstructs/" + modelName;
                     model.configPath = model.path + ".cfg";
-                    model.setSetting("keepConvex", "true");
-                    model.setSetting("title", modelTitle);
-                    model.setSetting("mesh", modelName);
-                    model.setSetting("category", "Squad KSC");
-                    model.setSetting("Author", "Squad");
-                    model.setSetting("manufacturer", "Squad");
-                    model.setSetting("description", "Squad original " + modelTitle);
+                    model.keepConvex = true;
+                    model.title = modelTitle;
+                    model.mesh =  modelName;
+                    model.category = "Squad KSC";
+                    model.author = "Squad";
+                    model.manufacturer="Squad";
+                    model.description = "Squad original " + modelTitle;
 
                     model.isSquad = true;
 
                     // the runways have all the same spawnpoint.
                     if (facility.name.Equals("Runway", StringComparison.CurrentCultureIgnoreCase))
-                        model.setSetting("DefaultLaunchPadTransform", "End09/SpawnPoint");
+                        model.defaultLaunchPadTransform = "End09/SpawnPoint";
 
                     // Launchpads also 
                     if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
-                        model.setSetting("DefaultLaunchPadTransform", "LaunchPad_spawn");
+                        model.defaultLaunchPadTransform = "LaunchPad_spawn";
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
@@ -1224,11 +1223,14 @@ namespace KerbalKonstructs
                 }
 
                 StaticModel model = new StaticModel();
+                ConfigParser.ParseModelConfig( model, conf.config);
                 model.name = modelName;
+                model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
                 model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
                 model.config = conf.url;
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
-                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+//                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+                
 
                 foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
                 {
@@ -1248,16 +1250,19 @@ namespace KerbalKonstructs
                                 break;
                         }
                     }
+                    if (model.modules == null)
+                        model.modules = new List<StaticModule>();
+
                     model.modules.Add(module);
                 }
-                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.getSetting("mesh"));
+                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
 
                 if (model.prefab == null)
                 {
-                    Debug.Log("KK: Could not find " + model.getSetting("mesh") + ".mu! Did the modder forget to include it or did you actually install it?");
+                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
-                if (((string)model.getSetting("keepConvex")).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                if (model.keepConvex == true)
                 { }
                 else
                 {
@@ -1306,7 +1311,7 @@ namespace KerbalKonstructs
         /// saves the model definition and the direct instances
         /// </summary>
         /// <param name="mModelToSave"></param>
-        public void saveModelConfig(StaticModel mModelToSave)
+        internal void saveModelConfig(StaticModel mModelToSave)
         {
             StaticModel model = StaticDatabase.GetModelByName(mModelToSave.name);
 
@@ -1314,20 +1319,7 @@ namespace KerbalKonstructs
             ConfigNode staticNode = new ConfigNode("STATIC");
             ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
 
-            foreach (KeyValuePair<string, object> modelsetting in model.settings)
-            {
-                if (modelsetting.Key == "mesh") continue;
-
-                if (modelConfig.HasValue(modelsetting.Key))
-                {
-                    modelConfig.RemoveValue(modelsetting.Key);
-                    modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
-                }
-                else
-                {
-                    modelConfig.AddValue(modelsetting.Key, KKAPI.getModelSettings()[modelsetting.Key].convertValueToConfig(modelsetting.Value));
-                }
-            }
+            ConfigParser.WriteModelConfig(model, modelConfig);
 
             modelConfig.RemoveNodes("Instances");
 

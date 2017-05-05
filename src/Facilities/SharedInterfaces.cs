@@ -39,7 +39,7 @@ namespace KerbalKonstructs.UI
 
 			float iFundsOpen2 = (float)selectedFacility.getSetting("OpenCost");
 			float iFundsClose2 = (float)selectedFacility.getSetting("CloseValue");
-			float iFundsDefaultCost = (float)selectedFacility.model.getSetting("cost");
+			float iFundsDefaultCost = selectedFacility.model.cost;
 
 			bool isAlwaysOpen2 = false;
 			bool cannotBeClosed2 = false;

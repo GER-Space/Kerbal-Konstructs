@@ -361,7 +361,7 @@ namespace KerbalKonstructs.UI
                     foldedIn = true;
             }
 
-            GUILayout.Button((string)selectedObject.model.getSetting("title"), GUILayout.Height(23));
+            GUILayout.Button((string)selectedObject.model.title, GUILayout.Height(23));
 
             GUILayout.EndHorizontal();
 
@@ -956,7 +956,7 @@ namespace KerbalKonstructs.UI
                         float fOffset = (float)selectedObject.getSetting("RadiusOffset");
                         Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
                         float fAngle = (float)selectedObject.getSetting("RotationAngle");
-                        smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
+                        smessage = "Spawned duplicate " + selectedObject.model.title;
                         KerbalKonstructs.instance.deselectObject(true, true);
                         spawnInstance(oModel, fOffset, vPosition, fAngle);
                         MiscUtils.HUDMessage(smessage, 10, 2);
@@ -988,7 +988,7 @@ namespace KerbalKonstructs.UI
                     float fOffset = (float)selectedObject.getSetting("RadiusOffset");
                     Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
                     float fAngle = (float)selectedObject.getSetting("RotationAngle");
-                    smessage = "Spawned duplicate " + selectedObject.model.getSetting("title");
+                    smessage = "Spawned duplicate " + selectedObject.model.title;
                     KerbalKonstructs.instance.deselectObject(true, true);
                     spawnInstance(oModel, fOffset, vPosition, fAngle);
                     MiscUtils.HUDMessage(smessage, 10, 2);
@@ -1002,9 +1002,9 @@ namespace KerbalKonstructs.UI
             if (!foldedIn)
             {
                 string sLaunchPadTransform = (string)selectedObject.getSetting("LaunchPadTransform");
-                string sDefaultPadTransform = (string)selectedObject.model.getSetting("DefaultLaunchPadTransform");
+                string sDefaultPadTransform = (string)selectedObject.model.defaultLaunchPadTransform;
                 string sLaunchsiteDesc = (string)selectedObject.getSetting("LaunchSiteDescription");
-                string sModelDesc = (string)selectedObject.model.getSetting("description");
+                string sModelDesc = (string)selectedObject.model.description;
 
                 if (sLaunchPadTransform == "" && sDefaultPadTransform == "")
                     GUI.enabled = false;
@@ -1035,12 +1035,12 @@ namespace KerbalKonstructs.UI
                     flLength = (float)selectedObject.getSetting("LaunchSiteLength");
 
                     if (flLength < 1)
-                        flLength = (float)selectedObject.model.getSetting("DefaultLaunchSiteLength");
+                        flLength = (float)selectedObject.model.defaultLaunchSiteLength;
 
                     flWidth = (float)selectedObject.getSetting("LaunchSiteWidth");
 
                     if (flWidth < 1)
-                        flWidth = (float)selectedObject.model.getSetting("DefaultLaunchSiteWidth");
+                        flWidth = (float)selectedObject.model.defaultLaunchSiteWidth;
 
                     stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
                     stRecoveryRange = string.Format("{0}", flRecoveryRange);
@@ -1049,7 +1049,7 @@ namespace KerbalKonstructs.UI
                     stLength = string.Format("{0}", flLength);
                     stWidth = string.Format("{0}", flWidth);
 
-                    siteAuthor = (selectedObject.settings.ContainsKey("author")) ? (string)selectedObject.getSetting("author") : (string)selectedObject.model.getSetting("author");
+                    siteAuthor = (selectedObject.settings.ContainsKey("author")) ? (string)selectedObject.getSetting("author") : (string)selectedObject.model.author;
                     // Debug.Log("KK: Making or editing a launchsite");
                     editingSite = true;
                 }
@@ -1187,7 +1187,7 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Space(2);
 
-            GUILayout.Box((string)selectedObject.model.getSetting("title"));
+            GUILayout.Box(selectedObject.model.title);
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Site Name: ", GUILayout.Width(120));
@@ -1328,7 +1328,7 @@ namespace KerbalKonstructs.UI
                 selectedObject.setSetting("OpenCloseState", "Open");
                 selectedObject.setSetting("Category", siteCategory);
                 selectedObject.setSetting("LaunchSiteIsHidden", siteHidden);
-                if (siteAuthor != (string)selectedObject.model.getSetting("author"))
+                if (siteAuthor != selectedObject.model.author)
                     selectedObject.setSetting("LaunchSiteAuthor", siteAuthor);
 
                 if (addToDB)
@@ -1386,7 +1386,7 @@ namespace KerbalKonstructs.UI
             obj.setSetting("Orientation", Vector3.up);
             obj.setSetting("VisibilityRange", 25000f);
 
-            string sPad = ((string)model.getSetting("DefaultLaunchPadTransform"));
+            string sPad = ((string)model.defaultLaunchPadTransform);
             if (!String.IsNullOrEmpty(sPad))
             {
                 obj.setSetting("LaunchPadTransform", sPad);
@@ -1765,7 +1765,7 @@ namespace KerbalKonstructs.UI
 
             if (facType == null || facType == "")
             {
-                string DefaultFacType = (string)obj.model.getSetting("DefaultFacilityType");
+                string DefaultFacType = obj.model.defaultFacilityType;
 
                 if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
                     facType = "None";

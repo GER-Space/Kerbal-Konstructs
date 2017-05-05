@@ -394,11 +394,11 @@ namespace KerbalKonstructs.UI
 
                             if (!bIsOpen)
                             {
-                                iFundsOpen2 = (float)allFacilities[i].model.getSetting("cost");
+                                iFundsOpen2 = (float)allFacilities[i].model.cost;
                                 if (iFundsOpen2 == 0) bIsOpen = true;
                             }
 
-                            if (GUILayout.Button((string)allFacilities[i].model.getSetting("title"), GUILayout.Height(23)))
+                            if (GUILayout.Button((string)allFacilities[i].model.title, GUILayout.Height(23)))
                             {
                                 selectedObject = allFacilities[i];
                                 KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);

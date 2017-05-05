@@ -38,7 +38,7 @@ namespace KerbalKonstructs.UI
 
 				if ((string)obj.getSetting("FacilityType") != "Barracks")
 				{
-					if ((string)obj.model.getSetting("DefaultFacilityType") != "Barracks") continue;
+					if ((string)obj.model.defaultFacilityType != "Barracks") continue;
 				}
 
 				var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, obj.gameObject.transform.position);
@@ -68,7 +68,7 @@ namespace KerbalKonstructs.UI
 
 				if ((string)obj.getSetting("FacilityType") != "Barracks")
 				{
-					if ((string)obj.model.getSetting("DefaultFacilityType") != "Barracks") continue;
+					if ((string)obj.model.defaultFacilityType != "Barracks") continue;
 				}
 
 				if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
@@ -149,12 +149,12 @@ namespace KerbalKonstructs.UI
 			if ((string)selectedFacility.getSetting("FacilityType") == "Barracks")
 				bIsBarracks = true;
 			else
-				if ((string)selectedFacility.model.getSetting("DefaultFacilityType") == "Barracks")
+				if ((string)selectedFacility.model.defaultFacilityType == "Barracks")
 					bIsBarracks = true;
 
 			if (fMaxStaff < 1)
 			{
-				fMaxStaff = (float)selectedFacility.model.getSetting("DefaultStaffMax");
+				fMaxStaff = (float)selectedFacility.model.defaultStaffMax;
 
 				if (fMaxStaff < 1)
 				{
@@ -177,7 +177,7 @@ namespace KerbalKonstructs.UI
 
 				if (!bIsOpen)
 				{
-					iFundsOpen2 = (float)selectedFacility.model.getSetting("cost");
+					iFundsOpen2 = (float)selectedFacility.model.cost;
 					if (iFundsOpen2 == 0) bIsOpen = true;
 				}
 

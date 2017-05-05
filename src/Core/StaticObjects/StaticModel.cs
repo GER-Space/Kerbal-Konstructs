@@ -5,51 +5,49 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	public class StaticModel
+	internal class StaticModel
 	{
+        internal GameObject prefab;
+       // internal Dictionary<string, object> settings = new Dictionary<string, object>();
+        internal List<StaticModule> modules = new List<StaticModule>();
 
-        public bool isSquad = false;
-		public string config;
-		public string configPath;
-		public string path;
-        public string name;
+        internal string config;
+        internal string configPath;
+        internal string path;
+        internal string name;
 
-        public GameObject  prefab;
-		public Dictionary<string, object> settings = new Dictionary<string, object>();
-		public List<StaticModule> modules = new List<StaticModule>();
+        internal string mesh;
+        internal string author = "Unknown";
+        internal string title;
+        internal string category;
+        internal string manufacturer;
+        internal string description;
 
-		public object getSetting(string setting)
-		{
-			if (settings.ContainsKey(setting))
-				return settings[setting];
+        internal string defaultLaunchPadTransform;
+        internal float defaultLaunchSiteLength;
+        internal float defaultLaunchSiteWidth;
 
-            Log.Debug("Setting " + setting + " not found in model " + config + ". This is harmless. Not a bug.");
-			
-			object defaultValue = KKAPI.getModelSettings()[setting].getDefaultValue();
+        internal bool keepConvex;
+        internal bool isSquad = false;
 
-			if (defaultValue != null)
-			{
-				settings.Add(setting, defaultValue);
-				return defaultValue;
-			}
-			else
-			{
-                Log.Debug("Setting " + setting + " not found in model API. It may be on purpose. Not a bug.");
-				return null;
-			}
-		}
+        // need checking
+        internal float cost;
 
-		public void setSetting(string setting, object value)
-		{
+        // facility settings below
+        internal string defaultFacilityType = "None";
+        internal float defaultFacilityLength;
+        internal float defaultFacilityWidth ;
+        internal float defaultFacilityHeight;
+        internal float defaultFacilityMassCapacity;
+        internal float defaultFacilityCraftCapacity;
 
-			if (settings.ContainsKey(setting))
-			{
-				settings[setting] = value;
-			}
-			else
-			{
-				settings.Add(setting, value);
-			}
-		}
+        internal float defaultStaffMax;
+        internal float lqFMax;
+        internal float oxFMax;
+        internal float moFMax;
+        internal float defaultProductionRateMax;
+        internal float defaultScienceOMax;
+        internal float defaultRepOMax;
+        internal float defaultFundsOMax;
 	}
 }

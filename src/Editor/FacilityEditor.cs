@@ -108,7 +108,7 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Space(2);
 
-            GUILayout.Box((string)selectedObject.model.getSetting("title"));
+            GUILayout.Box((string)selectedObject.model.title);
             GUILayout.Space(1);
 
             if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
@@ -483,49 +483,49 @@ namespace KerbalKonstructs.UI
 
             infFacMassCap = selectedObject.getSetting("FacilityMassCapacity").ToString();
             if (infFacMassCap == "0" || infFacMassCap == "")
-                infFacMassCap = selectedObject.model.getSetting("DefaultFacilityMassCapacity").ToString();
+                infFacMassCap = selectedObject.model.defaultFacilityMassCapacity.ToString();
 
             infFacCraftCap = selectedObject.getSetting("FacilityCraftCapacity").ToString();
             if (infFacCraftCap == "0" || infFacCraftCap == "")
-                infFacCraftCap = selectedObject.model.getSetting("DefaultFacilityCraftCapacity").ToString();
+                infFacCraftCap = selectedObject.model.defaultFacilityCraftCapacity.ToString();
 
             infLqFMax = selectedObject.getSetting("LqFMax").ToString();
             if (infLqFMax == "0" || infLqFMax == "")
-                infLqFMax = selectedObject.model.getSetting("LqFMax").ToString();
+                infLqFMax = selectedObject.model.lqFMax.ToString();
 
             infOxFMax = selectedObject.getSetting("OxFMax").ToString();
             if (infOxFMax == "0" || infOxFMax == "")
-                infOxFMax = selectedObject.model.getSetting("OxFMax").ToString();
+                infOxFMax = selectedObject.model.oxFMax.ToString();
 
             infMoFMax = selectedObject.getSetting("MoFMax").ToString();
             if (infMoFMax == "0" || infMoFMax == "")
-                infMoFMax = selectedObject.model.getSetting("MoFMax").ToString();
+                infMoFMax = selectedObject.model.moFMax.ToString();
 
             infOpenCost = selectedObject.getSetting("OpenCost").ToString();
             if (infOpenCost == "0" || infOpenCost == "")
-                infOpenCost = selectedObject.model.getSetting("cost").ToString();
+                infOpenCost = selectedObject.model.cost.ToString();
 
             infStaffMax = selectedObject.getSetting("StaffMax").ToString();
             if (infStaffMax == "0" || infStaffMax == "")
-                infStaffMax = selectedObject.model.getSetting("DefaultStaffMax").ToString();
+                infStaffMax = selectedObject.model.defaultStaffMax.ToString();
 
             infProdRateMax = selectedObject.getSetting("ProductionRateMax").ToString();
             if (infProdRateMax == "0" || infProdRateMax == "")
-                infProdRateMax = selectedObject.model.getSetting("DefaultProductionRateMax").ToString();
+                infProdRateMax = selectedObject.model.defaultProductionRateMax.ToString();
 
             infScienceMax = selectedObject.getSetting("ScienceOMax").ToString();
             if (infScienceMax == "0" || infScienceMax == "")
-                infScienceMax = selectedObject.model.getSetting("DefaultScienceOMax").ToString();
+                infScienceMax = selectedObject.model.defaultScienceOMax.ToString();
 
             infFundsMax = selectedObject.getSetting("FundsOMax").ToString();
             if (infFundsMax == "0" || infFundsMax == "")
-                infFundsMax = selectedObject.model.getSetting("DefaultFundsOMax").ToString();
+                infFundsMax = selectedObject.model.defaultFundsOMax.ToString();
 
             facType = (string)selectedObject.getSetting("FacilityType");
 
             if (facType == null || facType == "")
             {
-                facType = (string)selectedObject.model.getSetting("DefaultFacilityType");
+                facType = (string)selectedObject.model.defaultFacilityType;
 
                 if (facType == null || facType == "None" || facType == "")
                     facType = "None";
