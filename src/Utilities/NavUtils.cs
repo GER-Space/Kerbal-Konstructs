@@ -41,7 +41,7 @@ namespace KerbalKonstructs.Utilities
 			float fDistance = 0f;
 			float fNearest = 0f;
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
 			{
 				if (sGroup != "None")
 				{

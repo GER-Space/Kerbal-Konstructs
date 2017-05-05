@@ -32,7 +32,7 @@ namespace KerbalKonstructs.UI
 		{
 			float fKerbals = 0f;
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
@@ -62,7 +62,7 @@ namespace KerbalKonstructs.UI
 			StaticObject soNearest = null;
 			float fKerbals = 0f;
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 

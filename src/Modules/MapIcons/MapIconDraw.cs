@@ -49,7 +49,7 @@ namespace KerbalKonstructs.Modules
         {
             groundStations = new List<StaticObject>(15);
 
-            StaticObject[] allObjects = KerbalKonstructs.instance.getStaticDB().GetAllStatics().ToArray();
+            StaticObject[] allObjects = StaticDatabase.GetAllStatics().ToArray();
 
             for (int i = 0; i < allObjects.Length; i++)
             {
@@ -128,9 +128,9 @@ namespace KerbalKonstructs.Modules
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
                 {
-                    CelestialBody cPlanetoid = (CelestialBody)groundStation.getSetting("CelestialBody");
 
-                    var objectpos2 = cPlanetoid.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
+
+                    var objectpos2 = groundStation.body.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
                     var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
                     var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
                     var disObjectLat2 = dObjectLat2 * 180 / Math.PI;

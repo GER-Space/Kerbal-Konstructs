@@ -48,7 +48,7 @@ namespace KerbalKonstructs.Modules
 
             }
 
-            foreach (StaticObject instance in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
             {
 
                 if ((string)instance.getSetting("FacilityType") != "TrackingStation")

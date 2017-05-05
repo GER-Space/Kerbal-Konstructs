@@ -6,16 +6,16 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	public class StaticDatabase
+	internal static class StaticDatabase
 	{
 		//Groups are stored by name within the body name
-		private Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
-        private Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
-        private List<StaticModel> allStaticModels = new List<StaticModel>();
+		private static Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
+        private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
+        internal static List<StaticModel> allStaticModels = new List<StaticModel>();
 
-		private string activeBodyName = "";
+		private static string activeBodyName = "";
 
-		public void ChangeGroup(StaticObject obj, string newGroup)
+        internal static void ChangeGroup(StaticObject obj, string newGroup)
 		{
 			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string)obj.getSetting("Group");
@@ -25,7 +25,7 @@ namespace KerbalKonstructs.Core
 			AddStatic(obj);
 		}
 
-		public void AddStatic(StaticObject obj)
+        internal static void AddStatic(StaticObject obj)
 		{
 			String bodyName = ((CelestialBody) obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string) obj.getSetting("Group");
@@ -54,21 +54,21 @@ namespace KerbalKonstructs.Core
 			groupList[bodyName][groupName].AddStatic(obj);
 		}
 
-		public void ToggleActiveAllStatics(bool bActive = true)
+        internal static void ToggleActiveAllStatics(bool bActive = true)
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in GetAllStatics())
 			{
 				InstanceUtil.SetActiveRecursively(obj, bActive);
 			}
 		}
 
-		public void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
+        internal static void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in GetAllStatics())
 			{
 				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
 					InstanceUtil.SetActiveRecursively(obj, bActive);
@@ -78,11 +78,11 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
+        internal static void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+			foreach (StaticObject obj in GetAllStatics())
 			{
 				if ((string)obj.getSetting("Group") == sGroup)
 					InstanceUtil.SetActiveRecursively(obj, bActive);
@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void CacheAll()
+        internal static void CacheAll()
 		{
 			if (activeBodyName == "")
 			{
@@ -125,7 +125,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void LoadObjectsForBody(String bodyName)
+        internal static void LoadObjectsForBody(String bodyName)
 		{
 			activeBodyName = bodyName;
 
@@ -138,7 +138,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void OnBodyChanged(CelestialBody body)
+        internal static void OnBodyChanged(CelestialBody body)
 		{
 			if (body != null)
 			{
@@ -162,7 +162,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public void UpdateCache(Vector3 playerPos)
+        internal static void UpdateCache(Vector3 playerPos)
 		{
             Log.Debug("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
 
@@ -247,7 +247,7 @@ namespace KerbalKonstructs.Core
 
 		}
 
-		public void DeleteObject(StaticObject obj)
+        internal static void DeleteObject(StaticObject obj)
 		{
 			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
 			String groupName = (string)obj.getSetting("Group");
@@ -262,7 +262,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public List<StaticObject> GetAllStatics()
+        internal static List<StaticObject> GetAllStatics()
 		{
 			List<StaticObject> objects = new List<StaticObject>();
 			foreach (Dictionary<string, StaticGroup> groups in groupList.Values)
@@ -278,7 +278,7 @@ namespace KerbalKonstructs.Core
 			return objects;
 		}
 
-		public void RegisterModel(StaticModel model, string name)
+        internal static void RegisterModel(StaticModel model, string name)
 		{
             allStaticModels.Add(model);
             if (modelList.ContainsKey(name))
@@ -292,12 +292,12 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-		public List<StaticModel> GetModels()
+        internal static List<StaticModel> GetModels()
 		{
 			return allStaticModels;
 		}
 
-        public StaticModel GetModel(string name)
+        internal static StaticModel GetModel(string name)
         {
             if (!modelList.ContainsKey(name))
             {
@@ -310,12 +310,12 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
+        internal static List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
         {
             return (from obj in GetAllStatics() where obj.configPath == model.configPath select obj).ToList();
         }
 
-        public List<StaticObject> GetObjectsFromModel(StaticModel model)
+        internal static List<StaticObject> GetObjectsFromModel(StaticModel model)
 		{
 			return (from obj in GetAllStatics() where obj.model == model select obj).ToList();
 		}

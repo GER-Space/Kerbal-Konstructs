@@ -107,7 +107,7 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            allStaticModels = KerbalKonstructs.instance.getStaticDB().GetModels();
+            allStaticModels = StaticDatabase.allStaticModels;
             base.Open();
             KerbalKonstructs.GUI_Editor.Open();
         }
@@ -625,7 +625,7 @@ namespace KerbalKonstructs.UI
                             //Validate the groupfilter to see if it is a Group name
                             bool bValidGroupName = false;
 
-                            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+                            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
                             {
                                 if ((string)obj.getSetting("Group") == groupfilter)
                                 {
@@ -764,14 +764,14 @@ namespace KerbalKonstructs.UI
             if (sGroup == "")
                 return;
 
-            foreach (StaticObject obj in KerbalKonstructs.instance.getStaticDB().GetAllStatics())
+            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
             {
                 if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
                 {
                     var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
                     if (dist < fRange)
                     {
-                        KerbalKonstructs.instance.getStaticDB().ChangeGroup(obj, sGroup);
+                        StaticDatabase.ChangeGroup(obj, sGroup);
                     }
                 }
             }
@@ -795,7 +795,7 @@ namespace KerbalKonstructs.UI
             if ((Time.time - lastloaded) > 2f)
             {
                 lastloaded = Time.time;
-                allStaticInstances = KerbalKonstructs.instance.getStaticDB().GetAllStatics();
+                allStaticInstances = StaticDatabase.GetAllStatics();
             }
         }
 

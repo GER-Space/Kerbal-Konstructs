@@ -486,7 +486,7 @@ namespace KerbalKonstructs.UI
         private void CacheFacilities()
         {
 
-            List<StaticObject> allStatics = KerbalKonstructs.instance.getStaticDB().GetAllStatics();
+            List<StaticObject> allStatics = StaticDatabase.GetAllStatics();
 
             for (int i = 0; i < allStatics.Count; i++)
             {
