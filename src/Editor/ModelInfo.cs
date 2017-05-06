@@ -609,7 +609,6 @@ namespace KerbalKonstructs.UI
 
             obj.model = model;
 
-            StaticDatabase.AddStatic(obj);
             obj.spawnObject(true, true);
             // KerbalKonstructs.instance.selectObject(obj, false);
             currPreview = obj;

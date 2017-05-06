@@ -25,7 +25,7 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// Adds the Instance to the instances and Group lists
+        /// Adds the Instance to the instances and Group lists. Also sets the PQSCity.name
         /// </summary>
         /// <param name="obj"></param>
         internal static void AddStatic(StaticObject obj)
@@ -36,30 +36,23 @@ namespace KerbalKonstructs.Core
             String bodyName = obj.body.bodyName;
 			String groupName = (string) obj.getSetting("Group");
 
-
-			//Debug.Log("Creating object in group " + obj.groupName);
-
 			if (!groupList.ContainsKey(bodyName))
 				groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
 
 			if (!groupList[bodyName].ContainsKey(groupName))
 			{
-
 				StaticGroup group = new StaticGroup(groupName, bodyName);
 				if (groupName == "Ungrouped")
 				{
 					group.alwaysActive = true;
 
-				}
-				
-				group.active = true;
-				
+				}				
+				group.active = true;				
 				groupList[bodyName].Add(groupName, group);
 			}
-
 			groupList[bodyName][groupName].AddStatic(obj);
 
-
+            SetNewName(obj);
 
 		}
 
@@ -103,6 +96,25 @@ namespace KerbalKonstructs.Core
         }
 
 
+        /// <summary>
+        /// Sets the PQSCity Name to Group_Modenlame_(index of the same models in group)
+        /// </summary>
+        /// <param name="instance"></param>
+        private static void SetNewName(StaticObject instance)
+        {
+            string modelName = instance.model.name;
+            string groupName = (string)instance.getSetting("Group"); 
+
+            int modelCount = (from obj in groupList[instance.body.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
+
+            instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + --modelCount;
+            Log.Normal("PQSCity.name: " + instance.pqsCity.name);
+        }
+
+        /// <summary>
+        /// toggles the visiblility for all Instances at once
+        /// </summary>
+        /// <param name="bActive"></param>
         internal static void ToggleActiveAllStatics(bool bActive = true)
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
@@ -113,6 +125,12 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
+        /// <summary>
+        /// toggles the visiblility of all statics on a planet
+        /// </summary>
+        /// <param name="cBody"></param>
+        /// <param name="bActive"></param>
+        /// <param name="bOpposite"></param>
         internal static void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
@@ -127,6 +145,12 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
+        /// <summary>
+        /// toggles the visiblility of all statics in a group
+        /// </summary>
+        /// <param name="sGroup"></param>
+        /// <param name="bActive"></param>
+        /// <param name="bOpposite"></param>
         internal static void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");

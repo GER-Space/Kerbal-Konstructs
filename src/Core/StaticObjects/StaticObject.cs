@@ -117,6 +117,12 @@ namespace KerbalKonstructs.Core
 			return fDistance;
 		}
 
+
+        /// <summary>
+        /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
+        /// </summary>
+        /// <param name="editing"></param>
+        /// <param name="bPreview"></param>
         internal void spawnObject(Boolean editing, Boolean bPreview)
 		{
             // mangle Squads statics
@@ -211,8 +217,17 @@ namespace KerbalKonstructs.Core
 			{
 				gorenderer.GetComponent<Renderer>().enabled = true;
 			}
+
+            StaticDatabase.AddStatic(this);
+
 		}
 
+
+        /// <summary>
+        /// Sets tje Layer of the Colliders
+        /// </summary>
+        /// <param name="sGameObject"></param>
+        /// <param name="newLayerNumber"></param>
         internal void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
 		{
 
@@ -225,7 +240,10 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-
+        /// <summary>
+        /// resets the object highlightColor to 0 and resets the editing flag.
+        /// </summary>
+        /// <param name="enableColliders"></param>
         internal void deselectObject(Boolean enableColliders)
 		{
 			this.editing = false;

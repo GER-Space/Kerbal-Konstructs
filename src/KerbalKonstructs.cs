@@ -1106,7 +1106,7 @@ namespace KerbalKonstructs
                         }
                     }
                 }
-                StaticDatabase.AddStatic(obj);
+                
                 obj.spawnObject(false, false);
 
                 if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))

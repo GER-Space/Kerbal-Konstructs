@@ -1402,7 +1402,6 @@ namespace KerbalKonstructs.UI
             obj.configPath = "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
             obj.configUrl = null;
 
-            StaticDatabase.AddStatic(obj);
             enableColliders = false;
             obj.spawnObject(true, false);
         }
