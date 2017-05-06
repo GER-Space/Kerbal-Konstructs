@@ -21,15 +21,7 @@ namespace KerbalKonstructs.Core
 
         private static string activeBodyName = "";
 
-        internal static void ChangeGroup(StaticObject obj, string newGroup)
-		{
-			String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
-			String groupName = (string)obj.getSetting("Group");
 
-			groupList[bodyName][groupName].RemoveStatic(obj);
-			obj.setSetting("Group", newGroup);
-			AddStatic(obj);
-		}
 
 
         /// <summary>
@@ -41,7 +33,7 @@ namespace KerbalKonstructs.Core
             _allStaticInstances.Add(obj);
             allStaticInstances = _allStaticInstances.ToArray();
 
-            String bodyName = ((CelestialBody) obj.getSetting("CelestialBody")).bodyName;
+            String bodyName = obj.body.bodyName;
 			String groupName = (string) obj.getSetting("Group");
 
 
@@ -52,13 +44,12 @@ namespace KerbalKonstructs.Core
 
 			if (!groupList[bodyName].ContainsKey(groupName))
 			{
-				//StaticGroup group = new StaticGroup(bodyName, groupName);
+
 				StaticGroup group = new StaticGroup(groupName, bodyName);
-				//Ungrouped objects get individually cached. New acts the same as Ungrouped but stores unsaved statics instead.
 				if (groupName == "Ungrouped")
 				{
 					group.alwaysActive = true;
-					//group.active = true;
+
 				}
 				
 				group.active = true;
@@ -67,6 +58,9 @@ namespace KerbalKonstructs.Core
 			}
 
 			groupList[bodyName][groupName].AddStatic(obj);
+
+
+
 		}
 
 
@@ -81,7 +75,7 @@ namespace KerbalKonstructs.Core
                 _allStaticInstances.Remove(instance);
                 allStaticInstances = _allStaticInstances.ToArray();
             }
-            String bodyName = ((CelestialBody)instance.getSetting("CelestialBody")).bodyName;
+            String bodyName = instance.body.bodyName;
             String groupName = (string)instance.getSetting("Group");
 
             if (groupList.ContainsKey(bodyName))
@@ -93,6 +87,21 @@ namespace KerbalKonstructs.Core
                 }
             }
         }
+
+        /// <summary>
+        /// Changes the group from a instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="newGroup"></param>
+        internal static void ChangeGroup(StaticObject obj, string newGroup)
+        {
+            String bodyName = obj.body.bodyName;
+            String groupName = (string)obj.getSetting("Group");
+
+            RemoveStatic(obj);
+            AddStatic(obj);
+        }
+
 
         internal static void ToggleActiveAllStatics(bool bActive = true)
 		{
