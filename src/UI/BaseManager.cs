@@ -10,7 +10,7 @@ namespace KerbalKonstructs.UI
 {
 	class BaseManager :KKWindow
 	{
-		public static Rect BaseManagerRect = new Rect(250, 60, 185, 720);
+		public static Rect BaseManagerRect = new Rect(250, 60, 185, 650);
 
 		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
 		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);
@@ -27,13 +27,6 @@ namespace KerbalKonstructs.UI
 		public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 		public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 
-		public static Texture tKerbica = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkerbica", false);
-		public Texture tKerbaland = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkerbaland", false);
-		public Texture tEmpire = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagempire", false);
-		public Texture tKeuropia = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagkeuropia", false);
-		public Texture tMiddle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagmiddle", false);
-		public Texture tUnitedKerbin = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/flagunited", false);
-		public Texture tNation = tKerbica;
 		
 		public static LaunchSite selectedSite = null;
 
@@ -65,7 +58,6 @@ namespace KerbalKonstructs.UI
 		public Boolean isLocked = false;
 		public Boolean isLaunch = false;
 
-		public string sNation;
 
         public override void Draw()
         {
@@ -304,30 +296,6 @@ namespace KerbalKonstructs.UI
 
 			if (displayStats)
 			{
-				sNation = selectedSite.nation;
-				if (sNation == "Kerbaland") tNation = tKerbaland;
-				if (sNation == "Kerbica") tNation = tKerbica;
-				if (sNation == "Empire") tNation = tEmpire;
-				if (sNation == "Middle") tNation = tMiddle;
-				if (sNation == "Keuropia") tNation = tKeuropia;
-
-				if (sNation != "")
-				{
-					GUILayout.BeginHorizontal();
-					GUILayout.Label("Nation: \n" + sNation, LabelInfo);
-					GUILayout.FlexibleSpace();
-					GUILayout.Label(tNation, GUILayout.Height(40), GUILayout.Width(64));
-					GUILayout.EndHorizontal();
-				}
-				else
-				{
-					GUILayout.BeginHorizontal();
-					GUILayout.Label("Nation: \nUnited Kerbin", LabelInfo);
-					GUILayout.FlexibleSpace();
-					GUILayout.Label(tUnitedKerbin, GUILayout.Height(40), GUILayout.Width(64));
-					GUILayout.EndHorizontal();
-				}
-
 				GUILayout.Label("Altitude: " + selectedSite.refAlt.ToString("#0.0") + " m", LabelInfo);
 				GUILayout.Label("Longitude: " + selectedSite.refLon.ToString("#0.000"), LabelInfo);
 				GUILayout.Label("Latitude: " + selectedSite.refLat.ToString("#0.000"), LabelInfo);

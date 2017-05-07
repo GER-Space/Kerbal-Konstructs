@@ -100,7 +100,6 @@
     <Compile Include="Editor\VectorRenderer.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
-    <Compile Include="Facilities\CraftConstructionGUI.cs" />
     <Compile Include="Facilities\HangarGUI.cs" />
     <Compile Include="Core\LaunchSites\LaunchSite.cs" />
     <Compile Include="Modules\Career\CareerState.cs" />
@@ -120,7 +119,6 @@
     <Compile Include="Core\Log.cs" />
     <Compile Include="UI\WindowManager.cs" />
     <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
-    <Compile Include="Nations\KerbinNation.cs" />
     <Compile Include="Core\StaticObjects\StaticModel.cs" />
     <Compile Include="Core\StaticObjects\StaticModule.cs" />
     <Compile Include="Utilities\CameraController.cs" />

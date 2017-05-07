@@ -22,15 +22,6 @@ namespace KerbalKonstructs.API
 			instanceSettings.Add(name, conf);
 		}
 
-		public static void addModelSetting(string name, IConfigItem conf)
-		{
-			modelSettings.Add(name, conf);
-		}
-
-		public static void addLaunchsiteSetting(string name, IConfigItem conf)
-		{
-			launchsiteSettings.Add(name, conf);
-		}
 
 		public static void addNationSetting(string name, IConfigItem conf)
 		{
@@ -42,15 +33,6 @@ namespace KerbalKonstructs.API
 			return instanceSettings;
 		}
 
-		public static Dictionary<string, IConfigItem> getModelSettings()
-		{
-			return modelSettings;
-		}
-
-		public static Dictionary<string, IConfigItem> getLaunchsiteSettings()
-		{
-			return launchsiteSettings;
-		}
 
 		public static Dictionary<string, IConfigItem> getNationSettings()
 		{

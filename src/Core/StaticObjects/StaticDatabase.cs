@@ -108,7 +108,7 @@ namespace KerbalKonstructs.Core
             int modelCount = (from obj in groupList[instance.body.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
 
             instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + --modelCount;
-            Log.Normal("PQSCity.name: " + instance.pqsCity.name);
+         //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
         }
 
         /// <summary>

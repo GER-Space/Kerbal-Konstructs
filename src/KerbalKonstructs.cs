@@ -6,7 +6,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using KerbalKonstructs.Core;
-using KerbalKonstructs.KerbinNations;
 using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
 using System.Reflection;
@@ -174,23 +173,6 @@ namespace KerbalKonstructs
             StageRecovery.AttachStageRecovery();
             #endregion
 
-            #region Model API
-            KKAPI.addModelSetting("mesh", new ConfigFile());
-            ConfigGenericString authorConfig = new ConfigGenericString();
-            authorConfig.setDefaultValue("Unknown");
-            KKAPI.addModelSetting("soThis.model.mesh", authorConfig);
-            KKAPI.addModelSetting("DefaultLaunchPadTransform", new ConfigGenericString());
-            KKAPI.addModelSetting("title", new ConfigGenericString());
-            KKAPI.addModelSetting("category", new ConfigGenericString());
-            KKAPI.addModelSetting("cost", new ConfigFloat());
-            KKAPI.addModelSetting("manufacturer", new ConfigGenericString());
-            KKAPI.addModelSetting("description", new ConfigGenericString());
-            KKAPI.addModelSetting("DefaultLaunchSiteLength", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultLaunchSiteWidth", new ConfigFloat());
-            KKAPI.addModelSetting("name", new ConfigGenericString());
-            KKAPI.addModelSetting("keepConvex", new ConfigGenericString());
-
-            #endregion
 
             #region Instance API
             // Position
@@ -263,12 +245,6 @@ namespace KerbalKonstructs
             // Facility Types
             ConfigGenericString facilityrole = new ConfigGenericString();
             facilityrole.setDefaultValue("None");
-            KKAPI.addModelSetting("DefaultFacilityType", facilityrole);
-            KKAPI.addModelSetting("DefaultFacilityLength", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultFacilityWidth", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultFacilityHeight", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultFacilityMassCapacity", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultFacilityCraftCapacity", new ConfigFloat());
 
             KKAPI.addInstanceSetting("FacilityMassCapacity", new ConfigFloat());
             KKAPI.addInstanceSetting("FacilityCraftCapacity", new ConfigFloat());
@@ -296,18 +272,14 @@ namespace KerbalKonstructs
             KKAPI.addInstanceSetting("FacilityXP", new ConfigFloat());
 
             // Staff
-            KKAPI.addModelSetting("DefaultStaffMax", new ConfigFloat());
             KKAPI.addInstanceSetting("StaffMax", new ConfigFloat());
             KKAPI.addInstanceSetting("StaffCurrent", new ConfigFloat());
 
             // Fueling
-            KKAPI.addModelSetting("LqFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("LqFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("LqFCurrent", new ConfigFloat());
-            KKAPI.addModelSetting("OxFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("OxFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("OxFCurrent", new ConfigFloat());
-            KKAPI.addModelSetting("MoFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("MoFMax", new ConfigFloat());
             KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
 
@@ -317,24 +289,18 @@ namespace KerbalKonstructs
 
 
             // Industry
-            KKAPI.addModelSetting("DefaultProductionRateMax", new ConfigFloat());
             KKAPI.addInstanceSetting("ProductionRateMax", new ConfigFloat());
             KKAPI.addInstanceSetting("ProductionRateCurrent", new ConfigFloat());
             KKAPI.addInstanceSetting("Producing", new ConfigGenericString());
 
-            KKAPI.addModelSetting("OreMax", new ConfigFloat());
             KKAPI.addInstanceSetting("OreCurrent", new ConfigFloat());
-            KKAPI.addModelSetting("PrOreMax", new ConfigFloat());
             KKAPI.addInstanceSetting("PrOreCurrent", new ConfigFloat());
 
             // Science Rep Funds generation
-            KKAPI.addModelSetting("DefaultScienceOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("ScienceOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("ScienceOCurrent", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultRepOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("RepOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("RepOCurrent", new ConfigFloat());
-            KKAPI.addModelSetting("DefaultFundsOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("FundsOMax", new ConfigFloat());
             KKAPI.addInstanceSetting("FundsOCurrent", new ConfigFloat());
 
@@ -1114,17 +1080,6 @@ namespace KerbalKonstructs
 
             }
 
-        }
-
-
-        public void loadNations()
-        {
-            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("KERBINNATION");
-
-            foreach (UrlDir.UrlConfig conf in configs)
-            {
-                KerbinNation nation = new KerbinNation();
-            }
         }
 
         /// <summary>
