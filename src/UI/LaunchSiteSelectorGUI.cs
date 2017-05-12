@@ -320,24 +320,24 @@ namespace KerbalKonstructs.UI
                     {
                         if (!bOpenOn)
                         {
-                            if (site.openCloseState == "Open" || site.openCost == 0)
+                            if (site.OpenCloseState == "Open" || site.OpenCost == 0)
                                 continue;
                         }
 
                         if (!bClosedOn)
                         {
-                            if (site.openCloseState == "Closed")
+                            if (site.OpenCloseState == "Closed")
                                 continue;
                         }
 
                         // Don't show hidden closed Bases
-                        if (site.isHidden && (site.openCloseState == "Closed"))
+                        if (site.LaunchSiteIsHidden && (site.OpenCloseState == "Closed"))
                             continue;
 
                         GUILayout.BeginHorizontal();
-                        if (site.openCloseState == "Open" || site.openCost == 0 && site.openCloseState != "OpenLocked" && site.openCloseState != "ClosedLocked")
+                        if (site.OpenCloseState == "Open" || site.OpenCost == 0 && site.OpenCloseState != "OpenLocked" && site.OpenCloseState != "ClosedLocked")
                         {
-                            site.openCloseState = "Open";
+                            site.OpenCloseState = "Open";
                             GUILayout.Label(tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
                         }
                         else
@@ -366,9 +366,9 @@ namespace KerbalKonstructs.UI
 
                     if (MiscUtils.isCareerGame())
                     {
-                        if (site.openCloseState == "Open" || site.openCost == 0 && site.openCloseState != "OpenLocked" && site.openCloseState != "ClosedLocked")
+                        if (site.OpenCloseState == "Open" || site.OpenCost == 0 && site.OpenCloseState != "OpenLocked" && site.OpenCloseState != "ClosedLocked")
                         {
-                            site.openCloseState = "Open";
+                            site.OpenCloseState = "Open";
                             GUILayout.Label(tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
                         }
                         else
@@ -444,7 +444,7 @@ namespace KerbalKonstructs.UI
                         {
                             if (MiscUtils.isCareerGame())
                             {
-                                if (DefaultSite.openCloseState == "OpenLocked" || DefaultSite.openCloseState == "ClosedLocked" || (DefaultSite.openCloseState != "Open" && DefaultSite.openCost != 0))
+                                if (DefaultSite.OpenCloseState == "OpenLocked" || DefaultSite.OpenCloseState == "ClosedLocked" || (DefaultSite.OpenCloseState != "Open" && DefaultSite.OpenCost != 0))
                                 {
                                     smessage = "Default site is closed.";
                                     MiscUtils.HUDMessage(smessage, 10, 0);
@@ -469,7 +469,7 @@ namespace KerbalKonstructs.UI
                         {
                             if (MiscUtils.isCareerGame())
                             {
-                                if (DefaultSite.openCloseState == "OpenLocked" || DefaultSite.openCloseState == "ClosedLocked" || (DefaultSite.openCloseState != "Open" && DefaultSite.openCost != 0))
+                                if (DefaultSite.OpenCloseState == "OpenLocked" || DefaultSite.OpenCloseState == "ClosedLocked" || (DefaultSite.OpenCloseState != "Open" && DefaultSite.OpenCost != 0))
                                 {
                                     smessage = "Default site is closed.";
                                     MiscUtils.HUDMessage(smessage, 10, 0);
@@ -537,7 +537,7 @@ namespace KerbalKonstructs.UI
             editorType = (KerbalKonstructs.instance.launchFromAnySite) ? SiteType.Any : type;
             if (selectedSite != null)
             {
-                if (selectedSite.type != editorType && selectedSite.type != SiteType.Any)
+                if (selectedSite.LaunchSiteType != editorType && selectedSite.LaunchSiteType != SiteType.Any)
                 {
                     selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
                 }

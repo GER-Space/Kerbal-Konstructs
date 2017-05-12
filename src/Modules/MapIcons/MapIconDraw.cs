@@ -167,8 +167,8 @@ namespace KerbalKonstructs.Modules
             {
                 launchSite = lauchSites[index];
                 // check if we should display the site or not this is the fastst check, so it shoud be first
-                openclosed = launchSite.openCloseState;
-                category = launchSite.category;
+                openclosed = launchSite.OpenCloseState;
+                category = launchSite.Category;
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
                     continue;
@@ -190,7 +190,7 @@ namespace KerbalKonstructs.Modules
                     if (openclosed == "OpenLocked" || openclosed == "ClosedLocked")
                         continue;
                     // don't show hidden bases when closed
-                    if (launchSite.isHidden && (launchSite.openCloseState == "Closed"))
+                    if (launchSite.LaunchSiteIsHidden && (launchSite.OpenCloseState == "Closed"))
                         continue;
                 }
 
@@ -212,10 +212,10 @@ namespace KerbalKonstructs.Modules
                 float fRadarOffset = fRadarRadius / 2;
 
 
-                if (launchSite.icon != null)
+                if (launchSite.LaunchSiteIcon != null)
                 {
                     if (fRadarRadius > 15)
-                        GUI.DrawTexture(screenRect, launchSite.icon, ScaleMode.ScaleToFit, true);
+                        GUI.DrawTexture(screenRect, launchSite.LaunchSiteIcon, ScaleMode.ScaleToFit, true);
                 }
                 else
                 {

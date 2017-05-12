@@ -21,7 +21,7 @@ using Debug = UnityEngine.Debug;
 namespace KerbalKonstructs
 {
 
-    [KSPAddon(KSPAddon.Startup.MainMenu,true)]
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
     public class KerbalKonstructs : MonoBehaviour
     {
         // Hello
@@ -77,7 +77,7 @@ namespace KerbalKonstructs
         internal static BaseManager GUI_BaseManager = new BaseManager();
         internal static KKSettingsGUI GUI_Settings = new KKSettingsGUI();
         internal static ModelInfo GUI_ModelInfo = new ModelInfo();
-        internal static LandingGuide GUI_Landinguide = new LandingGuide();
+        internal static LandingGuideUI GUI_Landinguide = new LandingGuideUI();
         #endregion
 
         #region Configurable Variables
@@ -221,6 +221,13 @@ namespace KerbalKonstructs
             ConfigGenericString launchSiteHidden = new ConfigGenericString();
             launchSiteHidden.setDefaultValue("false");
             KKAPI.addInstanceSetting("LaunchSiteIsHidden", launchSiteHidden);
+            ConfigFloat missionCount = new ConfigFloat();
+            missionCount.setDefaultValue(0f);
+            KKAPI.addInstanceSetting("MissionCount", missionCount);
+            ConfigGenericString missionlog = new ConfigGenericString();
+            missionlog.setDefaultValue("No missions logged");
+            KKAPI.addInstanceSetting("MissionLog", missionlog);
+
 
             // Career Mode Strategy Instances
             ConfigFloat openCost = new ConfigFloat();
@@ -235,12 +242,8 @@ namespace KerbalKonstructs
             ConfigGenericString favouriteSite = new ConfigGenericString();
             favouriteSite.setDefaultValue("No");
             KKAPI.addInstanceSetting("FavouriteSite", favouriteSite);
-            ConfigFloat missionCount = new ConfigFloat();
-            missionCount.setDefaultValue(0f);
-            KKAPI.addInstanceSetting("MissionCount", missionCount);
-            ConfigGenericString missionlog = new ConfigGenericString();
-            missionlog.setDefaultValue("No missions logged");
-            KKAPI.addInstanceSetting("MissionLog", missionlog);
+
+
 
             // Facility Types
             ConfigGenericString facilityrole = new ConfigGenericString();
@@ -398,8 +401,8 @@ namespace KerbalKonstructs
                 if (sitename == "") return;
 
                 LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
-                float fMissionCount = lsSite.missionCount;
-                lsSite.missionCount = fMissionCount + 1;
+                float fMissionCount = lsSite.MissionCount;
+                lsSite.MissionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
 
                 double hours = dSecs / 60.0 / 60.0;
@@ -413,8 +416,8 @@ namespace KerbalKonstructs
 
                 string sCraft = vVessel.shipName;
                 string sWeight = vVessel.GetTotalMass().ToString();
-                string sLogEntry = lsSite.missionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
-                lsSite.missionLog = sLogEntry;
+                string sLogEntry = lsSite.MissionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
+                lsSite.MissionLog = sLogEntry;
 
                 VesselLaunched = true;
 
@@ -975,7 +978,8 @@ namespace KerbalKonstructs
                         Vector3 newPostion = body.GetRelSurfaceNVector(lat, lon) * body.Radius;
                         obj.setSetting("RadialPosition", newPostion);
                         Log.UserInfo("creating new Radialposition for: " + obj.gameObject.name);
-                    } else
+                    }
+                    else
                     {
                         Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + obj.gameObject.name);
                         continue;
@@ -1014,9 +1018,9 @@ namespace KerbalKonstructs
                                 {
                                     bSpaceOccupied = true;
                                     Log.UserWarning("Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
-                                    + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine + 
+                                    + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine +
                                     "File1: " + soThis.configPath + Environment.NewLine +
-                                    "File2: " + obj.configPath) ;
+                                    "File2: " + obj.configPath);
                                     break;
                                 }
                                 else
@@ -1069,10 +1073,10 @@ namespace KerbalKonstructs
                         }
                     }
                 }
-                
+
                 obj.spawnObject(false, false);
 
-                AttachFacilities(obj,instanceCfgNode);
+                AttachFacilities(obj, instanceCfgNode);
 
                 if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
                     LaunchSiteManager.createLaunchSite(obj);
@@ -1084,7 +1088,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Tes for getting information out of the prebuild static models.
         /// </summary>
-        public void LoadSquadModels ()
+        public void LoadSquadModels()
         {
 
             // first we find get all upgradeable facilities
@@ -1112,10 +1116,10 @@ namespace KerbalKonstructs
                     model.configPath = model.path + ".cfg";
                     model.keepConvex = true;
                     model.title = modelTitle;
-                    model.mesh =  modelName;
+                    model.mesh = modelName;
                     model.category = "Squad KSC";
                     model.author = "Squad";
-                    model.manufacturer="Squad";
+                    model.manufacturer = "Squad";
                     model.description = "Squad original " + modelTitle;
 
                     model.isSquad = true;
@@ -1177,14 +1181,14 @@ namespace KerbalKonstructs
                 }
 
                 StaticModel model = new StaticModel();
-                ConfigParser.ParseModelConfig( model, conf.config);
+                ConfigParser.ParseModelConfig(model, conf.config);
                 model.name = modelName;
                 model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
                 model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
                 model.config = conf.url;
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
-//                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
-                
+                //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+
 
                 foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
                 {
@@ -1262,17 +1266,17 @@ namespace KerbalKonstructs
         }
 
 
-    
-        internal static void  AttachFacilities(StaticObject instance, ConfigNode cfgNode)
+
+        internal static void AttachFacilities(StaticObject instance, ConfigNode cfgNode)
         {
-            if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility") )
+            if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility"))
                 return;
 
             FacilityType facType;
             try
             {
                 facType = (FacilityType)Enum.Parse(typeof(FacilityType), cfgNode.GetValue("FacilityType"), true);
-            } 
+            }
             catch
             {
                 instance.legacyfacilityID = cfgNode.GetValue("FacilityType");
@@ -1281,7 +1285,7 @@ namespace KerbalKonstructs
             }
 
 
-            if (facType == FacilityType.None  && !cfgNode.HasNode("Facility"))
+            if (facType == FacilityType.None && !cfgNode.HasNode("Facility"))
                 return;
 
             instance.hasFacilities = true;
@@ -1296,7 +1300,7 @@ namespace KerbalKonstructs
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     break;
                 case FacilityType.FuelTanks:
-                    instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));                    
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
                     break;
                 case FacilityType.Research:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
@@ -1307,7 +1311,21 @@ namespace KerbalKonstructs
                 case FacilityType.Hangar:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
                     break;
-
+                case FacilityType.Barracks:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Barracks>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.LandingGuide:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<LandingGuide>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.TouchdownGuideL:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideL>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.TouchdownGuideR:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.RadarStation:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
+                    break;
             }
         }
 
@@ -1359,7 +1377,8 @@ namespace KerbalKonstructs
             {
                 instanceConfig = new ConfigNode("STATIC");
                 instanceConfig.AddValue("pointername", firstInstance.model.name);
-            } else
+            }
+            else
             {
 
                 instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);

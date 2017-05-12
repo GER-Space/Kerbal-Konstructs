@@ -34,6 +34,12 @@ namespace KerbalKonstructs.Modules
         [CFGSetting]
         [CareerSetting]
         public string OpenCloseState = "Closed";
+        [CFGSetting]
+        public float OpenCost;
+        [CFGSetting]
+        public float CloseValue;
+
+        internal string facilityType; 
 
         private static Dictionary<string, FieldInfo> myFields;
         private static Dictionary<string, Dictionary<string, FieldInfo>> allFields = new Dictionary<string, Dictionary<string, FieldInfo>>();
@@ -60,6 +66,7 @@ namespace KerbalKonstructs.Modules
                 }
             }
 
+            facilityType = this.GetType().Name;
             return this;
         }
 
@@ -80,7 +87,6 @@ namespace KerbalKonstructs.Modules
         internal virtual void SaveCareerConfig(ConfigNode cfgNode)
         {
             myFields = allFields[this.GetType().Name];
-            cfgNode.SetValue("FacilityType", this.GetType().Name, true);
 
             foreach (var field in myFields)
             {

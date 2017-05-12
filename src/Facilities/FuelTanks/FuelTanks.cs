@@ -2,22 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
-    class FuelTanks : KKFacility
+    internal class FuelTanks : KKFacility
     {
-        public float LqFMax = 5000f;
-        public float LqFCurrent;
+        [CFGSetting]
+        public float LqFMax;
+        [CFGSetting]
         public float OxFMax;
-        public float OxFCurrent;
+        [CFGSetting]
         public float MoFMax;
-        public float MoFCurrent;
 
+        [CFGSetting]
         public string LqFAlt;
+        [CFGSetting]
         public string OxFAlt;
+        [CFGSetting]
         public string MoFAlt;
 
-
+        [CareerSetting]
+        public float LqFCurrent;
+        [CareerSetting]
+        public float OxFCurrent;
+        [CareerSetting]
+        public float MoFCurrent;
     }
 }

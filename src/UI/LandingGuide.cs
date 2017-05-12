@@ -10,7 +10,7 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.UI
 {
-    class LandingGuide :KKWindow
+    class LandingGuideUI :KKWindow
     {
         private Vector3 vLineStart = Vector3.zero;
         private Vector3 vLineEnd = Vector3.zero;

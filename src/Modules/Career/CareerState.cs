@@ -17,12 +17,101 @@ namespace KerbalKonstructs.Modules
 
         private static Dictionary<string, Dictionary<String, String>> parsedLSConfig = new Dictionary<string, Dictionary<string, string>>();
 
-        /// <summary>
-        /// fills the parsedConfig struckture for LoadFacilities() function
-        /// </summary>
-        private static void ParseFacConfig()
+        ///// <summary>
+        ///// fills the parsedConfig struckture for LoadFacilities() function
+        ///// </summary>
+        //private static void ParseFacConfig()
+        //{
+        //    parsedConfig.Clear();
+        //    string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
+
+        //    string position = "";
+        //    string facType = "";
+
+        //    ConfigNode rootNode = new ConfigNode();
+
+        //    if (!File.Exists(saveConfigPath))
+        //    {
+        //        ConfigNode GameNode = rootNode.AddNode("GAME");
+        //        ConfigNode ScenarioNode = GameNode.AddNode("SCENARIO");
+        //        ScenarioNode.AddValue("Name", "KKStatics");
+        //        rootNode.Save(saveConfigPath);
+        //        return;
+        //    }
+        //    rootNode = ConfigNode.Load(saveConfigPath);
+        //    ConfigNode gameNode = rootNode.GetNode("GAME");
+
+        //    foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
+        //    {
+
+        //        foreach (ConfigNode facNode in scenarioNode.GetNodes("KKStatic"))
+        //        {
+        //            Dictionary<string, string> config = new Dictionary<string, string>();
+        //            position = CareerUtils.KeyFromString(facNode.GetValue("RadialPosition"));
+        //            facType = facNode.GetValue("FacilityType");
+        //            if (parsedConfig.ContainsKey(position))
+        //            {
+        //                Log.UserError("duplicate posistion key found in file: " + position);
+        //                continue;
+        //            }
+        //            foreach (string key in CareerUtils.ParametersForFacility(facType))
+        //            {
+        //                if (facNode.HasValue(key))
+        //                {
+        //                    config.Add(key, facNode.GetValue(key));
+        //                }
+        //            }
+        //            parsedConfig.Add(position, config);
+
+        //        }
+
+        //    }
+
+        //}
+
+
+
+        ///// <summary>
+        ///// Loads the state of all facilities from the .cfg file
+        ///// </summary>
+        //internal static void LoadFacilities()
+        //{
+        //    ParseFacConfig();
+        //    foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+        //    {
+
+        //        if (String.IsNullOrEmpty((string)instance.getSetting("FacilityType")) || String.Equals(((string)instance.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
+        //        {
+        //            continue;
+        //        }
+        //        string instanceKey = CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString());
+        //        // check if we have a config loaded with the same radial position
+        //        if (parsedConfig.ContainsKey(instanceKey) )
+        //        {
+        //            config.Clear();
+        //            config = parsedConfig[instanceKey];
+
+        //            foreach (string key in config.Keys.ToList())
+        //            {
+        //                if (CareerUtils.IsString(key))
+        //                {
+        //                    instance.setSetting(key, config[key]);
+        //                    //Log.Normal("Setting: " +(string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
+        //                }
+        //                if (CareerUtils.IsFloat(key))
+        //                {
+        //                    instance.setSetting(key, float.Parse(config[key]));
+        //                    //Log.Normal("Setting: " + (string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //}
+
+
+        private static void LoadFacilities()
         {
-            parsedConfig.Clear();
             string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
 
             string position = "";
@@ -40,72 +129,35 @@ namespace KerbalKonstructs.Modules
             }
             rootNode = ConfigNode.Load(saveConfigPath);
             ConfigNode gameNode = rootNode.GetNode("GAME");
-
             foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
             {
 
-                foreach (ConfigNode facNode in scenarioNode.GetNodes("KKStatic"))
+                foreach (StaticObject instance in StaticDatabase.allStaticInstances)
                 {
-                    Dictionary<string, string> config = new Dictionary<string, string>();
-                    position = CareerUtils.KeyFromString(facNode.GetValue("RadialPosition"));
-                    facType = facNode.GetValue("FacilityType");
-                    if (parsedConfig.ContainsKey(position))
-                    {
-                        Log.UserError("duplicate posistion key found in file: " + position);
+                    if (!instance.hasFacilities || instance.myFacilities.Count == 0)
                         continue;
-                    }
-                    foreach (string key in CareerUtils.ParametersForFacility(facType))
+
+                    if (!scenarioNode.HasNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString())))
+                        continue;
+
+//                    Log.Normal("Load State for Facility: " + instance.pqsCity.name);
+
+                    ConfigNode instanceNode = scenarioNode.GetNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
+                    foreach (var facNode in instanceNode.GetNodes())
                     {
-                        if (facNode.HasValue(key))
+                        int index = int.Parse(facNode.GetValue("Index"));
+                        if (instance.myFacilities[index].facilityType == facNode.name)
                         {
-                            config.Add(key, facNode.GetValue(key));
+                            Log.Normal("Load State" + instance.pqsCity.name + " : "  + facNode.name);
+                            instance.myFacilities[index].LoadCareerConfig(facNode);
+
+                        } else
+                        {
+                            Log.UserError("Facility Index Missmatch in fac: " + instance.pqsCity.name);
                         }
                     }
-                    parsedConfig.Add(position, config);
-
-                }
 
             }
-
-        }
-
-
-
-        /// <summary>
-        /// Loads the state of all facilities from the .cfg file
-        /// </summary>
-        internal static void LoadFacilities()
-        {
-            ParseFacConfig();
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-            {
-
-                if (String.IsNullOrEmpty((string)instance.getSetting("FacilityType")) || String.Equals(((string)instance.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    continue;
-                }
-                string instanceKey = CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString());
-                // check if we have a config loaded with the same radial position
-                if (parsedConfig.ContainsKey(instanceKey) )
-                {
-                    config.Clear();
-                    config = parsedConfig[instanceKey];
-
-                    foreach (string key in config.Keys.ToList())
-                    {
-                        if (CareerUtils.IsString(key))
-                        {
-                            instance.setSetting(key, config[key]);
-                            //Log.Normal("Setting: " +(string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
-                        }
-                        if (CareerUtils.IsFloat(key))
-                        {
-                            instance.setSetting(key, float.Parse(config[key]));
-                            //Log.Normal("Setting: " + (string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
-                        }
-                    }
-
-                }
             }
         }
 
@@ -164,7 +216,7 @@ namespace KerbalKonstructs.Modules
 
                     if (config.ContainsKey("openclosestate"))
                     {
-                        site.openCloseState = config["openclosestate"];
+                        site.OpenCloseState = config["openclosestate"];
                     }
                     if (config.ContainsKey("favouritesite"))
                     {
@@ -172,11 +224,11 @@ namespace KerbalKonstructs.Modules
                     }
                     if (config.ContainsKey("missionlog"))
                     {
-                        site.missionLog = config["missionlog"];
+                        site.MissionLog = config["missionlog"];
                     }
                     if (config.ContainsKey("missioncount"))
                     {
-                        site.missionCount = float.Parse(config["missioncount"]);
+                        site.MissionCount = float.Parse(config["missioncount"]);
                     }
                 }
 
@@ -232,26 +284,18 @@ namespace KerbalKonstructs.Modules
 
             foreach (StaticObject instance in StaticDatabase.GetAllStatics())
             {
-                string facilityType = (string)instance.getSetting("FacilityType");
-                if (String.IsNullOrEmpty(facilityType) || String.Equals(facilityType, "None", StringComparison.CurrentCultureIgnoreCase))
-                {
+                if (!instance.hasFacilities)
                     continue;
-                }
-                ConfigNode instanceNode = scenarioNode.AddNode("KKStatic");
-                instanceNode.SetValue("RadialPosition", instance.pqsCity.repositionRadial.ToString(), true);
-                instanceNode.SetValue("FacilityType", facilityType, true);
 
-                foreach (string parameter in CareerUtils.ParametersForFacility(facilityType))
+                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
+                instanceNode.SetValue("FacilityName", instance.pqsCity.name, true);
+                instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
+
+                for (int i = 0; i < instance.myFacilities.Count; i++)
                 {
-
-                    if (CareerUtils.IsString(parameter))
-                    {
-                        instanceNode.SetValue(parameter, (string)instance.getSetting(parameter), true);
-                    }
-                    if (CareerUtils.IsFloat(parameter))
-                    {
-                        instanceNode.SetValue(parameter, ((float)instance.getSetting(parameter)).ToString(), true);
-                    }
+                    ConfigNode facnode = instanceNode.AddNode(instance.myFacilities[i].facilityType);
+                    facnode.SetValue("Index", i, true);
+                    instance.myFacilities[i].SaveCareerConfig(facnode);
                 }
             }
             rootNode.Save(facSave);
@@ -270,10 +314,10 @@ namespace KerbalKonstructs.Modules
             {
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = lsNodes.AddNode(name);
-                lsNode.SetValue("openclosestate", site.openCloseState, true);
+                lsNode.SetValue("openclosestate", site.OpenCloseState, true);
                 lsNode.SetValue("favouritesite", site.favouriteSite, true);
-                lsNode.SetValue("missioncount", site.missionCount.ToString(), true);
-                lsNode.SetValue("missionlog", site.missionLog, true);
+                lsNode.SetValue("missioncount", site.MissionCount.ToString(), true);
+                lsNode.SetValue("missionlog", site.MissionLog, true);
             }
             rootNode.Save(saveConfigPath);
         }

@@ -156,13 +156,13 @@ namespace KerbalKonstructs.UI
 				{
 					if (MiscUtils.isCareerGame())
 					{
-						if (site.openCloseState != "Open" && site.openCost != 0)
+						if (site.OpenCloseState != "Open" && site.OpenCost != 0)
 							continue;
 					}
 
 					if (!KerbalKonstructs.instance.launchFromAnySite)
 					{
-						if (site.type == SiteType.SPH) continue;
+						if (site.LaunchSiteType == SiteType.SPH) continue;
 					}
 
 					string sButtonName = "";
@@ -204,13 +204,13 @@ namespace KerbalKonstructs.UI
 				{
 					if (MiscUtils.isCareerGame())
 					{
-						if (site.openCloseState != "Open" && site.openCost != 0)
+						if (site.OpenCloseState != "Open" && site.OpenCost != 0)
 							continue;
 					}
 
 					if (!KerbalKonstructs.instance.launchFromAnySite)
 					{
-						if (site.type == SiteType.VAB) continue;
+						if (site.LaunchSiteType == SiteType.VAB) continue;
 					}
 
 					string sButtonName = "";
