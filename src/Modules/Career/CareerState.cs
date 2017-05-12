@@ -77,7 +77,7 @@ namespace KerbalKonstructs.Modules
         internal static void LoadFacilities()
         {
             ParseFacConfig();
-            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
             {
 
                 if (String.IsNullOrEmpty((string)instance.getSetting("FacilityType")) || String.Equals(((string)instance.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
@@ -156,7 +156,7 @@ namespace KerbalKonstructs.Modules
             foreach (LaunchSite site in LaunchSiteManager.AllLaunchSites)
             {
 
-                string name = CareerUtils.LSKeyFromName(site.name);
+                string name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
 
                 if (parsedLSConfig.ContainsKey(name))
                 {
@@ -268,7 +268,7 @@ namespace KerbalKonstructs.Modules
 
             foreach (LaunchSite site in LaunchSiteManager.AllLaunchSites)
             {
-                name = CareerUtils.LSKeyFromName(site.name);
+                name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = lsNodes.AddNode(name);
                 lsNode.SetValue("openclosestate", site.openCloseState, true);
                 lsNode.SetValue("favouritesite", site.favouriteSite, true);

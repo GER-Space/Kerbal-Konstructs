@@ -11,7 +11,6 @@ namespace KerbalKonstructs.Modules
             "FacilityType", "InStorage", "TargetID", "TargetType" , "Producing", "OpenCloseState", "missionlog" , "openclosestate" , "favouritesite" };
 
         private static List<string> floatAttributes = new List<string>{
-            "FacilityLengthUsed", "FacilityWidthUsed", "FacilityHeightUsed", "FacilityMassUsed",
             "FacilityXP",
             "StaffMax", "StaffCurrent", "LqFCurrent", "OxFCurrent", "MoFCurrent",
             "ECCurrent", "OreCurrent", "PrOreCurrent", "ScienceOMax", "ScienceOCurrent",
@@ -64,10 +63,6 @@ namespace KerbalKonstructs.Modules
                     paramList.Add("InStorage");
                     paramList.Add("TargetID");
                     paramList.Add("TargetType");
-                    paramList.Add("FacilityLengthUsed");
-                    paramList.Add("FacilityWidthUsed");
-                    paramList.Add("FacilityHeightUsed");
-                    paramList.Add("FacilityMassUsed");
                     break;
                 case "Business":
                     paramList.Add("StaffCurrent");

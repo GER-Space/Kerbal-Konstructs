@@ -147,7 +147,7 @@ namespace KerbalKonstructs.UI
 
 				sites.Sort(delegate(LaunchSite a, LaunchSite b)
 				{
-					return (a.name).CompareTo(b.name);
+					return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
 				});
 
 				GUILayout.Label("Select a default site from the list that follows.", LabelInfo);
@@ -166,13 +166,13 @@ namespace KerbalKonstructs.UI
 					}
 
 					string sButtonName = "";
-					sButtonName = site.name;
-					if (site.name == "Runway") sButtonName = "KSC Runway";
-					if (site.name == "LaunchPad") sButtonName = "KSC LaunchPad";
+					sButtonName = site.LaunchSiteName;
+					if (site.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
+					if (site.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
 
 					if (GUILayout.Button(sButtonName, GUILayout.Height(21)))
 					{
-						KerbalKonstructs.instance.defaultVABlaunchsite = site.name;
+						KerbalKonstructs.instance.defaultVABlaunchsite = site.LaunchSiteName;
 						bChangeVABDefault = false;
 					}
 				}
@@ -195,7 +195,7 @@ namespace KerbalKonstructs.UI
 
 				sites.Sort(delegate(LaunchSite a, LaunchSite b)
 				{
-					return (a.name).CompareTo(b.name);
+					return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
 				});
 
 				GUILayout.Label("Select a default site from the list that follows.", LabelInfo);
@@ -214,13 +214,13 @@ namespace KerbalKonstructs.UI
 					}
 
 					string sButtonName = "";
-					sButtonName = site.name;
-					if (site.name == "Runway") sButtonName = "KSC Runway";
-					if (site.name == "LaunchPad") sButtonName = "KSC LaunchPad";
+					sButtonName = site.LaunchSiteName;
+					if (site.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
+					if (site.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
 
 					if (GUILayout.Button(sButtonName, GUILayout.Height(21)))
 					{
-						KerbalKonstructs.instance.defaultSPHlaunchsite = site.name;
+						KerbalKonstructs.instance.defaultSPHlaunchsite = site.LaunchSiteName;
 						bChangeSPHDefault = false;
 					}
 				}

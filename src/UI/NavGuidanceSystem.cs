@@ -71,7 +71,7 @@ namespace KerbalKonstructs.UI
 		{
 			if (lTargetSite != null)
 			{
-				sTargetSiteName = lTargetSite.name;
+				sTargetSiteName = lTargetSite.LaunchSiteName;
 
 				fRangeToTarget = LaunchSiteManager.getDistanceToBase(FlightGlobals.ActiveVessel.GetTransform().position, lTargetSite);
 				if (fRangeToTarget > fOldRange) bClosing = false;

@@ -247,9 +247,9 @@ namespace KerbalKonstructs.Modules
                 {
                     //Only display one tooltip at a time
                     string sToolTip = "";
-                    sToolTip = launchSite.name;
-                    if (launchSite.name == "Runway") sToolTip = "KSC Runway";
-                    if (launchSite.name == "LaunchPad") sToolTip = "KSC LaunchPad";
+                    sToolTip = launchSite.LaunchSiteName;
+                    if (launchSite.LaunchSiteName == "Runway") sToolTip = "KSC Runway";
+                    if (launchSite.LaunchSiteName == "LaunchPad") sToolTip = "KSC LaunchPad";
                     DisplayMapIconToolTip(sToolTip, pos);
 
                     // Select a base by clicking on the icon

@@ -257,7 +257,7 @@ namespace KerbalKonstructs.UI
                 else
                 if (sFacilityType == "TrackingStation")
                 {
-                    sPurpose = "This facility can track a variety of off-Kerbin targets, including spacecraft, celestial bodies and asteroids.";
+                    sPurpose = "Thís Facility can be a GroundStation for RemoteTech/CommNet";
                     bHalfwindow = true;
                 }
                 else

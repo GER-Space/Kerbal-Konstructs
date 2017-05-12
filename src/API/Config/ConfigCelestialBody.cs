@@ -8,7 +8,7 @@ namespace KerbalKonstructs.API.Config
 
 		public void setValue(string configValue)
 		{
-			body = KKAPI.getCelestialBody(configValue);
+			body = KKAPI.GetCelestialBody(configValue);
 		}
 
 		public object getValue()

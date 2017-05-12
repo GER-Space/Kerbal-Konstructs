@@ -57,7 +57,7 @@ namespace KerbalKonstructs.API
 		}
 
         //Utility
-        public static CelestialBody getCelestialBody(String name)
+        public static CelestialBody GetCelestialBody(String name)
         {
             if (!bodiesInitialized)
             {

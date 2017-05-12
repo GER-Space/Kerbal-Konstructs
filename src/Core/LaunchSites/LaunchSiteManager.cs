@@ -30,7 +30,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody body = KKAPI.getCelestialBody("HomeWorld");
+                CelestialBody body = KKAPI.GetCelestialBody("HomeWorld");
                 var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d;
 
@@ -51,7 +51,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody body = KKAPI.getCelestialBody("HomeWorld");
+                CelestialBody body = KKAPI.GetCelestialBody("HomeWorld");
                 var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d;
 
@@ -74,14 +74,14 @@ namespace KerbalKonstructs.Core
         private static void AddKSC()
         {
 
-            runway.name = "Runway";
+            runway.LaunchSiteName = "Runway";
             runway.author = "Squad";
             runway.type = SiteType.SPH;
             runway.category = "Runway";
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.description = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.openCloseState = "Open";
-            runway.body = KKAPI.getCelestialBody("HomeWorld");
+            runway.body = KKAPI.GetCelestialBody("HomeWorld");
             runway.refLat = getKSCLat;
             runway.refLon = getKSCLon;
             runway.refAlt = 69f;
@@ -91,14 +91,14 @@ namespace KerbalKonstructs.Core
             runway.recoveryRange = 0f;
             runway.gameObject = SpaceCenter.Instance.gameObject;
 
-            launchpad.name = "LaunchPad";
+            launchpad.LaunchSiteName = "LaunchPad";
             launchpad.author = "Squad";
             launchpad.type = SiteType.VAB;
             launchpad.category = "RocketPad";
             launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.description = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.openCloseState = "Open";
-            launchpad.body = KKAPI.getCelestialBody("HomeWorld");
+            launchpad.body = KKAPI.GetCelestialBody("HomeWorld");
             launchpad.refLat = getKSCLat;
             launchpad.refLon = getKSCLon;
             launchpad.refAlt = 72;
@@ -248,7 +248,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     site.openCloseState = sState;
                     return;
@@ -262,7 +262,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     site.openCloseState = site.openCloseState + "Locked";
                     return;
@@ -276,7 +276,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     if (site.openCloseState == "OpenLocked")
                         site.openCloseState = "Open";
@@ -293,7 +293,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     sOpenCloseState = site.openCloseState;
                     fOpenCost = site.openCost;
@@ -311,7 +311,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     if (site.openCloseState == "OpenLocked" || site.openCloseState == "ClosedLocked")
                         return true;
@@ -326,7 +326,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     if ((site.openCloseState == "Open") || (site.openCloseState == "OpenLocked"))
                         return true;
@@ -341,7 +341,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     if (site.openCloseState == "Closed")
                         return true;
@@ -356,7 +356,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     fRefund = site.launchRefund;
                     return;
@@ -372,7 +372,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     return site.gameObject;
                 }
@@ -418,7 +418,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     return true;
                 }
@@ -438,7 +438,7 @@ namespace KerbalKonstructs.Core
             List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
             foreach (LaunchSite site in sites)
             {
-                if (site.name == sSiteName)
+                if (site.LaunchSiteName == sSiteName)
                 {
                     if (bRemember)
                     {
@@ -506,19 +506,19 @@ namespace KerbalKonstructs.Core
                     var radialposition = site.gameObject.transform.position;
                     var dist = Vector3.Distance(position, radialposition);
 
-                    if (site.name == "Runway")
+                    if (site.LaunchSiteName == "Runway")
                     {
                         if (lNearestBase == null)
                             lNearestBase = site;
                         lKSC = site;
                     }
                     else
-                        if (site.name != "LaunchPad")
+                        if (site.LaunchSiteName != "LaunchPad")
                     {
                         if ((float)dist < (float)smallestDist)
                         {
                             {
-                                sNearestBase = site.name;
+                                sNearestBase = site.LaunchSiteName;
                                 lNearestBase = site;
                                 smallestDist = dist;
                             }
@@ -591,7 +591,7 @@ namespace KerbalKonstructs.Core
 
                 if (radialposition == position) continue;
 
-                if (site.name == "Runway" || site.name == "LaunchPad")
+                if (site.LaunchSiteName == "Runway" || site.LaunchSiteName == "LaunchPad")
                 {
                     lKSC = site;
                 }
@@ -602,13 +602,13 @@ namespace KerbalKonstructs.Core
                         sLastNearest = sNearestBase;
                         lLastSite = lTargetSite;
                         lastSmallestDist = smallestDist;
-                        sNearestBase = site.name;
+                        sNearestBase = site.LaunchSiteName;
                         smallestDist = dist;
                         lTargetSite = site;
                     }
                     else if (dist < lastSmallestDist)
                     {
-                        sLastNearest = site.name;
+                        sLastNearest = site.LaunchSiteName;
                         lastSmallestDist = dist;
                         lLastSite = site;
                     }
@@ -651,8 +651,8 @@ namespace KerbalKonstructs.Core
                     site.facility.name = "LaunchPad";
                 }
             }
-            lastLaunchSite = site.name;
-            EditorLogic.fetch.launchSiteName = site.name;
+            lastLaunchSite = site.LaunchSiteName;
+            EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
         }
 
         // Returns the internal launchSite that KSP has been told is the launchsite

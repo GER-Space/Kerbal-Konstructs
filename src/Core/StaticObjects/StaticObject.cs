@@ -7,31 +7,39 @@ using UnityEngine;
 using KSP.UI.Screens;
 using System.Reflection;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
 	public class StaticObject
 	{
-		public Vector3 RadialPosition;
+        internal Vector3 RadialPosition;
 
 		internal CelestialBody body;
-		public float StaffCurrent;
 
-		public GameObject gameObject;
-		public PQSCity pqsCity;
-		internal StaticModel model;
+        internal GameObject gameObject;
+        internal PQSCity pqsCity;
+        internal StaticModel model;
 
-        public UrlDir.UrlConfig configUrl;
-        public String configPath;
+        internal UrlDir.UrlConfig configUrl;
+        internal String configPath;
 
-		[KSPField]
-		public Dictionary<string, object> settings = new Dictionary<string, object>();
+        internal Dictionary<string, object> settings = new Dictionary<string, object>();
 
-		public Boolean editing;
-		public Boolean preview;
+        internal bool hasFacilities = false;
+        internal FacilityType facilityType = FacilityType.None; 
+        internal List<KKFacility> myFacilities = new List<KKFacility>();
+
+
+        // used for non KKFacility objects like AirRace
+        internal string legacyfacilityID;
+
+
+		internal Boolean editing;
+        internal Boolean preview;
 
         private Vector3 origScale;
-        public bool isActive ;
+        internal bool isActive ;
 
 		private List<Renderer> _rendererComponents; 
 

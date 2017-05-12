@@ -14,40 +14,63 @@ namespace KerbalKonstructs.Core
         internal string config;
         internal string configPath;
         internal string path;
-        internal string name;
 
+        [CFGSetting]
+        internal string name;
+        [CFGSetting]
         internal string mesh;
+        [CFGSetting]
         internal string author = "Unknown";
+        [CFGSetting]
         internal string title;
+        [CFGSetting]
         internal string category;
+        [CFGSetting]
         internal string manufacturer;
+        [CFGSetting]
         internal string description;
 
+        [CFGSetting]
         internal string DefaultLaunchPadTransform;
+        [CFGSetting]
         internal float DefaultLaunchSiteLength;
+        [CFGSetting]
         internal float DefaultLaunchSiteWidth;
 
+        [CFGSetting]
         internal bool keepConvex;
+        [CFGSetting]
         internal bool isSquad = false;
 
         // need checking
+        [CFGSetting]
         internal float cost;
 
         // facility settings below
+        [CFGSetting]
         internal string DefaultFacilityType = "None";
-        internal float DefaultFacilityLength;
-        internal float DefaultFacilityWidth ;
-        internal float DefaultFacilityHeight;
-        internal float DefaultFacilityMassCapacity;
-        internal float DefaultFacilityCraftCapacity;
 
-        internal float DefaultStaffMax;
+
+        [CFGSetting]
+        internal float DefaultFacilityMassCapacity;
+        [CFGSetting]
+        internal int DefaultFacilityCraftCapacity;
+
+        [CFGSetting]
+        internal int DefaultStaffMax;
+        [CFGSetting]
         internal float LqFMax;
+        [CFGSetting]
         internal float OxFMax;
+        [CFGSetting]
         internal float MoFMax;
+        [CFGSetting]
         internal float DefaultProductionRateMax;
+        [CFGSetting]
         internal float DefaultScienceOMax;
+        [CFGSetting]
         internal float DefaultRepOMax;
+        [CFGSetting]
         internal float DefaultFundsOMax;
 	}
 }

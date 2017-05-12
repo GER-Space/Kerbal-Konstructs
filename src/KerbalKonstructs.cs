@@ -253,20 +253,16 @@ namespace KerbalKonstructs
             ConfigGenericString instfacilityrole = new ConfigGenericString();
             instfacilityrole.setDefaultValue("None");
             KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
-            KKAPI.addInstanceSetting("FacilityLengthUsed", new ConfigFloat());
-            KKAPI.addInstanceSetting("FacilityWidthUsed", new ConfigFloat());
-            KKAPI.addInstanceSetting("FacilityHeightUsed", new ConfigFloat());
-            KKAPI.addInstanceSetting("FacilityMassUsed", new ConfigFloat());
             KKAPI.addInstanceSetting("InStorage", new ConfigGenericString());
+            KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
+            KKAPI.addInstanceSetting("TargetID", new ConfigGenericString());
 
             // Facility Ratings
 
             // Tracking station max short range in m
             KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
 
-            // Target Type and ID
-            KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
-            KKAPI.addInstanceSetting("TargetID", new ConfigGenericString());
+
 
             //XP
             KKAPI.addInstanceSetting("FacilityXP", new ConfigFloat());
@@ -516,7 +512,7 @@ namespace KerbalKonstructs
 
                 // Tighter control over what statics are active
                 bTreatBodyAsNullForStatics = false;
-                currentBody = KKAPI.getCelestialBody("HomeWorld");
+                currentBody = KKAPI.GetCelestialBody("HomeWorld");
                 Log.Normal("Homeworld is " + currentBody.name);
                 //StaticDatabase.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
                 //StaticDatabase.onBodyChanged(null);
@@ -943,7 +939,7 @@ namespace KerbalKonstructs
                 return;
             }
 
-            foreach (ConfigNode instance in configurl.config.GetNodes("Instances"))
+            foreach (ConfigNode instanceCfgNode in configurl.config.GetNodes("Instances"))
             {
                 StaticObject obj = new StaticObject();
                 obj.model = model;
@@ -957,7 +953,7 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                obj.settings = KKAPI.loadConfig(instance, KKAPI.getInstanceSettings());
+                obj.settings = KKAPI.loadConfig(instanceCfgNode, KKAPI.getInstanceSettings());
 
                 if (obj.settings == null)
                 {
@@ -1017,9 +1013,10 @@ namespace KerbalKonstructs
                                 if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
                                 {
                                     bSpaceOccupied = true;
-                                    Log.Debug("KK: Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
-                                    + soThis.model.mesh + " : " + (string)soThis.getSetting("Group") + " : " + firstInstanceKey.ToString() + " | "
-                                    + obj.model.mesh + " : " + (string)obj.getSetting("Group") + " : " + secondInstanceKey.ToString());
+                                    Log.UserWarning("Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
+                                    + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine + 
+                                    "File1: " + soThis.configPath + Environment.NewLine +
+                                    "File2: " + obj.configPath) ;
                                     break;
                                 }
                                 else
@@ -1074,6 +1071,8 @@ namespace KerbalKonstructs
                 }
                 
                 obj.spawnObject(false, false);
+
+                AttachFacilities(obj,instanceCfgNode);
 
                 if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
                     LaunchSiteManager.createLaunchSite(obj);
@@ -1259,6 +1258,56 @@ namespace KerbalKonstructs
                     loadInstances(conf, model, true);
                 }
                 else { Log.UserError("No Model named " + modelname + " found as defined in: " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"); }
+            }
+        }
+
+
+    
+        internal static void  AttachFacilities(StaticObject instance, ConfigNode cfgNode)
+        {
+            if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility") )
+                return;
+
+            FacilityType facType;
+            try
+            {
+                facType = (FacilityType)Enum.Parse(typeof(FacilityType), cfgNode.GetValue("FacilityType"), true);
+            } 
+            catch
+            {
+                instance.legacyfacilityID = cfgNode.GetValue("FacilityType");
+                //Log.UserError("Unknown Facility Type: " + cfgNode.GetValue("FacilityType") + " in file: " + instance.configPath );
+                return;
+            }
+
+
+            if (facType == FacilityType.None  && !cfgNode.HasNode("Facility"))
+                return;
+
+            instance.hasFacilities = true;
+            instance.facilityType = facType;
+
+            switch (facType)
+            {
+                case FacilityType.GroundStation:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.TrackingStation:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.FuelTanks:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));                    
+                    break;
+                case FacilityType.Research:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.Business:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Business>().ParseConfig(cfgNode));
+                    break;
+                case FacilityType.Hangar:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
+                    break;
+
             }
         }
 

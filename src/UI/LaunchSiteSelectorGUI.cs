@@ -305,7 +305,7 @@ namespace KerbalKonstructs.UI
 
                 sites.Sort(delegate (LaunchSite a, LaunchSite b)
                 {
-                    return (a.name).CompareTo(b.name);
+                    return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
                 });
 
                 foreach (LaunchSite site in sites)
@@ -347,9 +347,9 @@ namespace KerbalKonstructs.UI
                     GUI.enabled = !(selectedSite == site);
 
                     string sButtonName = "";
-                    sButtonName = site.name;
-                    if (site.name == "Runway") sButtonName = "KSC Runway";
-                    if (site.name == "LaunchPad") sButtonName = "KSC LaunchPad";
+                    sButtonName = site.LaunchSiteName;
+                    if (site.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
+                    if (site.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
 
                     if (GUILayout.Button(sButtonName, GUILayout.Height(30)))
                     {
@@ -395,13 +395,13 @@ namespace KerbalKonstructs.UI
                     GUILayout.Box("Current Launchsite: " + sCurrentSite);
             }
 
-            GUI.enabled = (selectedSite != null && !(selectedSite.name == sCurrentSite) && LaunchSiteManager.getIsSiteOpen(selectedSite.name));
+            GUI.enabled = (selectedSite != null && !(selectedSite.LaunchSiteName == sCurrentSite) && LaunchSiteManager.getIsSiteOpen(selectedSite.LaunchSiteName));
             GUILayout.BeginHorizontal();
 
             if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
             {
                 LaunchSiteManager.setLaunchSite(selectedSite);
-                MiscUtils.HUDMessage(selectedSite.name + " has been set as the launchsite", 10, 0);
+                MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the launchsite", 10, 0);
             }
 
             GUILayout.EndHorizontal();
@@ -436,7 +436,7 @@ namespace KerbalKonstructs.UI
                     {
                         foreach (LaunchSite site in sites)
                         {
-                            if (site.name == KerbalKonstructs.instance.defaultSPHlaunchsite)
+                            if (site.LaunchSiteName == KerbalKonstructs.instance.defaultSPHlaunchsite)
                                 DefaultSite = site;
                         }
 
@@ -461,7 +461,7 @@ namespace KerbalKonstructs.UI
                     {
                         foreach (LaunchSite site in sites)
                         {
-                            if (site.name == KerbalKonstructs.instance.defaultVABlaunchsite)
+                            if (site.LaunchSiteName == KerbalKonstructs.instance.defaultVABlaunchsite)
                                 DefaultSite = site;
                         }
 
@@ -484,7 +484,7 @@ namespace KerbalKonstructs.UI
 
                     if (DefaultSite != null)
                     {
-                        smessage = DefaultSite.name + " has been set as the launchsite";
+                        smessage = DefaultSite.LaunchSiteName + " has been set as the launchsite";
                         MiscUtils.HUDMessage(smessage, 10, 0);
                     }
                     else

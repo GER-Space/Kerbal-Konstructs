@@ -8,96 +8,72 @@ using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
+
     internal static class ConfigParser
     {
-
-
         internal static void ParseModelConfig(StaticModel target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
                 ConfigUtil.InitTypes();
 
-            foreach (var key in ConfigUtil.modelFields.Keys)
+            foreach (var field in ConfigUtil.modelFields.Values)
             {
-
-                if (!string.IsNullOrEmpty(cfgNode.GetValue(key)))
-                {
-
-                    if (ConfigUtil.IsString(key))
-                    {
-                        ConfigUtil.modelFields[key].SetValue(target, cfgNode.GetValue(key));
-                    }
-                    if (ConfigUtil.IsInt(key))
-                    {
-                        ConfigUtil.modelFields[key].SetValue(target, int.Parse(cfgNode.GetValue(key)));
-                    }
-                    if (ConfigUtil.IsFloat(key))
-                    {
-                        ConfigUtil.modelFields[key].SetValue(target, float.Parse(cfgNode.GetValue(key)));
-                    }
-                    if (ConfigUtil.IsDouble(key))
-                    {
-                        ConfigUtil.modelFields[key].SetValue(target, double.Parse(cfgNode.GetValue(key)));
-                    }
-                    if (ConfigUtil.IsBool(key))
-                    {
-                        bool result;
-                        bool.TryParse(cfgNode.GetValue(key), out result);
-                        ConfigUtil.modelFields[key].SetValue(target, result);
-                    }
-                    if (ConfigUtil.IsVector3(key))
-                    {
-                        ConfigUtil.modelFields[key].SetValue(target, ConfigNode.ParseVector3(cfgNode.GetValue(key)));
-                    }
-                }
+                ConfigUtil.ReadCFGNode(target, field, cfgNode);
             }
-
         }
 
         internal static void WriteModelConfig(StaticModel model, ConfigNode cfgNode)
         {
-            if (!ConfigUtil.initialized)
-                ConfigUtil.InitTypes();
 
             foreach (var modelsetting in ConfigUtil.modelFields)
             {
                 if (modelsetting.Value.GetValue(model) == null)
                     continue;
 
-                string key = modelsetting.Key;
+                ;
                 if (modelsetting.Key == "mesh") continue;
 
                 if (cfgNode.HasValue(modelsetting.Key))
-                {
                     cfgNode.RemoveValue(modelsetting.Key);
 
-                    if (ConfigUtil.IsString(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (string)modelsetting.Value.GetValue(model));
-                    }
-                    if (ConfigUtil.IsInt(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (int)modelsetting.Value.GetValue(model));
-                    }
-                    if (ConfigUtil.IsFloat(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (float)modelsetting.Value.GetValue(model));
-                    }
-                    if (ConfigUtil.IsDouble(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (double)modelsetting.Value.GetValue(model));
-                    }
-                    if (ConfigUtil.IsBool(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (bool)modelsetting.Value.GetValue(model));
-                    }
-                    if (ConfigUtil.IsVector3(key))
-                    {
-                        cfgNode.AddValue(modelsetting.Key, (Vector3)modelsetting.Value.GetValue(model));
-                    }
-                }
-            }
 
+                switch (modelsetting.Value.FieldType.ToString())
+                {
+                    case "System.String":
+                        if (string.IsNullOrEmpty((string)modelsetting.Value.GetValue(model)))
+                            continue;
+                        cfgNode.AddValue(modelsetting.Key, (string)modelsetting.Value.GetValue(model));
+                        break;
+                    case "System.Int32":
+                        if ((int)modelsetting.Value.GetValue(model) == 0)
+                            continue;
+                        cfgNode.AddValue(modelsetting.Key, (int)modelsetting.Value.GetValue(model));
+                        break;
+                    case "System.Single":
+                        if ((float)modelsetting.Value.GetValue(model) == 0)
+                            continue;
+                        cfgNode.AddValue(modelsetting.Key, (float)modelsetting.Value.GetValue(model));
+                        break;
+                    case "System.Double":
+                        if ((double)modelsetting.Value.GetValue(model) == 0)
+                            continue;
+                        cfgNode.AddValue(modelsetting.Key, (double)modelsetting.Value.GetValue(model));
+                        break;
+                    case "System.Boolean":
+                        cfgNode.AddValue(modelsetting.Key, (bool)modelsetting.Value.GetValue(model));
+                        break;
+                    case "UnityEngine.Vector3":
+                        cfgNode.AddValue(modelsetting.Key, (Vector3)modelsetting.Value.GetValue(model));
+                        break;
+                    case "UnityEngine.Vector3d":
+                        cfgNode.AddValue(modelsetting.Key, (Vector3d)modelsetting.Value.GetValue(model));
+                        break;
+                    case "CelestialBody":
+                        cfgNode.AddValue(modelsetting.Key, ((CelestialBody)modelsetting.Value.GetValue(model)).name);
+                        break;
+                }
+
+            }
 
 
         }

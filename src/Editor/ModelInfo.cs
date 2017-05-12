@@ -51,9 +51,6 @@ namespace KerbalKonstructs.UI
         String infLaunchLength = "";
         String infLaunchWidth = "";
         String infFacType = "";
-        String infFacLength = "";
-        String infFacWidth = "";
-        String infFacHeight = "";
         String infFacMassCap = "";
         String infFacCraftCap = "";
         String infStaffMax = "";
@@ -521,12 +518,9 @@ namespace KerbalKonstructs.UI
 
             if (infLaunchLength != "") mModel.DefaultLaunchSiteLength =  float.Parse(infLaunchLength);
             if (infLaunchWidth != "") mModel.DefaultLaunchSiteWidth = float.Parse(infLaunchWidth);
-            if (infFacLength != "") mModel.DefaultFacilityLength = float.Parse(infFacLength);
-            if (infFacWidth != "") mModel.DefaultFacilityWidth = float.Parse(infFacWidth);
-            if (infFacHeight != "") mModel.DefaultFacilityHeight = float.Parse(infFacHeight);
             if (infFacMassCap != "") mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
-            if (infFacCraftCap != "") mModel.DefaultFacilityCraftCapacity = float.Parse(infFacCraftCap);
-            if (infStaffMax != "") mModel.DefaultStaffMax = float.Parse(infStaffMax);
+            if (infFacCraftCap != "") mModel.DefaultFacilityCraftCapacity = int.Parse(infFacCraftCap);
+            if (infStaffMax != "") mModel.DefaultStaffMax = int.Parse(infStaffMax);
             if (infLqFMax != "") mModel.LqFMax = float.Parse(infLqFMax);
             if (infOxFMax != "") mModel.OxFMax = float.Parse(infOxFMax);
             if (infMoFMax != "") mModel.MoFMax = float.Parse(infMoFMax);
@@ -553,9 +547,6 @@ namespace KerbalKonstructs.UI
             infLaunchLength = obj.DefaultLaunchSiteLength.ToString();
             infLaunchWidth = obj.DefaultLaunchSiteWidth.ToString();
             infFacType = obj.DefaultFacilityType;
-            infFacLength = obj.DefaultFacilityLength.ToString();
-            infFacWidth = obj.DefaultFacilityWidth.ToString();
-            infFacHeight = obj.DefaultFacilityHeight.ToString();
             infFacMassCap = obj.DefaultFacilityMassCapacity.ToString();
             infFacCraftCap = obj.DefaultFacilityCraftCapacity.ToString();
             infStaffMax = obj.DefaultStaffMax.ToString();

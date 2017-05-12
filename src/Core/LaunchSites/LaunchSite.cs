@@ -2,12 +2,13 @@
 using UnityEngine;
 using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
-    public class LaunchSite
+    public class LaunchSite 
     {
-        public string name;
+        public string LaunchSiteName;
 
         public string author;
         public SiteType type;
@@ -75,7 +76,7 @@ namespace KerbalKonstructs.Core
                     icon = GameDatabase.Instance.GetTexture(instance.model.path + "/" + instance.getSetting("LaunchSiteIcon"), false);
             }
 
-            this.name = (string)instance.getSetting("LaunchSiteName");
+            this.LaunchSiteName = (string)instance.getSetting("LaunchSiteName");
             this.author = (instance.settings.ContainsKey("LaunchSiteAuthor")) ? (string)instance.getSetting("LaunchSiteAuthor") : instance.model.author;
             this.type = (SiteType)instance.getSetting("LaunchSiteType");
             this.logo = logo;

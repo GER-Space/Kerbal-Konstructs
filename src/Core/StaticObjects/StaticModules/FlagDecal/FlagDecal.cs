@@ -30,7 +30,7 @@ namespace KerbalKonstructs
         /// </summary>
         internal void setTexture()
         {
-            Log.Normal("FlagDeclal: setTexture called");
+            //Log.Normal("FlagDeclal: setTexture called");
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == textureQuadName).ToArray();
 
             foreach (var transform in allTransforms)

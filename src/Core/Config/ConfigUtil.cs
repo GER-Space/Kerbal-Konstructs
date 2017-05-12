@@ -6,242 +6,192 @@ using System.Text.RegularExpressions;
 using KerbalKonstructs.Core;
 using UnityEngine;
 using System.Reflection;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
+
+        /// <summary>
+    /// Settings that are read from the Instance Config file
+    /// </summary>
+    internal class CFGSetting : Attribute
+    {
+
+    }
+
+    /// <summary>
+    /// Settings, that are written to the Savegame State file
+    /// </summary>
+    internal class CareerSetting : Attribute
+    {
+
+    }
+
     /// <summary>
     /// We use dictionarys for the lookup of the parameter types, because they are way faster then making reflection lookups.
-    /// We use reflektion calls to scan for the internal datatypes of SaticModule and StaticObject - (this might be changed to attributes) - 
+    /// We use reflektion calls to scan for the  datatypes of SaticModule and StaticObject with the attribute CFGSettings
     /// We have for each cfgfile-setting a same named field in the classes, so we don't need a translation table.
     /// </summary>
     internal static class ConfigUtil
     {
         internal static bool initialized = false;
-        // Model Settings
-        private static List<string> stringAttributesModel = new List<string>();
-        private static List<string> intAttributesModel = new List<string>();
-        private static List<string> floatAttributesModel = new List<string>();
-        private static List<string> doubleAttributesModel = new List<string>();
-        private static List<string> vector3AttributesModel = new List<string>();
-        private static List<string> vector3dAttributesModel = new List<string>();
-        private static List<string> boolAttributesModel = new List<string>();
-        private static List<string> CelBodyAttributesModel = new List<string>();
 
-        // Instance Settings
-        private static List<string> stringAttributesInstance = new List<string>();
-        private static List<string> intAttributesInstance = new List<string>();
-        private static List<string> floatAttributesInstance = new List<string>();
-        private static List<string> doubleAttributesInstance = new List<string>();
-        private static List<string> vector3AttributesInstance = new List<string>();
-        private static List<string> vector3dAttributesInstance = new List<string>();
-        private static List<string> boolAttributesInstance = new List<string>();
-        private static List<string> CelBodyAttributesInstance = new List<string>();
-
-        // combined settings
-        private static List<string> stringAttributes;
-        private static List<string> intAttributes;
-        private static List<string> floatAttributes;
-        private static List<string> doubleAttributes;
-        private static List<string> vector3Attributes;
-        private static List<string> vector3dAttributes;
-        private static List<string> boolAttributes;
-        private static List<string> CelBodyAttributes;
-
-        internal static Dictionary<string, Type> modelTypes = new Dictionary<string, Type>();
         internal static Dictionary<string, FieldInfo> modelFields = new Dictionary<string, FieldInfo>();
-
-
-        internal static Dictionary<string, Type> instanceTypes = new Dictionary<string, Type>();
         internal static Dictionary<string, FieldInfo> instanceFields = new Dictionary<string, FieldInfo>();
 
+        internal static HashSet<string> facilitiyTypes = new HashSet<string>();
+
+
+        // global stuff
+        private static bool bodiesInitialized = false;
+        private static Dictionary<string, CelestialBody> knownBodies = new Dictionary<string, CelestialBody>();
 
         /// <summary>
         /// Fills up the lookup tables for the parser. 
         /// </summary>
         internal static void InitTypes()
         {
-            foreach (FieldInfo field in typeof(StaticModel).GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (FieldInfo field in typeof(StaticModel).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
             {
-                modelTypes.Add(field.Name, field.FieldType);
-                modelFields.Add(field.Name, field);
-
-                Log.Normal("Parser Model:" + field.FieldType.ToString());
-
-                switch (field.FieldType.ToString())
+                if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
-                    case "System.String":
-                        stringAttributesModel.Add(field.Name);
-                        break;
-                    case "System.Int32":
-                        intAttributesModel.Add(field.Name);
-                        break;
-                    case "System.Single":
-                        floatAttributesModel.Add(field.Name);
-                        break;
-                    case "System.Double":
-                        doubleAttributesModel.Add(field.Name);
-                        break;
-                    case "UnityEngine.Vector3":
-                        vector3AttributesModel.Add(field.Name);
-                        break;
-                    case "UnityEngine.Vector3d":
-                        vector3dAttributesModel.Add(field.Name);
-                        break;
-                    case "CelestialBody":
-                        CelBodyAttributesModel.Add(field.Name);
-                        break;
-                    case "System.Boolean":
-                        boolAttributesModel.Add(field.Name);
-                        break;
+                    modelFields.Add(field.Name, field);
+                    Log.Normal("Parser Model:" + field.Name + ": " + field.FieldType.ToString());
                 }
 
             }
-            foreach (FieldInfo field in typeof(StaticObject).GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (FieldInfo field in typeof(StaticObject).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
             {
-                instanceTypes.Add(field.Name, field.GetType());
-                instanceFields.Add(field.Name, field);
-                Log.Normal("Parser Instance: " + field.FieldType.ToString());
-
-
-                switch (field.FieldType.ToString())
+                if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
-                    case "System.String":
-                        stringAttributesInstance.Add(field.Name);
-                        break;
-                    case "System.Int32":
-                        intAttributesInstance.Add(field.Name);
-                        break;
-                    case "System.Single":
-                        floatAttributesInstance.Add(field.Name);
-                        break;
-                    case "System.Double":
-                        doubleAttributesInstance.Add(field.Name);
-                        break;
-                    case "UnityEngine.Vector3":
-                        vector3AttributesInstance.Add(field.Name);
-                        break;
-                    case "UnityEngine.Vector3d":
-                        vector3dAttributesInstance.Add(field.Name);
-                        break;
-                    case "CelestialBody":
-                        CelBodyAttributesInstance.Add(field.Name);
-                        break;
-                    case "System.Boolean":
-                        boolAttributesInstance.Add(field.Name);
-                        break;
+                    instanceFields.Add(field.Name, field);
+                    Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
                 }
-                //if (field.FieldType == typeof(string))
-                //{
-                //    stringAttributesInstance.Add(field.Name);
-                //}
-                //if (field.FieldType == typeof(int))
-                //{
-                //    intAttributesInstance.Add(field.Name);
-                //}
-                //if (field.FieldType == typeof(float))
-                //{
-                //    floatAttributesInstance.Add(field.Name);
-                //}
-                //if (field.FieldType == typeof(double))
-                //{
-                //    doubleAttributesInstance.Add(field.Name);
-                //}
-                //if (field.FieldType == typeof(Vector3))
-                //{
-                //    vector3AttributesInstance.Add(field.Name);
-                //}
-                //if (field.FieldType == typeof(bool))
-                //{
-                //    boolAttributesInstance.Add(field.Name);
-                //}
             }
 
-            stringAttributes = stringAttributesModel.ToList();
-            stringAttributes.AddRange(stringAttributesInstance.ToList());
-            intAttributes = intAttributesModel.ToList();
-            intAttributes.AddRange(intAttributesInstance.ToList());
-            floatAttributes = floatAttributesModel.ToList();
-            floatAttributes.AddRange(floatAttributesInstance.ToList());
-            doubleAttributes = doubleAttributesModel.ToList();
-            doubleAttributes.AddRange(doubleAttributesInstance.ToList());
-            vector3Attributes = vector3AttributesModel.ToList();
-            vector3Attributes.AddRange(vector3AttributesInstance.ToList());
-            vector3dAttributes = vector3AttributesModel.ToList();
-            vector3dAttributes.AddRange(vector3AttributesInstance.ToList());
-            boolAttributes = boolAttributesModel.ToList();
-            boolAttributes.AddRange(boolAttributesInstance.ToList());
-            CelBodyAttributes = CelBodyAttributesModel.ToList();
-            CelBodyAttributes.AddRange(CelBodyAttributesInstance.ToList());
+
+            facilitiyTypes = new HashSet<string>(Enum.GetNames(typeof(FacilityType)));
 
             initialized = true;
         }
 
 
-
-        internal static bool IsString(string parameter)
+        /// <summary>
+        /// Reads a setting from a ConfigNode and writes the content to the targets field with the same name
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="field"></param>
+        /// <param name="cfgNode"></param>
+        internal static void ReadCFGNode(object target, FieldInfo field, ConfigNode cfgNode)
         {
-            if (!initialized)
-                InitTypes();
+            if (!cfgNode.HasValue(field.Name))
+                return;
 
-            return stringAttributes.Contains(parameter);
+            if (!string.IsNullOrEmpty(cfgNode.GetValue(field.Name)))
+            {
+                switch (field.FieldType.ToString())
+                {
+                    case "System.String":
+                        field.SetValue(target, cfgNode.GetValue(field.Name));
+                        break;
+                    case "System.Int32":
+                        field.SetValue(target, int.Parse(cfgNode.GetValue(field.Name)));
+                        break;
+                    case "System.Single":
+                        field.SetValue(target, float.Parse(cfgNode.GetValue(field.Name)));
+                        break;
+                    case "System.Double":
+                        field.SetValue(target, double.Parse(cfgNode.GetValue(field.Name)));
+                        break;
+                    case "System.Boolean":
+                        bool result;
+                        bool.TryParse(cfgNode.GetValue(field.Name), out result);
+                        field.SetValue(target, result);
+                        break;
+                    case "UnityEngine.Vector3":
+                        field.SetValue(target, ConfigNode.ParseVector3(cfgNode.GetValue(field.Name)));
+                        break;
+                    case "UnityEngine.Vector3d":
+                        field.SetValue(target, ConfigNode.ParseVector3D(cfgNode.GetValue(field.Name)));
+                        break;
+                    case "CelestialBody":
+                        field.SetValue(target, ConfigUtil.GetCelestialBody(cfgNode.GetValue(field.Name)));
+                        break;
+                }
+
+            }
         }
 
-        internal static bool IsInt(string parameter)
+        /// <summary>
+        /// Writes a setting from an object to a confignode
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="field"></param>
+        /// <param name="cfgNode"></param>
+        internal static void Write2CfgNode(object source, FieldInfo field, ConfigNode cfgNode)
         {
-            if (!initialized)
-                InitTypes();
 
-            return intAttributes.Contains(parameter);
+                switch (field.FieldType.ToString())
+            {
+                case "System.String":
+                    cfgNode.SetValue(field.Name, (string)field.GetValue(source), true);
+                    break;
+                case "System.Int32":
+                    cfgNode.SetValue(field.Name, (int)field.GetValue(source), true);
+                    break;
+                case "System.Single":
+                    cfgNode.SetValue(field.Name, (float)field.GetValue(source), true);
+                    break;
+                case "System.Double":
+                    cfgNode.SetValue(field.Name, (double)field.GetValue(source), true);
+                    break;
+                case "System.Boolean":
+                    cfgNode.SetValue(field.Name, (bool)field.GetValue(source), true);
+                    break;
+                case "UnityEngine.Vector3":
+                    cfgNode.SetValue(field.Name, (Vector3)field.GetValue(source), true);
+                    break;
+                case "UnityEngine.Vector3d":
+                    cfgNode.SetValue(field.Name, (Vector3d)field.GetValue(source), true);
+                    break;
+                case "CelestialBody":
+                    cfgNode.SetValue(field.Name, ((CelestialBody)field.GetValue(source)).name, true);
+                    break;
+            }
         }
 
-        internal static bool IsFloat(string parameter)
+        /// <summary>
+        /// Fast convert of a bodyname to a CelestianBody object also Supports "Homeworld" as a key
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal static CelestialBody GetCelestialBody(String name)
         {
-            if (!initialized)
-                InitTypes();
+            if (!bodiesInitialized)
+            {
+                CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
+                foreach (CelestialBody body in bodies)
+                {
+                    knownBodies.Add(body.name, body);
+                    if (body.isHomeWorld)
+                    {
+                        knownBodies.Add("HomeWorld", body);
+                    }
 
-            return floatAttributes.Contains(parameter);
+                }
+                bodiesInitialized = true;
+            }
+            CelestialBody returnValue = null;
+
+            if (knownBodies.TryGetValue(name, out returnValue))
+            {
+                return returnValue;
+            }
+            else
+            {
+                Debug.LogError("KK: Couldn't find body \"" + name + "\"");
+                return null;
+            }
         }
-
-        internal static bool IsDouble(string parameter)
-        {
-            if (!initialized)
-                InitTypes();
-
-            return doubleAttributes.Contains(parameter);
-        }
-
-        internal static bool IsVector3(string parameter)
-        {
-            if (!initialized)
-                InitTypes();
-
-            return vector3Attributes.Contains(parameter);
-        }
-
-        internal static bool IsVector3d(string parameter)
-        {
-            if (!initialized)
-                InitTypes();
-
-            return vector3dAttributes.Contains(parameter);
-        }
-
-        internal static bool IsBool(string parameter)
-        {
-            if (!initialized)
-                InitTypes();
-
-            return boolAttributes.Contains(parameter);
-        }
-
-        internal static bool IsCelBody(string parameter)
-        {
-            if (!initialized)
-                InitTypes();
-
-            return CelBodyAttributes.Contains(parameter);
-        }
-
-
     }
 }

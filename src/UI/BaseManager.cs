@@ -175,9 +175,9 @@ namespace KerbalKonstructs.UI
 
 
 			string sButtonName = "";
-			sButtonName = selectedSite.name;
-			if (selectedSite.name == "Runway") sButtonName = "KSC Runway";
-			if (selectedSite.name == "LaunchPad") sButtonName = "KSC LaunchPad";
+			sButtonName = selectedSite.LaunchSiteName;
+			if (selectedSite.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
+			if (selectedSite.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
 
 			GUILayout.BeginHorizontal();
 			{
@@ -210,13 +210,13 @@ namespace KerbalKonstructs.UI
 
 			GUILayout.Space(2);
 
-			if (selectedSite.name == "Runway")
+			if (selectedSite.LaunchSiteName == "Runway")
 				GUILayout.Box("KSC Runway", Yellowtext);
 			else
-				if (selectedSite.name == "LaunchPad")
+				if (selectedSite.LaunchSiteName == "LaunchPad")
 					GUILayout.Box("KSC LaunchPad", Yellowtext);
 				else
-					GUILayout.Box("" + selectedSite.name, Yellowtext);
+					GUILayout.Box("" + selectedSite.LaunchSiteName, Yellowtext);
 
 			if (!foldedIn)
 			{
@@ -327,7 +327,7 @@ namespace KerbalKonstructs.UI
 						if (selectedSite.recoveryFactor > 0)
 						{
 							GUILayout.Label("Recovery Factor: " + selectedSite.recoveryFactor.ToString() + "%", LabelInfo);
-							if (selectedSite.name != "Runway" && selectedSite.name != "LaunchPad")
+							if (selectedSite.LaunchSiteName != "Runway" && selectedSite.LaunchSiteName != "LaunchPad")
 							{
 								if (selectedSite.recoveryRange > 0)
 									rangekm = selectedSite.recoveryRange / 1000;
@@ -406,7 +406,7 @@ namespace KerbalKonstructs.UI
 				{
 					GUILayout.BeginHorizontal();
 					{
-						if (selectedSite.name == EditorLogic.fetch.launchSiteName)
+						if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName)
 							tStatusLaunchsite = tSetLaunchsite;
 						else
 							if (isOpen || isAlwaysOpen)
@@ -416,7 +416,7 @@ namespace KerbalKonstructs.UI
 
 						GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
 						
-						GUI.enabled = (isLaunch || isAlwaysOpen) && !(selectedSite.name == EditorLogic.fetch.launchSiteName);
+						GUI.enabled = (isLaunch || isAlwaysOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
 						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);

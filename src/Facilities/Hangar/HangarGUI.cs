@@ -76,7 +76,7 @@ namespace KerbalKonstructs.UI
 
 			float fMaxMass = (float)selectedFacility.model.DefaultFacilityMassCapacity;
 			if (fMaxMass < 1) fMaxMass = 25f;
-			float fMaxCrafts = (float)selectedFacility.model.DefaultFacilityCraftCapacity;
+			int fMaxCrafts = selectedFacility.model.DefaultFacilityCraftCapacity;
 			if (fMaxCrafts < 1 || fMaxCrafts > 3) fMaxCrafts = 2;
 
 			GUILayout.Space(2);
