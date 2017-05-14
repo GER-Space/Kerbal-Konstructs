@@ -49,22 +49,25 @@ namespace KerbalKonstructs.Modules
         {
             groundStations = new List<StaticObject>(15);
 
-            StaticObject[] allObjects = StaticDatabase.GetAllStatics().ToArray();
+            // Test for later
+            //var bla = Resources.FindObjectsOfTypeAll<GroundStation>();
 
-            for (int i = 0; i < allObjects.Length; i++)
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
             {
+                if (instance.facilityType != KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
+                {
+                    continue;                  
+                }                   
 
-                if ((string)allObjects[i].getSetting("FacilityType") != "TrackingStation")
+                if (instance.Group == "KSCUpgrades")
                     continue;
 
-                if ((float)allObjects[i].getSetting("TrackingShort") == 0f)
+                if (((GroundStation)instance.myFacilities[0]).TrackingShort == 0f)
                     continue;
 
-                if ((string)allObjects[i].getSetting("Group") == "KSCUpgrades")
-                    continue;
-
-                groundStations.Add(allObjects[i]);
+                groundStations.Add(instance);
             }
+           // Log.Normal("GS: Cached GroundStations: " + groundStations.Count.ToString());
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                openclosed3 = (string)groundStation.getSetting("OpenCloseState");
+                openclosed3 = ((GroundStation)groundStation.myFacilities[0]).OpenCloseState;
 
 
                 if (KerbalKonstructs.instance.mapShowOpenT)
@@ -130,7 +133,7 @@ namespace KerbalKonstructs.Modules
                 {
 
 
-                    var objectpos2 = groundStation.body.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
+                    var objectpos2 = groundStation.CelestialBody.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
                     var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
                     var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
                     var disObjectLat2 = dObjectLat2 * 180 / Math.PI;
@@ -142,10 +145,7 @@ namespace KerbalKonstructs.Modules
                     DisplayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
-                    {
-                        float sTrackRange = (float)groundStation.getSetting("TrackingShort");
-                        float sTrackRange2 = (float)groundStation.getSetting("TrackingShort");
-
+                    {                    
                         selectedFacility = groundStation;
                         FacilityManager.selectedFacility = groundStation;
                         KerbalKonstructs.GUI_FacilityManager.Open();
@@ -212,10 +212,10 @@ namespace KerbalKonstructs.Modules
                 float fRadarOffset = fRadarRadius / 2;
 
 
-                if (launchSite.LaunchSiteIcon != null)
+                if (launchSite.icon != null)
                 {
                     if (fRadarRadius > 15)
-                        GUI.DrawTexture(screenRect, launchSite.LaunchSiteIcon, ScaleMode.ScaleToFit, true);
+                        GUI.DrawTexture(screenRect, launchSite.icon, ScaleMode.ScaleToFit, true);
                 }
                 else
                 {

@@ -102,12 +102,12 @@ namespace KerbalKonstructs.Modules
             }
             if (isCareerGame)
             {
-                if ((string)instance.getSetting("OpenCloseState") == "Open" || (string)instance.getSetting("OpenCloseState") == "OpenLocked" )
+                if (instance.myFacilities[0].OpenCloseState == "Open" || instance.myFacilities[0].OpenCloseState == "OpenLocked" )
                 {
                     return true;
                 }
 
-                if ( ( !instance.settings.ContainsKey("OpenCost") ) || ((float)instance.getSetting("OpenCost") == 0f ) )
+                if ( instance.myFacilities[0].OpenCost == 0f  )
                 {
                     return true;
                 }

@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Modules;
 using System;
 using System.Collections.Generic;
 using KerbalKonstructs.API;
@@ -70,9 +71,9 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
-			sInStorage = (string)selectedFacility.getSetting("InStorage");
-			sInStorage2 = (string)selectedFacility.getSetting("TargetID");
-			sInStorage3 = (string)selectedFacility.getSetting("TargetType");
+			sInStorage = ((Hangar)(selectedFacility.myFacilities[0])).InStorage1;
+			sInStorage2 = ((Hangar)(selectedFacility.myFacilities[0])).InStorage2;
+			sInStorage3 = ((Hangar)(selectedFacility.myFacilities[0])).InStorage3;
 
 			float fMaxMass = (float)selectedFacility.model.DefaultFacilityMassCapacity;
 			if (fMaxMass < 1) fMaxMass = 25f;
@@ -265,9 +266,10 @@ namespace KerbalKonstructs.UI
 
 		public static void CacheHangaredCraft(StaticObject obj)
 		{
-			string sInStorage = (string)obj.getSetting("InStorage");
-			string sInStorage2 = (string)obj.getSetting("TargetID");
-			string sInStorage3 = (string)obj.getSetting("TargetType");
+            Hangar myHangar = obj.myFacilities[0] as Hangar;
+			string sInStorage = myHangar.InStorage1;
+			string sInStorage2 = myHangar.InStorage2;
+			string sInStorage3 = myHangar.InStorage3;
 
 			foreach (Vessel vVesselStored in FlightGlobals.Vessels)
 			{
@@ -282,20 +284,20 @@ namespace KerbalKonstructs.UI
 				string sHangarSpace = "None";
 				// If a vessel is hangared
 				if (vVesselStored.id.ToString() == sInStorage)
-					sHangarSpace = "InStorage";
+					sHangarSpace = "InStorage1";
 				if (vVesselStored.id.ToString() == sInStorage2)
-					sHangarSpace = "TargetID";
+					sHangarSpace = "InStorage2";
 				if (vVesselStored.id.ToString() == sInStorage3)
-					sHangarSpace = "TargetType";
+					sHangarSpace = "InStorage3";
 
 				if (sHangarSpace != "None")
 				{
 					if (vVesselStored == FlightGlobals.ActiveVessel)
 					{
-						// Craft has been taken control
-						// Empty the hangar
-						obj.setSetting(sHangarSpace, "None");
-					}
+                        // Craft has been taken control
+                        // Empty the hangar
+                        typeof(Hangar).GetField(sHangarSpace).SetValue(myHangar, "None");
+                    }
 					else
 					{
 						// Hide the vessel - it is in the hangar
@@ -371,28 +373,30 @@ namespace KerbalKonstructs.UI
 			return sSpace;
 		}
 
-		public static int NumberCraftHangared(StaticObject soHangar)
+		public static int NumberCraftHangared(StaticObject instance)
 		{
+            Hangar myHangar = instance.myFacilities[0] as Hangar;
 			int iNumber = 0;
 
-			if ((string)soHangar.getSetting("InStorage") != "None") iNumber = iNumber + 1;
-			if ((string)soHangar.getSetting("TargetID") != "None") iNumber = iNumber + 1;
-			if ((string)soHangar.getSetting("TargetType") != "None") iNumber = iNumber + 1;
+			if (myHangar.InStorage1 != "None") iNumber = iNumber + 1;
+			if (myHangar.InStorage2 != "None") iNumber = iNumber + 1;
+			if (myHangar.InStorage3 != "None") iNumber = iNumber + 1;
 
 			return iNumber;
 		}
 
-		public static void RemoveCorrectCraft(Vessel vVessel, StaticObject soHangar)
+		public static void RemoveCorrectCraft(Vessel vVessel, StaticObject instance)
 		{
-			string sSpace = "InStorage";
+            Hangar myHangar = instance.myFacilities[0] as Hangar;
+            string sSpace = "InStorage1";
 			string sVesselID = vVessel.id.ToString();
 
-			if (sVesselID == (string)soHangar.getSetting("TargetID"))
-				sSpace = "TargetID";
-			if (sVesselID == (string)soHangar.getSetting("TargetType"))
-				sSpace = "TargetType";
+			if (sVesselID == myHangar.InStorage2)
+				sSpace = "InStorage2";
+			if (sVesselID == myHangar.InStorage3)
+				sSpace = "InStorage3";
 
-			soHangar.setSetting(sSpace, "None");
+            typeof(Hangar).GetField(sSpace).SetValue(myHangar, "None"); ;
 		}
 
 		public static void UnhangarCraft(Vessel vVesselStored, StaticObject soHangar)

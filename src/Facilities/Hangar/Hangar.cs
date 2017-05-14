@@ -9,11 +9,11 @@ namespace KerbalKonstructs.Modules
     class Hangar : KKFacility
     {
         [CareerSetting]
-        public string InStorage;
+        public string InStorage1 = "";
         [CareerSetting]
-        public string InStorage2;
+        public string InStorage2 = "";
         [CareerSetting]
-        public string InStorage3;
+        public string InStorage3 = "";
 
 
         [CFGSetting]

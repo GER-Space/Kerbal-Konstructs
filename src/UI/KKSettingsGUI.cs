@@ -803,7 +803,7 @@ namespace KerbalKonstructs.UI
 				{
 					foreach (StaticModel model in StaticDatabase.allStaticModels)
 					{
-						foreach (StaticObject obj in StaticDatabase.GetObjectsFromModel(model))
+						foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
 						{
 							KerbalKonstructs.instance.deleteObject(obj);
 						}

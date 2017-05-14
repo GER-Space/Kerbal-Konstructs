@@ -200,155 +200,17 @@ namespace KerbalKonstructs
             ConfigGenericString groupCenter = new ConfigGenericString();
             groupCenter.setDefaultValue("false");
             KKAPI.addInstanceSetting("GroupCenter", groupCenter);
-            KKAPI.addInstanceSetting("RefCenter", new ConfigVector3());
-
-            // Launchsite
-            KKAPI.addInstanceSetting("LaunchSiteName", new ConfigGenericString());
-            KKAPI.addInstanceSetting("LaunchPadTransform", new ConfigGenericString());
-            KKAPI.addInstanceSetting("LaunchSiteAuthor", new ConfigGenericString());
-            ConfigGenericString descriptionConfig = new ConfigGenericString();
-            descriptionConfig.setDefaultValue("No description available.");
-            KKAPI.addInstanceSetting("LaunchSiteDescription", descriptionConfig);
-            KKAPI.addInstanceSetting("LaunchSiteLogo", new ConfigGenericString());
-            KKAPI.addInstanceSetting("LaunchSiteIcon", new ConfigGenericString());
-            KKAPI.addInstanceSetting("LaunchSiteType", new ConfigSiteType());
-            ConfigGenericString category = new ConfigGenericString();
-            category.setDefaultValue("Other");
-            KKAPI.addInstanceSetting("Category", category);
-            KKAPI.addInstanceSetting("LaunchSiteLength", new ConfigFloat());
-            KKAPI.addInstanceSetting("LaunchSiteWidth", new ConfigFloat());
-            KKAPI.addInstanceSetting("LaunchSiteNation", new ConfigGenericString());
-            ConfigGenericString launchSiteHidden = new ConfigGenericString();
-            launchSiteHidden.setDefaultValue("false");
-            KKAPI.addInstanceSetting("LaunchSiteIsHidden", launchSiteHidden);
-            ConfigFloat missionCount = new ConfigFloat();
-            missionCount.setDefaultValue(0f);
-            KKAPI.addInstanceSetting("MissionCount", missionCount);
-            ConfigGenericString missionlog = new ConfigGenericString();
-            missionlog.setDefaultValue("No missions logged");
-            KKAPI.addInstanceSetting("MissionLog", missionlog);
-
-
-            // Career Mode Strategy Instances
-            ConfigFloat openCost = new ConfigFloat();
-            openCost.setDefaultValue(0f);
-            KKAPI.addInstanceSetting("OpenCost", openCost);
-            ConfigFloat closeValue = new ConfigFloat();
-            closeValue.setDefaultValue(0f);
-            KKAPI.addInstanceSetting("CloseValue", closeValue);
-            ConfigGenericString opencloseState = new ConfigGenericString();
-            opencloseState.setDefaultValue("Closed");
-            KKAPI.addInstanceSetting("OpenCloseState", opencloseState);
-            ConfigGenericString favouriteSite = new ConfigGenericString();
-            favouriteSite.setDefaultValue("No");
-            KKAPI.addInstanceSetting("FavouriteSite", favouriteSite);
-
-
-
-            // Facility Types
-            ConfigGenericString facilityrole = new ConfigGenericString();
-            facilityrole.setDefaultValue("None");
-
-            KKAPI.addInstanceSetting("FacilityMassCapacity", new ConfigFloat());
-            KKAPI.addInstanceSetting("FacilityCraftCapacity", new ConfigFloat());
 
 
             ConfigGenericString instfacilityrole = new ConfigGenericString();
             instfacilityrole.setDefaultValue("None");
             KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
-            KKAPI.addInstanceSetting("InStorage", new ConfigGenericString());
-            KKAPI.addInstanceSetting("TargetType", new ConfigGenericString());
-            KKAPI.addInstanceSetting("TargetID", new ConfigGenericString());
-
-            // Facility Ratings
-
-            // Tracking station max short range in m
-            KKAPI.addInstanceSetting("TrackingShort", new ConfigFloat());
-
-
-
-            //XP
-            KKAPI.addInstanceSetting("FacilityXP", new ConfigFloat());
-
-            // Staff
-            KKAPI.addInstanceSetting("StaffMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("StaffCurrent", new ConfigFloat());
-
-            // Fueling
-            KKAPI.addInstanceSetting("LqFMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("LqFCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("OxFMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("OxFCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("MoFMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("MoFCurrent", new ConfigFloat());
-
-            KKAPI.addInstanceSetting("LqFAlt", new ConfigGenericString());
-            KKAPI.addInstanceSetting("OxFAlt", new ConfigGenericString());
-            KKAPI.addInstanceSetting("MoFAlt", new ConfigGenericString());
-
-
-            // Industry
-            KKAPI.addInstanceSetting("ProductionRateMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("ProductionRateCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("Producing", new ConfigGenericString());
-
-            KKAPI.addInstanceSetting("OreCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("PrOreCurrent", new ConfigFloat());
-
-            // Science Rep Funds generation
-            KKAPI.addInstanceSetting("ScienceOMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("ScienceOCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("RepOMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("RepOCurrent", new ConfigFloat());
-            KKAPI.addInstanceSetting("FundsOMax", new ConfigFloat());
-            KKAPI.addInstanceSetting("FundsOCurrent", new ConfigFloat());
-
-            // Local to a specific save - constructed in a specific save-game
-            // WIP for founding
-            ConfigGenericString LocalToSave = new ConfigGenericString();
-            LocalToSave.setDefaultValue("False");
-            KKAPI.addInstanceSetting("LocalToSave", LocalToSave);
-
-            // Custom instances - added or modified by player with the editor
-            ConfigGenericString CustomInstance = new ConfigGenericString();
-            CustomInstance.setDefaultValue("False");
-            KKAPI.addInstanceSetting("CustomInstance", CustomInstance);
-
-            // Launch and Recovery
-            ConfigFloat flaunchrefund = new ConfigFloat();
-            flaunchrefund.setDefaultValue(0f);
-            KKAPI.addInstanceSetting("LaunchRefund", flaunchrefund);
-            ConfigFloat frecoveryfactor = new ConfigFloat();
-            frecoveryfactor.setDefaultValue((float)defaultRecoveryFactor);
-            KKAPI.addInstanceSetting("RecoveryFactor", frecoveryfactor);
-            ConfigFloat frecoveryrange = new ConfigFloat();
-            frecoveryrange.setDefaultValue((float)defaultEffectiveRange);
-            KKAPI.addInstanceSetting("RecoveryRange", frecoveryrange);
-
-            // Activity logging
-            KKAPI.addInstanceSetting("LastCheck", new ConfigFloat());
 
             // Model Scale
             ConfigFloat modelScale = new ConfigFloat();
             modelScale.setDefaultValue(1f);
             KKAPI.addInstanceSetting("ModelScale", modelScale);
 
-            // Nation API
-            KKAPI.addNationSetting("nationName", new ConfigGenericString());
-            KKAPI.addNationSetting("shortname", new ConfigGenericString());
-            KKAPI.addNationSetting("abbreviation", new ConfigGenericString());
-            KKAPI.addNationSetting("nationIcon", new ConfigGenericString());
-            KKAPI.addNationSetting("description", new ConfigGenericString());
-            KKAPI.addNationSetting("rulership", new ConfigGenericString());
-            ConfigFloat fnationratingresources = new ConfigFloat();
-            fnationratingresources.setDefaultValue(0f);
-            KKAPI.addNationSetting("ratingresources", fnationratingresources);
-            ConfigFloat fnationratingmilitary = new ConfigFloat();
-            fnationratingmilitary.setDefaultValue(0f);
-            KKAPI.addNationSetting("ratingmilitary", fnationratingmilitary);
-            ConfigFloat fnationratingtech = new ConfigFloat();
-            fnationratingtech.setDefaultValue(0f);
-            KKAPI.addNationSetting("ratingtech", fnationratingtech);
 
             #endregion
 
@@ -752,17 +614,18 @@ namespace KerbalKonstructs
 
         public void DoHangaredCraftCheck()
         {
-            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
             {
-                string sFacType = (string)obj.getSetting("FacilityType");
 
-                if (sFacType != "Hangar") continue;
 
-                if (sFacType == "Hangar")
+                if (instance.facilityType == KKFacilityType.Hangar)
                 {
-                    string sInStorage = (string)obj.getSetting("InStorage");
-                    string sInStorage2 = (string)obj.getSetting("TargetID");
-                    string sInStorage3 = (string)obj.getSetting("TargetType");
+                    Hangar thisHanar = instance.gameObject.GetComponent<Hangar>();
+
+
+                    string sInStorage = thisHanar.InStorage1;
+                    string sInStorage2 = thisHanar.InStorage2;
+                    string sInStorage3 = thisHanar.InStorage3;
 
                     string bHangarHasStoredCraft1 = "None";
                     string bHangarHasStoredCraft2 = "None";
@@ -782,12 +645,12 @@ namespace KerbalKonstructs
                         }
 
                         if (bCraftExists)
-                            bHangarHasStoredCraft1 = "InStorage";
+                            bHangarHasStoredCraft1 = "InStorage1";
                         else
                         {
                             // Craft no longer exists. Clear this hangar space.
                             Log.Debug("Craft InStorage no longer exists. Emptying this hangar space.");
-                            obj.setSetting("InStorage", "None");
+                            thisHanar.InStorage1 = "None";
                         }
                     }
 
@@ -805,12 +668,12 @@ namespace KerbalKonstructs
                         }
 
                         if (bCraftExists)
-                            bHangarHasStoredCraft2 = "TargetID";
+                            bHangarHasStoredCraft2 = "InStorage2";
                         else
                         {
                             // Craft no longer exists. Clear this hangar space.
                             Log.Debug("Craft TargetID no longer exists. Emptying this hangar space.");
-                            obj.setSetting("TargetID", "None");
+                            thisHanar.InStorage2 = "None";
                         }
                     }
 
@@ -828,13 +691,13 @@ namespace KerbalKonstructs
                         }
 
                         if (bCraftExists)
-                            bHangarHasStoredCraft3 = "TargetType";
+                            bHangarHasStoredCraft3 = "InStorage3";
                         else
                         {
                             // Craft no longer exists. Clear this hangar space.
                             Log.Debug("Craft TargetType no longer exists. Emptying this hangar space.");
 
-                            obj.setSetting("TargetType", "None");
+                            thisHanar.InStorage3 = "None";
                         }
                     }
 
@@ -849,13 +712,13 @@ namespace KerbalKonstructs
                         foreach (Vessel vVesselStored in FlightGlobals.Vessels)
                         {
                             if (vVesselStored.id.ToString() == sInStorage)
-                                sHangarSpace = "InStorage";
+                                sHangarSpace = "InStorage1";
 
                             if (vVesselStored.id.ToString() == sInStorage2)
-                                sHangarSpace = "TargetID";
+                                sHangarSpace = "InStorage2";
 
                             if (vVesselStored.id.ToString() == sInStorage3)
-                                sHangarSpace = "TargetType";
+                                sHangarSpace = "InStorage3";
 
                             // If a vessel is hangared
                             if (vVesselStored.id.ToString() == sInStorage || vVesselStored.id.ToString() == sInStorage2 || vVesselStored.id.ToString() == sInStorage3)
@@ -865,7 +728,8 @@ namespace KerbalKonstructs
                                     // Craft has been taken control
                                     // Empty the hangar
                                     Log.Debug("Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
-                                    obj.setSetting(sHangarSpace, "None");
+                                    typeof(Hangar).GetField(sHangarSpace).SetValue(thisHanar, "None");
+                                    //instance.setSetting(sHangarSpace, "None");
                                 }
                                 else
                                 {
@@ -944,46 +808,49 @@ namespace KerbalKonstructs
 
             foreach (ConfigNode instanceCfgNode in configurl.config.GetNodes("Instances"))
             {
-                StaticObject obj = new StaticObject();
-                obj.model = model;
-                obj.configUrl = configurl;
-                obj.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
+                StaticObject instance = new StaticObject();
+                instance.model = model;
+                instance.configUrl = configurl;
+                instance.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
                 //obj.gameObject = GameDatabase.Instance.GetModel(model.path + "/" + model.getSetting("mesh"));
-                obj.gameObject = Instantiate(model.prefab);
-                if (obj.gameObject == null)
+                instance.gameObject = Instantiate(model.prefab);
+                if (instance.gameObject == null)
                 {
                     Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
 
-                obj.settings = KKAPI.loadConfig(instanceCfgNode, KKAPI.getInstanceSettings());
+                ConfigParser.ParseInstanceConfig(instance, instanceCfgNode);
+                //instance.settings = KKAPI.loadConfig(instanceCfgNode, KKAPI.getInstanceSettings());
 
-                if (obj.settings == null)
-                {
-                    Log.UserError("KK: Error loading instances for " + model.mesh + ".mu! Check your model and config.");
-                    continue;
-                }
+                //if (obj.settings == null)
+                //{
+                //    Log.UserError("KK: Error loading instances for " + model.mesh + ".mu! Check your model and config.");
+                //    continue;
+                //}
 
-                CelestialBody body = (CelestialBody)obj.getSetting("CelestialBody");
-                if (body == null)
+                //CelestialBody body = (CelestialBody)obj.getSetting("CelestialBody");
+                if (instance.CelestialBody == null)
                     continue;
 
                 // create RadialPosition, If we don't have one.
-                if (!obj.settings.ContainsKey("RadialPosition"))
+                if (instance.RadialPosition == Vector3.zero)
                 {
-                    if (obj.settings.ContainsKey("RefLatitude") && obj.settings.ContainsKey("RefLongitude"))
-                    {
-                        double lat = (double)obj.getSetting("RefLatitude");
-                        double lon = (double)obj.getSetting("RefLongitude");
-                        Vector3 newPostion = body.GetRelSurfaceNVector(lat, lon) * body.Radius;
-                        obj.setSetting("RadialPosition", newPostion);
-                        Log.UserInfo("creating new Radialposition for: " + obj.gameObject.name);
+                    if (instance.RefLatitude != 361f && instance.RefLongitude != 361f )
+                    {                   
+                        instance.RadialPosition = (instance.CelestialBody.GetRelSurfaceNVector(instance.RefLatitude , instance.RefLongitude).normalized * instance.CelestialBody.Radius);
+                        Log.UserInfo("creating new RadialPosition for: " + instance.configPath + " " + instance.RadialPosition.ToString());
                     }
                     else
                     {
-                        Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + obj.gameObject.name);
+                        Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
                         continue;
                     }
+                } else
+                {
+                    // create LAT & LON out of Radialposition
+                    instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
+                    instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
                 }
 
                 // sometimes we need a second pass.. (do we???)
@@ -991,36 +858,23 @@ namespace KerbalKonstructs
 
                 if (bSecondPass)
                 {
-                    Vector3 secondInstanceKey = (Vector3)obj.getSetting("RadialPosition");
+                    Vector3 secondInstanceKey = instance.RadialPosition;
                     bool bSpaceOccupied = false;
 
-                    foreach (StaticObject soThis in StaticDatabase.GetAllStatics())
+                    
+                    foreach (StaticObject soThis in StaticDatabase.GetAllStatics().Where(x => x.RadialPosition == instance.RadialPosition))
                     {
-                        Vector3 firstInstanceKey = (Vector3)soThis.getSetting("RadialPosition");
+                        Vector3 firstInstanceKey = soThis.RadialPosition;                      
 
-                        if (firstInstanceKey == secondInstanceKey)
-                        {
-
-                            Log.Debug("Custom instance has a RadialPosition that already has an instance."
-                                + soThis.model.mesh + ":"
-                                + (string)soThis.getSetting("Group") + ":" + firstInstanceKey.ToString() + "|"
-                                + obj.model.mesh + ":"
-                                + (string)obj.getSetting("Group") + ":" + secondInstanceKey.ToString());
-
-                            if (soThis.model.mesh == obj.model.mesh)
+                            if (soThis.model.mesh == instance.model.mesh)
                             {
-                                float fThisOffset = (float)soThis.getSetting("RadiusOffset");
-                                float fThatOffset = (float)obj.getSetting("RadiusOffset");
-                                float fThisRotation = (float)soThis.getSetting("RotationAngle");
-                                float fThatRotation = (float)obj.getSetting("RotationAngle");
-
-                                if ((fThisOffset == fThatOffset) && (fThisRotation == fThatRotation))
+                                if ((soThis.RadiusOffset == instance.RadiusOffset) && (soThis.RotationAngle == instance.RotationAngle))
                                 {
                                     bSpaceOccupied = true;
                                     Log.UserWarning("Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
                                     + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine +
                                     "File1: " + soThis.configPath + Environment.NewLine +
-                                    "File2: " + obj.configPath);
+                                    "File2: " + instance.configPath);
                                     break;
                                 }
                                 else
@@ -1032,7 +886,7 @@ namespace KerbalKonstructs
                             {
                                 Log.Debug("Different models. Allowing. Could be a terrain foundation or integrator.");
                             }
-                        }
+                        
                     }
 
                     if (bSpaceOccupied)
@@ -1042,44 +896,44 @@ namespace KerbalKonstructs
                     }
                 }
 
-                if (!obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
-                {
-                    if (!string.IsNullOrEmpty(model.DefaultLaunchPadTransform))
-                    {
-                        obj.settings.Add("LaunchPadTransform", model.DefaultLaunchPadTransform);
-                    }
-                    else
-                    {
-                        Log.Normal("Launch site is missing a transform. Defaulting to " + obj.getSetting("LaunchSiteName") + "_spawn...");
+                //if (!instance.settings.ContainsKey("LaunchPadTransform") && instance.settings.ContainsKey("LaunchSiteName"))
+                //{
+                //    if (!string.IsNullOrEmpty(model.DefaultLaunchPadTransform))
+                //    {
+                //        instance.settings.Add("LaunchPadTransform", model.DefaultLaunchPadTransform);
+                //    }
+                //    else
+                //    {
+                //        Log.Normal("Launch site is missing a transform. Defaulting to " + instance.getSetting("LaunchSiteName") + "_spawn...");
 
-                        if (obj.gameObject.transform.Find(obj.getSetting("LaunchSiteName") + "_spawn") != null)
-                        {
-                            obj.settings.Add("LaunchPadTransform", obj.getSetting("LaunchSiteName") + "_spawn");
-                        }
-                        else
-                        {
-                            Log.Normal("FAILED: " + obj.getSetting("LaunchSiteName") + "_spawn does not exist! Attempting to use any transform with _spawn in the name.");
-                            Transform lastResort = obj.gameObject.transform.Cast<Transform>().FirstOrDefault(trans => trans.name.EndsWith("_spawn"));
+                //        if (instance.gameObject.transform.Find(instance.getSetting("LaunchSiteName") + "_spawn") != null)
+                //        {
+                //            instance.settings.Add("LaunchPadTransform", instance.getSetting("LaunchSiteName") + "_spawn");
+                //        }
+                //        else
+                //        {
+                //            Log.Normal("FAILED: " + instance.getSetting("LaunchSiteName") + "_spawn does not exist! Attempting to use any transform with _spawn in the name.");
+                //            Transform lastResort = instance.gameObject.transform.Cast<Transform>().FirstOrDefault(trans => trans.name.EndsWith("_spawn"));
 
-                            if (lastResort != null)
-                            {
-                                Log.Normal("Using " + lastResort.name + " as launchpad transform");
-                                obj.settings.Add("LaunchPadTransform", lastResort.name);
-                            }
-                            else
-                            {
-                                Log.Error("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
-                            }
-                        }
-                    }
-                }
+                //            if (lastResort != null)
+                //            {
+                //                Log.Normal("Using " + lastResort.name + " as launchpad transform");
+                //                instance.settings.Add("LaunchPadTransform", lastResort.name);
+                //            }
+                //            else
+                //            {
+                //                Log.Error("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
+                //            }
+                //        }
+                //    }
+                //}
 
-                obj.spawnObject(false, false);
+                instance.spawnObject(false, false);
 
-                AttachFacilities(obj, instanceCfgNode);
+                AttachFacilities(instance, instanceCfgNode);
 
-                if (obj.settings.ContainsKey("LaunchPadTransform") && obj.settings.ContainsKey("LaunchSiteName"))
-                    LaunchSiteManager.createLaunchSite(obj);
+                if (instanceCfgNode.HasValue("LaunchPadTransform" ) && ! string.IsNullOrEmpty(instanceCfgNode.GetValue("LaunchPadTransform")) && instanceCfgNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceCfgNode.GetValue("LaunchSiteName")))
+                    LaunchSiteManager.CreateLaunchSite(instance, instanceCfgNode);
 
             }
 
@@ -1272,10 +1126,10 @@ namespace KerbalKonstructs
             if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility"))
                 return;
 
-            FacilityType facType;
+            KKFacilityType facType;
             try
             {
-                facType = (FacilityType)Enum.Parse(typeof(FacilityType), cfgNode.GetValue("FacilityType"), true);
+                facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), cfgNode.GetValue("FacilityType"), true);
             }
             catch
             {
@@ -1285,7 +1139,7 @@ namespace KerbalKonstructs
             }
 
 
-            if (facType == FacilityType.None && !cfgNode.HasNode("Facility"))
+            if (facType == KKFacilityType.None && !cfgNode.HasNode("Facility"))
                 return;
 
             instance.hasFacilities = true;
@@ -1293,37 +1147,38 @@ namespace KerbalKonstructs
 
             switch (facType)
             {
-                case FacilityType.GroundStation:
+                case KKFacilityType.GroundStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.TrackingStation:
+                case KKFacilityType.TrackingStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    instance.facilityType = KKFacilityType.GroundStation;
                     break;
-                case FacilityType.FuelTanks:
+                case KKFacilityType.FuelTanks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.Research:
+                case KKFacilityType.Research:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.Business:
+                case KKFacilityType.Business:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Business>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.Hangar:
+                case KKFacilityType.Hangar:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.Barracks:
+                case KKFacilityType.Barracks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Barracks>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.LandingGuide:
+                case KKFacilityType.LandingGuide:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<LandingGuide>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.TouchdownGuideL:
+                case KKFacilityType.TouchdownGuideL:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideL>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.TouchdownGuideR:
+                case KKFacilityType.TouchdownGuideR:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
                     break;
-                case FacilityType.RadarStation:
+                case KKFacilityType.RadarStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
                     break;
             }
@@ -1345,7 +1200,7 @@ namespace KerbalKonstructs
 
             modelConfig.RemoveNodes("Instances");
 
-            foreach (StaticObject obj in StaticDatabase.GetDirectInstancesFromModel(model))
+            foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
             {
                 ConfigNode inst = new ConfigNode("Instances");
                 foreach (KeyValuePair<string, object> setting in obj.settings)
@@ -1386,13 +1241,11 @@ namespace KerbalKonstructs
             }
 
             staticNode.AddNode(instanceConfig);
-            foreach (StaticObject obj in allInstances)
+            foreach (StaticObject instance in allInstances)
             {
                 ConfigNode inst = new ConfigNode("Instances");
-                foreach (KeyValuePair<string, object> setting in obj.settings)
-                {
-                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-                }
+                ConfigParser.WriteInstanceConfig(instance, inst);
+
                 instanceConfig.nodes.Add(inst);
             }
 
@@ -1467,10 +1320,10 @@ namespace KerbalKonstructs
 
                 modelConfig.RemoveNodes("Instances");
 
-                foreach (StaticObject obj in StaticDatabase.GetObjectsFromModel(model))
+                foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
                 {
-                    string sCustom = (string)obj.getSetting("CustomInstance");
-                    string sInstGroup = (string)obj.getSetting("Group");
+                    string sCustom = (string)instance.getSetting("CustomInstance");
+                    string sInstGroup = (string)instance.getSetting("Group");
 
                     if (sGroup != "")
                     {
@@ -1484,14 +1337,14 @@ namespace KerbalKonstructs
                     if (DevMode)
                     {
                         sCustom = "True";
-                        obj.setSetting("CustomInstance", "True");
+                        //obj.setSetting("CustomInstance", "True");
                     }
 
                     if (sCustom == "True")
                     {
                         HasCustom = true;
                         ConfigNode inst = new ConfigNode("Instances");
-                        foreach (KeyValuePair<string, object> setting in obj.settings)
+                        foreach (KeyValuePair<string, object> setting in instance.settings)
                         {
                             inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
                         }
@@ -1570,7 +1423,7 @@ namespace KerbalKonstructs
                         modelConfig.RemoveNodes("Instances");
                         bool bNoInstances = true;
 
-                        foreach (StaticObject obj in StaticDatabase.GetObjectsFromModel(model))
+                        foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
                         {
                             string sObjGroup = (string)obj.getSetting("Group");
                             if (sObjGroup != sBase) continue;

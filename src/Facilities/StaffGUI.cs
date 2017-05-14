@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using KerbalKonstructs.API;
 using UnityEngine;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -28,31 +29,28 @@ namespace KerbalKonstructs.UI
 
 		public static bool bIsBarracks = false;
 
-		public static float TotalBarracksPool(StaticObject selectedFacility, bool bUnassigned = true)
+		public static float TotalBarracksPool(StaticObject selectedFacility)
 		{
 			float fKerbals = 0f;
 
-			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+			foreach (StaticObject instance in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
-				if ((string)obj.getSetting("FacilityType") != "Barracks")
+				if ((string)instance.FacilityType!= "Barracks")
 				{
-					if ((string)obj.model.DefaultFacilityType != "Barracks") continue;
+					if ((string)instance.model.DefaultFacilityType != "Barracks") continue;
 				}
 
-				var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, obj.gameObject.transform.position);
+				var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
 				if (dist > 5000f) continue;
 
-				if (bUnassigned)
-				{
-					fKerbals = fKerbals + (float)obj.getSetting("ProductionRateCurrent");
-				}
-				else
-				{
-					fKerbals = fKerbals + ((float)obj.getSetting("StaffCurrent") - (float)obj.getSetting("ProductionRateCurrent"));	
-				}
-			}
+                Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
+
+                fKerbals = fKerbals + foundBarracks.ProductionRateCurrent;
+
+
+            }
 
 			return fKerbals;
 		}
@@ -62,43 +60,44 @@ namespace KerbalKonstructs.UI
 			StaticObject soNearest = null;
 			float fKerbals = 0f;
 
-			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+			foreach (StaticObject instance in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
-				if ((string)obj.getSetting("FacilityType") != "Barracks")
+				if (instance.FacilityType != "Barracks")
 				{
-					if ((string)obj.model.DefaultFacilityType != "Barracks") continue;
+					if (instance.model.DefaultFacilityType != "Barracks") continue;
 				}
 
-				if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+				if (instance.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
 				{
-					var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, obj.gameObject.transform.position);
+					var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
 					if (dist > 5000f) continue;
 				}
 				else
 					continue;
 
-				if (bUnassigned)
+                Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
+                if (bUnassigned)
 				{
-					fKerbals = (float)obj.getSetting("ProductionRateCurrent");
+					fKerbals = foundBarracks.ProductionRateCurrent;
 
 					if (fKerbals < 1) continue;
 					else
 					{
-						soNearest = obj;
+						soNearest = instance;
 						break;
 					}
 				}
 				else
 				{
-					if ((float)obj.getSetting("StaffCurrent") == 1) continue;
+					if (foundBarracks.StaffCurrent == 1) continue;
 
-					if (((float)obj.getSetting("StaffCurrent") -1) == (float)obj.getSetting("ProductionRateCurrent"))
+					if ((foundBarracks.StaffCurrent - 1f) == foundBarracks.ProductionRateCurrent )
 						continue;
 					else
 					{
-						soNearest = obj;
+						soNearest = instance;
 						break;
 					}
 				}
@@ -109,13 +108,15 @@ namespace KerbalKonstructs.UI
 
 		public static void DrawFromBarracks(StaticObject selectedFacility)
 		{
-			selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") - 1);
+            Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
+            foundBarracks.ProductionRateCurrent--;
 		}
 
 		public static void UnassignToBarracks(StaticObject selectedFacility)
 		{
-			selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") + 1);
-		}
+            Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
+            foundBarracks.ProductionRateCurrent++;
+        }
 
 		public static void StaffingInterface(StaticObject selectedFacility)
 		{
@@ -348,41 +349,6 @@ namespace KerbalKonstructs.UI
 
 				GUILayout.Space(5);
 
-				if (KerbalKonstructs.instance.DevMode)
-				{
-					fXP = (float)selectedFacility.getSetting("FacilityXP");
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.Space(5);
-						GUILayout.Label("XP: ", LabelInfo, GUILayout.Height(23), GUILayout.Width(55));
-
-						float CountCurrentXP = fXP;
-						float CountEmptyXP = 5 - fXP;
-
-						while (CountCurrentXP > 0)
-						{
-							GUILayout.Button(tXPGained, GUILayout.Height(23), GUILayout.Width(23));
-							CountCurrentXP = CountCurrentXP - 1;
-						}
-
-						while (CountEmptyXP > 0)
-						{
-							GUILayout.Button(tXPUngained, GUILayout.Height(23), GUILayout.Width(23));
-							CountEmptyXP = CountEmptyXP - 1;
-						}
-
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("Spend", ButtonSmallText, GUILayout.Height(23)))
-						{
-							if (fXP < 1)
-							{
-								MiscUtils.HUDMessage("No XP to spend!", 10, 3);
-							}
-
-						}
-					}
-					GUILayout.EndHorizontal();
-				}
 			}
 			else
 			{

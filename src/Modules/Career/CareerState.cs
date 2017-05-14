@@ -114,9 +114,6 @@ namespace KerbalKonstructs.Modules
         {
             string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
 
-            string position = "";
-            string facType = "";
-
             ConfigNode rootNode = new ConfigNode();
 
             if (!File.Exists(saveConfigPath))
@@ -148,7 +145,7 @@ namespace KerbalKonstructs.Modules
                         int index = int.Parse(facNode.GetValue("Index"));
                         if (instance.myFacilities[index].facilityType == facNode.name)
                         {
-                            Log.Normal("Load State" + instance.pqsCity.name + " : "  + facNode.name);
+                            //Log.Normal("Load State: " + instance.pqsCity.name + " : "  + facNode.name);
                             instance.myFacilities[index].LoadCareerConfig(facNode);
 
                         } else
@@ -159,6 +156,36 @@ namespace KerbalKonstructs.Modules
 
             }
             }
+        }
+
+        /// <summary>
+        /// saves the facility settings to the cfg file
+        /// </summary>
+        internal static void SaveFacilities()
+        {
+            string facSave = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
+
+            ConfigNode rootNode = new ConfigNode();
+            ConfigNode gameNode = rootNode.AddNode("GAME");
+            ConfigNode scenarioNode = gameNode.AddNode("SCENARIO");
+
+            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+            {
+                if (!instance.hasFacilities)
+                    continue;
+
+                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
+                instanceNode.SetValue("FacilityName", instance.pqsCity.name, true);
+                instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
+
+                for (int i = 0; i < instance.myFacilities.Count; i++)
+                {
+                    ConfigNode facnode = instanceNode.AddNode(instance.myFacilities[i].facilityType);
+                    facnode.SetValue("Index", i, true);
+                    instance.myFacilities[i].SaveCareerConfig(facnode);
+                }
+            }
+            rootNode.Save(facSave);
         }
 
         /// <summary>
@@ -271,35 +298,6 @@ namespace KerbalKonstructs.Modules
             }
         }
 
-        /// <summary>
-        /// saves the facility settings to the cfg file
-        /// </summary>
-        internal static void SaveFacilities()
-        {
-            string facSave = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
-
-            ConfigNode rootNode = new ConfigNode();
-            ConfigNode gameNode = rootNode.AddNode("GAME");
-            ConfigNode scenarioNode = gameNode.AddNode("SCENARIO");
-
-            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
-            {
-                if (!instance.hasFacilities)
-                    continue;
-
-                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
-                instanceNode.SetValue("FacilityName", instance.pqsCity.name, true);
-                instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
-
-                for (int i = 0; i < instance.myFacilities.Count; i++)
-                {
-                    ConfigNode facnode = instanceNode.AddNode(instance.myFacilities[i].facilityType);
-                    facnode.SetValue("Index", i, true);
-                    instance.myFacilities[i].SaveCareerConfig(facnode);
-                }
-            }
-            rootNode.Save(facSave);
-        }
 
 
         internal static void SaveLaunchsites()

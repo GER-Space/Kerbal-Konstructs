@@ -48,15 +48,17 @@ namespace KerbalKonstructs.Modules
 
             }
 
-            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
             {
 
-                if ((string)instance.getSetting("FacilityType") != "TrackingStation")
+                if (instance.facilityType !=  KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
                 {
                     continue;
                 }
 
-                if ((string)instance.getSetting("OpenCloseState") == "Closed" && (float)instance.getSetting("OpenCost") != 0f)
+                
+
+                if (instance.myFacilities[0].OpenCloseState == "Closed" && instance.myFacilities[0].OpenCost != 0f)
                 {
                     continue;
                 }
@@ -79,9 +81,10 @@ namespace KerbalKonstructs.Modules
         /// <param name="instance"></param>
         internal static void AttachGroundStation(StaticObject instance)
         {
+            GroundStation myfacility = instance.myFacilities[0] as GroundStation;
             // we use a messure of 1000km from the settings.
-            float antennaPower = (float)instance.getSetting("TrackingShort") * 1000000;
-            if (antennaPower == 0f || (string)instance.getSetting("Group") == "KSCUpgrades")
+            float antennaPower = myfacility.TrackingShort * 1000000;
+            if (antennaPower == 0f || instance.Group == "KSCUpgrades")
             {
                 return;
             }
@@ -90,12 +93,12 @@ namespace KerbalKonstructs.Modules
             if (KerbalKonstructs.instance.enableCommNet)
             {
 
-                Log.Normal("Adding Groundstation: " + (string)instance.getSetting("Group"));
+                Log.Normal("Adding Groundstation: " + instance.Group);
                 if (openCNStations.Contains(instance) == false)
                 {
                     CommNetHome commNetGroudStation = instance.gameObject.AddComponent<CommNetHome>();
 
-                    commNetGroudStation.nodeName = instance.body.name + " " + (string)instance.getSetting("Group");
+                    commNetGroudStation.nodeName = instance.CelestialBody.name + " " + instance.Group;
                     //commNetGroudStation.enabled = true;
                     openCNStations.Add(instance);
                     CommNet.CommNetNetwork.Reset();
@@ -109,16 +112,16 @@ namespace KerbalKonstructs.Modules
             if (KerbalKonstructs.instance.enableRT)
             {
 
-                Guid stationID = RemoteTechAddon.GetGroundStationGuid((instance.body.name) + " " + (string)instance.getSetting("Group"));
+                Guid stationID = RemoteTechAddon.GetGroundStationGuid((instance.CelestialBody.name) + " " + instance.Group);
                 if (stationID == Guid.Empty)
                 {
                     double lng, lat, alt;
-                    alt = instance.body.pqsController.GetSurfaceHeight(instance.pqsCity.repositionRadial) - instance.body.pqsController.radius + 15;
+                    alt = instance.CelestialBody.pqsController.GetSurfaceHeight(instance.pqsCity.repositionRadial) - instance.CelestialBody.pqsController.radius + 15;
 
-                    var objectPos = instance.body.transform.InverseTransformPoint(instance.gameObject.transform.position);
+                    var objectPos = instance.CelestialBody.transform.InverseTransformPoint(instance.gameObject.transform.position);
                     lng = NavUtils.GetLongitude((Vector3d)objectPos) * KKMath.rad2deg;
                     lat = NavUtils.GetLatitude((Vector3d)objectPos) * KKMath.rad2deg;
-                    stationID = RemoteTechAddon.AddGroundstation((instance.body.name) + " " + (string)instance.getSetting("Group"), lat, lng, alt, instance.body);
+                    stationID = RemoteTechAddon.AddGroundstation((instance.CelestialBody.name) + " " + instance.Group, lat, lng, alt, instance.CelestialBody);
                     Log.Normal("Got RTStationID: " + stationID);
                 }
                 openRTStations.Add(instance, stationID);
@@ -136,7 +139,7 @@ namespace KerbalKonstructs.Modules
             {
                 if (openCNStations.Contains(instance))
                 {
-                    Log.Normal("Closing Antenna for " + (string)instance.getSetting("Group"));
+                    Log.Normal("Closing Antenna for " + instance.Group);
                     CommNetHome commNetGroundStation = instance.gameObject.GetComponent<CommNetHome>();
                     //commNetGroundStation.enabled = false;
                     UnityEngine.Object.Destroy(commNetGroundStation);

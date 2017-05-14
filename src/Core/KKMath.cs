@@ -44,5 +44,30 @@ namespace KerbalKonstructs.Core
             return ((Math.Cos(deginrad) * vec_from) + (Math.Sin(deginrad) * vec_to));
         }
 
+
+        /// <summary>
+        /// Returns the Longitude of a RadialPosition (in Degrees)
+        /// </summary>
+        /// <param name="radialPosition"></param>
+        /// <returns></returns>
+        public static double GetLongitudeInDeg(Vector3d radialPosition)
+        {
+            Vector3d norm = radialPosition.normalized;
+            double longitude = Math.Atan2(norm.z, norm.x);
+            return (!double.IsNaN(longitude) ? (longitude * rad2deg): 0.0);
+        }
+
+        /// <summary>
+        /// Returns the Lattitude of a RadialPosition (in Degrees) 
+        /// </summary>
+        /// <param name="radialPosition"></param>
+        /// <returns></returns>
+        public static double GetLatitudeInDeg(Vector3d radialPosition)
+        {
+            double latitude = Math.Asin(radialPosition.normalized.y);
+            return (!double.IsNaN(latitude) ? (latitude * rad2deg) : 0.0);
+        }
+
+
     }
 }
