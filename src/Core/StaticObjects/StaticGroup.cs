@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Core
 		public String groupName;
 		public String bodyName;
 
-		public List<StaticObject> childObjects = new List<StaticObject>();
+		public List<StaticObject> groupInstances = new List<StaticObject>();
 		public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
 		public Boolean alwaysActive = false;
@@ -29,13 +29,13 @@ namespace KerbalKonstructs.Core
 
 		public void AddStatic(StaticObject obj)
 		{
-			childObjects.Add(obj);
+			groupInstances.Add(obj);
 			UpdateCacheSettings();
 		}
 
 		public void RemoveStatic(StaticObject obj)
 		{
-			childObjects.Remove(obj);
+			groupInstances.Remove(obj);
 			UpdateCacheSettings();
 		}
 
@@ -50,23 +50,22 @@ namespace KerbalKonstructs.Core
 
 
             // FIRST ONE IS THE CENTER
-            centerPoint = childObjects[0].gameObject.transform.position;
-            vRadPos = (Vector3)childObjects[0].getSetting("RadialPosition");
-            childObjects[0].setSetting("GroupCenter", "true");
-            soCenter = childObjects[0];
+            centerPoint = groupInstances[0].gameObject.transform.position;
+            vRadPos = (Vector3)groupInstances[0].RadialPosition;
+            groupInstances[0].GroupCenter = "true";
+            soCenter = groupInstances[0];
 
 
 
-            for (int i = 0; i < childObjects.Count; i++)
+            for (int i = 0; i < groupInstances.Count; i++)
             {
-                childObjects[i].setSetting("RefCenter", vRadPos);
 
-                if (childObjects[i] != soCenter) childObjects[i].setSetting("GroupCenter", "false");
+                if (groupInstances[i] != soCenter) groupInstances[i].GroupCenter = "false";
 
-                if ((float)childObjects[i].getSetting("VisibilityRange") > highestVisibility)
-                    highestVisibility = (float)childObjects[i].getSetting("VisibilityRange");
+                if (groupInstances[i].VisibilityRange > highestVisibility)
+                    highestVisibility = groupInstances[i].VisibilityRange;
 
-                float dist = Vector3.Distance(centerPoint, childObjects[i].gameObject.transform.position);
+                float dist = Vector3.Distance(centerPoint, groupInstances[i].gameObject.transform.position);
 
                 if (dist > furthestDist)
                     furthestDist = dist;
@@ -87,9 +86,9 @@ namespace KerbalKonstructs.Core
 
 		public void CacheAll()
 		{
-            for (int i = 0; i < childObjects.Count; i++)
+            for (int i = 0; i < groupInstances.Count; i++)
             {
-                InstanceUtil.SetActiveRecursively(childObjects[i], false);
+                InstanceUtil.SetActiveRecursively(groupInstances[i], false);
 			}
 		}
 
@@ -103,35 +102,35 @@ namespace KerbalKonstructs.Core
             bool visible = false;
 
 
-            foreach (StaticObject obj in childObjects)
+            foreach (StaticObject instance in groupInstances)
 			{
-				dist = Vector3.Distance(obj.gameObject.transform.position, playerPos);
-				visible = (dist < (float) obj.getSetting("VisibilityRange"));
+				dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
+				visible = (dist < instance.VisibilityRange);
 
-				string sFacType = (string)obj.getSetting("FacilityType");
+				string sFacType = instance.FacilityType;
 
 				if (sFacType == "Hangar")
 				{
-					if (visible) HangarGUI.CacheHangaredCraft(obj);
+					if (visible) HangarGUI.CacheHangaredCraft(instance);
 				}
 
 				if (sFacType == "LandingGuide")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(instance);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
 				}
 
 				if (sFacType == "TouchdownGuideL")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(instance);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
 				}
 
 				if (sFacType == "TouchdownGuideR")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(obj);
+					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(instance);
 					else
 						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
 				}
@@ -140,15 +139,15 @@ namespace KerbalKonstructs.Core
 				{
 					if (dist < 65000f)
 					{
-                        InstanceUtil.SetActiveRecursively(obj, false);
+                        InstanceUtil.SetActiveRecursively(instance, false);
 						return;
 					}
 				}
 			
 				if (visible)
-                    InstanceUtil.SetActiveRecursively(obj, true);
+                    InstanceUtil.SetActiveRecursively(instance, true);
 				else
-                    InstanceUtil.SetActiveRecursively(obj, false);
+                    InstanceUtil.SetActiveRecursively(instance, false);
 			}
 		}
 
@@ -170,9 +169,9 @@ namespace KerbalKonstructs.Core
 
 		internal void DeleteObject(StaticObject obj)
 		{
-			if (childObjects.Contains(obj))
+			if (groupInstances.Contains(obj))
 			{
-				childObjects.Remove(obj);
+				groupInstances.Remove(obj);
 				MonoBehaviour.Destroy(obj.gameObject);
 			}
 			else
@@ -183,7 +182,7 @@ namespace KerbalKonstructs.Core
 
 		public List<StaticObject> GetStatics()
 		{
-			return childObjects;
+			return groupInstances;
 		}
 	}
 }

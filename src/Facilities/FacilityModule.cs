@@ -9,7 +9,7 @@ using KerbalKonstructs.Core;
 namespace KerbalKonstructs.Modules
 {
 
-    public enum FacilityType 
+    public enum KKFacilityType 
     {
         None,
         TrackingStation,
@@ -80,7 +80,12 @@ namespace KerbalKonstructs.Modules
             foreach (var field in myFields)
             {
                 if (Attribute.IsDefined(field.Value, typeof(CFGSetting)))
+                {
+                    if (field.Value.GetValue(this) == null)
+                        continue;
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+
+                }
             }
         }
 
@@ -118,7 +123,7 @@ namespace KerbalKonstructs.Modules
             foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
                 myFields.Add(field.Name, field);
-                Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
+                //Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
             }
 
             allFields.Add(this.GetType().Name, myFields);

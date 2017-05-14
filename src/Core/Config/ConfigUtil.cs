@@ -56,7 +56,7 @@ namespace KerbalKonstructs.Core
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
                     modelFields.Add(field.Name, field);
-                    Log.Normal("Parser Model:" + field.Name + ": " + field.FieldType.ToString());
+                    //Log.Normal("Parser Model:" + field.Name + ": " + field.FieldType.ToString());
                 }
 
             }
@@ -65,12 +65,12 @@ namespace KerbalKonstructs.Core
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
                     instanceFields.Add(field.Name, field);
-                    Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
+                    //Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
                 }
             }
 
 
-            facilitiyTypes = new HashSet<string>(Enum.GetNames(typeof(FacilityType)));
+            facilitiyTypes = new HashSet<string>(Enum.GetNames(typeof(KKFacilityType)));
 
             initialized = true;
         }
@@ -189,7 +189,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                Debug.LogError("KK: Couldn't find body \"" + name + "\"");
+                Log.UserError("Couldn't find body \"" + name + "\"");
                 return null;
             }
         }

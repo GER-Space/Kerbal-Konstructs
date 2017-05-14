@@ -444,7 +444,7 @@ namespace KerbalKonstructs.UI
                     {
                         if (groupfilterset != "")
                         {
-                            sGroupHolder = (string)allStaticInstances[ix].getSetting("Group");
+                            sGroupHolder = allStaticInstances[ix].Group;
                             if (!sGroupHolder.Contains(groupfilterset))
                             {
                                 isLocal = false;
@@ -459,10 +459,10 @@ namespace KerbalKonstructs.UI
                         GUILayout.BeginHorizontal();
                         if (!foldedIn)
                         {
-                            GUILayout.Button("" + allStaticInstances[ix].getSetting("Group"), DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
-                            if (allStaticInstances[ix].settings.ContainsKey("LaunchSiteName"))
+                            GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
+                            if (allStaticInstances[ix].hasLauchSites)
                             {
-                                sLaunchType = (string)allStaticInstances[ix].getSetting("Category");
+                                sLaunchType = allStaticInstances[ix].launchSite.Category;
                             }
                             switch (sLaunchType)
                             {
@@ -488,7 +488,7 @@ namespace KerbalKonstructs.UI
                         }
 
                         //GUI.enabled = (obj != selectedObject);
-                        if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title, "Edit this instance."), GUILayout.Height(23)))
+                        if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title + " ( " + allStaticInstances[ix].indexInGroup.ToString() + " )" , "Edit this instance."), GUILayout.Height(23)))
                         {
                             KerbalKonstructs.instance.bDisablePositionEditing = false;
                             enableColliders = true;

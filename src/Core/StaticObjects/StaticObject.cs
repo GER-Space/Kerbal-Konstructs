@@ -13,9 +13,43 @@ namespace KerbalKonstructs.Core
 {
 	public class StaticObject
 	{
-        internal Vector3 RadialPosition;
 
-		internal CelestialBody body;
+        // Position
+        [CFGSetting]
+        internal CelestialBody CelestialBody;
+        [CFGSetting]
+        internal Vector3 RadialPosition = Vector3.zero;
+        [CFGSetting]
+        internal Vector3 Orientation;
+        [CFGSetting]
+        internal float RadiusOffset;
+        [CFGSetting]
+        internal float RotationAngle;
+        [CFGSetting]
+        internal bool isScanable = false;
+        [CFGSetting]
+        internal float ModelScale = 1f;
+
+        // Legacy Faclility Setting
+        [CFGSetting]
+        internal string FacilityType = "None";
+
+        // Calculated References
+        [CFGSetting]
+        internal double RefLatitude = 361f;
+        [CFGSetting]
+        internal double RefLongitude = 361f;
+
+        // Visibility and Grouping
+        [CFGSetting]
+        internal float VisibilityRange = 25000f;
+        [CFGSetting]
+        internal string Group  = "Ungrouped";
+        [CFGSetting]
+        internal string GroupCenter = "false";
+
+
+
 
         internal GameObject gameObject;
         internal PQSCity pqsCity;
@@ -27,7 +61,10 @@ namespace KerbalKonstructs.Core
         internal Dictionary<string, object> settings = new Dictionary<string, object>();
 
         internal bool hasFacilities = false;
-        internal FacilityType facilityType = FacilityType.None; 
+        internal bool hasLauchSites = false;
+        internal LaunchSite launchSite;
+
+        internal KKFacilityType facilityType = KKFacilityType.None; 
         internal List<KKFacility> myFacilities = new List<KKFacility>();
 
 
@@ -41,6 +78,8 @@ namespace KerbalKonstructs.Core
         private Vector3 origScale;
         internal bool isActive ;
 
+        internal int indexInGroup = 0;
+
 		private List<Renderer> _rendererComponents; 
 
 
@@ -51,11 +90,11 @@ namespace KerbalKonstructs.Core
 		{
 			if (pqsCity != null)
 			{
-				pqsCity.repositionRadial = (Vector3) settings["RadialPosition"];
-				pqsCity.repositionRadiusOffset = (float) settings["RadiusOffset"];
-				pqsCity.reorientInitialUp = (Vector3) settings["Orientation"];
-				pqsCity.reorientFinalAngle = (float) settings["RotationAngle"];
-                pqsCity.transform.localScale = origScale * (float)settings["ModelScale"];
+				pqsCity.repositionRadial = RadialPosition;
+				pqsCity.repositionRadiusOffset = RadiusOffset;
+				pqsCity.reorientInitialUp = Orientation;
+				pqsCity.reorientFinalAngle = RotationAngle;
+                pqsCity.transform.localScale = origScale * ModelScale;
                 pqsCity.Orientate();
 			}
 			// Notify modules about update
@@ -153,11 +192,9 @@ namespace KerbalKonstructs.Core
 
 			if (editing) KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
 
-			float objvisibleRange = (float)getSetting("VisibilityRange");
+			float objvisibleRange = VisibilityRange;
 			
 			if (objvisibleRange < 1) objvisibleRange = 25000f;
-
-            body = (CelestialBody)getSetting("CelestialBody");
 
             PQSCity.LODRange range = new PQSCity.LODRange
 			{
@@ -171,29 +208,20 @@ namespace KerbalKonstructs.Core
 			pqsCity.frameDelta = 1; //Unknown
 			pqsCity.repositionToSphere = true; //enable repositioning
 			pqsCity.repositionToSphereSurface = false; //Snap to surface?
-			pqsCity.repositionRadial = (Vector3)getSetting("RadialPosition"); //position
-			pqsCity.repositionRadiusOffset = (float)getSetting("RadiusOffset"); //height
-			pqsCity.reorientInitialUp = (Vector3)getSetting("Orientation"); //orientation
-			pqsCity.reorientFinalAngle = (float)getSetting("RotationAngle"); //rotation x axis
+			pqsCity.repositionRadial = RadialPosition; //position
+			pqsCity.repositionRadiusOffset = RadiusOffset; //height
+			pqsCity.reorientInitialUp = Orientation; //orientation
+			pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
 			pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-			gameObject.transform.parent = body.pqsController.transform;
-			pqsCity.sphere = body.pqsController;
+			gameObject.transform.parent = CelestialBody.pqsController.transform;
+			pqsCity.sphere = CelestialBody.pqsController;
             origScale = pqsCity.transform.localScale;             // save the original scale for later use
-            pqsCity.transform.localScale *= (float)getSetting("ModelScale");
+            pqsCity.transform.localScale *= ModelScale;
             pqsCity.order = 100;
 			pqsCity.modEnabled = true;
             pqsCity.OnSetup();
 			pqsCity.Orientate();
 
-
-            // Add them to the bodys objectlist, so they show up as anomalies
-            if (bool.Parse((string)getSetting("isScanable")))
-            {
-                Log.Normal("Added " + gameObject.name + " to scanable Objects");
-                var pqsObjectList = body.pqsSurfaceObjects.ToList();
-                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
-                body.pqsSurfaceObjects = pqsObjectList.ToArray();
-            }
 
             foreach (StaticModule module in model.modules)
 			{
@@ -228,7 +256,18 @@ namespace KerbalKonstructs.Core
 
             StaticDatabase.AddStatic(this);
 
-		}
+            // Add them to the bodys objectlist, so they show up as anomalies
+            // After we got a new Name from StaticDatabase.AddStatic()
+            if (isScanable)
+            {
+                Log.Normal("Added " + gameObject.name + " to scanable Objects");
+                var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
+                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
+            }
+
+
+        }
 
 
         /// <summary>

@@ -588,31 +588,30 @@ namespace KerbalKonstructs.UI
 
         public void CreatePreviewInstance(StaticModel model)
         {
-            StaticObject obj = new StaticObject();
-            obj.gameObject = GameObject.Instantiate(model.prefab);
-            obj.setSetting("RadiusOffset", (float)FlightGlobals.ActiveVessel.altitude);
-            obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-            obj.setSetting("Group", "Ungrouped");
-            obj.setSetting("RadialPosition", KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position));
-            obj.setSetting("RotationAngle", 0f);
-            obj.setSetting("Orientation", Vector3.up);
-            obj.setSetting("VisibilityRange", 25000f);
+            StaticObject instance = new StaticObject();
+            instance.gameObject = GameObject.Instantiate(model.prefab);
+            instance.RadiusOffset = (float)FlightGlobals.ActiveVessel.altitude;
+            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
+            instance.Group = "Ungrouped";
+            instance.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
+            instance.RotationAngle = 0f;
+            instance.Orientation= Vector3.up;
+            instance.VisibilityRange = 25000f;
 
-            obj.model = model;
+            instance.model = model;
 
-            obj.spawnObject(true, true);
+            instance.spawnObject(true, true);
             // KerbalKonstructs.instance.selectObject(obj, false);
-            currPreview = obj;
+            currPreview = instance;
         }
 
         public void SpinPreview(StaticObject soObject)
         {
             if (soObject == null || currPreview == null) return;
 
-            float fRot = (float)soObject.getSetting("RotationAngle") + 0.1f;
-            if (fRot > 360) fRot -= 360;
+            float fRot = ((soObject.RotationAngle + 0.1f) % 360);
 
-            soObject.setSetting("RotationAngle", fRot);
+            soObject.RotationAngle = fRot;
             soObject.update();
         }
     }

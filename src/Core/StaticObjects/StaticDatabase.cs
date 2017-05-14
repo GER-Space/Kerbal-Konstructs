@@ -27,14 +27,14 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Adds the Instance to the instances and Group lists. Also sets the PQSCity.name
         /// </summary>
-        /// <param name="obj"></param>
-        internal static void AddStatic(StaticObject obj)
+        /// <param name="instance"></param>
+        internal static void AddStatic(StaticObject instance)
 		{
-            _allStaticInstances.Add(obj);
+            _allStaticInstances.Add(instance);
             allStaticInstances = _allStaticInstances.ToArray();
 
-            String bodyName = obj.body.bodyName;
-			String groupName = (string) obj.getSetting("Group");
+            String bodyName = instance.CelestialBody.bodyName;
+			String groupName = instance.Group;
 
 			if (!groupList.ContainsKey(bodyName))
 				groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
@@ -50,9 +50,9 @@ namespace KerbalKonstructs.Core
 				group.active = true;				
 				groupList[bodyName].Add(groupName, group);
 			}
-			groupList[bodyName][groupName].AddStatic(obj);
+			groupList[bodyName][groupName].AddStatic(instance);
 
-            SetNewName(obj);
+            SetNewName(instance);
 
 		}
 
@@ -68,8 +68,8 @@ namespace KerbalKonstructs.Core
                 _allStaticInstances.Remove(instance);
                 allStaticInstances = _allStaticInstances.ToArray();
             }
-            String bodyName = instance.body.bodyName;
-            String groupName = (string)instance.getSetting("Group");
+            String bodyName = instance.CelestialBody.bodyName;
+            String groupName = instance.Group;
 
             if (groupList.ContainsKey(bodyName))
             {
@@ -84,15 +84,15 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Changes the group from a instance
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="instance"></param>
         /// <param name="newGroup"></param>
-        internal static void ChangeGroup(StaticObject obj, string newGroup)
+        internal static void ChangeGroup(StaticObject instance, string newGroup)
         {
-            String bodyName = obj.body.bodyName;
-            String groupName = (string)obj.getSetting("Group");
+            String bodyName = instance.CelestialBody.bodyName;
+            String groupName = instance.Group;
 
-            RemoveStatic(obj);
-            AddStatic(obj);
+            RemoveStatic(instance);
+            AddStatic(instance);
         }
 
 
@@ -103,11 +103,12 @@ namespace KerbalKonstructs.Core
         private static void SetNewName(StaticObject instance)
         {
             string modelName = instance.model.name;
-            string groupName = (string)instance.getSetting("Group"); 
+            string groupName = instance.Group; 
 
-            int modelCount = (from obj in groupList[instance.body.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
-
-            instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + --modelCount;
+            int modelCount = (from obj in groupList[instance.CelestialBody.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
+            modelCount--;
+            instance.indexInGroup = modelCount;
+            instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + modelCount;
          //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
         }
 
@@ -135,13 +136,13 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticObject obj in allStaticInstances)
+			foreach (StaticObject instance in allStaticInstances)
 			{
-				if ((CelestialBody)obj.getSetting("CelestialBody") == cBody)
-					InstanceUtil.SetActiveRecursively(obj, bActive);
+				if (instance.CelestialBody == cBody)
+					InstanceUtil.SetActiveRecursively(instance, bActive);
 				else
 					if (bOpposite)
-						InstanceUtil.SetActiveRecursively(obj, !bActive);
+						InstanceUtil.SetActiveRecursively(instance, !bActive);
 			}
 		}
 
@@ -155,13 +156,13 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject obj in allStaticInstances)
+			foreach (StaticObject instance in allStaticInstances)
 			{
-				if ((string)obj.getSetting("Group") == sGroup)
-					InstanceUtil.SetActiveRecursively(obj, bActive);
+				if (instance.Group == sGroup)
+					InstanceUtil.SetActiveRecursively(instance, bActive);
 				else
 					if (bOpposite)
-						InstanceUtil.SetActiveRecursively(obj, !bActive);
+						InstanceUtil.SetActiveRecursively(instance, !bActive);
 			}
 		}
 
@@ -271,7 +272,7 @@ namespace KerbalKonstructs.Core
 						var center = group.centerPoint;
 						var dist = Vector3.Distance(center, vPlayerPos);
 
-						List<StaticObject> groupchildObjects = group.childObjects;
+						List<StaticObject> groupchildObjects = group.groupInstances;
 
 						foreach (StaticObject obj in groupchildObjects)
 						{
@@ -352,12 +353,8 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal static List<StaticObject> GetDirectInstancesFromModel(StaticModel model)
-        {
-            return (from obj in allStaticInstances where obj.configPath == model.configPath select obj).ToList();
-        }
 
-        internal static List<StaticObject> GetObjectsFromModel(StaticModel model)
+        internal static List<StaticObject> GetInstancesFromModel(StaticModel model)
 		{
 			return (from obj in allStaticInstances where obj.model == model select obj).ToList();
 		}

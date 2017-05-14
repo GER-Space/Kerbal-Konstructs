@@ -78,7 +78,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
             runway.Category = "Runway";
-            runway.LaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
+            runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.OpenCloseState = "Open";
             runway.body = KKAPI.GetCelestialBody("HomeWorld");
@@ -95,7 +95,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
             launchpad.Category = "RocketPad";
-            launchpad.LaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
+            launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.OpenCloseState = "Open";
             launchpad.body = KKAPI.GetCelestialBody("HomeWorld");
@@ -119,68 +119,75 @@ namespace KerbalKonstructs.Core
         }
 
 
-
+        /// <summary>
+        /// Creates a new LaunchSite out of a cfg-node and Registers it with RegisterLaunchSite
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="cfgNode"></param>
+        internal static void CreateLaunchSite(StaticObject instance, ConfigNode cfgNode)
+        {
+            LaunchSite newSite = instance.gameObject.AddComponent<LaunchSite>().ParseConfig(cfgNode) as LaunchSite;
+            instance.hasLauchSites = true;
+            instance.launchSite = newSite;
+            newSite.parentInstance = instance;
+            RegisterLaunchSite(newSite);
+        }
 
         /// <summary>
-        /// Add a launchsite to the KK launchsite and custom space centre database
-		/// Please note there's some near hackery here to get KSP to recognise additional launchsites and space centres
+        /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
-        /// <param name="obj"></param>
-        public static void createLaunchSite(StaticObject obj)
+        /// <param name="site"></param>
+        internal static void RegisterLaunchSite(LaunchSite site)
         {
-
-            if (obj.settings.ContainsKey("LaunchSiteName") && obj.gameObject.transform.Find((string)obj.getSetting("LaunchPadTransform")) != null)
+            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.gameObject.transform.Find(site.LaunchPadTransform) != null)
             {
-                obj.gameObject.transform.name = (string)obj.getSetting("LaunchSiteName");
-                obj.gameObject.name = (string)obj.getSetting("LaunchSiteName");
 
-                CelestialBody CelBody = (CelestialBody)obj.getSetting("CelestialBody");
-                var objectpos = CelBody.transform.InverseTransformPoint(obj.gameObject.transform.position);
-                var dObjectLat = NavUtils.GetLatitude(objectpos);
-                var dObjectLon = NavUtils.GetLongitude(objectpos);
-                var disObjectLat = dObjectLat * 180 / Math.PI;
-                var disObjectLon = dObjectLon * 180 / Math.PI;
+                site.lsGameObject.transform.name = site.LaunchSiteName;
+                site.lsGameObject.name = site.LaunchSiteName;
 
-                if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
-                obj.setSetting("RefLatitude", (float)disObjectLat);
-                obj.setSetting("RefLongitude", (float)disObjectLon);
+                //CelestialBody CelBody = site.body;
+                //var objectpos = CelBody.transform.InverseTransformPoint(site.lsGameObject.transform.position);
+                //var dObjectLat = NavUtils.GetLatitude(objectpos);
+                //var dObjectLon = NavUtils.GetLongitude(objectpos);
+                //var disObjectLat = dObjectLat * 180 / Math.PI;
+                //var disObjectLon = dObjectLon * 180 / Math.PI;
 
-                foreach (FieldInfo fi in PSystemSetup.Instance.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                //if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
+                //instance.setSetting("RefLatitude", (float)disObjectLat);
+                //instance.setSetting("RefLongitude", (float)disObjectLon);
+
+                FieldInfo sitesField = typeof(PSystemSetup).GetField("facilities", BindingFlags.NonPublic | BindingFlags.Instance);
+                List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();
+
+                if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
                 {
-                    if (fi.FieldType.Name == "SpaceCenterFacility[]")
-                    {
-                        PSystemSetup.SpaceCenterFacility[] facilities = (PSystemSetup.SpaceCenterFacility[])fi.GetValue(PSystemSetup.Instance);
-                        if (PSystemSetup.Instance.GetSpaceCenterFacility((string)obj.getSetting("LaunchSiteName")) == null)
-                        {
-                            PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
-                            newFacility.name = "FacilityName";
-                            newFacility.facilityName = (string)obj.getSetting("LaunchSiteName");
-                            newFacility.facilityPQS = ((CelestialBody)obj.getSetting("CelestialBody")).pqsController;
-                            newFacility.facilityTransformName = obj.gameObject.name;
-                            newFacility.pqsName = ((CelestialBody)obj.getSetting("CelestialBody")).pqsController.name;
-                            PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
-                            spawnPoint.name = (string)obj.getSetting("LaunchSiteName");
-                            spawnPoint.spawnTransformURL = (string)obj.getSetting("LaunchPadTransform");
-                            newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
-                            newFacility.spawnPoints[0] = spawnPoint;
-                            PSystemSetup.SpaceCenterFacility[] newFacilities = new PSystemSetup.SpaceCenterFacility[facilities.Length + 1];
-                            for (int i = 0; i < facilities.Length; ++i)
-                            {
-                                newFacilities[i] = facilities[i];
-                            }
-                            newFacilities[newFacilities.Length - 1] = newFacility;
-                            fi.SetValue(PSystemSetup.Instance, newFacilities);
-                            facilities = newFacilities;
+                    PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
+                    newFacility.name = "FacilityName";
+                    newFacility.facilityName = site.LaunchSiteName;
+                    newFacility.facilityPQS = site.body.pqsController;
+                    newFacility.facilityTransformName = site.LaunchSiteName;
+                    //     newFacility.facilityTransformName = instance.gameObject.transform.name;
+                    newFacility.pqsName = site.body.pqsController.name;
+
+                    PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
+                    spawnPoint.name = site.LaunchSiteName;
+                    spawnPoint.spawnTransformURL = site.LaunchPadTransform;
+
+                    newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
+                    newFacility.spawnPoints[0] = spawnPoint;
+
+                    facilities.Add(newFacility);
+                    sitesField.SetValue(PSystemSetup.Instance, facilities.ToArray());
 
 
-                            launchSites.Add(new LaunchSite(obj, newFacility));
-                        }
-                        else
-                        {
-                            Log.Error("Launch site " + obj.getSetting("LaunchSiteName") + " already exists.");
-                        }
-                    }
+
+                    launchSites.Add(site);
                 }
+                else
+                {
+                    Log.Error("Launch site " + site.name + " already exists.");
+                }
+
 
                 MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (updateSitesMI == null)
@@ -188,14 +195,88 @@ namespace KerbalKonstructs.Core
                 else
                     updateSitesMI.Invoke(PSystemSetup.Instance, null);
 
-                if (obj.gameObject != null)
-                    CustomSpaceCenter.CreateFromLaunchsite((string)obj.getSetting("LaunchSiteName"), obj.gameObject);
+                if (site.lsGameObject != null)
+                    CustomSpaceCenter.CreateFromLaunchsite(site.LaunchSiteName, site.lsGameObject);
             }
             else
             {
-                Log.UserWarning("Launch pad transform \"" + obj.getSetting("LaunchPadTransform") + "\" missing for " + obj.getSetting("LaunchSiteName"));
+                Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
             }
+
         }
+
+  //      /// <summary>
+  //      /// Add a launchsite to the KK launchsite and custom space centre database
+		///// We need to use Reflection to add the launchsites to the KSP internal list
+  //      /// </summary>
+  //      /// <param name="instance"></param>
+  //      public static void createLaunchSite(StaticObject instance)
+  //      {
+
+  //          if (instance.settings.ContainsKey("LaunchSiteName") && instance.gameObject.transform.Find((string)instance.getSetting("LaunchPadTransform")) != null)
+  //          {
+
+  //              instance.gameObject.transform.name = (string)instance.getSetting("LaunchSiteName");
+  //              instance.gameObject.name = (string)instance.getSetting("LaunchSiteName");
+
+  //              CelestialBody CelBody = (CelestialBody)instance.getSetting("CelestialBody");
+  //              var objectpos = CelBody.transform.InverseTransformPoint(instance.gameObject.transform.position);
+  //              var dObjectLat = NavUtils.GetLatitude(objectpos);
+  //              var dObjectLon = NavUtils.GetLongitude(objectpos);
+  //              var disObjectLat = dObjectLat * 180 / Math.PI;
+  //              var disObjectLon = dObjectLon * 180 / Math.PI;
+
+  //              if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
+  //              instance.setSetting("RefLatitude", (float)disObjectLat);
+  //              instance.setSetting("RefLongitude", (float)disObjectLon);
+
+  //              FieldInfo sitesField = typeof(PSystemSetup).GetField("facilities", BindingFlags.NonPublic | BindingFlags.Instance);
+  //              List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();
+
+  //              if (PSystemSetup.Instance.GetSpaceCenterFacility((string)instance.getSetting("LaunchSiteName")) == null)
+  //              {
+  //                  PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
+  //                  newFacility.name = "FacilityName";
+  //                  newFacility.facilityName = (string)instance.getSetting("LaunchSiteName");
+  //                  newFacility.facilityPQS = ((CelestialBody)instance.getSetting("CelestialBody")).pqsController;
+  //                  newFacility.facilityTransformName = (string)instance.getSetting("LaunchSiteName");
+  //             //     newFacility.facilityTransformName = instance.gameObject.transform.name;
+  //                  newFacility.pqsName = ((CelestialBody)instance.getSetting("CelestialBody")).pqsController.name;
+
+  //                  PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
+  //                  spawnPoint.name = (string)instance.getSetting("LaunchSiteName");
+  //                  spawnPoint.spawnTransformURL = (string)instance.getSetting("LaunchPadTransform");
+
+  //                  newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
+  //                  newFacility.spawnPoints[0] = spawnPoint;
+
+  //                  facilities.Add(newFacility);
+  //                  sitesField.SetValue(PSystemSetup.Instance, facilities.ToArray());
+
+
+
+  //                  launchSites.Add(new LaunchSite(instance, newFacility));
+  //              }
+  //              else
+  //              {
+  //                  Log.Error("Launch site " + instance.getSetting("LaunchSiteName") + " already exists.");
+  //              }
+
+
+  //              MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
+  //              if (updateSitesMI == null)
+  //                  Log.UserError("You are screwed. Failed to find SetupFacilities().");
+  //              else
+  //                  updateSitesMI.Invoke(PSystemSetup.Instance, null);
+
+  //              if (instance.gameObject != null)
+  //                  CustomSpaceCenter.CreateFromLaunchsite((string)instance.getSetting("LaunchSiteName"), instance.gameObject);
+  //          }
+  //          else
+  //          {
+  //              Log.UserWarning("Launch pad transform \"" + instance.getSetting("LaunchPadTransform") + "\" missing for " + instance.getSetting("LaunchSiteName"));
+  //          }
+  //      }
 
         // Returns a list of launchsites. Supports category filtering.
         public static List<LaunchSite> getLaunchSites(String usedFilter = "ALL")
@@ -382,7 +463,7 @@ namespace KerbalKonstructs.Core
         }
 
         // Returns the StaticObject of a site. Can provide a sitename or a GameObject
-        public static StaticObject getSiteStaticObject(string sSiteName, GameObject go = null)
+        public static StaticObject getSiteStaticObject(string siteName, GameObject go = null)
         {
             StaticObject soSite = null;
             if (go != null)
@@ -395,15 +476,16 @@ namespace KerbalKonstructs.Core
 
             string sName = "";
             object oName = null;
-            foreach (StaticObject obj in StaticDatabase.allStaticInstances)
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances.Where(inst => inst.hasLauchSites == true))
             {
-                oName = obj.getSetting("LaunchSiteName");
+
+                oName = instance.launchSite.LaunchSiteName;
                 if (oName == null) continue;
 
                 oName = null;
 
-                sName = (string)obj.getSetting("LaunchSiteName");
-                if (sName == sSiteName) return obj;
+                sName = instance.launchSite.LaunchSiteName;
+                if (sName == siteName) return instance;
             }
 
             return null;

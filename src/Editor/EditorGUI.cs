@@ -52,7 +52,8 @@ namespace KerbalKonstructs.UI
         // Switches
         public Boolean enableColliders = false;
         internal static bool isScanable = false;
-        public static Boolean editingSite = false;
+
+        public static Boolean editingLaunchSite = false;
 
         //   public static Boolean editingFacility = false;
 
@@ -249,7 +250,7 @@ namespace KerbalKonstructs.UI
 
                 toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
 
-                if (editingSite)
+                if (editingLaunchSite)
                 {
                     siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
                 }
@@ -304,10 +305,10 @@ namespace KerbalKonstructs.UI
         void InstanceEditorWindow(int windowID)
         {
             //initialize values
-            rotation = (double)(float)selectedObject.getSetting("RotationAngle");
-            referenceVector = (Vector3d)(Vector3)selectedObject.getSetting("RadialPosition");
-            orientation = (Vector3)selectedObject.getSetting("Orientation");
-            modelScale = (float)selectedObject.getSetting("ModelScale");
+            rotation = (double)selectedObject.RotationAngle;
+            referenceVector = (Vector3d)selectedObject.RadialPosition;
+            orientation = selectedObject.Orientation;
+            modelScale = selectedObject.ModelScale;
             //isScanable = bool.Parse((string)selectedObject.getSetting("isScanable"));
 
             // make this new when converted to PQSCity2
@@ -361,7 +362,7 @@ namespace KerbalKonstructs.UI
                     foldedIn = true;
             }
 
-            GUILayout.Button((string)selectedObject.model.title, GUILayout.Height(23));
+            GUILayout.Button(selectedObject.model.title + " ("+ selectedObject.indexInGroup.ToString() + ")", GUILayout.Height(23));
 
             GUILayout.EndHorizontal();
 
@@ -403,15 +404,10 @@ namespace KerbalKonstructs.UI
                         }
                         else
                         {
-                            Vector3 snapTargetPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
-                            float snapTargetAlt = (float)snapTargetInstance.getSetting("RadiusOffset");
-                            selectedObject.setSetting("RadialPosition", snapTargetPos);
-                            selectedObject.setSetting("RadiusOffset", snapTargetAlt);
-                        }
-
-                        if (!KerbalKonstructs.instance.DevMode)
-                        {
-                            selectedObject.setSetting("CustomInstance", "True");
+                            Vector3 snapTargetPos = (Vector3)snapTargetInstance.RadialPosition;
+                            float snapTargetAlt = (float)snapTargetInstance.RadiusOffset;
+                            selectedObject.RadialPosition = snapTargetPos;
+                            selectedObject.RadiusOffset = snapTargetAlt;
                         }
                         updateSelection(selectedObject);
                     }
@@ -617,13 +613,13 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
 
-            var pqsc = ((CelestialBody)selectedObject.getSetting("CelestialBody")).pqsController;
+            var pqsc = selectedObject.CelestialBody.pqsController;
 
             if (!foldedIn)
             {
                 if (GUILayout.Button("Snap to Terrain", GUILayout.Height(21)))
                 {
-                    altitude = 1.0d + ((double)(pqsc.GetSurfaceHeight((Vector3)selectedObject.getSetting("RadialPosition")) - pqsc.radius - (double)(float)selectedObject.getSetting("RadiusOffset")));
+                    altitude = 1.0d + ((pqsc.GetSurfaceHeight(selectedObject.RadialPosition) - pqsc.radius - selectedObject.RadiusOffset));
                     saveSettings();
                 }
             }
@@ -953,9 +949,9 @@ namespace KerbalKonstructs.UI
                     {
                         KerbalKonstructs.instance.saveObjects();
                         StaticModel oModel = selectedObject.model;
-                        float fOffset = (float)selectedObject.getSetting("RadiusOffset");
-                        Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
-                        float fAngle = (float)selectedObject.getSetting("RotationAngle");
+                        float fOffset = selectedObject.RadiusOffset;
+                        Vector3 vPosition = selectedObject.RadialPosition;
+                        float fAngle = selectedObject.RotationAngle;
                         smessage = "Spawned duplicate " + selectedObject.model.title;
                         KerbalKonstructs.instance.deselectObject(true, true);
                         spawnInstance(oModel, fOffset, vPosition, fAngle);
@@ -985,9 +981,9 @@ namespace KerbalKonstructs.UI
                 {
                     KerbalKonstructs.instance.saveObjects();
                     StaticModel oModel = selectedObject.model;
-                    float fOffset = (float)selectedObject.getSetting("RadiusOffset");
-                    Vector3 vPosition = (Vector3)selectedObject.getSetting("RadialPosition");
-                    float fAngle = (float)selectedObject.getSetting("RotationAngle");
+                    float fOffset = selectedObject.RadiusOffset;
+                    Vector3 vPosition = selectedObject.RadialPosition;
+                    float fAngle = selectedObject.RotationAngle;
                     smessage = "Spawned duplicate " + selectedObject.model.title;
                     KerbalKonstructs.instance.deselectObject(true, true);
                     spawnInstance(oModel, fOffset, vPosition, fAngle);
@@ -997,50 +993,79 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
-            GUI.enabled = !editingSite;
-
+            GUI.enabled = !editingLaunchSite;
+            // Make a new LaunchSite here:
             if (!foldedIn)
             {
-                string sLaunchPadTransform = (string)selectedObject.getSetting("LaunchPadTransform");
-                string sDefaultPadTransform = selectedObject.model.DefaultLaunchPadTransform;
-                string sLaunchsiteDesc = (string)selectedObject.getSetting("LaunchSiteDescription");
-                string sModelDesc = (string)selectedObject.model.description;
 
-                if (sLaunchPadTransform == "" && string.IsNullOrEmpty(sLaunchPadTransform))
+                if (!selectedObject.hasLauchSites && string.IsNullOrEmpty(selectedObject.model.DefaultLaunchPadTransform))
                     GUI.enabled = false;
 
-                if (GUILayout.Button(((selectedObject.settings.ContainsKey("LaunchSiteName")) ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
+                if (GUILayout.Button((selectedObject.hasLauchSites ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
                 {
-                    // Edit or make a launchsite
-                    siteName = (string)selectedObject.getSetting("LaunchSiteName");
-                    siteTrans = (selectedObject.settings.ContainsKey("LaunchPadTransform")) ? sLaunchPadTransform : sDefaultPadTransform;
+                    if (selectedObject.hasLauchSites)
+                    {
+                        //LaunchSite myLaunchSite = new LaunchSite();
 
-                    if (sLaunchsiteDesc != "")
-                        siteDesc = sLaunchsiteDesc;
-                    else
-                        siteDesc = sModelDesc;
+                        string sLaunchsiteDesc = selectedObject.launchSite.LaunchSiteDescription;
+                        string sModelDesc = selectedObject.model.description;
 
-                    siteCategory = (string)selectedObject.getSetting("Category");
-                    siteHidden = (string)selectedObject.getSetting("LaunchSiteIsHidden");
-                    siteType = (SiteType)selectedObject.getSetting("LaunchSiteType");
-                    flOpenCost = (float)selectedObject.getSetting("OpenCost");
-                    flCloseValue = (float)selectedObject.getSetting("CloseValue");
-                    stOpenCost = string.Format("{0}", flOpenCost);
-                    stCloseValue = string.Format("{0}", flCloseValue);
+                        // Edit or make a launchsite
+                        siteName = selectedObject.launchSite.LaunchSiteName ;
+                        siteTrans = selectedObject.launchSite.LaunchPadTransform;
 
-                    flRecoveryFactor = (float)selectedObject.getSetting("RecoveryFactor");
-                    flRecoveryRange = (float)selectedObject.getSetting("RecoveryRange");
-                    flLaunchRefund = (float)selectedObject.getSetting("LaunchRefund");
+                        if (sLaunchsiteDesc != "")
+                            siteDesc = sLaunchsiteDesc;
+                        else
+                            siteDesc = sModelDesc;
 
-                    flLength = (float)selectedObject.getSetting("LaunchSiteLength");
+                        siteCategory = selectedObject.launchSite.Category;
+                        siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
+                        siteType = selectedObject.launchSite.LaunchSiteType;
+                        flOpenCost = selectedObject.launchSite.OpenCost;
+                        flCloseValue = selectedObject.launchSite.CloseValue;
+                        stOpenCost = string.Format("{0}", flOpenCost);
+                        stCloseValue = string.Format("{0}", flCloseValue);
 
-                    if (flLength < 1)
-                        flLength = (float)selectedObject.model.DefaultLaunchSiteLength;
+                        flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
+                        flRecoveryRange = selectedObject.launchSite.RecoveryRange;
+                        flLaunchRefund = selectedObject.launchSite.LaunchRefund;
 
-                    flWidth = (float)selectedObject.getSetting("LaunchSiteWidth");
+                        flLength = selectedObject.launchSite.LaunchSiteLength;
 
-                    if (flWidth < 1)
-                        flWidth = (float)selectedObject.model.DefaultLaunchSiteWidth;
+                        if (flLength < 1)
+                            flLength = selectedObject.model.DefaultLaunchSiteLength;
+
+                        flWidth = selectedObject.launchSite.LaunchSiteWidth;
+
+                        if (flWidth < 1)
+                            flWidth = selectedObject.model.DefaultLaunchSiteWidth;
+
+                    } else
+                    {
+  
+                        string sModelDesc = selectedObject.model.description;
+
+                        // Edit or make a launchsite
+                        siteName = selectedObject.gameObject.name;
+                        siteTrans = selectedObject.model.DefaultLaunchPadTransform;
+                        siteDesc = selectedObject.model.description;
+
+                        siteCategory = "";
+                        siteHidden = "false";
+                        siteType = SiteType.Any;
+                        flOpenCost = 0f;
+                        flCloseValue = 0f;
+                        stOpenCost = string.Format("{0}", flOpenCost);
+                        stCloseValue = string.Format("{0}", flCloseValue);
+
+                        flRecoveryFactor = 0f;
+                        flRecoveryRange = 0f;
+                        flLaunchRefund = 0f;
+
+                        flLength = selectedObject.model.DefaultLaunchSiteLength;
+                        flWidth = selectedObject.model.DefaultLaunchSiteWidth;
+                    }
 
                     stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
                     stRecoveryRange = string.Format("{0}", flRecoveryRange);
@@ -1049,9 +1074,13 @@ namespace KerbalKonstructs.UI
                     stLength = string.Format("{0}", flLength);
                     stWidth = string.Format("{0}", flWidth);
 
-                    siteAuthor = (selectedObject.settings.ContainsKey("author")) ? (string)selectedObject.getSetting("author") : (string)selectedObject.model.author;
+                    siteAuthor = selectedObject.hasLauchSites?  selectedObject.launchSite.LaunchSiteAuthor : selectedObject.model.author;
                     // Debug.Log("KK: Making or editing a launchsite");
-                    editingSite = true;
+
+
+
+
+                    editingLaunchSite = true;
                 }
             }
 
@@ -1115,7 +1144,7 @@ namespace KerbalKonstructs.UI
         public static void CloseEditors()
         {
             GUI_FacilityEditor.Close();
-            editingSite = false;
+            editingLaunchSite = false;
         }
 
         #region Launchsite Editor
@@ -1177,7 +1206,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
                 {
-                    editingSite = false;
+                    editingLaunchSite = false;
                 }
             }
             GUILayout.EndHorizontal();
@@ -1313,35 +1342,44 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
             {
-                Boolean addToDB = (selectedObject.settings.ContainsKey("LaunchSiteName") && siteName != "");
-                selectedObject.setSetting("LaunchSiteName", siteName);
-                selectedObject.setSetting("LaunchSiteLength", float.Parse(stLength));
-                selectedObject.setSetting("LaunchSiteWidth", float.Parse(stWidth));
-                selectedObject.setSetting("LaunchSiteType", siteType);
-                selectedObject.setSetting("LaunchPadTransform", siteTrans);
-                selectedObject.setSetting("LaunchSiteDescription", siteDesc);
-                selectedObject.setSetting("OpenCost", float.Parse(stOpenCost));
-                selectedObject.setSetting("CloseValue", float.Parse(stCloseValue));
-                selectedObject.setSetting("RecoveryFactor", float.Parse(stRecoveryFactor));
-                selectedObject.setSetting("RecoveryRange", float.Parse(stRecoveryRange));
-                selectedObject.setSetting("LaunchRefund", float.Parse(stLaunchRefund));
-                selectedObject.setSetting("OpenCloseState", "Open");
-                selectedObject.setSetting("Category", siteCategory);
-                selectedObject.setSetting("LaunchSiteIsHidden", siteHidden);
-                if (siteAuthor != selectedObject.model.author)
-                    selectedObject.setSetting("LaunchSiteAuthor", siteAuthor);
+                bool addToDB = false;
+                if (! selectedObject.hasLauchSites)
+                {
+                    LaunchSite lsite = new LaunchSite();
+                    selectedObject.launchSite = lsite;
+                    selectedObject.hasLauchSites = true;
+                    lsite.parentInstance = selectedObject;
+                    addToDB = true;
+                }
+
+
+                selectedObject.launchSite.LaunchSiteName = siteName;
+                selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
+                selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
+                selectedObject.launchSite.LaunchSiteType = siteType;
+                selectedObject.launchSite.LaunchPadTransform = siteTrans;
+                selectedObject.launchSite.LaunchSiteDescription = siteDesc;
+                selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
+                selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
+                selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
+                selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
+                selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
+                selectedObject.launchSite.OpenCloseState = "Open";
+                selectedObject.launchSite.Category = siteCategory;
+                selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
+                selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
 
                 if (addToDB)
                 {
-                    LaunchSiteManager.createLaunchSite(selectedObject);
+                    LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
                 }
                 KerbalKonstructs.instance.saveObjects();
-                editingSite = false;
+                editingLaunchSite = false;
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
             {
-                editingSite = false;
+                editingLaunchSite = false;
             }
             GUILayout.EndHorizontal();
 
@@ -1358,10 +1396,6 @@ namespace KerbalKonstructs.UI
 
         #endregion
 
-        #region Career Persistence
-
-        #endregion
-
         #region Utility Functions
 
 
@@ -1375,35 +1409,35 @@ namespace KerbalKonstructs.UI
         /// <returns></returns>
         public void spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
         {
-            StaticObject obj = new StaticObject();
-            obj.gameObject = UnityEngine.Object.Instantiate(model.prefab);
-            obj.setSetting("RadiusOffset", fOffset);
-            obj.setSetting("CelestialBody", KerbalKonstructs.instance.getCurrentBody());
-            string newGroup = (selectedObject != null) ? (string)selectedObject.getSetting("Group") : "Ungrouped";
-            obj.setSetting("Group", newGroup);
-            obj.setSetting("RadialPosition", vPosition);
-            obj.setSetting("RotationAngle", fAngle);
-            obj.setSetting("Orientation", Vector3.up);
-            obj.setSetting("VisibilityRange", 25000f);
+            StaticObject instance = new StaticObject();
+            instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
+            instance.RadiusOffset = fOffset;
+            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
+            string newGroup = (selectedObject != null) ? (string)selectedObject.Group : "Ungrouped";
+            instance.Group = newGroup;
+            instance.RadialPosition = vPosition;
+            instance.RotationAngle = fAngle;
+            instance.Orientation = Vector3.up;
+            instance.VisibilityRange = 25000f;
 
-            string sPad = model.DefaultLaunchPadTransform;
-            if (!String.IsNullOrEmpty(sPad))
-            {
-                obj.setSetting("LaunchPadTransform", sPad);
-            }
+            //string sPad = model.DefaultLaunchPadTransform;
+            //if (!String.IsNullOrEmpty(sPad))
+            //{
+            //    instance.setSetting("LaunchPadTransform", sPad);
+            //}
 
-            if (!KerbalKonstructs.instance.DevMode)
-            {
-                obj.setSetting("CustomInstance", "True");
-            }
+            //if (!KerbalKonstructs.instance.DevMode)
+            //{
+            //    instance.setSetting("CustomInstance", "True");
+            //}
 
-            obj.model = model;
+            instance.model = model;
             Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/NewInstances/");
-            obj.configPath = "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
-            obj.configUrl = null;
+            instance.configPath = "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
+            instance.configUrl = null;
 
             enableColliders = false;
-            obj.spawnObject(true, false);
+            instance.spawnObject(true, false);
         }
 
         public static void setTargetSite(LaunchSite lsTarget, string sName = "")
@@ -1709,7 +1743,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         internal void saveSettings()
         {
-            selectedObject.setSetting("Orientation", orientation);
+            selectedObject.Orientation = orientation;
 
             if (modelScale < 0.01f)
                 modelScale = 0.01f;
@@ -1725,25 +1759,21 @@ namespace KerbalKonstructs.UI
                 vis = 1000;
             }
 
-            selectedObject.setSetting("RadialPosition", (Vector3)referenceVector);
+            selectedObject.RadialPosition = referenceVector;
 
-            selectedObject.setSetting("RadiusOffset", (float)altitude);
-            selectedObject.setSetting("RotationAngle", (float)rotation);
-            selectedObject.setSetting("VisibilityRange", vis);
-            selectedObject.setSetting("RefLatitude", latitude);
-            selectedObject.setSetting("RefLongitude", longitude);
+            selectedObject.RadiusOffset = (float)altitude;
+            selectedObject.RotationAngle = (float)rotation;
+            selectedObject.VisibilityRange = vis;
+            selectedObject.RefLatitude = latitude;
+            selectedObject.RefLongitude = longitude;
 
-            selectedObject.setSetting("FacilityType", facType);
-            selectedObject.setSetting("Group", sGroup);
+            selectedObject.FacilityType =  facType;
+            selectedObject.Group= sGroup;
 
-            selectedObject.setSetting("ModelScale", modelScale);
+            selectedObject.ModelScale =  modelScale;
 
-            if (!KerbalKonstructs.instance.DevMode)
-            {
-                selectedObject.setSetting("CustomInstance", "True");
-            }
 
-            selectedObject.setSetting("isScanable", isScanable.ToString());
+            selectedObject.isScanable =  isScanable;
 
             updateSelection(selectedObject);
 
@@ -1752,19 +1782,19 @@ namespace KerbalKonstructs.UI
         /// <summary>
         /// Updates the Window Strings to the new settings
         /// </summary>
-        /// <param name="obj"></param>
-		public static void updateSelection(StaticObject obj)
+        /// <param name="instance"></param>
+		public static void updateSelection(StaticObject instance)
         {
-            selectedObject = obj;
+            selectedObject = instance;
 
-            isScanable = bool.Parse((string)selectedObject.getSetting("isScanable"));
+            isScanable = selectedObject.isScanable;
 
-            vis = (float)obj.getSetting("VisibilityRange");
-            facType = (string)obj.getSetting("FacilityType");
+            vis = instance.VisibilityRange;
+            facType = instance.FacilityType;
 
             if (facType == null || facType == "")
             {
-                string DefaultFacType = obj.model.DefaultFacilityType;
+                string DefaultFacType = instance.model.DefaultFacilityType;
 
                 if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
                     facType = "None";
@@ -1772,7 +1802,7 @@ namespace KerbalKonstructs.UI
                     facType = DefaultFacType;
             }
 
-            sGroup = ((string)obj.getSetting("Group"));
+            sGroup = instance.Group;
             selectedObject.update();
         }
 
@@ -1807,7 +1837,7 @@ namespace KerbalKonstructs.UI
 
                     vDrift = snpspos - snptpos;
                     vCurrpos = selectedObject.pqsCity.repositionRadial;
-                    selectedObject.setSetting("RadialPosition", vCurrpos + vDrift);
+                    selectedObject.RadialPosition = vCurrpos + vDrift;
                     updateSelection(selectedObject);
 
                     spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
@@ -1916,15 +1946,15 @@ namespace KerbalKonstructs.UI
                 //quatSelTar * snapTargetPos;
 
                 snapVector = (snapPoint2Relation - snapPointRelation);
-                vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition") + snapVector;
+                vFinalPos = snapTargetInstance.RadialPosition + snapVector;
             }
             else
             {
                 // THIS SHIT DO NOT WORK
                 //MiscUtils.HUDMessage("Snapping with rotation.", 60, 2);
                 // Stick the origins on each other
-                vFinalPos = (Vector3)snapTargetInstance.getSetting("RadialPosition");
-                selectedObject.setSetting("RadialPosition", vFinalPos);
+                vFinalPos = snapTargetInstance.RadialPosition;
+                selectedObject.RadialPosition = vFinalPos;
                 updateSelection(selectedObject);
 
                 // Get the offset of the source and move by that
@@ -1933,7 +1963,7 @@ namespace KerbalKonstructs.UI
                     selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
                 MiscUtils.HUDMessage("" + snapPointRelation.ToString(), 60, 2);
                 vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
-                selectedObject.setSetting("RadialPosition", vFinalPos);
+                selectedObject.RadialPosition = vFinalPos;
                 updateSelection(selectedObject);
 
                 // Get the offset of the target and move by that
@@ -1948,8 +1978,8 @@ namespace KerbalKonstructs.UI
             snapTargetPos = selectedSnapPoint2.transform.localPosition;
             snapVectorNoRot = (snapSourcePos - snapTargetPos);
 
-            selectedObject.setSetting("RadialPosition", vFinalPos);
-            selectedObject.setSetting("RadiusOffset", (float)snapTargetInstance.getSetting("RadiusOffset") + snapVectorNoRot.y);
+            selectedObject.RadialPosition = vFinalPos;
+            selectedObject.RadiusOffset = (float)snapTargetInstance.RadiusOffset + snapVectorNoRot.y;
 
             updateSelection(selectedObject);
             if (!bRotate) FixDrift();

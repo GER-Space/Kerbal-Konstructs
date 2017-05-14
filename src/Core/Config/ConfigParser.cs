@@ -74,9 +74,83 @@ namespace KerbalKonstructs.Core
                 }
 
             }
+        }
+
+        internal static void ParseInstanceConfig(StaticObject target, ConfigNode cfgNode)
+        {
+            if (!ConfigUtil.initialized)
+                ConfigUtil.InitTypes();
+
+            foreach (var field in ConfigUtil.instanceFields.Values)
+            {
+                ConfigUtil.ReadCFGNode(target, field, cfgNode);
+            }
+        }
+
+        internal static void WriteInstanceConfig(StaticObject instance, ConfigNode cfgNode)
+        {
+
+            foreach (var instanceSetting in ConfigUtil.instanceFields)
+            {
+                if (instanceSetting.Value.GetValue(instance) == null)
+                    continue;
+
+                ;
+                switch (instanceSetting.Value.FieldType.ToString())
+                {
+                    case "System.String":
+                        if (string.IsNullOrEmpty((string)instanceSetting.Value.GetValue(instance)))
+                            continue;
+                        cfgNode.SetValue(instanceSetting.Key, (string)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "System.Int32":
+                        if ((int)instanceSetting.Value.GetValue(instance) == 0)
+                            continue;
+                        cfgNode.SetValue(instanceSetting.Key, (int)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "System.Single":
+                        if ((float)instanceSetting.Value.GetValue(instance) == 0)
+                            continue;
+                        cfgNode.SetValue(instanceSetting.Key, (float)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "System.Double":
+                        if ((double)instanceSetting.Value.GetValue(instance) == 0)
+                            continue;
+                        cfgNode.SetValue(instanceSetting.Key, (double)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "System.Boolean":
+                        cfgNode.SetValue(instanceSetting.Key, (bool)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "UnityEngine.Vector3":
+                        cfgNode.SetValue(instanceSetting.Key, (Vector3)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "UnityEngine.Vector3d":
+                        cfgNode.SetValue(instanceSetting.Key, (Vector3d)instanceSetting.Value.GetValue(instance), true);
+                        break;
+                    case "CelestialBody":
+                        cfgNode.SetValue(instanceSetting.Key, ((CelestialBody)instanceSetting.Value.GetValue(instance)).name, true);
+                        break;
+                }
+
+                if (instance.hasFacilities)
+                {
+                    foreach (var fac in instance.myFacilities)
+                    {
+                        fac.WriteConfig(cfgNode);
+                    }
+                }
+
+                if (instance.hasLauchSites)
+                {
+                    instance.launchSite.WriteConfig(cfgNode);
+                }
+
+            }
 
 
         }
+
+
 
     }
 }

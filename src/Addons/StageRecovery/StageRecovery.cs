@@ -35,7 +35,6 @@ namespace KerbalKonstructs.Addons
                     double dist = 0d;
                     double smallestDist = 0d;
                     string openCloseState;
-                    float OpenCost;
 
                     SpaceCenter spaceCenter = null;
                     SpaceCenter closestSpaceCenter = SpaceCenter.Instance;
@@ -47,10 +46,10 @@ namespace KerbalKonstructs.Addons
                     {
 
                         // ASH Get openclosestate of launchsite with same name as space centre
-                        LaunchSiteManager.getSiteOpenCloseState(csc.SpaceCenterName, out openCloseState, out OpenCost);
+                        openCloseState = csc.staticObject.launchSite.OpenCloseState;
 
-                        StaticObject myBase = csc.getStaticObject();
-                        if ((float)myBase.getSetting("RecoveryFactor") == 0) continue;
+                        StaticObject myBase = csc.staticObject;
+                        if (csc.staticObject.launchSite.RecoveryFactor == 0) continue;
                         spaceCenter = csc.getSpaceCenter();
                         dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 

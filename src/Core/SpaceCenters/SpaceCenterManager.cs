@@ -45,15 +45,12 @@ namespace KerbalKonstructs.Core
 			{
 				if (isCareer)
 				{
-					string OpenCloseState;
-					float OpenCost;
-					// ASH Get openclosestate of launchsite with same name as space centre
-					LaunchSiteManager.getSiteOpenCloseState(csc.SpaceCenterName, out OpenCloseState, out OpenCost);
-					sOpenCloseState = OpenCloseState;
+					 sOpenCloseState = csc.staticObject.launchSite.OpenCloseState;
+					// ASH Get openclosestate of launchsite with same name as space centre					
 				}
 
-				StaticObject myBase = csc.getStaticObject();
-				if ((float)myBase.getSetting("RecoveryFactor") == 0) continue;
+
+				if (csc.staticObject.launchSite.RecoveryFactor == 0) continue;
                 sc = csc.getSpaceCenter();
                 //float dist = Vector3.Distance(position, csc.getStaticObject().gameObject.transform.position);
                 var dist = (float)sc.GreatCircleDistance(sc.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
@@ -69,9 +66,9 @@ namespace KerbalKonstructs.Core
 					{
 						closest = csc;
 						smallestDist = dist;
-						fMyBaseRecovFact = (float)myBase.getSetting("RecoveryFactor");
-						fMyBaseRecovRang = (float)myBase.getSetting("RecoveryRange");
-						sBaseName = (string)myBase.getSetting("LaunchSiteName");
+						fMyBaseRecovFact = csc.staticObject.launchSite.RecoveryFactor;
+						fMyBaseRecovRang = csc.staticObject.launchSite.RecoveryRange;
+						sBaseName = csc.staticObject.launchSite.LaunchSiteName;
 						// Debug.Log("KK: closest updated to " + closest.SpaceCenterName + ", distance " + smallestDist);
 					}
 				}
