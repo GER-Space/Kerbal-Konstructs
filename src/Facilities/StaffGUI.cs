@@ -37,9 +37,9 @@ namespace KerbalKonstructs.UI
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
-				if ((string)instance.FacilityType!= "Barracks")
+				if (instance.FacilityType!= "Barracks")
 				{
-					if ((string)instance.model.DefaultFacilityType != "Barracks") continue;
+					if (instance.model.DefaultFacilityType != "Barracks") continue;
 				}
 
 				var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
@@ -120,6 +120,7 @@ namespace KerbalKonstructs.UI
 
 		public static void StaffingInterface(StaticObject selectedFacility)
 		{
+            Barracks myBarracks = selectedFacility.myFacilities[0] as Barracks;
 			LabelInfo = new GUIStyle(GUI.skin.label);
 			LabelInfo.normal.background = null;
 			LabelInfo.normal.textColor = Color.white;
@@ -142,29 +143,29 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
-			fStaff = (float)selectedFacility.getSetting("StaffCurrent");
-			fMaxStaff = (float)selectedFacility.getSetting("StaffMax");
+			fStaff = myBarracks.StaffCurrent;
+			fMaxStaff = myBarracks.StaffMax;
 
 			bIsBarracks = false;
 
-			if ((string)selectedFacility.getSetting("FacilityType") == "Barracks")
+			if (selectedFacility.FacilityType == "Barracks")
 				bIsBarracks = true;
 			else
-				if ((string)selectedFacility.model.DefaultFacilityType == "Barracks")
+				if (selectedFacility.model.DefaultFacilityType == "Barracks")
 					bIsBarracks = true;
 
 			if (fMaxStaff < 1)
 			{
-				fMaxStaff = (float)selectedFacility.model.DefaultStaffMax;
+				fMaxStaff = selectedFacility.model.DefaultStaffMax;
 
 				if (fMaxStaff < 1)
 				{
-					selectedFacility.setSetting("StaffMax", (float)0);
+                    myBarracks.StaffMax = 0f;
 					//PersistenceUtils.saveStaticPersistence(selectedFacility);
 				}
 				else
 				{
-					selectedFacility.setSetting("StaffMax", (float)fMaxStaff);
+                    myBarracks.StaffMax = fMaxStaff;
 				}
 			}
 
@@ -174,7 +175,7 @@ namespace KerbalKonstructs.UI
 				float fFireRefund = 2500;
 				float fFireRepCost = 1;
 
-				bIsOpen = ((string)selectedFacility.getSetting("OpenCloseState") == "Open");
+				bIsOpen = (myBarracks.OpenCloseState == "Open");
 
 				if (!bIsOpen)
 				{
@@ -186,7 +187,7 @@ namespace KerbalKonstructs.UI
 
 				float CountCurrent = fStaff;
 				float CountEmpty = fMaxStaff - fStaff;
-				float funassigned = (float)selectedFacility.getSetting("ProductionRateCurrent");
+				float funassigned = myBarracks.ProductionRateCurrent;
 
 				scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(58));
 				{
@@ -241,9 +242,9 @@ namespace KerbalKonstructs.UI
 										3);
 								else
 								{
-									selectedFacility.setSetting("StaffCurrent", (float)fStaff + 1);
+                                    myBarracks.StaffCurrent = fStaff + 1f;
 									Funding.Instance.AddFunds(-fHireFundCost, TransactionReasons.Cheating);
-									selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") + 1);
+                                    myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent + 1f;
 								}
 							}
 
@@ -256,14 +257,14 @@ namespace KerbalKonstructs.UI
 							}
 							else
 							{
-								if ((float)selectedFacility.getSetting("ProductionRateCurrent") < 1)
+								if (myBarracks.ProductionRateCurrent < 1)
 								{
 									MiscUtils.HUDMessage("All staff are assigned to duties. Staff must be unassigned in order to fire them.", 10, 3);
 								}
 								else
 								{
-									selectedFacility.setSetting("StaffCurrent", (float)fStaff - 1);
-									selectedFacility.setSetting("ProductionRateCurrent", (float)selectedFacility.getSetting("ProductionRateCurrent") - 1);
+                                    myBarracks.StaffCurrent = fStaff - 1f;
+                                    myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent - 1f;
 									Funding.Instance.AddFunds(fFireRefund, TransactionReasons.Cheating);
 									Reputation.Instance.AddReputation(-fFireRepCost, TransactionReasons.Cheating);
 								}
@@ -312,7 +313,7 @@ namespace KerbalKonstructs.UI
 									{
 										DrawFromBarracks(soNearestBarracks);
 
-										selectedFacility.setSetting("StaffCurrent", (float)fStaff + 1);
+                                        myBarracks.StaffCurrent =  fStaff + 1;
 									}
 									else
 										MiscUtils.HUDMessage("No facility with available staff is nearby.", 10, 3);
@@ -333,7 +334,7 @@ namespace KerbalKonstructs.UI
 								if (soAvailableSpace != null)
 								{
 									UnassignToBarracks(soAvailableSpace);
-									selectedFacility.setSetting("StaffCurrent", (float)fStaff - 1);
+                                    myBarracks.StaffCurrent = fStaff - 1;
 								}
 								else
 								{
