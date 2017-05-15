@@ -1,7 +1,7 @@
 ﻿using KerbalKonstructs.Core;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
+using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
@@ -19,7 +19,15 @@ namespace KerbalKonstructs.UI
 
 		public static void ProductionInterface(StaticObject selectedFacility, string sFacilityType)
 		{
-			DeadButton = new GUIStyle(GUI.skin.button);
+
+            Research allFacs = selectedFacility.myFacilities[0] as Research;
+            //if (sFacilityType == "Research")
+            Research myResearch = selectedFacility.myFacilities[0] as Research;
+            //if (sFacilityType == "Research")
+            Business myBusiness = selectedFacility.myFacilities[0] as Business;
+
+
+                DeadButton = new GUIStyle(GUI.skin.button);
 			DeadButton.normal.background = null;
 			DeadButton.hover.background = null;
 			DeadButton.active.background = null;
@@ -68,8 +76,8 @@ namespace KerbalKonstructs.UI
 			float fProductionRate = 0;
 			float fLastCheck = 0;
 
-			fStaffing = (float)selectedFacility.getSetting("StaffCurrent");
-			fProductionRate = (float)selectedFacility.getSetting("ProductionRateCurrent") * (fStaffing / 2f);
+			fStaffing = allFacs.StaffCurrent;
+			fProductionRate = allFacs.ProductionRateCurrent * (fStaffing / 2f);
 
 			if (fProductionRate < 0.01f)
 			{
@@ -77,16 +85,16 @@ namespace KerbalKonstructs.UI
 
 				if (sFacilityType == "Business") fDefaultRate = 0.10f;
 
-				selectedFacility.setSetting("ProductionRateCurrent", fDefaultRate);
+                allFacs.ProductionRateCurrent =  fDefaultRate;
 				fProductionRate = fDefaultRate * (fStaffing / 2f);
 			}
 
-			fLastCheck = (float)selectedFacility.getSetting("LastCheck");
+			fLastCheck = allFacs.LastCheck;
 
 			if (fLastCheck == 0)
 			{
 				fLastCheck = (float)Planetarium.GetUniversalTime();
-				selectedFacility.setSetting("LastCheck", fLastCheck);
+                allFacs.LastCheck = fLastCheck;
 			}
 
 			if (sFacilityType == "Research" || sFacilityType == "Business")
@@ -98,7 +106,7 @@ namespace KerbalKonstructs.UI
 				if (sFacilityType == "Research")
 				{
 					sProduces = "Science";
-					fMax = (float)selectedFacility.getSetting("ScienceOMax");
+					fMax = myResearch.ScienceOMax;
 
 					if (fMax < 1)
 					{
@@ -106,15 +114,15 @@ namespace KerbalKonstructs.UI
 
 						if (fMax < 1) fMax = 10f;
 
-						selectedFacility.setSetting("ScienceOMax", fMax);
+                        myResearch.ScienceOMax = fMax;
 					}
 
-					fCurrent = (float)selectedFacility.getSetting("ScienceOCurrent");
+					fCurrent = myResearch.ScienceOCurrent;
 				}
 				if (sFacilityType == "Business")
 				{
 					sProduces = "Funds";
-					fMax = (float)selectedFacility.getSetting("FundsOMax");
+					fMax = myBusiness.FundsOMax;
 
 					if (fMax < 1)
 					{
@@ -122,10 +130,10 @@ namespace KerbalKonstructs.UI
 
 						if (fMax < 1) fMax = 10000f;
 
-						selectedFacility.setSetting("FundsOMax", fMax);
+                        myBusiness.FundsOMax =  fMax;
 					}
 
-					fCurrent = (float)selectedFacility.getSetting("FundsOCurrent");
+					fCurrent = myBusiness.FundsOCurrent;
 				}				
 
 				double dTime = Planetarium.GetUniversalTime();
@@ -133,7 +141,7 @@ namespace KerbalKonstructs.UI
 				// Deal with revert exploits
 				if (fLastCheck > (float)dTime)
 				{
-					selectedFacility.setSetting("LastCheck", (float)dTime);
+					allFacs.LastCheck =  (float)dTime;
 				}
 
 				if ((float)dTime - fLastCheck > 43200)
@@ -147,14 +155,14 @@ namespace KerbalKonstructs.UI
 
 					if (sFacilityType == "Research")
 					{
-						selectedFacility.setSetting("ScienceOCurrent", fCurrent);
+                        myResearch.ScienceOCurrent =  fCurrent;
 					}
 					if (sFacilityType == "Business")
 					{
-						selectedFacility.setSetting("FundsOCurrent", fCurrent);
+                        myBusiness.FundsOCurrent = fCurrent;
 					}
 
-					selectedFacility.setSetting("LastCheck", (float)dTime);
+                    allFacs.LastCheck = (float)dTime;
 				}
 
 				GUILayout.BeginHorizontal();
@@ -169,7 +177,7 @@ namespace KerbalKonstructs.UI
 					if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
 					{
 						ResearchAndDevelopment.Instance.AddScience(fCurrent, TransactionReasons.Cheating);
-						selectedFacility.setSetting("ScienceOCurrent", 0f);
+                        myResearch.ScienceOCurrent = 0f;
 					}
 
 				}
@@ -178,7 +186,7 @@ namespace KerbalKonstructs.UI
 					if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
 					{
 						Funding.Instance.AddFunds((double)fCurrent, TransactionReasons.Cheating);
-						selectedFacility.setSetting("FundsOCurrent", 0f);
+                        myBusiness.FundsOCurrent = 0f;
 					}
 				}				
 
