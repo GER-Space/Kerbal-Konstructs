@@ -30,8 +30,10 @@ namespace BWStatics
 			int heading = getHeading ();
 			if (heading % 10 > 5)
 				heading += 10 - heading % 10;
-				
-			Debug.Log ("AutoKourseModule: heading = " + heading);
+            if (heading < 6)
+                heading = 360; // There are no 00 runways, they all are 36!
+
+            Debug.Log ("AutoKourseModule: heading = " + heading);
 			int dg0 = heading / 10 % 10;
 			int dg1 = heading / 100 % 10;
 			Transform digit0 = gameObject.transform.GetChild(0).FindChild("digit0_obj");
