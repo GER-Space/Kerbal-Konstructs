@@ -194,7 +194,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Cost: " + fLqFCost.ToString("#0") + " \\F", LabelInfo);
                 if (GUILayout.Button("Buy", GUILayout.Height(18)))
                 {
-                    if ((float)selectedObject.getSetting("LqFCurrent") + (float.Parse(fLqFAmount)) > fLqFMax)
+                    if (myTank.LqFCurrent + (float.Parse(fLqFAmount)) > fLqFMax)
                     {
                         MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
                         fLqFAmount = "0.00";
@@ -412,7 +412,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Cost: " + fMoFCost.ToString("#0") + " \\F", LabelInfo);
                 if (GUILayout.Button("Buy", GUILayout.Height(18)))
                 {
-                    if ((float)selectedObject.getSetting("MoFCurrent") + (float.Parse(fMoFAmount)) > fMoFMax)
+                    if (myTank.MoFCurrent + (float.Parse(fMoFAmount)) > fMoFMax)
                     {
                         MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
                         fMoFAmount = "0.00";

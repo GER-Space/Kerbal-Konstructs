@@ -198,7 +198,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Box("" + sFacilityName, Yellowtext);
                 GUILayout.Space(5);
 
-                fAlt = (float)selectedFacility.getSetting("RadiusOffset");
+                fAlt = selectedFacility.RadiusOffset;
 
                 ObjectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
                 dObjectLat = NavUtils.GetLatitude(ObjectPos);
