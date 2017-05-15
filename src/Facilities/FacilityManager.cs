@@ -185,11 +185,11 @@ namespace KerbalKonstructs.UI
 
             if (selectedFacility != null)
             {
-                sFacilityType = (string)selectedFacility.getSetting("FacilityType");
+                sFacilityType = (string)selectedFacility.FacilityType;
 
-                if (sFacilityType == "TrackingStation")
+                if (sFacilityType == "GroundStation")
                 {
-                    sFacilityName = "Tracking Station";
+                    sFacilityName = "Ground Station";
                     bHalfwindow = true;
                 }
                 else
@@ -275,8 +275,8 @@ namespace KerbalKonstructs.UI
 
                 SharedInterfaces.OpenCloseFacility(selectedFacility);
 
-                iFundsOpen2 = (float)selectedFacility.getSetting("OpenCost");
-                isOpen2 = ((string)selectedFacility.getSetting("OpenCloseState") == "Open");
+                iFundsOpen2 = selectedFacility.myFacilities[0].OpenCost;
+                isOpen2 = (selectedFacility.myFacilities[0].OpenCloseState == "Open");
                 float iFundsDefaultCost = selectedFacility.model.cost;
                 if (iFundsOpen2 == 0) iFundsOpen2 = iFundsDefaultCost;
 
@@ -288,7 +288,7 @@ namespace KerbalKonstructs.UI
 
                 GUI.enabled = isOpen2;
 
-                if (sFacilityType == "TrackingStation")
+                if (sFacilityType == "GroundStation")
                 {
                     TrackingStationGUI.TrackingInterface(selectedFacility);
                 }
