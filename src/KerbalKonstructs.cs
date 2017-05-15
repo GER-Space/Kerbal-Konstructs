@@ -65,6 +65,7 @@ namespace KerbalKonstructs
 
         #region GUI Windows
         internal static EditorGUI GUI_Editor = new EditorGUI();
+        internal static LaunchSiteEditor GUI_LSEditor = new LaunchSiteEditor();
         internal static StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
         internal static NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
         internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();

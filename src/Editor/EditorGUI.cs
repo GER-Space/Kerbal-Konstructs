@@ -53,7 +53,7 @@ namespace KerbalKonstructs.UI
         public Boolean enableColliders = false;
         internal static bool isScanable = false;
 
-        public static Boolean editingLaunchSite = false;
+        //public static Boolean editingLaunchSite = false;
 
         //   public static Boolean editingFacility = false;
 
@@ -250,10 +250,10 @@ namespace KerbalKonstructs.UI
 
                 toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
 
-                if (editingLaunchSite)
-                {
-                    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
-                }
+                //if (editingLaunchSite)
+                //{
+                //    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
+                //}
             }
         }
 
@@ -993,7 +993,7 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
-            GUI.enabled = !editingLaunchSite;
+            GUI.enabled = !KerbalKonstructs.GUI_LSEditor.IsOpen();
             // Make a new LaunchSite here:
             if (!foldedIn)
             {
@@ -1003,84 +1003,84 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button((selectedObject.hasLauchSites ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
                 {
-                    if (selectedObject.hasLauchSites)
-                    {
-                        //LaunchSite myLaunchSite = new LaunchSite();
+                    //if (selectedObject.hasLauchSites)
+                    //{
+                    //    //LaunchSite myLaunchSite = new LaunchSite();
 
-                        string sLaunchsiteDesc = selectedObject.launchSite.LaunchSiteDescription;
-                        string sModelDesc = selectedObject.model.description;
+                    //    string sLaunchsiteDesc = selectedObject.launchSite.LaunchSiteDescription;
+                    //    string sModelDesc = selectedObject.model.description;
 
-                        // Edit or make a launchsite
-                        siteName = selectedObject.launchSite.LaunchSiteName ;
-                        siteTrans = selectedObject.launchSite.LaunchPadTransform;
+                    //    // Edit or make a launchsite
+                    //    siteName = selectedObject.launchSite.LaunchSiteName ;
+                    //    siteTrans = selectedObject.launchSite.LaunchPadTransform;
 
-                        if (sLaunchsiteDesc != "")
-                            siteDesc = sLaunchsiteDesc;
-                        else
-                            siteDesc = sModelDesc;
+                    //    if (sLaunchsiteDesc != "")
+                    //        siteDesc = sLaunchsiteDesc;
+                    //    else
+                    //        siteDesc = sModelDesc;
 
-                        siteCategory = selectedObject.launchSite.Category;
-                        siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
-                        siteType = selectedObject.launchSite.LaunchSiteType;
-                        flOpenCost = selectedObject.launchSite.OpenCost;
-                        flCloseValue = selectedObject.launchSite.CloseValue;
-                        stOpenCost = string.Format("{0}", flOpenCost);
-                        stCloseValue = string.Format("{0}", flCloseValue);
+                    //    siteCategory = selectedObject.launchSite.Category;
+                    //    siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
+                    //    siteType = selectedObject.launchSite.LaunchSiteType;
+                    //    flOpenCost = selectedObject.launchSite.OpenCost;
+                    //    flCloseValue = selectedObject.launchSite.CloseValue;
+                    //    stOpenCost = string.Format("{0}", flOpenCost);
+                    //    stCloseValue = string.Format("{0}", flCloseValue);
 
-                        flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
-                        flRecoveryRange = selectedObject.launchSite.RecoveryRange;
-                        flLaunchRefund = selectedObject.launchSite.LaunchRefund;
+                    //    flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
+                    //    flRecoveryRange = selectedObject.launchSite.RecoveryRange;
+                    //    flLaunchRefund = selectedObject.launchSite.LaunchRefund;
 
-                        flLength = selectedObject.launchSite.LaunchSiteLength;
+                    //    flLength = selectedObject.launchSite.LaunchSiteLength;
 
-                        if (flLength < 1)
-                            flLength = selectedObject.model.DefaultLaunchSiteLength;
+                    //    if (flLength < 1)
+                    //        flLength = selectedObject.model.DefaultLaunchSiteLength;
 
-                        flWidth = selectedObject.launchSite.LaunchSiteWidth;
+                    //    flWidth = selectedObject.launchSite.LaunchSiteWidth;
 
-                        if (flWidth < 1)
-                            flWidth = selectedObject.model.DefaultLaunchSiteWidth;
+                    //    if (flWidth < 1)
+                    //        flWidth = selectedObject.model.DefaultLaunchSiteWidth;
 
-                    } else
-                    {
+                    //} else
+                    //{
   
-                        string sModelDesc = selectedObject.model.description;
+                    //    string sModelDesc = selectedObject.model.description;
 
-                        // Edit or make a launchsite
-                        siteName = selectedObject.gameObject.name;
-                        siteTrans = selectedObject.model.DefaultLaunchPadTransform;
-                        siteDesc = selectedObject.model.description;
+                    //    // Edit or make a launchsite
+                    //    siteName = selectedObject.gameObject.name;
+                    //    siteTrans = selectedObject.model.DefaultLaunchPadTransform;
+                    //    siteDesc = selectedObject.model.description;
 
-                        siteCategory = "";
-                        siteHidden = "false";
-                        siteType = SiteType.Any;
-                        flOpenCost = 0f;
-                        flCloseValue = 0f;
-                        stOpenCost = string.Format("{0}", flOpenCost);
-                        stCloseValue = string.Format("{0}", flCloseValue);
+                    //    siteCategory = "";
+                    //    siteHidden = "false";
+                    //    siteType = SiteType.Any;
+                    //    flOpenCost = 0f;
+                    //    flCloseValue = 0f;
+                    //    stOpenCost = string.Format("{0}", flOpenCost);
+                    //    stCloseValue = string.Format("{0}", flCloseValue);
 
-                        flRecoveryFactor = 0f;
-                        flRecoveryRange = 0f;
-                        flLaunchRefund = 0f;
+                    //    flRecoveryFactor = 0f;
+                    //    flRecoveryRange = 0f;
+                    //    flLaunchRefund = 0f;
 
-                        flLength = selectedObject.model.DefaultLaunchSiteLength;
-                        flWidth = selectedObject.model.DefaultLaunchSiteWidth;
-                    }
+                    //    flLength = selectedObject.model.DefaultLaunchSiteLength;
+                    //    flWidth = selectedObject.model.DefaultLaunchSiteWidth;
+                    //}
 
-                    stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
-                    stRecoveryRange = string.Format("{0}", flRecoveryRange);
-                    stLaunchRefund = string.Format("{0}", flLaunchRefund);
+                    //stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
+                    //stRecoveryRange = string.Format("{0}", flRecoveryRange);
+                    //stLaunchRefund = string.Format("{0}", flLaunchRefund);
 
-                    stLength = string.Format("{0}", flLength);
-                    stWidth = string.Format("{0}", flWidth);
+                    //stLength = string.Format("{0}", flLength);
+                    //stWidth = string.Format("{0}", flWidth);
 
-                    siteAuthor = selectedObject.hasLauchSites?  selectedObject.launchSite.LaunchSiteAuthor : selectedObject.model.author;
-                    // Debug.Log("KK: Making or editing a launchsite");
-
-
+                    //siteAuthor = selectedObject.hasLauchSites?  selectedObject.launchSite.LaunchSiteAuthor : selectedObject.model.author;
+                    //// Debug.Log("KK: Making or editing a launchsite");
 
 
-                    editingLaunchSite = true;
+
+
+                    KerbalKonstructs.GUI_LSEditor.Open();
                 }
             }
 
@@ -1144,7 +1144,7 @@ namespace KerbalKonstructs.UI
         public static void CloseEditors()
         {
             GUI_FacilityEditor.Close();
-            editingLaunchSite = false;
+            KerbalKonstructs.GUI_LSEditor.Close();
         }
 
         #region Launchsite Editor
@@ -1161,237 +1161,237 @@ namespace KerbalKonstructs.UI
         /// Launchsite Editor
         /// </summary>
         /// <param name="id"></param>
-        void drawLaunchSiteEditorWindow(int id)
-        {
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
+        //void drawLaunchSiteEditorWindow(int id)
+        //{
+        //    BoxNoBorder = new GUIStyle(GUI.skin.box);
+        //    BoxNoBorder.normal.background = null;
+        //    BoxNoBorder.normal.textColor = Color.white;
 
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
+        //    DeadButton = new GUIStyle(GUI.skin.button);
+        //    DeadButton.normal.background = null;
+        //    DeadButton.hover.background = null;
+        //    DeadButton.active.background = null;
+        //    DeadButton.focused.background = null;
+        //    DeadButton.normal.textColor = Color.yellow;
+        //    DeadButton.hover.textColor = Color.white;
+        //    DeadButton.active.textColor = Color.yellow;
+        //    DeadButton.focused.textColor = Color.yellow;
+        //    DeadButton.fontSize = 14;
+        //    DeadButton.fontStyle = FontStyle.Normal;
 
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
+        //    DeadButtonRed = new GUIStyle(GUI.skin.button);
+        //    DeadButtonRed.normal.background = null;
+        //    DeadButtonRed.hover.background = null;
+        //    DeadButtonRed.active.background = null;
+        //    DeadButtonRed.focused.background = null;
+        //    DeadButtonRed.normal.textColor = Color.red;
+        //    DeadButtonRed.hover.textColor = Color.yellow;
+        //    DeadButtonRed.active.textColor = Color.red;
+        //    DeadButtonRed.focused.textColor = Color.red;
+        //    DeadButtonRed.fontSize = 12;
+        //    DeadButtonRed.fontStyle = FontStyle.Bold;
 
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+        //    GUILayout.BeginHorizontal();
+        //    {
+        //        GUI.enabled = false;
+        //        GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
 
-                GUILayout.FlexibleSpace();
+        //        GUILayout.FlexibleSpace();
 
-                GUILayout.Button("Launchsite Editor", DeadButton, GUILayout.Height(21));
+        //        GUILayout.Button("Launchsite Editor", DeadButton, GUILayout.Height(21));
 
-                GUILayout.FlexibleSpace();
+        //        GUILayout.FlexibleSpace();
 
-                GUI.enabled = true;
+        //        GUI.enabled = true;
 
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-                {
-                    editingLaunchSite = false;
-                }
-            }
-            GUILayout.EndHorizontal();
+        //        if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+        //        {
+        //            editingLaunchSite = false;
+        //        }
+        //    }
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+        //    GUILayout.Space(1);
+        //    GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-            GUILayout.Space(2);
+        //    GUILayout.Space(2);
 
-            GUILayout.Box(selectedObject.model.title);
+        //    GUILayout.Box(selectedObject.model.title);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Site Name: ", GUILayout.Width(120));
-            siteName = GUILayout.TextField(siteName, GUILayout.Height(19));
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Site Name: ", GUILayout.Width(120));
+        //    siteName = GUILayout.TextField(siteName, GUILayout.Height(19));
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Transform: ", GUILayout.Width(120));
-            GUILayout.Box("" + siteTrans);
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Transform: ", GUILayout.Width(120));
+        //    GUILayout.Box("" + siteTrans);
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Length: ", GUILayout.Width(120));
-            stLength = GUILayout.TextField(stLength, GUILayout.Height(19));
-            GUILayout.Label(" m");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Length: ", GUILayout.Width(120));
+        //    stLength = GUILayout.TextField(stLength, GUILayout.Height(19));
+        //    GUILayout.Label(" m");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Width: ", GUILayout.Width(120));
-            stWidth = GUILayout.TextField(stWidth, GUILayout.Height(19));
-            GUILayout.Label(" m");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Width: ", GUILayout.Width(120));
+        //    stWidth = GUILayout.TextField(stWidth, GUILayout.Height(19));
+        //    GUILayout.Label(" m");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Site Category: ", GUILayout.Width(115));
-            GUILayout.Label(siteCategory, GUILayout.Width(85));
-            GUILayout.FlexibleSpace();
-            GUI.enabled = !(siteCategory == "RocketPad");
-            if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "RocketPad";
-            GUI.enabled = !(siteCategory == "Runway");
-            if (GUILayout.Button("RW", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Runway";
-            GUI.enabled = !(siteCategory == "Helipad");
-            if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Helipad";
-            GUI.enabled = !(siteCategory == "Waterlaunch");
-            if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Waterlaunch";
-            GUI.enabled = !(siteCategory == "Other");
-            if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Other";
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Site Category: ", GUILayout.Width(115));
+        //    GUILayout.Label(siteCategory, GUILayout.Width(85));
+        //    GUILayout.FlexibleSpace();
+        //    GUI.enabled = !(siteCategory == "RocketPad");
+        //    if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
+        //        siteCategory = "RocketPad";
+        //    GUI.enabled = !(siteCategory == "Runway");
+        //    if (GUILayout.Button("RW", GUILayout.Width(25), GUILayout.Height(23)))
+        //        siteCategory = "Runway";
+        //    GUI.enabled = !(siteCategory == "Helipad");
+        //    if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
+        //        siteCategory = "Helipad";
+        //    GUI.enabled = !(siteCategory == "Waterlaunch");
+        //    if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
+        //        siteCategory = "Waterlaunch";
+        //    GUI.enabled = !(siteCategory == "Other");
+        //    if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
+        //        siteCategory = "Other";
+        //    GUILayout.EndHorizontal();
 
-            GUI.enabled = true;
+        //    GUI.enabled = true;
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Site Type: ", GUILayout.Width(120));
-            if (siteType == SiteType.VAB)
-                GUILayout.Label("VAB", GUILayout.Width(40));
-            if (siteType == SiteType.SPH)
-                GUILayout.Label("SPH", GUILayout.Width(40));
-            if (siteType == SiteType.Any)
-                GUILayout.Label("Any", GUILayout.Width(40));
-            GUILayout.FlexibleSpace();
-            GUI.enabled = !(siteType == (SiteType)0);
-            if (GUILayout.Button("VAB", GUILayout.Height(23)))
-                siteType = SiteType.VAB;
-            GUI.enabled = !(siteType == (SiteType)1);
-            if (GUILayout.Button("SPH", GUILayout.Height(23)))
-                siteType = SiteType.SPH;
-            GUI.enabled = !(siteType == (SiteType)2);
-            if (GUILayout.Button("Any", GUILayout.Height(23)))
-                siteType = SiteType.Any;
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Site Type: ", GUILayout.Width(120));
+        //    if (siteType == SiteType.VAB)
+        //        GUILayout.Label("VAB", GUILayout.Width(40));
+        //    if (siteType == SiteType.SPH)
+        //        GUILayout.Label("SPH", GUILayout.Width(40));
+        //    if (siteType == SiteType.Any)
+        //        GUILayout.Label("Any", GUILayout.Width(40));
+        //    GUILayout.FlexibleSpace();
+        //    GUI.enabled = !(siteType == (SiteType)0);
+        //    if (GUILayout.Button("VAB", GUILayout.Height(23)))
+        //        siteType = SiteType.VAB;
+        //    GUI.enabled = !(siteType == (SiteType)1);
+        //    if (GUILayout.Button("SPH", GUILayout.Height(23)))
+        //        siteType = SiteType.SPH;
+        //    GUI.enabled = !(siteType == (SiteType)2);
+        //    if (GUILayout.Button("Any", GUILayout.Height(23)))
+        //        siteType = SiteType.Any;
+        //    GUILayout.EndHorizontal();
 
-            GUI.enabled = true;
+        //    GUI.enabled = true;
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Author: ", GUILayout.Width(120));
-            siteAuthor = GUILayout.TextField(siteAuthor, GUILayout.Height(19));
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Author: ", GUILayout.Width(120));
+        //    siteAuthor = GUILayout.TextField(siteAuthor, GUILayout.Height(19));
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Open Cost: ", GUILayout.Width(120));
-            stOpenCost = GUILayout.TextField(stOpenCost, GUILayout.Height(19));
-            GUILayout.Label(" \\F");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Open Cost: ", GUILayout.Width(120));
+        //    stOpenCost = GUILayout.TextField(stOpenCost, GUILayout.Height(19));
+        //    GUILayout.Label(" \\F");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Close Value: ", GUILayout.Width(120));
-            stCloseValue = GUILayout.TextField(stCloseValue, GUILayout.Height(19));
-            GUILayout.Label(" \\F");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Close Value: ", GUILayout.Width(120));
+        //    stCloseValue = GUILayout.TextField(stCloseValue, GUILayout.Height(19));
+        //    GUILayout.Label(" \\F");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Recovery Factor: ", GUILayout.Width(120));
-            stRecoveryFactor = GUILayout.TextField(stRecoveryFactor, GUILayout.Height(19));
-            GUILayout.Label(" %");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Recovery Factor: ", GUILayout.Width(120));
+        //    stRecoveryFactor = GUILayout.TextField(stRecoveryFactor, GUILayout.Height(19));
+        //    GUILayout.Label(" %");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Effective Range: ", GUILayout.Width(120));
-            stRecoveryRange = GUILayout.TextField(stRecoveryRange, GUILayout.Height(19));
-            GUILayout.Label(" m");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Effective Range: ", GUILayout.Width(120));
+        //    stRecoveryRange = GUILayout.TextField(stRecoveryRange, GUILayout.Height(19));
+        //    GUILayout.Label(" m");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Launch Refund: ", GUILayout.Width(120));
-            stLaunchRefund = GUILayout.TextField(stLaunchRefund, GUILayout.Height(19));
-            GUILayout.Label(" %");
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Launch Refund: ", GUILayout.Width(120));
+        //    stLaunchRefund = GUILayout.TextField(stLaunchRefund, GUILayout.Height(19));
+        //    GUILayout.Label(" %");
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Site is hidden: ", GUILayout.Width(115));
-            GUILayout.Label(siteHidden, GUILayout.Width(85));
-            GUILayout.FlexibleSpace();
-            GUI.enabled = !(siteHidden == "false");
-            if (GUILayout.Button("No", GUILayout.Width(40), GUILayout.Height(23)))
-                siteHidden = "false";
-            GUI.enabled = !(siteHidden == "true");
-            if (GUILayout.Button("Yes", GUILayout.Width(40), GUILayout.Height(23)))
-                siteHidden = "true";
-            GUILayout.EndHorizontal();
-            GUI.enabled = true;
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Site is hidden: ", GUILayout.Width(115));
+        //    GUILayout.Label(siteHidden, GUILayout.Width(85));
+        //    GUILayout.FlexibleSpace();
+        //    GUI.enabled = !(siteHidden == "false");
+        //    if (GUILayout.Button("No", GUILayout.Width(40), GUILayout.Height(23)))
+        //        siteHidden = "false";
+        //    GUI.enabled = !(siteHidden == "true");
+        //    if (GUILayout.Button("Yes", GUILayout.Width(40), GUILayout.Height(23)))
+        //        siteHidden = "true";
+        //    GUILayout.EndHorizontal();
+        //    GUI.enabled = true;
 
-            GUILayout.Label("Description: ");
-            descScroll = GUILayout.BeginScrollView(descScroll);
-            siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
-            GUILayout.EndScrollView();
+        //    GUILayout.Label("Description: ");
+        //    descScroll = GUILayout.BeginScrollView(descScroll);
+        //    siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
+        //    GUILayout.EndScrollView();
 
-            GUI.enabled = true;
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
-            {
-                bool addToDB = false;
-                if (! selectedObject.hasLauchSites)
-                {
-                    LaunchSite lsite = new LaunchSite();
-                    selectedObject.launchSite = lsite;
-                    selectedObject.hasLauchSites = true;
-                    lsite.parentInstance = selectedObject;
-                    addToDB = true;
-                }
+        //    GUI.enabled = true;
+        //    GUILayout.BeginHorizontal();
+        //    if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
+        //    {
+        //        bool addToDB = false;
+        //        if (! selectedObject.hasLauchSites)
+        //        {
+        //            LaunchSite lsite = new LaunchSite();
+        //            selectedObject.launchSite = lsite;
+        //            selectedObject.hasLauchSites = true;
+        //            lsite.parentInstance = selectedObject;
+        //            addToDB = true;
+        //        }
 
 
-                selectedObject.launchSite.LaunchSiteName = siteName;
-                selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
-                selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
-                selectedObject.launchSite.LaunchSiteType = siteType;
-                selectedObject.launchSite.LaunchPadTransform = siteTrans;
-                selectedObject.launchSite.LaunchSiteDescription = siteDesc;
-                selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
-                selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
-                selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
-                selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
-                selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
-                selectedObject.launchSite.OpenCloseState = "Open";
-                selectedObject.launchSite.Category = siteCategory;
-                selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
-                selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
+        //        selectedObject.launchSite.LaunchSiteName = siteName;
+        //        selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
+        //        selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
+        //        selectedObject.launchSite.LaunchSiteType = siteType;
+        //        selectedObject.launchSite.LaunchPadTransform = siteTrans;
+        //        selectedObject.launchSite.LaunchSiteDescription = siteDesc;
+        //        selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
+        //        selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
+        //        selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
+        //        selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
+        //        selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
+        //        selectedObject.launchSite.OpenCloseState = "Open";
+        //        selectedObject.launchSite.Category = siteCategory;
+        //        selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
+        //        selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
 
-                if (addToDB)
-                {
-                    LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
-                }
-                KerbalKonstructs.instance.saveObjects();
-                editingLaunchSite = false;
-            }
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
-            {
-                editingLaunchSite = false;
-            }
-            GUILayout.EndHorizontal();
+        //        if (addToDB)
+        //        {
+        //            LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
+        //        }
+        //        KerbalKonstructs.instance.saveObjects();
+        //        editingLaunchSite = false;
+        //    }
+        //    GUILayout.FlexibleSpace();
+        //    if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
+        //    {
+        //        editingLaunchSite = false;
+        //    }
+        //    GUILayout.EndHorizontal();
 
-            GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
+        //    GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
 
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+        //    GUILayout.Space(1);
+        //    GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
-            GUILayout.Space(2);
+        //    GUILayout.Space(2);
 
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
+        //    GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        //}
         #endregion
 
         #endregion

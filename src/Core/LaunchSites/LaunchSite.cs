@@ -15,9 +15,9 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string LaunchPadTransform;
         [CFGSetting]
-        public string LaunchSiteName;
+        public string LaunchSiteName = "";
         [CFGSetting]
-        public string LaunchSiteAuthor;
+        public string LaunchSiteAuthor = "";
         [CFGSetting]
         public SiteType LaunchSiteType;
         [CFGSetting]

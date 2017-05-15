@@ -63,15 +63,17 @@ namespace KerbalKonstructs.UI
                 selectedObject = KerbalKonstructs.instance.selectedObject;
                 updateSelection();
             }
+            
             facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindows);
 
         }
 
         public override void Open()
         {
-            Log.Normal("FacEditor Open Called");
+            
             base.Open();
         }
+
 
         public override void Close()
         {
@@ -188,7 +190,6 @@ namespace KerbalKonstructs.UI
 
                 GUILayout.EndScrollView();
             }
-
             // Update editor window button
             EditorGUI.facType = facType;
             if (selectedObject.FacilityType != facType)
@@ -196,14 +197,12 @@ namespace KerbalKonstructs.UI
                 ChangeFacility();
                 updateSelection();
             }
-
             GUILayout.BeginHorizontal();
             GUILayout.Label("Open Cost: ", LabelGreen);
             GUILayout.FlexibleSpace();
             infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
             GUILayout.Label("\\F", LabelWhite);
             GUILayout.EndHorizontal();
-
             if (facType == "GroundStation")
             {
                 GUILayout.BeginHorizontal();
@@ -584,17 +583,13 @@ namespace KerbalKonstructs.UI
 
         private void updateSelection()
         {
-            
-
             if (facType == null || facType == "")
             {
                 facType = selectedObject.model.DefaultFacilityType;
 
                 if (facType == null || facType == "None" || facType == "")
                     facType = "None";
-
             }
-
 
             switch (facType)
             {
@@ -655,6 +650,9 @@ namespace KerbalKonstructs.UI
                 infOpenCost = selectedObject.myFacilities[0].OpenCost.ToString();
                 if (infOpenCost == "0" || infOpenCost == "")
                     infOpenCost = selectedObject.model.cost.ToString();
+            } else
+            {
+                infOpenCost = "0";
             }
             
             //selectedObject.update();
