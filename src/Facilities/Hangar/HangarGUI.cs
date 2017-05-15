@@ -2,7 +2,7 @@
 using KerbalKonstructs.Modules;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
+using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
@@ -26,6 +26,8 @@ namespace KerbalKonstructs.UI
 
 		public static void HangarInterface(StaticObject selectedFacility)
 		{
+            Hangar myHangar = selectedFacility.myFacilities[0] as Hangar;
+
 			DeadButton = new GUIStyle(GUI.skin.button);
 			DeadButton.normal.background = null;
 			DeadButton.hover.background = null;
@@ -71,9 +73,9 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
-			sInStorage = ((Hangar)(selectedFacility.myFacilities[0])).InStorage1;
-			sInStorage2 = ((Hangar)(selectedFacility.myFacilities[0])).InStorage2;
-			sInStorage3 = ((Hangar)(selectedFacility.myFacilities[0])).InStorage3;
+			sInStorage = myHangar.InStorage1;
+			sInStorage2 = myHangar.InStorage2;
+			sInStorage3 = myHangar.InStorage3;
 
 			float fMaxMass = (float)selectedFacility.model.DefaultFacilityMassCapacity;
 			if (fMaxMass < 1) fMaxMass = 25f;
@@ -91,17 +93,17 @@ namespace KerbalKonstructs.UI
 			if (sInStorage == null || sInStorage == "")
 			{
 				sInStorage = "None";
-				selectedFacility.setSetting("InStorage", "None");
+                myHangar.InStorage1 =  "None";
 			}
 			if (sInStorage2 == null || sInStorage2 == "")
 			{
 				sInStorage2 = "None";
-				selectedFacility.setSetting("TargetID", "None");
+                myHangar.InStorage2 =  "None";
 			}
 			if (sInStorage3 == null || sInStorage3 == "")
 			{
 				sInStorage3 = "None";
-				selectedFacility.setSetting("TargetType", "None");
+                myHangar.InStorage3 =  "None";
 			}
 
 			if (sInStorage == "None" && sInStorage2 == "None" && sInStorage3 == "None")
@@ -351,24 +353,26 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public static string GetHangarSpace(StaticObject soHangar, int iMax = 2)
+		public static string GetHangarSpace(StaticObject instacne, int iMax = 2)
 		{
-			string sSpace = "None";
+            Hangar myHangar = instacne.myFacilities[0] as Hangar;
 
-			if ((string)soHangar.getSetting("InStorage") == "None")
+            string sSpace = "None";
+
+			if (myHangar.InStorage1 == "None")
 			{
-				sSpace = "InStorage";
+				sSpace = "InStorage1";
 				if (iMax < 2) return sSpace;
 			}
 			else
-				if ((string)soHangar.getSetting("TargetID") == "None")
+				if (myHangar.InStorage2 == "None")
 				{
-					sSpace = "TargetID";
+					sSpace = "InStorage2";
 					if (iMax == 2) return sSpace;
 				}
 				else
-					if ((string)soHangar.getSetting("TargetType") == "None")
-						sSpace = "TargetType";
+					if (myHangar.InStorage3 == "None")
+						sSpace = "InStorage3";
 
 			return sSpace;
 		}
