@@ -58,7 +58,7 @@ namespace KerbalKonstructs.Core
         internal UrlDir.UrlConfig configUrl;
         internal String configPath;
 
-        internal Dictionary<string, object> settings = new Dictionary<string, object>();
+        //internal Dictionary<string, object> settings = new Dictionary<string, object>();
 
         internal bool hasFacilities = false;
         internal bool hasLauchSites = false;

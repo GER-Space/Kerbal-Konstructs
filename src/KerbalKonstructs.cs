@@ -1200,13 +1200,10 @@ namespace KerbalKonstructs
 
             modelConfig.RemoveNodes("Instances");
 
-            foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
+            foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
             {
                 ConfigNode inst = new ConfigNode("Instances");
-                foreach (KeyValuePair<string, object> setting in obj.settings)
-                {
-                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-                }
+                ConfigParser.WriteInstanceConfig(instance, inst);
                 modelConfig.nodes.Add(inst);
             }
 
