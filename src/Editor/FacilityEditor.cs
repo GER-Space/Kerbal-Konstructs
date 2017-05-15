@@ -6,7 +6,7 @@ using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
-using UnityEngine.UI;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -156,9 +156,9 @@ namespace KerbalKonstructs.UI
                     bChangeFacilityType = false;
                 }
 
-                if (GUILayout.Button("Tracking Station", GUILayout.Height(23)))
+                if (GUILayout.Button("Ground Station", GUILayout.Height(23)))
                 {
-                    facType = "TrackingStation";
+                    facType = "GroundStation";
                     bChangeFacilityType = false;
                 }
 
@@ -191,6 +191,11 @@ namespace KerbalKonstructs.UI
 
             // Update editor window button
             EditorGUI.facType = facType;
+            if (selectedObject.FacilityType != facType)
+            {
+                ChangeFacility();
+                updateSelection();
+            }
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Open Cost: ", LabelGreen);
@@ -199,7 +204,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("\\F", LabelWhite);
             GUILayout.EndHorizontal();
 
-            if (facType == "TrackingStation")
+            if (facType == "GroundStation")
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Short Range: ", LabelGreen);
@@ -411,62 +416,164 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void RemoveOldSettings()
         {
-            List<String> allFacSettings = new List<string>()
-            {
-                "FacilityMassCapacity",
-                "FacilityCraftCapacity",
-                "StaffMax",
-                "LqFMax",
-                "OxFMax",
-                "MoFMax",
-                "ProductionRateMax",
-                "ScienceOMax",
-                "FundsOMax"
-            };
+            //List<String> allFacSettings = new List<string>()
+            //{
+            //    "FacilityMassCapacity",
+            //    "FacilityCraftCapacity",
+            //    "StaffMax",
+            //    "LqFMax",
+            //    "OxFMax",
+            //    "MoFMax",
+            //    "ProductionRateMax",
+            //    "ScienceOMax",
+            //    "FundsOMax"
+            //};
 
-            foreach (String setting in allFacSettings)
+            //foreach (String setting in allFacSettings)
+            //{
+            //    if (selectedObject.settings.ContainsKey(setting))
+            //        selectedObject.settings.Remove(setting);
+            //}
+
+            if (selectedObject.hasFacilities)
             {
-                if (selectedObject.settings.ContainsKey(setting))
-                    selectedObject.settings.Remove(setting);
+
+                Log.Normal("FacEditor: Remove called");
+                selectedObject.hasFacilities = false;
+                GameObject.Destroy(selectedObject.myFacilities[0]);
+                selectedObject.myFacilities.Clear();
+                Log.Normal("FacEditor: Remove Finished");
+            }
+        }
+
+        internal void ChangeFacility()
+        {
+            RemoveOldSettings();
+
+            Log.Normal("FacEditor: Change called");
+            KKFacilityType newType;
+            try
+            {
+                newType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), facType, true);
+            }
+            catch
+            {
+                //Log.UserError("Unknown Facility Type: " + cfgNode.GetValue("FacilityType") + " in file: " + instance.configPath );
+                return;
             }
 
+            selectedObject.facilityType = newType;
+            selectedObject.FacilityType = facType;
+
+            if (newType == KKFacilityType.None)
+            {
+                return;
+            }
+            else
+            {
+                selectedObject.hasFacilities = true;
+            }
+            // use a face cfgnode for initialization
+            ConfigNode cfgNode = new ConfigNode();
+
+            switch (newType)
+            {
+                case KKFacilityType.GroundStation:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.TrackingStation:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    selectedObject.facilityType = KKFacilityType.GroundStation;
+                    break;
+                case KKFacilityType.FuelTanks:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.Research:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.Business:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Business>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.Hangar:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.Barracks:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Barracks>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.LandingGuide:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<LandingGuide>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.TouchdownGuideL:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<TouchdownGuideL>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.TouchdownGuideR:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
+                    break;
+                case KKFacilityType.RadarStation:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
+                    break;
+            }
+            Log.Normal("FacEditor: Change Finished");
         }
 
 
         public void updateSettings()
         {
-            RemoveOldSettings();
+            bool needNewFacility = false;
+            if (facType != selectedObject.FacilityType)
+            {
+                ChangeFacility();
+            }
 
-            if (facType != "") selectedObject.setSetting("FacilityType", facType);
+            if (facType != "")
+                selectedObject.FacilityType =  facType;
 
             switch (facType)
             {
                 case "None":
                     break;
                 case "FuelTanks":
-                    if (infLqFMax != "") selectedObject.setSetting("LqFMax", float.Parse(infLqFMax));
-                    if (infOxFMax != "") selectedObject.setSetting("OxFMax", float.Parse(infOxFMax));
-                    if (infMoFMax != "") selectedObject.setSetting("MoFMax", float.Parse(infMoFMax));
+                    if (needNewFacility) 
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>());
+                    selectedObject.hasFacilities = true;
+                    if (infLqFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).LqFMax = float.Parse(infLqFMax);
+                    if (infOxFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).OxFMax = float.Parse(infOxFMax);
+                    if (infMoFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).MoFMax = float.Parse(infMoFMax);
                     break;
-                case "TrackingStation":
-                    selectedObject.setSetting("TrackingShort", float.Parse(infTrackingShort));
+                case "GroundStation":
+                    if (needNewFacility)
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>());
+                    selectedObject.hasFacilities = true;                    
+                    ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
                     break;
                 case "Hangar":
-                    if (infFacMassCap != "") selectedObject.setSetting("FacilityMassCapacity", float.Parse(infFacMassCap));
-                    if (infFacCraftCap != "") selectedObject.setSetting("FacilityCraftCapacity", float.Parse(infFacCraftCap));
+                    if (needNewFacility)
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Hangar>());
+                    selectedObject.hasFacilities = true;
+                    if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity =  float.Parse(infFacMassCap);
+                    if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity =  int.Parse(infFacCraftCap);
                     break;
                 case "Barracks":
-                    if (infStaffMax != "") selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
+                    if (needNewFacility)
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Barracks>());
+                    selectedObject.hasFacilities = true;
+                    if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = float.Parse(infStaffMax);
                     break;
                 case "Research":
-                    if (infStaffMax != "") selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
-                    if (infProdRateMax != "") selectedObject.setSetting("ProductionRateMax", float.Parse(infProdRateMax));
-                    if (infScienceMax != "") selectedObject.setSetting("ScienceOMax", float.Parse(infScienceMax));
+                    if (needNewFacility)
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Research>());
+                    selectedObject.hasFacilities = true;
+                    if (infStaffMax != "") ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "") ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infScienceMax != "") ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
                     break;
                 case "Business":
-                    if (infStaffMax != "") selectedObject.setSetting("StaffMax", float.Parse(infStaffMax));
-                    if (infProdRateMax != "") selectedObject.setSetting("ProductionRateMax", float.Parse(infProdRateMax));
-                    if (infFundsMax != "") selectedObject.setSetting("FundsOMax", float.Parse(infFundsMax));
+                    if (needNewFacility)
+                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Business>());
+                    selectedObject.hasFacilities = true;
+                    if (infStaffMax != "") ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "") ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infFundsMax != "") ((Business)selectedObject.myFacilities[0]).FundsOMax = float.Parse(infFundsMax);
                     break;
 
                 default:
@@ -477,51 +584,7 @@ namespace KerbalKonstructs.UI
 
         private void updateSelection()
         {
-
-            infTrackingShort = selectedObject.getSetting("TrackingShort").ToString();
-
-
-            infFacMassCap = selectedObject.getSetting("FacilityMassCapacity").ToString();
-            if (infFacMassCap == "0" || infFacMassCap == "")
-                infFacMassCap = selectedObject.model.DefaultFacilityMassCapacity.ToString();
-
-            infFacCraftCap = selectedObject.getSetting("FacilityCraftCapacity").ToString();
-            if (infFacCraftCap == "0" || infFacCraftCap == "")
-                infFacCraftCap = selectedObject.model.DefaultFacilityCraftCapacity.ToString();
-
-            infLqFMax = selectedObject.getSetting("LqFMax").ToString();
-            if (infLqFMax == "0" || infLqFMax == "")
-                infLqFMax = selectedObject.model.LqFMax.ToString();
-
-            infOxFMax = selectedObject.getSetting("OxFMax").ToString();
-            if (infOxFMax == "0" || infOxFMax == "")
-                infOxFMax = selectedObject.model.OxFMax.ToString();
-
-            infMoFMax = selectedObject.getSetting("MoFMax").ToString();
-            if (infMoFMax == "0" || infMoFMax == "")
-                infMoFMax = selectedObject.model.MoFMax.ToString();
-
-            infOpenCost = selectedObject.getSetting("OpenCost").ToString();
-            if (infOpenCost == "0" || infOpenCost == "")
-                infOpenCost = selectedObject.model.cost.ToString();
-
-            infStaffMax = selectedObject.getSetting("StaffMax").ToString();
-            if (infStaffMax == "0" || infStaffMax == "")
-                infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
-
-            infProdRateMax = selectedObject.getSetting("ProductionRateMax").ToString();
-            if (infProdRateMax == "0" || infProdRateMax == "")
-                infProdRateMax = selectedObject.model.DefaultProductionRateMax.ToString();
-
-            infScienceMax = selectedObject.getSetting("ScienceOMax").ToString();
-            if (infScienceMax == "0" || infScienceMax == "")
-                infScienceMax = selectedObject.model.DefaultScienceOMax.ToString();
-
-            infFundsMax = selectedObject.getSetting("FundsOMax").ToString();
-            if (infFundsMax == "0" || infFundsMax == "")
-                infFundsMax = selectedObject.model.DefaultFundsOMax.ToString();
-
-            facType = (string)selectedObject.getSetting("FacilityType");
+            
 
             if (facType == null || facType == "")
             {
@@ -531,7 +594,71 @@ namespace KerbalKonstructs.UI
                     facType = "None";
 
             }
-            selectedObject.update();
+
+
+            switch (facType)
+            {
+
+                case "GroundStation":
+                    infTrackingShort = ((GroundStation)selectedObject.myFacilities[0]).TrackingShort.ToString();
+                    break;
+                case "Hangar":
+                    infFacMassCap = ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity.ToString();
+                    if (infFacMassCap == "0" || infFacMassCap == "")
+                        infFacMassCap = selectedObject.model.DefaultFacilityMassCapacity.ToString();
+                    infFacCraftCap = ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity.ToString();
+                    if (infFacCraftCap == "0" || infFacCraftCap == "")
+                        infFacCraftCap = selectedObject.model.DefaultFacilityCraftCapacity.ToString();
+                    break;
+                case "FuelTanks":
+                    infLqFMax = ((FuelTanks)selectedObject.myFacilities[0]).LqFMax.ToString();
+                    if (infLqFMax == "0" || infLqFMax == "")
+                        infLqFMax = selectedObject.model.LqFMax.ToString();
+                    infOxFMax = ((FuelTanks)selectedObject.myFacilities[0]).OxFMax.ToString();
+                    if (infOxFMax == "0" || infOxFMax == "")
+                        infOxFMax = selectedObject.model.OxFMax.ToString();
+                    infMoFMax = ((FuelTanks)selectedObject.myFacilities[0]).MoFMax.ToString();
+                    if (infMoFMax == "0" || infMoFMax == "")
+                        infMoFMax = selectedObject.model.MoFMax.ToString();
+                    break;
+                case "Barracks":
+                    infStaffMax = ((Barracks)selectedObject.myFacilities[0]).StaffMax.ToString();
+                    if (infStaffMax == "0" || infStaffMax == "")
+                        infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
+                    break;
+                case "Research":
+                    infStaffMax = ((Research)selectedObject.myFacilities[0]).StaffMax.ToString();
+                    if (infStaffMax == "0" || infStaffMax == "")
+                        infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
+                    infProdRateMax = ((Research)selectedObject.myFacilities[0]).ProductionRateMax.ToString();
+                    if (infProdRateMax == "0" || infProdRateMax == "")
+                        infProdRateMax = selectedObject.model.DefaultProductionRateMax.ToString();
+                    infScienceMax = ((Research)selectedObject.myFacilities[0]).ScienceOMax.ToString();
+                    if (infScienceMax == "0" || infScienceMax == "")
+                        infScienceMax = selectedObject.model.DefaultScienceOMax.ToString();
+                    break;
+                case "Business":
+                    infStaffMax = ((Business)selectedObject.myFacilities[0]).StaffMax.ToString();
+                    if (infStaffMax == "0" || infStaffMax == "")
+                        infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
+                    infProdRateMax = ((Business)selectedObject.myFacilities[0]).ProductionRateMax.ToString();
+                    if (infProdRateMax == "0" || infProdRateMax == "")
+                        infProdRateMax = selectedObject.model.DefaultProductionRateMax.ToString();
+                    infFundsMax = ((Business)selectedObject.myFacilities[0]).FundsOMax.ToString();
+                    if (infFundsMax == "0" || infFundsMax == "")
+                        infFundsMax = selectedObject.model.DefaultFundsOMax.ToString();
+                    break;
+
+            }
+            if (selectedObject.hasFacilities)
+            {
+                infOpenCost = selectedObject.myFacilities[0].OpenCost.ToString();
+                if (infOpenCost == "0" || infOpenCost == "")
+                    infOpenCost = selectedObject.model.cost.ToString();
+            }
+            
+            //selectedObject.update();
+            facType = selectedObject.FacilityType;
         }
 
     }

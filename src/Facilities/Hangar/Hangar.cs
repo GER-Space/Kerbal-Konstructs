@@ -17,9 +17,9 @@ namespace KerbalKonstructs.Modules
 
 
         [CFGSetting]
-        float FacilityMassCapacity;
+        public float FacilityMassCapacity;
         [CFGSetting]
-        int FacilityCraftCapacity;
+        public int FacilityCraftCapacity;
 
 
     }

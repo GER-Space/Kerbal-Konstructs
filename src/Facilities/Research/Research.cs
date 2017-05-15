@@ -16,6 +16,7 @@ namespace KerbalKonstructs.Modules
         [CFGSetting]
         public float ScienceOMax;
         [CFGSetting]
+        public float ProductionRateMax;
 
         [CareerSetting]
         public float ScienceOCurrent;
