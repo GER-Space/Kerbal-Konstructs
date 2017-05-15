@@ -1,7 +1,7 @@
 ﻿using KerbalKonstructs.Core;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
+using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
@@ -42,13 +42,15 @@ namespace KerbalKonstructs.UI
         public static GUIStyle LabelInfo;
         public static GUIStyle BoxInfo;
 
-        public static string getResourceAlt(StaticObject obj, string sOriginal)
+        public static string getResourceAlt(StaticObject instance, string sOriginal)
         {
             string sAlt = sOriginal;
 
-            if (sOriginal == "LiquidFuel") sAlt = (string)obj.getSetting("LqFAlt");
-            if (sOriginal == "Oxidizer") sAlt = (string)obj.getSetting("OxFAlt");
-            if (sOriginal == "MonoPropellant") sAlt = (string)obj.getSetting("MoFAlt");
+            FuelTanks myTank = instance.myFacilities[0] as FuelTanks;
+
+            if (sOriginal == "LiquidFuel") sAlt = myTank.LqFAlt;
+            if (sOriginal == "Oxidizer") sAlt = myTank.OxFAlt;
+            if (sOriginal == "MonoPropellant") sAlt = myTank.MoFAlt;
 
             if (sAlt != "") return sAlt;
             else
@@ -59,19 +61,21 @@ namespace KerbalKonstructs.UI
         {
             string smessage = "";
 
-            string sFacilityName = (string)selectedObject.model.title;
-            string sFacilityRole = (string)selectedObject.getSetting("FacilityType");
+            FuelTanks myTank = selectedObject.myFacilities[0] as FuelTanks;
+
+            string sFacilityName = selectedObject.model.title;
+            string sFacilityRole = selectedObject.FacilityType;
 
             string sResource1 = "LiquidFuel";
             string sResource2 = "Oxidizer";
             string sResource3 = "MonoPropellant";
 
-            fLqFMax = (selectedObject.settings.ContainsKey("LqFMax")) ? (float)selectedObject.getSetting("LqFMax") : (float)selectedObject.model.LqFMax;
-            fLqFCurrent = (float)selectedObject.getSetting("LqFCurrent");
-            fOxFMax = (selectedObject.settings.ContainsKey("OxFMax")) ? (float)selectedObject.getSetting("OxFMax") : (float)selectedObject.model.OxFMax;
-            fOxFCurrent = (float)selectedObject.getSetting("OxFCurrent");
-            fMoFMax = (selectedObject.settings.ContainsKey("MoFMax")) ? (float)selectedObject.getSetting("MoFMax") : (float)selectedObject.model.MoFMax;
-            fMoFCurrent = (float)selectedObject.getSetting("MoFCurrent");
+            fLqFMax = myTank.LqFMax;
+            fLqFCurrent = myTank.LqFCurrent;
+            fOxFMax = myTank.OxFMax;
+            fOxFCurrent = myTank.OxFCurrent;
+            fMoFMax = myTank.MoFMax;
+            fMoFCurrent = myTank.MoFCurrent;
 
             float fPurchaseRate = fTransferRate * 100f;
 
@@ -208,12 +212,12 @@ namespace KerbalKonstructs.UI
                             else
                             {
                                 Funding.Instance.AddFunds(-fLqFCost, TransactionReasons.Cheating);
-                                selectedObject.setSetting("LqFCurrent", (float)selectedObject.getSetting("LqFCurrent") + (float.Parse(fLqFAmount)));
+                                myTank.LqFCurrent = myTank.LqFCurrent + (float.Parse(fLqFAmount));
                             }
                         }
                         else
                         {
-                            selectedObject.setSetting("LqFCurrent", (float)selectedObject.getSetting("LqFCurrent") + (float.Parse(fLqFAmount)));
+                            myTank.LqFCurrent = myTank.LqFCurrent + (float.Parse(fLqFAmount));
                         }
                     }
 
@@ -299,7 +303,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Cost: " + fOxFCost.ToString("#0") + " \\F", LabelInfo);
                 if (GUILayout.Button("Buy", GUILayout.Height(18)))
                 {
-                    if ((float)selectedObject.getSetting("OxFCurrent") + (float.Parse(fOxFAmount)) > fOxFMax)
+                    if (myTank.OxFCurrent + (float.Parse(fOxFAmount)) > fOxFMax)
                     {
                         MiscUtils.HUDMessage("Insufficient fuel capacity!", 10, 0);
                         fOxFAmount = "0.00";
@@ -317,12 +321,12 @@ namespace KerbalKonstructs.UI
                             else
                             {
                                 Funding.Instance.AddFunds(-fOxFCost, TransactionReasons.Cheating);
-                                selectedObject.setSetting("OxFCurrent", (float)selectedObject.getSetting("OxFCurrent") + (float.Parse(fOxFAmount)));
+                                myTank.OxFCurrent = myTank.OxFCurrent + (float.Parse(fOxFAmount));
                             }
                         }
                         else
                         {
-                            selectedObject.setSetting("OxFCurrent", (float)selectedObject.getSetting("OxFCurrent") + (float.Parse(fOxFAmount)));
+                            myTank.OxFCurrent = myTank.OxFCurrent + (float.Parse(fOxFAmount));
                         }
                     }
 
@@ -426,12 +430,12 @@ namespace KerbalKonstructs.UI
                             else
                             {
                                 Funding.Instance.AddFunds(-fMoFCost, TransactionReasons.Cheating);
-                                selectedObject.setSetting("MoFCurrent", (float)selectedObject.getSetting("MoFCurrent") + (float.Parse(fMoFAmount)));
+                                myTank.MoFCurrent = myTank.MoFCurrent + (float.Parse(fMoFAmount));
                             }
                         }
                         else
                         {
-                            selectedObject.setSetting("MoFCurrent", (float)selectedObject.getSetting("MoFCurrent") + (float.Parse(fMoFAmount)));
+                            myTank.MoFCurrent = myTank.MoFCurrent + (float.Parse(fMoFAmount));
                         }
                     }
 
@@ -553,6 +557,7 @@ namespace KerbalKonstructs.UI
 
         public static void doFuelOut(StaticObject selectedObject)
         {
+            FuelTanks myTank = selectedObject.myFacilities[0] as FuelTanks;
             if (SelectedResource == null) return;
             if (SelectedTank == null) return;
 
@@ -577,26 +582,27 @@ namespace KerbalKonstructs.UI
 
             if (SelectedResource.resourceName == sResource3)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("MoFCurrent")) - fTransferRate;
+                dStaticFuel = myTank.MoFCurrent - fTransferRate;
                 if (dStaticFuel < 0) dStaticFuel = 0;
-                selectedObject.setSetting("MoFCurrent", dStaticFuel);
+                myTank.MoFCurrent = dStaticFuel;
             }
             if (SelectedResource.resourceName == sResource1)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("LqFCurrent")) - fTransferRate;
+                dStaticFuel = myTank.LqFCurrent - fTransferRate;
                 if (dStaticFuel < 0) dStaticFuel = 0;
-                selectedObject.setSetting("LqFCurrent", dStaticFuel);
+                myTank.LqFCurrent =  dStaticFuel;
             }
             if (SelectedResource.resourceName == sResource2)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("OxFCurrent")) - fTransferRate;
+                dStaticFuel = myTank.OxFCurrent - fTransferRate;
                 if (dStaticFuel < 0) dStaticFuel = 0;
-                selectedObject.setSetting("OxFCurrent", dStaticFuel);
+                myTank.OxFCurrent =  dStaticFuel;
             }
         }
 
         public static void doFuelIn(StaticObject selectedObject)
         {
+            FuelTanks myTank = selectedObject.myFacilities[0] as FuelTanks;
             if (SelectedResource == null) return;
             if (SelectedTank == null) return;
 
@@ -621,21 +627,21 @@ namespace KerbalKonstructs.UI
 
             if (SelectedResource.resourceName == sResource3)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("MoFCurrent")) + fTransferRate;
+                dStaticFuel = myTank.MoFCurrent + fTransferRate;
                 if (dStaticFuel > fMoFMax) dStaticFuel = fMoFMax;
-                selectedObject.setSetting("MoFCurrent", dStaticFuel);
+                myTank.MoFCurrent =  dStaticFuel;
             }
             if (SelectedResource.resourceName == sResource1)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("LqFCurrent")) + fTransferRate;
+                dStaticFuel = myTank.LqFCurrent + fTransferRate;
                 if (dStaticFuel > fLqFMax) dStaticFuel = fLqFMax;
-                selectedObject.setSetting("LqFCurrent", dStaticFuel);
+                myTank.LqFCurrent = dStaticFuel;
             }
             if (SelectedResource.resourceName == sResource2)
             {
-                dStaticFuel = ((float)selectedObject.getSetting("OxFCurrent")) + fTransferRate;
+                dStaticFuel = myTank.OxFCurrent + fTransferRate;
                 if (dStaticFuel > fOxFMax) dStaticFuel = fOxFMax;
-                selectedObject.setSetting("OxFCurrent", dStaticFuel);
+                myTank.OxFCurrent = dStaticFuel;
             }
         }
 

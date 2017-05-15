@@ -16,11 +16,11 @@ namespace KerbalKonstructs.Modules
         public float MoFMax;
 
         [CFGSetting]
-        public string LqFAlt;
+        public string LqFAlt = "";
         [CFGSetting]
-        public string OxFAlt;
+        public string OxFAlt = "";
         [CFGSetting]
-        public string MoFAlt;
+        public string MoFAlt = "";
 
         [CareerSetting]
         public float LqFCurrent;

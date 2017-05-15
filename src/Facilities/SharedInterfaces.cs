@@ -37,8 +37,8 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
-			float iFundsOpen2 = (float)selectedFacility.getSetting("OpenCost");
-			float iFundsClose2 = (float)selectedFacility.getSetting("CloseValue");
+			float iFundsOpen2 = selectedFacility.myFacilities[0].OpenCost;
+			float iFundsClose2 = selectedFacility.myFacilities[0].CloseValue;
 			float iFundsDefaultCost = selectedFacility.model.cost;
 
 			bool isAlwaysOpen2 = false;
@@ -55,7 +55,7 @@ namespace KerbalKonstructs.UI
 
 			if (MiscUtils.isCareerGame())
 			{
-				bool isOpen2 = ((string)selectedFacility.getSetting("OpenCloseState") == "Open");
+				bool isOpen2 = (selectedFacility.myFacilities[0].OpenCloseState == "Open");
 
 				GUILayout.BeginHorizontal();
 				{
@@ -76,7 +76,7 @@ namespace KerbalKonstructs.UI
 							else
 							{
 								// Open the site - save to instance
-								selectedFacility.setSetting("OpenCloseState", "Open");
+								selectedFacility.myFacilities[0].OpenCloseState = "Open";
 
 								// Charge some funds
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
@@ -87,7 +87,8 @@ namespace KerbalKonstructs.UI
 									evFacilityOpened(selectedFacility);
 
                                 // Callback to CommNet.
-                                if (((string)selectedFacility.getSetting("FacilityType")) == "TrackingStation")
+                                
+                                if (selectedFacility.myFacilities[0].facilityType == "GroundStation")
                                 {
                                     Modules.RemoteNet.AttachGroundStation(selectedFacility);
                                 } 
@@ -112,14 +113,14 @@ namespace KerbalKonstructs.UI
 							// Close the site - save to instance
 							// Pay back some funds
 							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Structures);
-							selectedFacility.setSetting("OpenCloseState", "Closed");
+							selectedFacility.myFacilities[0].OpenCloseState =  "Closed";
 
 							soStoredEventObject = selectedFacility;
 							if (evFacilityClosed != null)
 								evFacilityClosed(selectedFacility);
 
                             // Callback to CommNet.
-                            if (((string)selectedFacility.getSetting("FacilityType")) == "TrackingStation")
+                            if ((selectedFacility.myFacilities[0].facilityType) == "GroundStation")
                             {
                                 Modules.RemoteNet.DetachGroundStation(selectedFacility);
                             }
