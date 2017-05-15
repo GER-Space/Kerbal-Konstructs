@@ -625,9 +625,9 @@ namespace KerbalKonstructs.UI
                             //Validate the groupfilter to see if it is a Group name
                             bool bValidGroupName = false;
 
-                            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+                            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
                             {
-                                if ((string)obj.getSetting("Group") == groupfilter)
+                                if (instance.Group == groupfilter)
                                 {
                                     bValidGroupName = true;
                                     break;
