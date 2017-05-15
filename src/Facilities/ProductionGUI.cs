@@ -32,7 +32,7 @@ namespace KerbalKonstructs.UI
             {
                 facField = typeof(Business);
             }
-            //Research allFacs = selectedFacility.myFacilities[0] as Research;
+            Barracks allFacs = selectedFacility.myFacilities[0] as Barracks;
             Research myResearch = selectedFacility.myFacilities[0] as Research;
             //if (sFacilityType == "Research")
             Business myBusiness = selectedFacility.myFacilities[0] as Business;

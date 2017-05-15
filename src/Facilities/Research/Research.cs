@@ -6,17 +6,17 @@ using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
-    class Research : KKFacility
+    class Research : Barracks
     {
-        [CFGSetting]
-        public int StaffMax;
+        //[CFGSetting]
+        //public int StaffMax;
         [CFGSetting]
         public float ProductionRateMax;
 
-        [CareerSetting]
-        public float StaffCurrent = 0;
-        [CareerSetting]
-        public float ProductionRateCurrent = 0;
+        //[CareerSetting]
+        //public float StaffCurrent = 0;
+        //[CareerSetting]
+        //public float ProductionRateCurrent = 0;
         [CareerSetting]
         public float LastCheck = 0;
 

@@ -10,8 +10,8 @@ namespace KerbalKonstructs.UI
 {
 	public class StaffGUI
 	{
-		public static int fStaff;
-		public static int fMaxStaff;
+		public static float fStaff;
+		public static float fMaxStaff;
 		public static float fXP;
 		public static GUIStyle LabelInfo;
 		public static GUIStyle BoxInfo;
@@ -153,8 +153,9 @@ namespace KerbalKonstructs.UI
                 bIsBarracks = true;
 
             // check if we can access the staffing variables
-            if (selectedFacility.FacilityType == "Barracks" || selectedFacility.FacilityType == "Business " || selectedFacility.FacilityType == "Research")
+            if (selectedFacility.FacilityType == "Barracks" || selectedFacility.FacilityType == "Business" || selectedFacility.FacilityType == "Research")
             {
+                Log.Normal("20001");
                 fStaff = myBarracks.StaffCurrent;
                 fMaxStaff = myBarracks.StaffMax;
 
@@ -171,6 +172,7 @@ namespace KerbalKonstructs.UI
                         myBarracks.StaffMax = fMaxStaff;
                     }
                 }
+                Log.Normal("20002");
             }
             else
             {  
@@ -182,7 +184,8 @@ namespace KerbalKonstructs.UI
 
             if (fMaxStaff > 0)
 			{
-				float fHireFundCost = 5000;
+                Log.Normal("20003");
+                float fHireFundCost = 5000;
 				float fFireRefund = 2500;
 				float fFireRepCost = 1;
 
@@ -226,8 +229,8 @@ namespace KerbalKonstructs.UI
 				{
 					GUILayout.Box("Assigned Staff: " + fStaff.ToString("#0") + "/" + fMaxStaff.ToString("#0"), BoxInfo);
 				}
-
-				if (bIsBarracks)
+                Log.Normal("20004");
+                if (bIsBarracks)
 				{
 					GUILayout.BeginHorizontal();
 					GUILayout.Label("Staff: " + fStaff.ToString("#0") + "/" + fMaxStaff.ToString("#0"), LabelInfo);
