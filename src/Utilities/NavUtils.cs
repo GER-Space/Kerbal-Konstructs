@@ -41,21 +41,21 @@ namespace KerbalKonstructs.Utilities
 			float fDistance = 0f;
 			float fNearest = 0f;
 
-			foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+			foreach (StaticObject instance in StaticDatabase.allStaticInstances)
 			{
 				if (sGroup != "None")
 				{
-					if ((string)obj.getSetting("Group") != sGroup) continue;
+					if (instance.Group != sGroup) continue;
 				}
 
-				if ((string)obj.getSetting("FacilityType") == sFacilityType)
+				if (instance.FacilityType == sFacilityType)
 				{
-					fDistance = Vector3.Distance(obj.gameObject.transform.position, vPosition);
+					fDistance = Vector3.Distance(instance.gameObject.transform.position, vPosition);
 
 					if (fDistance < fLastDist)
 					{
 						fNearest = fDistance;
-						soFacility = obj;
+						soFacility = instance;
 					}
 
 					fLastDist = fDistance;

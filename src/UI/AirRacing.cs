@@ -277,7 +277,7 @@ namespace KerbalKonstructs.UI
 		{
 			StaticObject soNextGate = null;
 			string sGate = "Gate" + fNextGate.ToString();
-			string sGroup = (string)StartLine.getSetting("Group");
+			string sGroup = StartLine.Group;
 
 			soNextGate = NavUtils.GetNearestFacility(StartLine.gameObject.transform.position, sGate, sGroup);
 
@@ -290,8 +290,8 @@ namespace KerbalKonstructs.UI
 			Vector3 vCenter = new Vector3(0, 0, 0);
 			StaticObject soNearestPole = null;
 
-			string sGroup = (string)soGate.getSetting("Group");
-			string sFacType = (string)soGate.getSetting("FacilityType");
+			string sGroup = soGate.Group;
+			string sFacType = soGate.FacilityType;
 			soNearestPole = NavUtils.GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
 
 			vCenter = Vector3.Lerp(soGate.gameObject.transform.position, soNearestPole.gameObject.transform.position, 0.5f);
@@ -305,8 +305,8 @@ namespace KerbalKonstructs.UI
 			float fDistance = 0f;
 			StaticObject soNearestPole = null;
 
-			string sGroup = (string)soGate.getSetting("Group");
-			string sFacType = (string)soGate.getSetting("FacilityType");
+			string sGroup = soGate.Group;
+			string sFacType = soGate.FacilityType;
 			soNearestPole = NavUtils.GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
 
 			fDistance = Vector3.Distance(soGate.gameObject.transform.position, soNearestPole.gameObject.transform.position);
