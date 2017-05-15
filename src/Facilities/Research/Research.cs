@@ -11,7 +11,7 @@ namespace KerbalKonstructs.Modules
         [CFGSetting]
         public int StaffMax;
         [CareerSetting]
-        public int StaffCurrent;
+        public int StaffCurrent = 0;
 
         [CFGSetting]
         public float ScienceOMax;

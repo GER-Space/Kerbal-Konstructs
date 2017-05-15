@@ -2,7 +2,6 @@
 using KerbalKonstructs.Modules;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
