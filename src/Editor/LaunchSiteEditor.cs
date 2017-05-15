@@ -93,7 +93,6 @@ namespace KerbalKonstructs.UI
 
         public static StaticObject selectedObject = null;
         public StaticObject selectedObjectPrevious = null;
-        static LaunchSite lTargetSite = null;
 
         internal static String facType = "None";
         internal static String sGroup = "Ungrouped";
@@ -132,8 +131,6 @@ namespace KerbalKonstructs.UI
         private Vector3d referenceVector = Vector3d.zero;
         private Vector3 orientation = Vector3.zero;
 
-        private static double altitude;
-        private static double latitude, longitude;
 
         private static float vis = 0;
 
