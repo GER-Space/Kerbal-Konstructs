@@ -326,8 +326,10 @@ namespace KerbalKonstructs.UI
 		public static void HangarCraft(Vessel vVessel, StaticObject soHangar, int iMax = 2)
 		{
 			string sSpace = GetHangarSpace(soHangar, iMax);
+            Hangar myHangar = soHangar.myFacilities[0] as Hangar;
 
-			if (sSpace == "None")
+
+            if (sSpace == "None")
 			{
 				MiscUtils.HUDMessage("This facility is full.", 10,
 					3);
@@ -335,7 +337,7 @@ namespace KerbalKonstructs.UI
 			else
 			{
 				string sVesselID = vVessel.id.ToString();
-				soHangar.setSetting(sSpace, sVesselID);
+                typeof(Hangar).GetField(sSpace).SetValue(myHangar, sVesselID);
 
 				// Hangar the vessel - hide it
 				foreach (Part p in vVessel.Parts)
@@ -399,7 +401,7 @@ namespace KerbalKonstructs.UI
 			if (sVesselID == myHangar.InStorage3)
 				sSpace = "InStorage3";
 
-            typeof(Hangar).GetField(sSpace).SetValue(myHangar, "None"); ;
+            typeof(Hangar).GetField(sSpace).SetValue(myHangar, "None");
 		}
 
 		public static void UnhangarCraft(Vessel vVesselStored, StaticObject soHangar)
