@@ -390,7 +390,7 @@ namespace KerbalKonstructs.UI
                         bAreFacilities = true;
                         GUILayout.BeginHorizontal();
                         {
-                            bIsOpen = ((string)allFacilities[i].getSetting("OpenCloseState") == "Open");
+                            bIsOpen = ((string)allFacilities[i].myFacilities[0].OpenCloseState == "Open");
 
                             if (!bIsOpen)
                             {
@@ -497,7 +497,7 @@ namespace KerbalKonstructs.UI
                 if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].gameObject.transform.position) > 5000f)
                     continue;
                 // is not a facility
-                if (String.Equals(((string)allStatics[i].getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
+                if (String.Equals(allStatics[i].FacilityType, "None", StringComparison.CurrentCultureIgnoreCase))
                     continue;
 
                 allFacilities.Add(allStatics[i]);
