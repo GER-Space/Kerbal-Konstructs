@@ -390,15 +390,15 @@ namespace KerbalKonstructs.UI
                         bAreFacilities = true;
                         GUILayout.BeginHorizontal();
                         {
-                            bIsOpen = ((string)allFacilities[i].myFacilities[0].OpenCloseState == "Open");
+                            bIsOpen = (allFacilities[i].myFacilities[0].OpenCloseState == "Open");
 
                             if (!bIsOpen)
                             {
-                                iFundsOpen2 = (float)allFacilities[i].model.cost;
+                                iFundsOpen2 = allFacilities[i].model.cost;
                                 if (iFundsOpen2 == 0) bIsOpen = true;
                             }
 
-                            if (GUILayout.Button((string)allFacilities[i].model.title, GUILayout.Height(23)))
+                            if (GUILayout.Button(allFacilities[i].model.title, GUILayout.Height(23)))
                             {
                                 selectedObject = allFacilities[i];
                                 KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
@@ -486,7 +486,7 @@ namespace KerbalKonstructs.UI
         private void CacheFacilities()
         {
 
-            StaticObject [] allStatics = StaticDatabase.GetAllStatics();
+            StaticObject [] allStatics = StaticDatabase.allStaticInstances;
 
             for (int i = 0; i < allStatics.Length; i++)
             {
@@ -498,6 +498,8 @@ namespace KerbalKonstructs.UI
                     continue;
                 // is not a facility
                 if (String.Equals(allStatics[i].FacilityType, "None", StringComparison.CurrentCultureIgnoreCase))
+                    continue;
+                if (allStatics[i].myFacilities.Count == 0)
                     continue;
 
                 allFacilities.Add(allStatics[i]);

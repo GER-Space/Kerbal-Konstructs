@@ -56,7 +56,6 @@ namespace KerbalKonstructs.UI
         String sCategoryHolder = "";
         String groupfilter = "";
         String groupfilterset = "";
-        String sPackName = "";
 
         String sButtonText = "";
 
