@@ -10,20 +10,21 @@ namespace KerbalKonstructs.Modules
     {
         [CFGSetting]
         public int StaffMax;
-        [CareerSetting]
-        public int StaffCurrent = 0;
-
-        [CFGSetting]
-        public float ScienceOMax;
         [CFGSetting]
         public float ProductionRateMax;
 
         [CareerSetting]
+        public float StaffCurrent = 0;
+        [CareerSetting]
+        public float ProductionRateCurrent = 0;
+        [CareerSetting]
+        public float LastCheck = 0;
+
+        [CFGSetting]
+        public float ScienceOMax;
+
+        [CareerSetting]
         public float ScienceOCurrent;
-        [CareerSetting]
-        public float LastCheck;
-        [CareerSetting]
-        public float ProductionRateCurrent;
 
 
     }

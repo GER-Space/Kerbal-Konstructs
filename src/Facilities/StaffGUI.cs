@@ -10,8 +10,8 @@ namespace KerbalKonstructs.UI
 {
 	public class StaffGUI
 	{
-		public static float fStaff;
-		public static float fMaxStaff;
+		public static int fStaff;
+		public static int fMaxStaff;
 		public static float fXP;
 		public static GUIStyle LabelInfo;
 		public static GUIStyle BoxInfo;
@@ -164,8 +164,7 @@ namespace KerbalKonstructs.UI
 
                     if (fMaxStaff < 1)
                     {
-                        myBarracks.StaffMax = 0f;
-                        //PersistenceUtils.saveStaticPersistence(selectedFacility);
+                        myBarracks.StaffMax = 0;
                     }
                     else
                     {
@@ -254,7 +253,7 @@ namespace KerbalKonstructs.UI
 										3);
 								else
 								{
-                                    myBarracks.StaffCurrent = fStaff + 1f;
+                                    myBarracks.StaffCurrent = fStaff + 1;
 									Funding.Instance.AddFunds(-fHireFundCost, TransactionReasons.Cheating);
                                     myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent + 1f;
 								}
@@ -275,7 +274,7 @@ namespace KerbalKonstructs.UI
 								}
 								else
 								{
-                                    myBarracks.StaffCurrent = fStaff - 1f;
+                                    myBarracks.StaffCurrent = fStaff - 1;
                                     myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent - 1f;
 									Funding.Instance.AddFunds(fFireRefund, TransactionReasons.Cheating);
 									Reputation.Instance.AddReputation(-fFireRepCost, TransactionReasons.Cheating);

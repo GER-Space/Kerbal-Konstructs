@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
+using System.Reflection;
 
 namespace KerbalKonstructs.UI
 {
@@ -19,15 +20,24 @@ namespace KerbalKonstructs.UI
 
 		public static void ProductionInterface(StaticObject selectedFacility, string sFacilityType)
 		{
+            if (selectedFacility.myFacilities.Count == 0)
+                return;
 
-            Research allFacs = selectedFacility.myFacilities[0] as Research;
-            //if (sFacilityType == "Research")
+            Type facField;
+
+            if (sFacilityType == "Research")
+            {
+                facField = typeof(Research);
+            }else
+            {
+                facField = typeof(Business);
+            }
+            //Research allFacs = selectedFacility.myFacilities[0] as Research;
             Research myResearch = selectedFacility.myFacilities[0] as Research;
             //if (sFacilityType == "Research")
             Business myBusiness = selectedFacility.myFacilities[0] as Business;
 
-
-                DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton = new GUIStyle(GUI.skin.button);
 			DeadButton.normal.background = null;
 			DeadButton.hover.background = null;
 			DeadButton.active.background = null;
@@ -76,8 +86,9 @@ namespace KerbalKonstructs.UI
 			float fProductionRate = 0;
 			float fLastCheck = 0;
 
-			fStaffing = allFacs.StaffCurrent;
-			fProductionRate = allFacs.ProductionRateCurrent * (fStaffing / 2f);
+
+			fStaffing = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
+            fProductionRate = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]) * (fStaffing / 2f);
 
 			if (fProductionRate < 0.01f)
 			{
@@ -85,19 +96,18 @@ namespace KerbalKonstructs.UI
 
 				if (sFacilityType == "Business") fDefaultRate = 0.10f;
 
-                allFacs.ProductionRateCurrent =  fDefaultRate;
+                facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0],fDefaultRate);
 				fProductionRate = fDefaultRate * (fStaffing / 2f);
 			}
 
-			fLastCheck = allFacs.LastCheck;
+			fLastCheck = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]);
 
 			if (fLastCheck == 0)
 			{
 				fLastCheck = (float)Planetarium.GetUniversalTime();
-                allFacs.LastCheck = fLastCheck;
+                facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], fLastCheck);
 			}
-
-			if (sFacilityType == "Research" || sFacilityType == "Business")
+            if (sFacilityType == "Research" || sFacilityType == "Business")
 			{
 				string sProduces = "";
 				float fMax = 0f;
@@ -126,7 +136,7 @@ namespace KerbalKonstructs.UI
 
 					if (fMax < 1)
 					{
-						fMax = (float)selectedFacility.model.DefaultFundsOMax;
+						fMax = selectedFacility.model.DefaultFundsOMax;
 
 						if (fMax < 1) fMax = 10000f;
 
@@ -134,14 +144,13 @@ namespace KerbalKonstructs.UI
 					}
 
 					fCurrent = myBusiness.FundsOCurrent;
-				}				
-
-				double dTime = Planetarium.GetUniversalTime();
+				}
+                double dTime = Planetarium.GetUniversalTime();
 
 				// Deal with revert exploits
 				if (fLastCheck > (float)dTime)
 				{
-					allFacs.LastCheck =  (float)dTime;
+                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], (float)dTime);
 				}
 
 				if ((float)dTime - fLastCheck > 43200)
@@ -162,7 +171,7 @@ namespace KerbalKonstructs.UI
                         myBusiness.FundsOCurrent = fCurrent;
 					}
 
-                    allFacs.LastCheck = (float)dTime;
+                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], (float)dTime);
 				}
 
 				GUILayout.BeginHorizontal();
@@ -171,8 +180,7 @@ namespace KerbalKonstructs.UI
 				GUILayout.Label("Current: " + fCurrent.ToString("#0") + " | Max: " + fMax.ToString("#0"), LabelInfo);
 				GUILayout.EndHorizontal();
 
-
-				if (sFacilityType == "Research")
+                if (sFacilityType == "Research")
 				{
 					if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
 					{
@@ -198,7 +206,7 @@ namespace KerbalKonstructs.UI
 					//if (GUILayout.Button(" Upgrade ", ButtonSmallText, GUILayout.Height(20)))
 					//{ }
 				}
-				GUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
 				GUILayout.Space(3);
 			}
 		}

@@ -557,7 +557,7 @@ namespace KerbalKonstructs.UI
                     if (needNewFacility)
                         selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Barracks>());
                     selectedObject.hasFacilities = true;
-                    if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = float.Parse(infStaffMax);
+                    if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     break;
                 case "Research":
                     if (needNewFacility)

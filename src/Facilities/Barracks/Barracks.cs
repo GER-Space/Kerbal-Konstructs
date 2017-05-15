@@ -9,11 +9,12 @@ namespace KerbalKonstructs.Modules
     class Barracks : KKFacility
     {
         [CFGSetting]
-        public float StaffMax;
+        public int StaffMax;
         [CareerSetting]
-        public float StaffCurrent;
+        public int StaffCurrent = 0;
         [CareerSetting]
         public float ProductionRateCurrent;
+
 
     }
 }
