@@ -1,58 +1,51 @@
 ﻿using KerbalKonstructs.Core;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
+using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-    public class TrackingStationGUI
+    internal class TrackingStationGUI
     {
-        public static string sTargetType = "None";
-        public static string sTarget = "None";
-        public static string sSelectedTrackingTarget = "None";
-        public static string sDisplayTarget = "None";
-        public static string sDisplayRange = "0m";
-        public static string sUplink = "None";
-        public static string sFacLvl = "Lvl 1/3";
-        public static string sGroup = "Ungrouped";
+        internal static string sGroup = "Ungrouped";
 
-        public static StaticObject selectedStation = null;
+        internal static StaticObject selectedStation = null;
 
-        public static float fRange = 0f;
-        public static float fTSRange = 90000f;
+        internal static float fRange = 0f;
+        internal static float fTSRange = 90000f;
 
-        public static Boolean bChangeTargetType = false;
+        internal static Boolean bChangeTargetType = false;
 
-        public static Vector2 scrollPos;
 
-        public static GUIStyle LabelInfo;
-        public static GUIStyle BoxInfo;
-        public static GUIStyle ButtonSmallText;
 
-        public static string sButtonText = "";
+        internal static GUIStyle LabelInfo;
+        internal static GUIStyle BoxInfo;
 
-        public static float fAlt = 0f;
 
-        public static CelestialBody cPlanetoid = null;
+        internal static string sButtonText = "";
 
-        public static Vector3 ObjectPos = new Vector3(0, 0, 0);
+        internal static float fAlt = 0f;
 
-        public static Double disObjectLat = 0;
-        public static Double disObjectLon = 0;
+        internal static CelestialBody cPlanetoid = null;
 
-        public static Boolean bGUIenabled = false;
-        public static Boolean bCraftLock = false;
+        internal static Vector3 ObjectPos = new Vector3(0, 0, 0);
 
-        public static Boolean bNotInit = false;
+        internal static Double disObjectLat = 0;
+        internal static Double disObjectLon = 0;
 
-        public static void TrackingInterface(StaticObject soStation)
+        internal static Boolean bGUIenabled = false;
+        internal static Boolean bCraftLock = false;
+
+        internal static Boolean bNotInit = false;
+
+        internal static void TrackingInterface(StaticObject instance)
         {
-            fRange = (float)soStation.getSetting("TrackingShort");
-            sTargetType = (string)soStation.getSetting("TargetType");
-            sTarget = (string)soStation.getSetting("TargetID");
-            sGroup = (string)soStation.getSetting("Group");
+            GroundStation myStation = instance.myFacilities[0] as GroundStation;
+
+            fRange = myStation.TrackingShort;
+            sGroup = instance.Group;
             bCraftLock = false;
 
             LabelInfo = new GUIStyle(GUI.skin.label);
