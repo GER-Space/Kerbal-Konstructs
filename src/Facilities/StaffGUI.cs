@@ -37,7 +37,7 @@ namespace KerbalKonstructs.UI
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
-				if (instance.FacilityType!= "Barracks")
+				if (instance.FacilityType != "Barracks")
 				{
 					if (instance.model.DefaultFacilityType != "Barracks") continue;
 				}
@@ -143,33 +143,45 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
 
-			fStaff = myBarracks.StaffCurrent;
-			fMaxStaff = myBarracks.StaffMax;
 
-			bIsBarracks = false;
+            bIsBarracks = false;
 
-			if (selectedFacility.FacilityType == "Barracks")
-				bIsBarracks = true;
-			else
-				if (selectedFacility.model.DefaultFacilityType == "Barracks")
-					bIsBarracks = true;
+            if (selectedFacility.FacilityType == "Barracks")
+                bIsBarracks = true;
+            else
+                if (selectedFacility.model.DefaultFacilityType == "Barracks")
+                bIsBarracks = true;
 
-			if (fMaxStaff < 1)
-			{
-				fMaxStaff = selectedFacility.model.DefaultStaffMax;
+            // check if we can access the staffing variables
+            if (selectedFacility.FacilityType == "Barracks" || selectedFacility.FacilityType == "Business " || selectedFacility.FacilityType == "Research")
+            {
+                fStaff = myBarracks.StaffCurrent;
+                fMaxStaff = myBarracks.StaffMax;
 
-				if (fMaxStaff < 1)
-				{
-                    myBarracks.StaffMax = 0f;
-					//PersistenceUtils.saveStaticPersistence(selectedFacility);
-				}
-				else
-				{
-                    myBarracks.StaffMax = fMaxStaff;
-				}
-			}
+                if (fMaxStaff < 1)
+                {
+                    fMaxStaff = selectedFacility.model.DefaultStaffMax;
 
-			if (fMaxStaff > 0)
+                    if (fMaxStaff < 1)
+                    {
+                        myBarracks.StaffMax = 0f;
+                        //PersistenceUtils.saveStaticPersistence(selectedFacility);
+                    }
+                    else
+                    {
+                        myBarracks.StaffMax = fMaxStaff;
+                    }
+                }
+            }
+            else
+            {  
+                // we don't have any staffing
+                fStaff = 0;
+                fMaxStaff = 0;
+            }
+
+
+            if (fMaxStaff > 0)
 			{
 				float fHireFundCost = 5000;
 				float fFireRefund = 2500;
