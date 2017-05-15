@@ -1303,77 +1303,77 @@ namespace KerbalKonstructs
 
 
 
-        public void exportCustomInstances(string sPackName = "MyStaticPack", string sBaseName = "All", string sGroup = "", Boolean bLocal = false)
-        {
-            bool HasCustom = false;
-            string sBase = "";
+        //public void exportCustomInstances(string sPackName = "MyStaticPack", string sBaseName = "All", string sGroup = "", Boolean bLocal = false)
+        //{
+        //    bool HasCustom = false;
+        //    string sBase = "";
 
-            if (sGroup != "") sBase = sGroup;
-            else
-                sBase = sBaseName;
+        //    if (sGroup != "") sBase = sGroup;
+        //    else
+        //        sBase = sBaseName;
 
-            foreach (StaticModel model in StaticDatabase.allStaticModels)
-            {
-                HasCustom = false;
-                ConfigNode staticNode = new ConfigNode("STATIC");
-                ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
+        //    foreach (StaticModel model in StaticDatabase.allStaticModels)
+        //    {
+        //        HasCustom = false;
+        //        ConfigNode staticNode = new ConfigNode("STATIC");
+        //        ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
 
-                modelConfig.RemoveNodes("Instances");
+        //        modelConfig.RemoveNodes("Instances");
 
-                foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
-                {
-                    string sCustom = (string)instance.getSetting("CustomInstance");
-                    string sInstGroup = (string)instance.getSetting("Group");
+        //        foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
+        //        {
+                    
+        //            string sInstGroup = (string)instance.getSetting("Group");
 
-                    if (sGroup != "")
-                    {
-                        if (sInstGroup != sGroup)
-                        {
-                            sInstGroup = "";
-                            continue;
-                        }
-                    }
+        //            if (sGroup != "")
+        //            {
+        //                if (sInstGroup != sGroup)
+        //                {
+        //                    sInstGroup = "";
+        //                    continue;
+        //                }
+        //            }
 
-                    if (DevMode)
-                    {
-                        sCustom = "True";
-                        //obj.setSetting("CustomInstance", "True");
-                    }
+        //            if (DevMode)
+        //            {
+        //                sCustom = "True";
+        //                //obj.setSetting("CustomInstance", "True");
+        //            }
 
-                    if (sCustom == "True")
-                    {
-                        HasCustom = true;
-                        ConfigNode inst = new ConfigNode("Instances");
-                        foreach (KeyValuePair<string, object> setting in instance.settings)
-                        {
-                            inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-                        }
-                        modelConfig.nodes.Add(inst);
-                    }
-                }
+        //            if (sCustom == "True")
+        //            {
+        //                HasCustom = true;
+        //                ConfigNode inst = new ConfigNode("Instances");
+        //                foreach (KeyValuePair<string, object> setting in instance.settings)
+        //                {
+        //                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
+        //                }
+        //                modelConfig.nodes.Add(inst);
+        //            }
+        //        }
 
-                if (HasCustom)
-                {
-                    string sModelName = modelConfig.GetValue("name");
-                    modelConfig.AddValue("pointername", sModelName);
+        //        if (HasCustom)
+        //        {
+        //            string sModelName = modelConfig.GetValue("name");
+        //            modelConfig.AddValue("pointername", sModelName);
 
-                    modelConfig.RemoveValue("name");
-                    modelConfig.AddValue("name", sPackName + "_" + sBase + "_" + sModelName);
+        //            modelConfig.RemoveValue("name");
+        //            modelConfig.AddValue("name", sPackName + "_" + sBase + "_" + sModelName);
 
-                    staticNode.AddNode(modelConfig);
-                    if (DevMode)
-                    {
-                        Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase);
-                        staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase + "/" + sModelName + ".cfg", "Exported custom instances by Kerbal Konstructs");
-                    }
-                    else
-                    {
-                        Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.path);
-                        staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.configPath, "Exported custom instances by Kerbal Konstructs");
-                    }
-                }
-            }
-        }
+        //            staticNode.AddNode(modelConfig);
+        //            if (DevMode)
+        //            {
+        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase);
+        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase + "/" + sModelName + ".cfg", "Exported custom instances by Kerbal Konstructs");
+        //            }
+        //            else
+        //            {
+        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.path);
+        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.configPath, "Exported custom instances by Kerbal Konstructs");
+        //            }
+        //        }
+        //    }
+        //}
 
         public void exportMasters()
         {
@@ -1382,10 +1382,10 @@ namespace KerbalKonstructs
 
             Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
 
-            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
             {
-                String bodyName = ((CelestialBody)obj.getSetting("CelestialBody")).bodyName;
-                String groupName = (string)obj.getSetting("Group");
+                String bodyName = instance.CelestialBody.bodyName;
+                String groupName = instance.Group;
 
                 if (!groupList.ContainsKey(bodyName))
                 {
@@ -1425,15 +1425,12 @@ namespace KerbalKonstructs
 
                         foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
                         {
-                            string sObjGroup = (string)obj.getSetting("Group");
+                            string sObjGroup = obj.Group;
                             if (sObjGroup != sBase) continue;
 
                             ConfigNode inst = new ConfigNode("Instances");
 
-                            foreach (KeyValuePair<string, object> setting in obj.settings)
-                            {
-                                inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-                            }
+                            ConfigParser.WriteInstanceConfig(obj,inst);
                             modelConfig.nodes.Add(inst);
                             bNoInstances = false;
                         }

@@ -49,7 +49,7 @@ namespace KerbalKonstructs.Addons
 
             foreach (StaticObject instance in StaticDatabase.allStaticInstances )
             {
-                group = (string)instance.getSetting("Group");
+                group = (string)instance.Group;
                 key = instance.pqsCity.repositionRadial.ToString();
 
                 switch (group)

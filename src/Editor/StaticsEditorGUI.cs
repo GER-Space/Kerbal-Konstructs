@@ -613,50 +613,50 @@ namespace KerbalKonstructs.UI
                     GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label("Pack Name: ", GUILayout.Width(140));
-                        //GUILayout.FlexibleSpace();
-                        sPackName = GUILayout.TextField(sPackName, 30, GUILayout.Width(140));
-                        //GUILayout.FlexibleSpace();
+                    //{
+                    //    GUILayout.Label("Pack Name: ", GUILayout.Width(140));
+                    //    //GUILayout.FlexibleSpace();
+                    //    sPackName = GUILayout.TextField(sPackName, 30, GUILayout.Width(140));
+                    //    //GUILayout.FlexibleSpace();
 
-                        GUI.enabled = (sPackName != "" && groupfilter != "");
-                        if (GUILayout.Button("Export Group"))
-                        {
-                            //Validate the groupfilter to see if it is a Group name
-                            bool bValidGroupName = false;
+                    //    GUI.enabled = (sPackName != "" && groupfilter != "");
+                    //    if (GUILayout.Button("Export Group"))
+                    //    {
+                    //        //Validate the groupfilter to see if it is a Group name
+                    //        bool bValidGroupName = false;
 
-                            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-                            {
-                                if (instance.Group == groupfilter)
-                                {
-                                    bValidGroupName = true;
-                                    break;
-                                }
-                            }
+                    //        foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+                    //        {
+                    //            if (instance.Group == groupfilter)
+                    //            {
+                    //                bValidGroupName = true;
+                    //                break;
+                    //            }
+                    //        }
 
-                            if (bValidGroupName)
-                            {
-                                KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
-                                smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
-                                MiscUtils.HUDMessage(smessage, 10, 2);
-                            }
-                            else
-                            {
-                                smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
-                                MiscUtils.HUDMessage(smessage, 20, 2);
-                            }
-                        }
-                        GUI.enabled = true;
+                    //        if (bValidGroupName)
+                    //        {
+                    //            KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
+                    //            smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
+                    //            MiscUtils.HUDMessage(smessage, 10, 2);
+                    //        }
+                    //        else
+                    //        {
+                    //            smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
+                    //            MiscUtils.HUDMessage(smessage, 20, 2);
+                    //        }
+                    //    }
+                    //    GUI.enabled = true;
 
-                        GUI.enabled = (sPackName != "");
-                        if (GUILayout.Button("Export All"))
-                        {
-                            KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
-                            smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
-                            MiscUtils.HUDMessage(smessage, 10, 2);
-                        }
-                        GUI.enabled = true;
-                    }
+                    //    GUI.enabled = (sPackName != "");
+                    //    if (GUILayout.Button("Export All"))
+                    //    {
+                    //        KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
+                    //        smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
+                    //        MiscUtils.HUDMessage(smessage, 10, 2);
+                    //    }
+                    //    GUI.enabled = true;
+                    //}
                     GUILayout.EndHorizontal();
 
                     if (!KerbalKonstructs.instance.disableAllInstanceEditing)
