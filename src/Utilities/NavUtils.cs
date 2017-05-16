@@ -33,38 +33,7 @@ namespace KerbalKonstructs.Utilities
 			return (!double.IsNaN(latitude) ? latitude : 0.0);
 		}
 
-		public static StaticObject GetNearestFacility(Vector3 vPosition, string sFacilityType, string sGroup = "None")
-		{
-			StaticObject soFacility = null;
 
-			float fLastDist = 100000000f;
-			float fDistance = 0f;
-			float fNearest = 0f;
-
-			foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-			{
-				if (sGroup != "None")
-				{
-					if (instance.Group != sGroup) continue;
-				}
-
-				if (instance.legacyfacilityID == sFacilityType)
-				{
-					fDistance = Vector3.Distance(instance.gameObject.transform.position, vPosition);
-
-					if (fDistance < fLastDist)
-					{
-						fNearest = fDistance;
-						soFacility = instance;
-					}
-
-					fLastDist = fDistance;
-				}
-				else continue;
-			}
-
-			return soFacility;
-		}
 
 		public static Material lineMaterial1;
 		public static Material lineMaterial2;
