@@ -832,7 +832,7 @@ namespace KerbalKonstructs.UI
                 {
                     GUILayout.Label("Heading:");
                     GUILayout.FlexibleSpace();
-                    GUILayout.TextField(heading.ToString(), 7, GUILayout.Width(fTempWidth));
+                    GUILayout.TextField(heading.ToString(), 9, GUILayout.Width(fTempWidth));
 
                     if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                     {

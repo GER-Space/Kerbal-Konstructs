@@ -69,8 +69,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal float DefaultScienceOMax;
         [CFGSetting]
-        internal float DefaultRepOMax;
-        [CFGSetting]
         internal float DefaultFundsOMax;
 	}
 }

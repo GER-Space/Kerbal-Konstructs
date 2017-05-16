@@ -62,7 +62,6 @@ namespace KerbalKonstructs.UI
         //		String infPrOreMax = "";
         String infProdRateMax = "";
         String infScienceMax = "";
-        String infRepMax = "";
         String infFundsMax = "";
 
         public StaticModel mModel = null;
@@ -529,7 +528,6 @@ namespace KerbalKonstructs.UI
             //	if (infPrOreMax != "") mModel.setSetting("PrOreMax", float.Parse(infPrOreMax));
             if (infProdRateMax != "") mModel.DefaultProductionRateMax = float.Parse(infProdRateMax);
             if (infScienceMax != "") mModel.DefaultScienceOMax = float.Parse(infScienceMax);
-            if (infRepMax != "") mModel.DefaultRepOMax = float.Parse(infRepMax);
             if (infFundsMax != "") mModel.DefaultFundsOMax = float.Parse(infFundsMax);
         }
 
@@ -558,7 +556,6 @@ namespace KerbalKonstructs.UI
             //	infPrOreMax = obj.getSetting("PrOreMax").ToString();
             infProdRateMax = obj.DefaultProductionRateMax.ToString();
             infScienceMax = obj.DefaultScienceOMax.ToString();
-            infRepMax = obj.DefaultRepOMax.ToString();
             infFundsMax = obj.DefaultFundsOMax.ToString();
         }
 

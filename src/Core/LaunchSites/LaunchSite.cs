@@ -66,66 +66,6 @@ namespace KerbalKonstructs.Core
 
 
 
-        public LaunchSite()
-        {
-        }
-
-        ///// <summary>
-        ///// Creates an Launchsite out of an StaticInstance (and its settings)
-        ///// </summary>
-        ///// <param name="instance"></param>
-        //public LaunchSite(StaticObject instance, PSystemSetup.SpaceCenterFacility newFacility)
-        //{
-
-        //    if (instance.settings.ContainsKey("LaunchSiteLogo"))
-        //    {
-        //        string sLogoPath = (string)instance.getSetting("LaunchSiteLogo");
-        //        logo = GameDatabase.Instance.GetTexture(sLogoPath, false);
-
-        //        if (logo == null)
-        //            logo = GameDatabase.Instance.GetTexture(instance.model.path + "/" + instance.getSetting("LaunchSiteLogo"), false);
-        //    }
-        //    // use default logo
-        //    if (logo == null)
-        //        logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
-
-        //    if (instance.settings.ContainsKey("LaunchSiteIcon"))
-        //    {
-        //        string sIconPath = (string)instance.getSetting("LaunchSiteIcon");
-        //        icon = GameDatabase.Instance.GetTexture(sIconPath, false);
-
-        //        if (icon == null)
-        //            icon = GameDatabase.Instance.GetTexture(instance.model.path + "/" + instance.getSetting("LaunchSiteIcon"), false);
-        //    }
-
-        //    this.LaunchSiteName = (string)instance.getSetting("LaunchSiteName");
-        //    this.LaunchSiteAuthor = (instance.settings.ContainsKey("LaunchSiteAuthor")) ? (string)instance.getSetting("LaunchSiteAuthor") : instance.model.author;
-        //    this.LaunchSiteType = (SiteType)instance.getSetting("LaunchSiteType");
-
-        //    this.LaunchSiteDescription = (string)instance.getSetting("LaunchSiteDescription");
-        //    this.Category = (string)instance.getSetting("Category");
-        //    this.OpenCost = (float)instance.getSetting("OpenCost");
-        //    this.CloseValue = (float)instance.getSetting("CloseValue");
-        //    this.body = instance.CelestialBody;
-        //    this.refLon = (float)Math.Round((NavUtils.GetLongitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 4);
-        //    this.refLat = (float)Math.Round((NavUtils.GetLatitude(instance.pqsCity.repositionRadial) * KKMath.rad2deg), 4);
-        //    this.refAlt = (float)instance.getSetting("RadiusOffset");
-        //    this.LaunchSiteLength = (instance.settings.ContainsKey("LaunchSiteLength")) ?
-        //                            (float)instance.getSetting("LaunchSiteLength") : (float)instance.model.DefaultLaunchSiteLength;
-        //    this.LaunchSiteWidth = (instance.settings.ContainsKey("LaunchSiteWidth")) ?
-        //                            (float)instance.getSetting("LaunchSiteWidth") : (float)instance.model.DefaultLaunchSiteWidth;
-        //    this.LaunchRefund = (float)instance.getSetting("LaunchRefund");
-        //    this.RecoveryFactor = (float)instance.getSetting("RecoveryFactor");
-        //    this.RecoveryRange = (float)instance.getSetting("RecoveryRange");
-        //    this.lsGameObject = instance.gameObject;
-        //    this.facility = newFacility;
-        //    this.MissionLog = "No log";
-
-        //    if (string.Equals((string)instance.getSetting("LaunchSiteIsHidden"), "true", StringComparison.CurrentCultureIgnoreCase))
-        //        this.LaunchSiteIsHidden = true;
-
-        //}
-
         internal override KKFacility ParseConfig(ConfigNode node)
         {
             LaunchSite launchSite = base.ParseConfig(node) as LaunchSite;

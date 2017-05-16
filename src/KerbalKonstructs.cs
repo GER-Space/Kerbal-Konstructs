@@ -174,47 +174,6 @@ namespace KerbalKonstructs
             StageRecovery.AttachStageRecovery();
             #endregion
 
-
-            //#region Instance API
-            //// Position
-            //KKAPI.addInstanceSetting("CelestialBody", new ConfigCelestialBody());
-            //KKAPI.addInstanceSetting("RadialPosition", new ConfigVector3());
-            //KKAPI.addInstanceSetting("Orientation", new ConfigVector3());
-            //KKAPI.addInstanceSetting("RadiusOffset", new ConfigFloat());
-            //KKAPI.addInstanceSetting("RotationAngle", new ConfigFloat());
-
-            //ConfigGenericString isScanable = new ConfigGenericString();
-            //isScanable.setDefaultValue("false");
-            //KKAPI.addInstanceSetting("isScanable", isScanable);
-
-            //// Calculated References - do not set, it will not work
-            //KKAPI.addInstanceSetting("RefLatitude", new ConfigDouble());
-            //KKAPI.addInstanceSetting("RefLongitude", new ConfigDouble());
-
-            //// Visibility and Grouping
-            //ConfigFloat visibilityConfig = new ConfigFloat();
-            //visibilityConfig.setDefaultValue(25000f);
-            //KKAPI.addInstanceSetting("VisibilityRange", visibilityConfig);
-            //ConfigGenericString groupConfig = new ConfigGenericString();
-            //groupConfig.setDefaultValue("Ungrouped");
-            //KKAPI.addInstanceSetting("Group", groupConfig);
-            //ConfigGenericString groupCenter = new ConfigGenericString();
-            //groupCenter.setDefaultValue("false");
-            //KKAPI.addInstanceSetting("GroupCenter", groupCenter);
-
-
-            //ConfigGenericString instfacilityrole = new ConfigGenericString();
-            //instfacilityrole.setDefaultValue("None");
-            //KKAPI.addInstanceSetting("FacilityType", instfacilityrole);
-
-            //// Model Scale
-            //ConfigFloat modelScale = new ConfigFloat();
-            //modelScale.setDefaultValue(1f);
-            //KKAPI.addInstanceSetting("ModelScale", modelScale);
-
-
-            //#endregion
-
             SpaceCenterManager.setKSC();
             loadConfig();
             saveConfig();
