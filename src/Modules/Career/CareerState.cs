@@ -331,13 +331,15 @@ namespace KerbalKonstructs.Modules
         {
             if ((HighLogic.LoadedScene == GameScenes.SPACECENTER) && (!KerbalKonstructs.InitialisedFacilities))
             {
+                bool newGame = false;
                 string saveConfigPath = string.Format("{0}saves/{1}/persistent.sfs", KSPUtil.ApplicationRootPath, HighLogic.SaveFolder);
                 if (File.Exists(saveConfigPath))
                 {
                     Log.Debug("Found persistent.sfs");
                     ConfigNode rootNode = ConfigNode.Load(saveConfigPath);
                     ConfigNode rootrootNode = rootNode.GetNode("GAME");
-                    foreach (ConfigNode ins in rootrootNode.GetNodes())
+
+                    foreach (ConfigNode ins in rootrootNode.GetNodes("SCENARIO"))
                     {
                         // Debug.Log("KK: ConfigNode is " + ins);
                         if (ins.GetValue("name") == "ScenarioUpgradeableFacilities")
@@ -345,33 +347,34 @@ namespace KerbalKonstructs.Modules
                             Log.Debug("Found ScenarioUpgradeableFacilities in persistent.sfs");
 
                             foreach (string kscBuilding in new List<string> {
-                            "SpaceCenter/LaunchPad",
-                            "SpaceCenter/Runway",
-                            "SpaceCenter/VehicleAssemblyBuilding",
-                            "SpaceCenter/SpaceplaneHangar",
-                            "SpaceCenter/TrackingStation",
-                            "SpaceCenter/AstronautComplex",
-                            "SpaceCenter/MissionControl",
-                            "SpaceCenter/ResearchAndDevelopment",
-                            "SpaceCenter/Administration",
-                            "SpaceCenter/FlagPole" })
-                            {
-                                ConfigNode node = ins.GetNode(kscBuilding);
-                                if (node == null)
+                                    "SpaceCenter/LaunchPad",
+                                    "SpaceCenter/Runway",
+                                    "SpaceCenter/VehicleAssemblyBuilding",
+                                    "SpaceCenter/SpaceplaneHangar",
+                                    "SpaceCenter/TrackingStation",
+                                    "SpaceCenter/AstronautComplex",
+                                    "SpaceCenter/MissionControl",
+                                    "SpaceCenter/ResearchAndDevelopment",
+                                    "SpaceCenter/Administration",
+                                    "SpaceCenter/FlagPole",
+                                    "SpaceCenter/Observatory" })
+                            {                          
+                                if (!ins.HasNode(kscBuilding))
                                 {
                                     Log.Normal("Could not find " + kscBuilding + " node. Creating node.");
-                                    node = ins.AddNode(kscBuilding);
+                                    ConfigNode node = ins.AddNode(kscBuilding);
                                     node.AddValue("lvl", 0);
                                     rootNode.Save(saveConfigPath);
-                                    KerbalKonstructs.InitialisedFacilities = true;
+                                    newGame = true;
                                 }
                             }
                             break;
                         }
                     }
 
-                    if (KerbalKonstructs.InitialisedFacilities)
+                    if (newGame)
                     {
+                        Log.Normal("Resetting Facilitiy Levels");
                         rootNode.Save(saveConfigPath);
                         foreach (UpgradeableFacility facility in GameObject.FindObjectsOfType<UpgradeableFacility>())
                         {
@@ -379,7 +382,7 @@ namespace KerbalKonstructs.Modules
                         }
                     }
 
-                    Log.Normal("loadCareerObjects");
+                    
                     KerbalKonstructs.InitialisedFacilities = true;
                 }
             }
