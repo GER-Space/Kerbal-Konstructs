@@ -549,7 +549,7 @@ namespace KerbalKonstructs
                 {
                     GUI_StaticsEditor.ToggleEditor();
                 }
-                if (Input.GetKeyDown(KeyCode.LeftShift) && GUI_StaticsEditor.IsOpen())
+                if (Input.GetKeyDown(KeyCode.Tab) && GUI_StaticsEditor.IsOpen())
                 {
                     GUI_StaticsEditor.SelectMouseObject();
                 }

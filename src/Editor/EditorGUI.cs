@@ -335,7 +335,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
+                    //KerbalKonstructs.instance.saveObjects();
                     KerbalKonstructs.instance.deselectObject(true, true);
                 }
             }
