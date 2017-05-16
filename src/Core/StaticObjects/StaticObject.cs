@@ -58,8 +58,6 @@ namespace KerbalKonstructs.Core
         internal UrlDir.UrlConfig configUrl;
         internal String configPath;
 
-        //internal Dictionary<string, object> settings = new Dictionary<string, object>();
-
         internal bool hasFacilities = false;
         internal bool hasLauchSites = false;
         internal LaunchSite launchSite;
@@ -101,37 +99,6 @@ namespace KerbalKonstructs.Core
 			foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
 			    module.StaticObjectUpdate();
 		}
-
-  //      internal object getSetting(string setting)
-		//{
-		//	if (settings.ContainsKey(setting))
-		//		return settings[setting];
-		//	// Debug.Log("KK: Setting " + setting + " not found in instance of model " + model.config);
-		//	object defaultValue = KKAPI.getInstanceSettings()[setting].getDefaultValue();
-
-		//	if (defaultValue != null)
-		//	{
-		//		settings.Add(setting, defaultValue);
-		//		return defaultValue;
-		//	}
-		//	else
-		//	{
-		//		Log.Normal("Setting " + setting + " not found in instance API. BUG BUG BUG.");
-		//		return null;
-		//	}
-		//}
-
-  //      internal void setSetting(string setting, object value)
-		//{
-		//	if (settings.ContainsKey(setting))
-		//	{
-		//		settings[setting] = value;
-		//	}
-		//	else
-		//	{
-		//		settings.Add(setting, value);
-		//	}
-		//}
 
         internal void HighlightObject(Color highlightColor)
 		{
