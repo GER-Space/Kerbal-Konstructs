@@ -143,7 +143,7 @@ namespace KerbalKonstructs.Modules
                     foreach (var facNode in instanceNode.GetNodes())
                     {
                         int index = int.Parse(facNode.GetValue("Index"));
-                        if (instance.myFacilities[index].facilityType == facNode.name)
+                        if (instance.myFacilities[index].FacilityType == facNode.name)
                         {
                             //Log.Normal("Load State: " + instance.pqsCity.name + " : "  + facNode.name);
                             instance.myFacilities[index].LoadCareerConfig(facNode);
@@ -180,7 +180,7 @@ namespace KerbalKonstructs.Modules
 
                 for (int i = 0; i < instance.myFacilities.Count; i++)
                 {
-                    ConfigNode facnode = instanceNode.AddNode(instance.myFacilities[i].facilityType);
+                    ConfigNode facnode = instanceNode.AddNode(instance.myFacilities[i].FacilityType);
                     facnode.SetValue("Index", i, true);
                     instance.myFacilities[i].SaveCareerConfig(facnode);
                 }

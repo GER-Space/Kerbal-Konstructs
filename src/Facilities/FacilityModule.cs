@@ -38,8 +38,8 @@ namespace KerbalKonstructs.Modules
         public float OpenCost;
         [CFGSetting]
         public float CloseValue;
-
-        internal string facilityType; 
+        [CFGSetting]
+        internal string FacilityType; 
 
         private static Dictionary<string, FieldInfo> myFields;
         private static Dictionary<string, Dictionary<string, FieldInfo>> allFields = new Dictionary<string, Dictionary<string, FieldInfo>>();
@@ -66,7 +66,7 @@ namespace KerbalKonstructs.Modules
                 }
             }
 
-            facilityType = this.GetType().Name;
+            FacilityType = this.GetType().Name;
             return this;
         }
 

@@ -576,21 +576,25 @@ namespace KerbalKonstructs
         /// </summary>
         void LateUpdate()
         {
+
             // Check if we don't have the KSC Buildings in the savegame and save them there if missing.
             // this is needed, because for some reason we set all buildings directly to max level without.
-            CareerState.FixKSCFacilities();
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && HighLogic.CurrentGame.Mode == Game.Modes.CAREER)
+                CareerState.FixKSCFacilities();
 
-            GUI_Editor.CheckEditorKeys();
-
-            if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                GUI_StaticsEditor.ToggleEditor();
-            }
-            if (Input.GetKeyDown(KeyCode.LeftShift) && GUI_StaticsEditor.IsOpen())
-            {
-                GUI_StaticsEditor.SelectMouseObject();
-            }
+                GUI_Editor.CheckEditorKeys();
 
+                if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+                {
+                    GUI_StaticsEditor.ToggleEditor();
+                }
+                if (Input.GetKeyDown(KeyCode.LeftShift) && GUI_StaticsEditor.IsOpen())
+                {
+                    GUI_StaticsEditor.SelectMouseObject();
+                }
+            }
         }
 
         #endregion
@@ -1186,6 +1190,12 @@ namespace KerbalKonstructs
                     instance.myFacilities.Add(instance.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
                     break;
             }
+
+            //attach multiple failities
+            foreach (ConfigNode facNode in cfgNode.GetNodes("Facility"))
+                AttachFacilities(instance, facNode);
+
+
         }
 
         /// <summary>

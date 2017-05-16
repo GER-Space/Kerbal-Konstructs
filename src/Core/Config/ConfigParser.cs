@@ -95,7 +95,9 @@ namespace KerbalKonstructs.Core
                 if (instanceSetting.Value.GetValue(instance) == null)
                     continue;
 
-                ;
+                if (instanceSetting.Key == "FacilityType")
+                    continue;
+
                 switch (instanceSetting.Value.FieldType.ToString())
                 {
                     case "System.String":
@@ -136,7 +138,8 @@ namespace KerbalKonstructs.Core
                 {
                     foreach (var fac in instance.myFacilities)
                     {
-                        fac.WriteConfig(cfgNode);
+                        ConfigNode facNode = cfgNode.AddNode("Facility");
+                        fac.WriteConfig(facNode);
                     }
                 }
 

@@ -88,7 +88,7 @@ namespace KerbalKonstructs.UI
 
                                 // Callback to CommNet.
                                 
-                                if (selectedFacility.myFacilities[0].facilityType == "GroundStation")
+                                if (selectedFacility.myFacilities[0].FacilityType == "GroundStation")
                                 {
                                     Modules.RemoteNet.AttachGroundStation(selectedFacility);
                                 } 
@@ -120,7 +120,7 @@ namespace KerbalKonstructs.UI
 								evFacilityClosed(selectedFacility);
 
                             // Callback to CommNet.
-                            if ((selectedFacility.myFacilities[0].facilityType) == "GroundStation")
+                            if ((selectedFacility.myFacilities[0].FacilityType) == "GroundStation")
                             {
                                 Modules.RemoteNet.DetachGroundStation(selectedFacility);
                             }
