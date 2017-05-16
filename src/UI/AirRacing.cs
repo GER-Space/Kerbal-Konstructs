@@ -149,7 +149,7 @@ namespace KerbalKonstructs.UI
 
 					if (!started)
 					{
-						StartLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceStart");
+						StartLine = GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceStart");
 						if (StartLine != null)
 						{
 							fDistToStart = StartLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
@@ -212,7 +212,7 @@ namespace KerbalKonstructs.UI
 
 						if (fNextGate == 0)
 						{
-							FinishLine = NavUtils.GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceFinish");
+							FinishLine = GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceFinish");
 							if (FinishLine != null)
 							{
 								fDistToFinish = FinishLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
@@ -279,7 +279,7 @@ namespace KerbalKonstructs.UI
 			string sGate = "Gate" + fNextGate.ToString();
 			string sGroup = StartLine.Group;
 
-			soNextGate = NavUtils.GetNearestFacility(StartLine.gameObject.transform.position, sGate, sGroup);
+			soNextGate = GetNearestFacility(StartLine.gameObject.transform.position, sGate, sGroup);
 
 			return soNextGate;
 		}
@@ -291,8 +291,8 @@ namespace KerbalKonstructs.UI
 			StaticObject soNearestPole = null;
 
 			string sGroup = soGate.Group;
-			string sFacType = soGate.FacilityType;
-			soNearestPole = NavUtils.GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
+			string sFacType = soGate.legacyfacilityID;
+			soNearestPole = GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
 
 			vCenter = Vector3.Lerp(soGate.gameObject.transform.position, soNearestPole.gameObject.transform.position, 0.5f);
 
@@ -306,8 +306,8 @@ namespace KerbalKonstructs.UI
 			StaticObject soNearestPole = null;
 
 			string sGroup = soGate.Group;
-			string sFacType = soGate.FacilityType;
-			soNearestPole = NavUtils.GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
+			string sFacType = soGate.legacyfacilityID;
+			soNearestPole = GetNearestFacility(soGate.gameObject.transform.position, sFacType + "P", sGroup);
 
 			fDistance = Vector3.Distance(soGate.gameObject.transform.position, soNearestPole.gameObject.transform.position);
 			return fDistance;
@@ -325,5 +325,39 @@ namespace KerbalKonstructs.UI
 			finished = false;
 			started = false;
 		}
-	}
+
+        public static StaticObject GetNearestFacility(Vector3 vPosition, string sFacilityType, string sGroup = "None")
+        {
+            StaticObject soFacility = null;
+
+            float fLastDist = 100000000f;
+            float fDistance = 0f;
+            float fNearest = 0f;
+
+            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            {
+                if (sGroup != "None")
+                {
+                    if (instance.Group != sGroup) continue;
+                }
+
+                if (instance.legacyfacilityID == sFacilityType)
+                {
+                    fDistance = Vector3.Distance(instance.gameObject.transform.position, vPosition);
+
+                    if (fDistance < fLastDist)
+                    {
+                        fNearest = fDistance;
+                        soFacility = instance;
+                    }
+
+                    fLastDist = fDistance;
+                }
+                else continue;
+            }
+
+            return soFacility;
+        }
+
+    }
 }

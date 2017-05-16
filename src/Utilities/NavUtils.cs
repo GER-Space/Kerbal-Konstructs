@@ -48,7 +48,7 @@ namespace KerbalKonstructs.Utilities
 					if (instance.Group != sGroup) continue;
 				}
 
-				if (instance.FacilityType == sFacilityType)
+				if (instance.legacyfacilityID == sFacilityType)
 				{
 					fDistance = Vector3.Distance(instance.gameObject.transform.position, vPosition);
 
