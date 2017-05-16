@@ -26,6 +26,9 @@ namespace KerbalKonstructs.Core
 
 
 
+        // Handy get of all launchSites
+        public static List<LaunchSite> AllLaunchSites { get { return launchSites; } }
+
         private static float getKSCLon
         {
             get
@@ -116,6 +119,29 @@ namespace KerbalKonstructs.Core
         static LaunchSiteManager()
         {
             AddKSC();
+        }
+
+
+        internal static void AttachLaunchSite(StaticObject instance, ConfigNode instanceNode)
+        {
+            if (instanceNode.HasValue("LaunchPadTransform") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchPadTransform")) && instanceNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchSiteName")))
+            {
+                // legacy Launchsite within instanceNode
+                CreateLaunchSite(instance, instanceNode);
+            }
+            else
+            {
+                // check for new LaunchSite ConfigNode
+                if (instanceNode.HasNode("LaunchSite"))
+                {
+                    ConfigNode lsNode = instanceNode.GetNode("LaunchSite");
+                    if (lsNode.HasValue("LaunchPadTransform") && !string.IsNullOrEmpty(lsNode.GetValue("LaunchPadTransform")) && lsNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(lsNode.GetValue("LaunchSiteName")))
+                    {
+                        // legacy Launchsite within instanceNode
+                        CreateLaunchSite(instance, lsNode);
+                    }
+                }
+            }
         }
 
 
@@ -746,8 +772,5 @@ namespace KerbalKonstructs.Core
             return lastLaunchSite;
 
         }
-
-        // Handy get of all launchSites
-        public static List<LaunchSite> AllLaunchSites { get { return launchSites; } }
     }
 }

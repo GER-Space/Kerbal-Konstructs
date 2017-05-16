@@ -147,8 +147,7 @@ namespace KerbalKonstructs.Core
             }
 
             if (instance.hasFacilities)
-            {
-                Log.Normal("Writing FacConfig for: " + instance.gameObject.name);
+            {               
                 for (int i = 0; i < instance.myFacilities.Count; i++)
                 { 
                     ConfigNode facNode = cfgNode.AddNode("Facility");
@@ -158,7 +157,8 @@ namespace KerbalKonstructs.Core
 
             if (instance.hasLauchSites)
             {
-                instance.launchSite.WriteConfig(cfgNode);
+                ConfigNode lsNode = cfgNode.AddNode("LaunchSite");
+                instance.launchSite.WriteConfig(lsNode);
             }
 
         }

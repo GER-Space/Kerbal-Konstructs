@@ -940,8 +940,7 @@ namespace KerbalKonstructs
 
                 AttachFacilities(instance, instanceCfgNode);
 
-                if (instanceCfgNode.HasValue("LaunchPadTransform" ) && ! string.IsNullOrEmpty(instanceCfgNode.GetValue("LaunchPadTransform")) && instanceCfgNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceCfgNode.GetValue("LaunchSiteName")))
-                    LaunchSiteManager.CreateLaunchSite(instance, instanceCfgNode);
+                LaunchSiteManager.AttachLaunchSite(instance, instanceCfgNode);
 
             }
 
@@ -1255,9 +1254,9 @@ namespace KerbalKonstructs
             }
             else
             {
-               // instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);
-              //  instanceConfig.RemoveNodes("Instances");
-              //  instanceConfig.RemoveValues();
+                //instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);
+                //instanceConfig.RemoveNodes("Instances");
+                //instanceConfig.RemoveValues();
                 instanceConfig = new ConfigNode("STATIC");
                 instanceConfig.AddValue("pointername", firstInstance.model.name);
 
