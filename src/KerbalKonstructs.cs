@@ -904,38 +904,6 @@ namespace KerbalKonstructs
                     }
                 }
 
-                //if (!instance.settings.ContainsKey("LaunchPadTransform") && instance.settings.ContainsKey("LaunchSiteName"))
-                //{
-                //    if (!string.IsNullOrEmpty(model.DefaultLaunchPadTransform))
-                //    {
-                //        instance.settings.Add("LaunchPadTransform", model.DefaultLaunchPadTransform);
-                //    }
-                //    else
-                //    {
-                //        Log.Normal("Launch site is missing a transform. Defaulting to " + instance.getSetting("LaunchSiteName") + "_spawn...");
-
-                //        if (instance.gameObject.transform.Find(instance.getSetting("LaunchSiteName") + "_spawn") != null)
-                //        {
-                //            instance.settings.Add("LaunchPadTransform", instance.getSetting("LaunchSiteName") + "_spawn");
-                //        }
-                //        else
-                //        {
-                //            Log.Normal("FAILED: " + instance.getSetting("LaunchSiteName") + "_spawn does not exist! Attempting to use any transform with _spawn in the name.");
-                //            Transform lastResort = instance.gameObject.transform.Cast<Transform>().FirstOrDefault(trans => trans.name.EndsWith("_spawn"));
-
-                //            if (lastResort != null)
-                //            {
-                //                Log.Normal("Using " + lastResort.name + " as launchpad transform");
-                //                instance.settings.Add("LaunchPadTransform", lastResort.name);
-                //            }
-                //            else
-                //            {
-                //                Log.Error("All attempts at finding a launchpad transform have failed (╯°□°）╯︵ ┻━┻ This static isn't configured for KK properly. Tell the modder.");
-                //            }
-                //        }
-                //    }
-                //}
-
                 instance.spawnObject(false, false);
 
                 AttachFacilities(instance, instanceCfgNode);
