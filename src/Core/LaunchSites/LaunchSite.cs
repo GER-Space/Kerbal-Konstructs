@@ -19,7 +19,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string LaunchSiteAuthor = "";
         [CFGSetting]
-        public SiteType LaunchSiteType;
+        public SiteType LaunchSiteType = SiteType.Any;
         [CFGSetting]
         public string LaunchSiteLogo = null;
         [CFGSetting]
@@ -49,20 +49,20 @@ namespace KerbalKonstructs.Core
         public string MissionLog = "No Log";
 
 
-        public Texture logo = null;
-        public Texture icon = null;
+        internal Texture logo = null;
+        internal Texture icon = null;
 
 
-        public float refLon;
-        public float refLat;
-        public float refAlt;
-        public CelestialBody body;
+        internal float refLon;
+        internal float refLat;
+        internal float refAlt;
+        internal CelestialBody body;
 
         internal StaticObject parentInstance;
 
 
-        public GameObject lsGameObject;
-        public PSystemSetup.SpaceCenterFacility facility = null;
+        internal GameObject lsGameObject;
+        internal PSystemSetup.SpaceCenterFacility facility = null;
 
 
 

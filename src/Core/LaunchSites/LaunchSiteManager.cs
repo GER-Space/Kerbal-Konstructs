@@ -139,11 +139,11 @@ namespace KerbalKonstructs.Core
         /// <param name="site"></param>
         internal static void RegisterLaunchSite(LaunchSite site)
         {
-            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.gameObject.transform.Find(site.LaunchPadTransform) != null)
+            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.parentInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
             {
 
-                site.lsGameObject.transform.name = site.LaunchSiteName;
-                site.lsGameObject.name = site.LaunchSiteName;
+                site.parentInstance.gameObject.transform.name = site.LaunchSiteName;
+                site.parentInstance.gameObject.name = site.LaunchSiteName;
 
                 //CelestialBody CelBody = site.body;
                 //var objectpos = CelBody.transform.InverseTransformPoint(site.lsGameObject.transform.position);
@@ -162,10 +162,11 @@ namespace KerbalKonstructs.Core
                 if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
                 {
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
-                    newFacility.name = "FacilityName";
+                    newFacility.name = "";
                     newFacility.facilityName = site.LaunchSiteName;
-                    newFacility.facilityPQS = site.body.pqsController;
-                    newFacility.facilityTransformName = site.LaunchSiteName;
+                    newFacility.facilityPQS = site.parentInstance.CelestialBody.pqsController;
+                    newFacility.facilityTransformName = site.parentInstance.gameObject.name;
+                   // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
                     //     newFacility.facilityTransformName = instance.gameObject.transform.name;
                     newFacility.pqsName = site.body.pqsController.name;
 
@@ -179,7 +180,7 @@ namespace KerbalKonstructs.Core
                     facilities.Add(newFacility);
                     sitesField.SetValue(PSystemSetup.Instance, facilities.ToArray());
 
-
+                    site.facility = newFacility;
 
                     launchSites.Add(site);
                 }
@@ -195,8 +196,10 @@ namespace KerbalKonstructs.Core
                 else
                     updateSitesMI.Invoke(PSystemSetup.Instance, null);
 
-                if (site.lsGameObject != null)
-                    CustomSpaceCenter.CreateFromLaunchsite(site.LaunchSiteName, site.lsGameObject);
+                if (site.parentInstance.gameObject != null)
+                {                    
+                    CustomSpaceCenter.CreateFromLaunchsite(site.LaunchSiteName, site.parentInstance.gameObject);
+                }
             }
             else
             {

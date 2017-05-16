@@ -117,6 +117,18 @@ namespace KerbalKonstructs.Core
                     case "CelestialBody":
                         field.SetValue(target, ConfigUtil.GetCelestialBody(cfgNode.GetValue(field.Name)));
                         break;
+                    case "KerbalKonstructs.Core.SiteType":
+                        SiteType value = SiteType.Any;
+                        try
+                        {
+                            value = (SiteType)Enum.Parse(typeof(SiteType), cfgNode.GetValue(field.Name));
+                            
+                        } catch
+                        {
+                            value = SiteType.Any;
+                        }
+                        field.SetValue(target, value);
+                        break;
                 }
 
             }
@@ -156,6 +168,9 @@ namespace KerbalKonstructs.Core
                     break;
                 case "CelestialBody":
                     cfgNode.SetValue(field.Name, ((CelestialBody)field.GetValue(source)).name, true);
+                    break;
+                case "KerbalKonstructs.Core.SiteType":
+                    cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString() , true);
                     break;
             }
         }

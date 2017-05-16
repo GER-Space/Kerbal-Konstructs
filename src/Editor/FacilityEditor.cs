@@ -440,7 +440,7 @@ namespace KerbalKonstructs.UI
                 Log.Normal("FacEditor: Remove called");
                 selectedObject.hasFacilities = false;
                 GameObject.Destroy(selectedObject.myFacilities[0]);
-                selectedObject.myFacilities.Clear();
+                selectedObject.myFacilities = new List<KKFacility>();
                 Log.Normal("FacEditor: Remove Finished");
             }
         }

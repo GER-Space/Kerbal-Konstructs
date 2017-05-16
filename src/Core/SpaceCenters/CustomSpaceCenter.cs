@@ -21,13 +21,11 @@ namespace KerbalKonstructs.Core
                 csc.SpaceCenterName = name;
                 csc.staticObject = staticObject;
                 csc.gameObject = go;
-
-                // Debug.Log("KK: CreateFromLaunchsite added Space Center " + name);
                 SpaceCenterManager.addSpaceCenter(csc);
             }
             else
             {
-                Debug.Log("KK: CreateFromLaunchsite failed because staticObject is null.");
+                Log.Normal("CreateFromLaunchsite failed because staticObject is null.");
             }
         }
 

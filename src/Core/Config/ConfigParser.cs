@@ -76,6 +76,11 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        /// <summary>
+        /// Reads the ConfigNode and sets the values into the instance
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="cfgNode"></param>
         internal static void ParseInstanceConfig(StaticObject target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
@@ -87,6 +92,11 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        /// <summary>
+        /// Writes out all the data of the instance To a ConfigNode (+ the Facilities)
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="cfgNode"></param>
         internal static void WriteInstanceConfig(StaticObject instance, ConfigNode cfgNode)
         {
 
@@ -134,22 +144,22 @@ namespace KerbalKonstructs.Core
                         break;
                 }
 
-                if (instance.hasFacilities)
-                {
-                    foreach (var fac in instance.myFacilities)
-                    {
-                        ConfigNode facNode = cfgNode.AddNode("Facility");
-                        fac.WriteConfig(facNode);
-                    }
-                }
-
-                if (instance.hasLauchSites)
-                {
-                    instance.launchSite.WriteConfig(cfgNode);
-                }
-
             }
 
+            if (instance.hasFacilities)
+            {
+                Log.Normal("Writing FacConfig for: " + instance.gameObject.name);
+                for (int i = 0; i < instance.myFacilities.Count; i++)
+                { 
+                    ConfigNode facNode = cfgNode.AddNode("Facility");
+                    instance.myFacilities[i].WriteConfig(facNode);
+                }
+            }
+
+            if (instance.hasLauchSites)
+            {
+                instance.launchSite.WriteConfig(cfgNode);
+            }
 
         }
 
