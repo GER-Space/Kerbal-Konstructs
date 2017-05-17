@@ -17,7 +17,7 @@ namespace KerbalKonstructs.Core
         //make the list private, so nobody does easily add or remove from it. the array is updated in the Add and Remove functions
         // arrays are always optimized (also in foreach loops)
         private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
-        internal static StaticInstance [] allStaticInstances ;
+        internal static StaticInstance [] allStaticInstances  = new StaticInstance [0] ;
 
         private static string activeBodyName = "";
 
