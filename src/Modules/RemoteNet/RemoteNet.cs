@@ -96,9 +96,12 @@ namespace KerbalKonstructs.Modules
                 Log.Normal("Adding Groundstation: " + instance.Group);
                 if (openCNStations.Contains(instance) == false)
                 {
-                    CommNetHome commNetGroudStation = instance.gameObject.AddComponent<CommNetHome>();
+                    KKCommNetHome commNetGroudStation = instance.gameObject.AddComponent<KKCommNetHome>();
 
                     commNetGroudStation.nodeName = instance.CelestialBody.name + " " + instance.Group;
+                    commNetGroudStation.comm = new CommNode();
+                    var commNode = commNetGroudStation.comm;
+                    commNode.antennaTransmit.power = antennaPower;
                     //commNetGroudStation.enabled = true;
                     openCNStations.Add(instance);
                     CommNet.CommNetNetwork.Reset();
@@ -156,5 +159,10 @@ namespace KerbalKonstructs.Modules
         }
 
 
+    }
+
+    internal class KKCommNetHome : CommNetHome
+    {
+        internal new CommNode comm;
     }
 }
