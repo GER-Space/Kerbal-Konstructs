@@ -134,10 +134,13 @@ namespace KerbalKonstructs.Modules
 
 
                     var objectpos2 = groundStation.CelestialBody.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
-                    var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
-                    var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
-                    var disObjectLat2 = dObjectLat2 * 180 / Math.PI;
-                    var disObjectLon2 = dObjectLon2 * 180 / Math.PI;
+                    //var dObjectLat2 = NavUtils.GetLatitude(objectpos2);
+                    //var dObjectLon2 = NavUtils.GetLongitude(objectpos2);
+                    //var disObjectLat2 = dObjectLat2 * 180 / Math.PI;
+                    //var disObjectLon2 = dObjectLon2 * 180 / Math.PI;
+
+                    var disObjectLat2 = KKMath.GetLatitudeInDeg(objectpos2);
+                    var disObjectLon2 = KKMath.GetLongitudeInDeg(objectpos2);
 
                     if (disObjectLon2 < 0) disObjectLon2 = disObjectLon2 + 360;
 

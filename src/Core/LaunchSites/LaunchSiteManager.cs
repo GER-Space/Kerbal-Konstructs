@@ -40,7 +40,7 @@ namespace KerbalKonstructs.Core
                     PQSCity mod = m as PQSCity;
                     if (mod.name == "KSC")
                     {
-                        retval = (NavUtils.GetLongitude(mod.repositionRadial) * KKMath.rad2deg);
+                        retval = (KKMath.GetLongitudeInDeg(mod.repositionRadial));
                         break;
                     }
                 }
@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Core
                     PQSCity mod = m as PQSCity;
                     if (mod.name == "KSC")
                     {
-                        retval = (NavUtils.GetLatitude(mod.repositionRadial) * KKMath.rad2deg);
+                        retval = (KKMath.GetLatitudeInDeg(mod.repositionRadial) * KKMath.rad2deg);
                         break;
                     }
                 }

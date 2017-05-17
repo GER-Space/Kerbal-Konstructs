@@ -46,10 +46,8 @@ namespace KerbalKonstructs.UI
 
         // string sOreTransferAmount = "0";
 
-        Vector3 ObjectPos = new Vector3(0, 0, 0);
+        Vector3 objectPos = new Vector3(0, 0, 0);
 
-        double dObjectLat = 0;
-        double dObjectLon = 0;
         double disObjectLat = 0;
         double disObjectLon = 0;
 
@@ -196,11 +194,13 @@ namespace KerbalKonstructs.UI
 
                 fAlt = selectedFacility.RadiusOffset;
 
-                ObjectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
-                dObjectLat = NavUtils.GetLatitude(ObjectPos);
-                dObjectLon = NavUtils.GetLongitude(ObjectPos);
-                disObjectLat = dObjectLat * 180 / Math.PI;
-                disObjectLon = dObjectLon * 180 / Math.PI;
+                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
+                //dObjectLat = NavUtils.GetLatitude(ObjectPos);
+                //dObjectLon = NavUtils.GetLongitude(ObjectPos);
+                //disObjectLat = dObjectLat * 180 / Math.PI;
+                //disObjectLon = dObjectLon * 180 / Math.PI;
+                disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
+                disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
 
                 if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
 

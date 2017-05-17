@@ -145,7 +145,6 @@
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
-    <Compile Include="Utilities\NavUtils.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

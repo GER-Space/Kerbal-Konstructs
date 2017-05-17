@@ -119,8 +119,8 @@ namespace KerbalKonstructs.Modules
                     alt = instance.CelestialBody.pqsController.GetSurfaceHeight(instance.pqsCity.repositionRadial) - instance.CelestialBody.pqsController.radius + 15;
 
                     var objectPos = instance.CelestialBody.transform.InverseTransformPoint(instance.gameObject.transform.position);
-                    lng = NavUtils.GetLongitude((Vector3d)objectPos) * KKMath.rad2deg;
-                    lat = NavUtils.GetLatitude((Vector3d)objectPos) * KKMath.rad2deg;
+                    lng = KKMath.GetLongitudeInDeg(objectPos);
+                    lat = KKMath.GetLatitudeInDeg(objectPos);
                     stationID = RemoteTechAddon.AddGroundstation((instance.CelestialBody.name) + " " + instance.Group, lat, lng, alt, instance.CelestialBody);
                     Log.Normal("Got RTStationID: " + stationID);
                 }

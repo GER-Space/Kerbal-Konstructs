@@ -38,6 +38,12 @@ namespace KerbalKonstructs.UI
         private Rect Marker7;
         private Rect Marker8;
 
+        private static Material lineMaterial1;
+        private static Material lineMaterial2;
+        private static Material lineMaterial3;
+        private static Material lineMaterial4;
+        private static Material lineMaterial5;
+
         public override void Draw()
         {
             if (!MapView.MapIsEnabled)
@@ -166,37 +172,37 @@ namespace KerbalKonstructs.UI
 
                 if (fDist < 8000)
                 {
-                    NavUtils.CreateLineMaterial(1);
+                    CreateLineMaterial(1);
 
                     GL.Begin(GL.LINES);
-                    NavUtils.lineMaterial1.SetPass(0);
+                    lineMaterial1.SetPass(0);
                     GL.Color(clLandGuide);
                     GL.Vertex3(vLineEnd.x - Screen.width / 2, vLineEnd.y - Screen.height / 2, vLineEnd.z);
                     GL.Vertex3(vLineStart.x - Screen.width / 2, vLineStart.y - Screen.height / 2, vLineStart.z);
                     GL.End();
 
-                    NavUtils.CreateLineMaterial(2);
+                    CreateLineMaterial(2);
 
                     GL.Begin(GL.LINES);
-                    NavUtils.lineMaterial2.SetPass(0);
+                    lineMaterial2.SetPass(0);
                     GL.Color(clLandGuide);
                     GL.Vertex3(vLineStart.x - Screen.width / 2, (vLineStart.y - Screen.height / 2) + 200, vLineStart.z);
                     GL.Vertex3(vLineStart.x - Screen.width / 2, (vLineStart.y - Screen.height / 2) - 150, vLineStart.z);
                     GL.End();
 
-                    NavUtils.CreateLineMaterial(3);
+                    CreateLineMaterial(3);
 
                     GL.Begin(GL.LINES);
-                    NavUtils.lineMaterial3.SetPass(0);
+                    lineMaterial3.SetPass(0);
                     GL.Color(clLandGuide);
                     GL.Vertex3((vLineStart.x - Screen.width / 2) + 100, (vLineStart.y - Screen.height / 2) + 5, vLineStart.z);
                     GL.Vertex3((vLineStart.x - Screen.width / 2) - 100, (vLineStart.y - Screen.height / 2) + 5, vLineStart.z);
                     GL.End();
 
-                    NavUtils.CreateLineMaterial(4);
+                    CreateLineMaterial(4);
 
                     GL.Begin(GL.LINES);
-                    NavUtils.lineMaterial4.SetPass(0);
+                    lineMaterial4.SetPass(0);
                     GL.Color(clLandGuide);
                     GL.Vertex3((vLineStart.x - Screen.width / 2) + 150, (vLineStart.y - Screen.height / 2) + 50, vLineStart.z);
                     GL.Vertex3((vLineStart.x - Screen.width / 2) - 150, (vLineStart.y - Screen.height / 2) + 50, vLineStart.z);
@@ -224,6 +230,34 @@ namespace KerbalKonstructs.UI
             }
         }
 
+        private static void CreateLineMaterial(int iMat = 1)
+        {
+            Material mMat = lineMaterial1;
+            if (iMat == 2) mMat = lineMaterial2;
+            if (iMat == 3) mMat = lineMaterial3;
+            if (iMat == 4) mMat = lineMaterial4;
+            if (iMat == 5) mMat = lineMaterial5;
+
+            if (mMat == null)
+            {
+                var shader = Shader.Find("Hidden/Internal-Colored");
+                mMat = new Material(shader);
+                mMat.hideFlags = HideFlags.HideAndDontSave;
+                // Turn on alpha blending
+                mMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                mMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                // Turn backface culling off
+                mMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                // Turn off depth writes
+                mMat.SetInt("_ZWrite", 0);
+
+                if (iMat == 1) lineMaterial1 = mMat;
+                if (iMat == 2) lineMaterial2 = mMat;
+                if (iMat == 3) lineMaterial3 = mMat;
+                if (iMat == 4) lineMaterial4 = mMat;
+                if (iMat == 5) lineMaterial5 = mMat;
+            }
+        }
 
     }
 }

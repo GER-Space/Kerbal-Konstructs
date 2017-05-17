@@ -76,12 +76,15 @@ namespace KerbalKonstructs.UI
 				if (fRangeToTarget < fOldRange) bClosing = true;
 
 				var basepos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(lTargetSite.lsGameObject.transform.position);
-				var dBaseLat = NavUtils.GetLatitude(basepos);
-				var dBaseLon = NavUtils.GetLongitude(basepos);
-				disBaseLat = dBaseLat * 180 / Math.PI;
-				disBaseLon = dBaseLon * 180 / Math.PI;
 
-				fOldRange = fRangeToTarget;
+				//disBaseLat = dBaseLat * 180 / Math.PI;
+				//disBaseLon = dBaseLon * 180 / Math.PI;
+                disBaseLat = KKMath.GetLatitudeInDeg(basepos);
+                disBaseLon = KKMath.GetLongitudeInDeg(basepos);
+                var dBaseLat = disBaseLat * KKMath.deg2rad;
+                var dBaseLon = disBaseLon * KKMath.deg2rad;
+
+                fOldRange = fRangeToTarget;
 
 				if (bClosing)
 				{
