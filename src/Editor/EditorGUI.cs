@@ -975,7 +975,7 @@ namespace KerbalKonstructs.UI
             {
                 if (GUILayout.Button("Duplicate", GUILayout.Height(23)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
+                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
                     StaticModel oModel = selectedObject.model;
                     float fOffset = selectedObject.RadiusOffset;
                     Vector3 vPosition = selectedObject.RadialPosition;
@@ -1086,14 +1086,15 @@ namespace KerbalKonstructs.UI
             {
                 if (GUILayout.Button("Save", GUILayout.Width(110), GUILayout.Height(23)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
-                    smessage = "Saved all changes to all objects.";
+                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+                    smessage = "Saved changes to this object.";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Deselect", GUILayout.Width(110), GUILayout.Height(23)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
+                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+                    smessage = "Saved changes to this object.";
                     KerbalKonstructs.instance.deselectObject(true, true);
                 }
             }
