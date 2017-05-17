@@ -22,69 +22,69 @@ namespace KerbalKonstructs.UI
 
         internal static FacilityEditor GUI_FacilityEditor = new FacilityEditor();
 
-        public Boolean foldedIn = false;
-        public Boolean doneFold = false;
+        internal Boolean foldedIn = false;
+        internal Boolean doneFold = false;
 
         #region Texture Definitions
         // Texture definitions
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-        public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
-        public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-        public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-        public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-        public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
-        public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
-        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
+        internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+        internal Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+        internal Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
+        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
+        internal Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+        internal Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+        internal Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
+        internal Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
+        internal Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
+        internal Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+        internal Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
+        internal Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
+        internal Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
+        internal Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
+        internal Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        internal Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        internal Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
+        internal Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
 
         #endregion
 
         #region Switches
         // Switches
-        public Boolean enableColliders = false;
+        internal Boolean enableColliders = false;
         internal static bool isScanable = false;
 
         //public static Boolean editingLaunchSite = false;
 
         //   public static Boolean editingFacility = false;
 
-        public Boolean creatingInstance = false;
-        public Boolean showLocal = false;
-        public Boolean onNGS = false;
-        public Boolean displayingInfo = false;
-        public Boolean SnapRotateMode = false;
+        internal Boolean creatingInstance = false;
+        internal Boolean showLocal = false;
+        internal Boolean onNGS = false;
+        internal Boolean displayingInfo = false;
+        internal Boolean SnapRotateMode = false;
 
-        public Boolean bChangeFacilityType = false;
+        internal Boolean bChangeFacilityType = false;
 
         #endregion
 
         #region GUI Windows
         // GUI Windows
-        Rect toolRect = new Rect(300, 35, 330, 695);
-        Rect siteEditorRect = new Rect(400, 45, 360, 625);
+        internal Rect toolRect = new Rect(300, 35, 330, 695);
+        internal Rect siteEditorRect = new Rect(400, 45, 360, 625);
 
         #endregion
 
         #region GUI elements
         // GUI elements
-        GUIStyle listStyle = new GUIStyle();
-        GUIStyle navStyle = new GUIStyle();
+        internal GUIStyle listStyle = new GUIStyle();
+        internal GUIStyle navStyle = new GUIStyle();
 
-        GUIStyle DeadButton;
-        GUIStyle DeadButtonRed;
-        GUIStyle KKWindows;
-        GUIStyle BoxNoBorder;
+        internal GUIStyle DeadButton;
+        internal GUIStyle DeadButtonRed;
+        internal GUIStyle KKWindows;
+        internal GUIStyle BoxNoBorder;
 
-        GUIContent[] siteTypeOptions = {
+        internal GUIContent[] siteTypeOptions = {
                                             new GUIContent("VAB"),
                                             new GUIContent("SPH"),
                                             new GUIContent("ANY")
@@ -95,28 +95,28 @@ namespace KerbalKonstructs.UI
         #region Holders
         // Holders
 
-        public static StaticObject selectedObject = null;
-        public StaticObject selectedObjectPrevious = null;
-        static LaunchSite lTargetSite = null;
+        internal static StaticObject selectedObject = null;
+        internal StaticObject selectedObjectPrevious = null;
+        internal static LaunchSite lTargetSite = null;
 
         internal static String facType = "None";
         internal static String sGroup = "Ungrouped";
-        String increment = "0.1";
+        internal String increment = "0.1";
 
 
 
-        Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
-        Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
+        internal Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
+        internal Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
 
-        Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
-        Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
+        internal Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
+        internal Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
 
-        String sSTROT = "";
+        internal String sSTROT = "";
 
-        GameObject selectedSnapPoint = null;
-        GameObject selectedSnapPoint2 = null;
-        public StaticObject snapTargetInstance = null;
-        StaticObject snapTargetInstancePrevious = null;
+        internal GameObject selectedSnapPoint = null;
+        internal GameObject selectedSnapPoint2 = null;
+        internal StaticObject snapTargetInstance = null;
+        internal StaticObject snapTargetInstancePrevious = null;
 
         private Vector3 snpspos = new Vector3(0, 0, 0);
         private Vector3 snptpos = new Vector3(0, 0, 0);
@@ -999,82 +999,6 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button((selectedObject.hasLauchSites ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
                 {
-                    //if (selectedObject.hasLauchSites)
-                    //{
-                    //    //LaunchSite myLaunchSite = new LaunchSite();
-
-                    //    string sLaunchsiteDesc = selectedObject.launchSite.LaunchSiteDescription;
-                    //    string sModelDesc = selectedObject.model.description;
-
-                    //    // Edit or make a launchsite
-                    //    siteName = selectedObject.launchSite.LaunchSiteName ;
-                    //    siteTrans = selectedObject.launchSite.LaunchPadTransform;
-
-                    //    if (sLaunchsiteDesc != "")
-                    //        siteDesc = sLaunchsiteDesc;
-                    //    else
-                    //        siteDesc = sModelDesc;
-
-                    //    siteCategory = selectedObject.launchSite.Category;
-                    //    siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
-                    //    siteType = selectedObject.launchSite.LaunchSiteType;
-                    //    flOpenCost = selectedObject.launchSite.OpenCost;
-                    //    flCloseValue = selectedObject.launchSite.CloseValue;
-                    //    stOpenCost = string.Format("{0}", flOpenCost);
-                    //    stCloseValue = string.Format("{0}", flCloseValue);
-
-                    //    flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
-                    //    flRecoveryRange = selectedObject.launchSite.RecoveryRange;
-                    //    flLaunchRefund = selectedObject.launchSite.LaunchRefund;
-
-                    //    flLength = selectedObject.launchSite.LaunchSiteLength;
-
-                    //    if (flLength < 1)
-                    //        flLength = selectedObject.model.DefaultLaunchSiteLength;
-
-                    //    flWidth = selectedObject.launchSite.LaunchSiteWidth;
-
-                    //    if (flWidth < 1)
-                    //        flWidth = selectedObject.model.DefaultLaunchSiteWidth;
-
-                    //} else
-                    //{
-  
-                    //    string sModelDesc = selectedObject.model.description;
-
-                    //    // Edit or make a launchsite
-                    //    siteName = selectedObject.gameObject.name;
-                    //    siteTrans = selectedObject.model.DefaultLaunchPadTransform;
-                    //    siteDesc = selectedObject.model.description;
-
-                    //    siteCategory = "";
-                    //    siteHidden = "false";
-                    //    siteType = SiteType.Any;
-                    //    flOpenCost = 0f;
-                    //    flCloseValue = 0f;
-                    //    stOpenCost = string.Format("{0}", flOpenCost);
-                    //    stCloseValue = string.Format("{0}", flCloseValue);
-
-                    //    flRecoveryFactor = 0f;
-                    //    flRecoveryRange = 0f;
-                    //    flLaunchRefund = 0f;
-
-                    //    flLength = selectedObject.model.DefaultLaunchSiteLength;
-                    //    flWidth = selectedObject.model.DefaultLaunchSiteWidth;
-                    //}
-
-                    //stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
-                    //stRecoveryRange = string.Format("{0}", flRecoveryRange);
-                    //stLaunchRefund = string.Format("{0}", flLaunchRefund);
-
-                    //stLength = string.Format("{0}", flLength);
-                    //stWidth = string.Format("{0}", flWidth);
-
-                    //siteAuthor = selectedObject.hasLauchSites?  selectedObject.launchSite.LaunchSiteAuthor : selectedObject.model.author;
-                    //// Debug.Log("KK: Making or editing a launchsite");
-
-
-
 
                     KerbalKonstructs.GUI_LSEditor.Open();
                 }
