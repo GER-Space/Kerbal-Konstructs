@@ -9,12 +9,12 @@ namespace KerbalKonstructs.Core
         public string SpaceCenterName;
 
         internal SpaceCenter spaceCenter;
-        internal StaticObject staticObject;
+        internal StaticInstance staticObject;
         internal GameObject gameObject;
 
         public static void CreateFromLaunchsite(string name, GameObject go)
         {
-            StaticObject staticObject = InstanceUtil.GetStaticInstanceForGameObject(go);
+            StaticInstance staticObject = InstanceUtil.GetStaticInstanceForGameObject(go);
             if (staticObject != null)
             {
                 var csc = new CustomSpaceCenter();

@@ -23,7 +23,7 @@ namespace KerbalKonstructs.UI
 		public static string sInStorage2 = "None";
 		public static string sInStorage3 = "None";
 
-		public static void HangarInterface(StaticObject selectedFacility)
+		public static void HangarInterface(StaticInstance selectedFacility)
 		{
             Hangar myHangar = selectedFacility.myFacilities[0] as Hangar;
 
@@ -244,7 +244,7 @@ namespace KerbalKonstructs.UI
 			GUILayout.FlexibleSpace();
 		}
 
-		public static Boolean HangarwayIsClear(StaticObject soHangar)
+		public static Boolean HangarwayIsClear(StaticInstance soHangar)
 		{
 			Boolean bIsClear = true;
 
@@ -265,7 +265,7 @@ namespace KerbalKonstructs.UI
 			return bIsClear;
 		}
 
-		public static void CacheHangaredCraft(StaticObject obj)
+		public static void CacheHangaredCraft(StaticInstance obj)
 		{
             Hangar myHangar = obj.myFacilities[0] as Hangar;
 			string sInStorage = myHangar.InStorage1;
@@ -323,7 +323,7 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public static void HangarCraft(Vessel vVessel, StaticObject soHangar, int iMax = 2)
+		public static void HangarCraft(Vessel vVessel, StaticInstance soHangar, int iMax = 2)
 		{
 			string sSpace = GetHangarSpace(soHangar, iMax);
             Hangar myHangar = soHangar.myFacilities[0] as Hangar;
@@ -354,7 +354,7 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		public static string GetHangarSpace(StaticObject instacne, int iMax = 2)
+		public static string GetHangarSpace(StaticInstance instacne, int iMax = 2)
 		{
             Hangar myHangar = instacne.myFacilities[0] as Hangar;
 
@@ -378,7 +378,7 @@ namespace KerbalKonstructs.UI
 			return sSpace;
 		}
 
-		public static int NumberCraftHangared(StaticObject instance)
+		public static int NumberCraftHangared(StaticInstance instance)
 		{
             Hangar myHangar = instance.myFacilities[0] as Hangar;
 			int iNumber = 0;
@@ -390,7 +390,7 @@ namespace KerbalKonstructs.UI
 			return iNumber;
 		}
 
-		public static void RemoveCorrectCraft(Vessel vVessel, StaticObject instance)
+		public static void RemoveCorrectCraft(Vessel vVessel, StaticInstance instance)
 		{
             Hangar myHangar = instance.myFacilities[0] as Hangar;
             string sSpace = "InStorage1";
@@ -404,7 +404,7 @@ namespace KerbalKonstructs.UI
             typeof(Hangar).GetField(sSpace).SetValue(myHangar, "None");
 		}
 
-		public static void UnhangarCraft(Vessel vVesselStored, StaticObject soHangar)
+		public static void UnhangarCraft(Vessel vVesselStored, StaticInstance soHangar)
 		{
 			RemoveCorrectCraft(vVesselStored, soHangar);
 

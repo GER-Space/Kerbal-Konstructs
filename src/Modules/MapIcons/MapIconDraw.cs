@@ -19,11 +19,11 @@ namespace KerbalKonstructs.Modules
         private Boolean displayingTooltip2 = false;
 
         static LaunchSite selectedSite = null;
-        static StaticObject selectedFacility = null;
+        static StaticInstance selectedFacility = null;
 
         internal static bool mapHideIconsBehindBody = true;
 
-        private static List<StaticObject> groundStations;
+        private static List<StaticInstance> groundStations;
         private static LaunchSite[] lauchSites;
 
         public override void Draw()
@@ -47,12 +47,12 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         private void CacheGroundStations()
         {
-            groundStations = new List<StaticObject>(15);
+            groundStations = new List<StaticInstance>(15);
 
             // Test for later
             //var bla = Resources.FindObjectsOfTypeAll<GroundStation>();
 
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 if (instance.facilityType != KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
                 {
@@ -93,7 +93,7 @@ namespace KerbalKonstructs.Modules
             bool display2 = false;
             string openclosed3 = "Closed";
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
-            StaticObject groundStation;
+            StaticInstance groundStation;
 
             displayingTooltip2 = false;
 

@@ -81,7 +81,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="target"></param>
         /// <param name="cfgNode"></param>
-        internal static void ParseInstanceConfig(StaticObject target, ConfigNode cfgNode)
+        internal static void ParseInstanceConfig(StaticInstance target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
                 ConfigUtil.InitTypes();
@@ -97,7 +97,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="cfgNode"></param>
-        internal static void WriteInstanceConfig(StaticObject instance, ConfigNode cfgNode)
+        internal static void WriteInstanceConfig(StaticInstance instance, ConfigNode cfgNode)
         {
 
             foreach (var instanceSetting in ConfigUtil.instanceFields)

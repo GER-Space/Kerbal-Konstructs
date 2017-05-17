@@ -11,7 +11,7 @@ namespace KerbalKonstructs.UI
 {
     class BaseBossFlight : KKWindow
     {
-        public StaticObject selectedObject = null;
+        public StaticInstance selectedObject = null;
 
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
         public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
@@ -31,7 +31,7 @@ namespace KerbalKonstructs.UI
         public Boolean bIsOpen = false;
 
         public Boolean bShowFacilities = false;
-        private static List<StaticObject> allFacilities = new List<StaticObject>();
+        private static List<StaticInstance> allFacilities = new List<StaticInstance>();
 
         public static Boolean bChangeTarget = false;
 
@@ -486,7 +486,7 @@ namespace KerbalKonstructs.UI
         private void CacheFacilities()
         {
 
-            StaticObject [] allStatics = StaticDatabase.allStaticInstances;
+            StaticInstance [] allStatics = StaticDatabase.allStaticInstances;
 
             for (int i = 0; i < allStatics.Length; i++)
             {

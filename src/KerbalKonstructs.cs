@@ -30,9 +30,9 @@ namespace KerbalKonstructs
         public static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
         #region Holders
-        public StaticObject selectedObject;
+        public StaticInstance selectedObject;
         internal StaticModel selectedModel;
-        public StaticObject snapTargetInstance;
+        public StaticInstance snapTargetInstance;
         public CameraController camControl = new CameraController();
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
@@ -144,7 +144,7 @@ namespace KerbalKonstructs
         public Boolean enableCommNet = true;
         #endregion
 
-        private List<StaticObject> deletedInstances = new List<StaticObject>();
+        private List<StaticInstance> deletedInstances = new List<StaticInstance>();
 
         void Awake()
         {
@@ -773,7 +773,7 @@ namespace KerbalKonstructs
 
             foreach (ConfigNode instanceCfgNode in configurl.config.GetNodes("Instances"))
             {
-                StaticObject instance = new StaticObject();
+                StaticInstance instance = new StaticInstance();
                 instance.model = model;
                 instance.configUrl = configurl;
                 instance.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
@@ -818,7 +818,7 @@ namespace KerbalKonstructs
                     bool bSpaceOccupied = false;
 
                     
-                    foreach (StaticObject soThis in StaticDatabase.GetAllStatics().Where(x => x.RadialPosition == instance.RadialPosition))
+                    foreach (StaticInstance soThis in StaticDatabase.GetAllStatics().Where(x => x.RadialPosition == instance.RadialPosition))
                     {
                         Vector3 firstInstanceKey = soThis.RadialPosition;                      
 
@@ -1044,7 +1044,7 @@ namespace KerbalKonstructs
 
 
 
-        internal static void AttachFacilities(StaticObject instance, ConfigNode cfgNode)
+        internal static void AttachFacilities(StaticInstance instance, ConfigNode cfgNode)
         {            
             if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility"))
             {
@@ -1138,7 +1138,7 @@ namespace KerbalKonstructs
 
             modelConfig.RemoveNodes("Instances");
 
-            foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
+            foreach (StaticInstance instance in StaticDatabase.GetInstancesFromModel(model))
             {
                 ConfigNode inst = new ConfigNode("Instances");
                 ConfigParser.WriteInstanceConfig(instance, inst);
@@ -1157,8 +1157,8 @@ namespace KerbalKonstructs
         /// <param name="pathname"></param>
         internal void SaveInstanceByCfg(string pathname)
         {
-            StaticObject [] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();          
-            StaticObject firstInstance = allInstances.First();
+            StaticInstance [] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();          
+            StaticInstance firstInstance = allInstances.First();
             ConfigNode instanceConfig = null;
 
             ConfigNode staticNode = new ConfigNode("STATIC");
@@ -1179,7 +1179,7 @@ namespace KerbalKonstructs
             }
 
             staticNode.AddNode(instanceConfig);
-            foreach (StaticObject instance in allInstances)
+            foreach (StaticInstance instance in allInstances)
             {
                 ConfigNode inst = new ConfigNode("Instances");
                 ConfigParser.WriteInstanceConfig(instance, inst);
@@ -1196,7 +1196,7 @@ namespace KerbalKonstructs
         public void saveObjects()
         {
             HashSet<String> processedInstances = new HashSet<string>();
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 // ignore allready processed cfg files
                 if (processedInstances.Contains(instance.configPath))
@@ -1218,7 +1218,7 @@ namespace KerbalKonstructs
             }
 
             // check for orqhaned files
-            foreach (StaticObject deletedInstance in deletedInstances)
+            foreach (StaticInstance deletedInstance in deletedInstances)
             {
                 if (!processedInstances.Contains(deletedInstance.configPath))
                 {
@@ -1320,7 +1320,7 @@ namespace KerbalKonstructs
 
             Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
 
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 String bodyName = instance.CelestialBody.bodyName;
                 String groupName = instance.Group;
@@ -1361,7 +1361,7 @@ namespace KerbalKonstructs
                         modelConfig.RemoveNodes("Instances");
                         bool bNoInstances = true;
 
-                        foreach (StaticObject obj in StaticDatabase.GetInstancesFromModel(model))
+                        foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
                         {
                             string sObjGroup = obj.Group;
                             if (sObjGroup != sBase) continue;
@@ -1390,7 +1390,7 @@ namespace KerbalKonstructs
             }
         }
 
-        public void deleteObject(StaticObject obj)
+        public void deleteObject(StaticInstance obj)
         {
             if (selectedObject == obj)
                 deselectObject(true, false);
@@ -1413,12 +1413,12 @@ namespace KerbalKonstructs
             StaticDatabase.RemoveStatic(obj);
         }
 
-        public void setSnapTarget(StaticObject obj)
+        public void setSnapTarget(StaticInstance obj)
         {
             snapTargetInstance = obj;
         }
 
-        public void selectObject(StaticObject obj, bool isEditing, bool bFocus, bool bPreview)
+        public void selectObject(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)
         {
             if (bFocus)
             {

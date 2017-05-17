@@ -90,8 +90,8 @@ namespace KerbalKonstructs.UI
         #region Holders
         // Holders
 
-        public static StaticObject selectedObject = null;
-        public StaticObject selectedObjectPrevious = null;
+        public static StaticInstance selectedObject = null;
+        public StaticInstance selectedObjectPrevious = null;
 
         internal static String facType = "None";
         internal static String sGroup = "Ungrouped";
@@ -108,7 +108,7 @@ namespace KerbalKonstructs.UI
         Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
 
 
-        internal StaticObject snapTargetInstance = null;
+        internal StaticInstance snapTargetInstance = null;
 
 
         private Vector3 snpspos = new Vector3(0, 0, 0);
@@ -193,7 +193,7 @@ namespace KerbalKonstructs.UI
         /// Wrapper to draw editors
         /// </summary>
         /// <param name="obj"></param>
-        public void drawEditor(StaticObject obj)
+        public void drawEditor(StaticInstance obj)
         {
             if (!guiInitialized)
             {
@@ -510,7 +510,7 @@ namespace KerbalKonstructs.UI
         /// Updates the Window Strings to the new settings
         /// </summary>
         /// <param name="instance"></param>
-		public static void updateSelection(StaticObject instance)
+		public static void updateSelection(StaticInstance instance)
         {
             selectedObject = instance;
 

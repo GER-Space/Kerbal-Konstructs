@@ -14,8 +14,8 @@ namespace KerbalKonstructs.Modules
 
     internal class RemoteNet
     {
-        static List<StaticObject> openCNStations = new List<StaticObject>();
-        static Dictionary<StaticObject, Guid> openRTStations = new Dictionary<StaticObject, Guid>();
+        static List<StaticInstance> openCNStations = new List<StaticInstance>();
+        static Dictionary<StaticInstance, Guid> openRTStations = new Dictionary<StaticInstance, Guid>();
 
         /// <summary>
         /// iterates through all potential open TrackingStations and attaches GroundStations
@@ -48,7 +48,7 @@ namespace KerbalKonstructs.Modules
 
             }
 
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
 
                 if (instance.facilityType !=  KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
@@ -79,7 +79,7 @@ namespace KerbalKonstructs.Modules
         /// Attaches A CommNet or RemoteTech Groundstation to a Static Object instance
         /// </summary>
         /// <param name="instance"></param>
-        internal static void AttachGroundStation(StaticObject instance)
+        internal static void AttachGroundStation(StaticInstance instance)
         {
             GroundStation myfacility = instance.myFacilities[0] as GroundStation;
             // we use a messure of 1000km from the settings.
@@ -133,7 +133,7 @@ namespace KerbalKonstructs.Modules
         /// Removes all GroundStations from an Static Object.
         /// </summary>
         /// <param name="instance"></param>
-        internal static void DetachGroundStation(StaticObject instance)
+        internal static void DetachGroundStation(StaticInstance instance)
         {
             if (KerbalKonstructs.instance.enableCommNet)
             {

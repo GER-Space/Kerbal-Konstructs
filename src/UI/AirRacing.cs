@@ -34,8 +34,8 @@ namespace KerbalKonstructs.UI
 		public double dTimeSinceStart = 0;
 		public double dFinishTime = 0;
 
-		public StaticObject StartLine = null;
-		public StaticObject FinishLine = null;
+		public StaticInstance StartLine = null;
+		public StaticInstance FinishLine = null;
 
 		GUIStyle raceStyle = new GUIStyle();
 		GUIStyle BoxNoBorder;
@@ -186,7 +186,7 @@ namespace KerbalKonstructs.UI
 
 						if (fNextGate > 0)
 						{
-							StaticObject soNextGate = GetNextGate(StartLine, fNextGate);
+							StaticInstance soNextGate = GetNextGate(StartLine, fNextGate);
 							if (soNextGate != null)
 							{
 								GUILayout.Box("Next Gate: " + fNextGate);
@@ -272,9 +272,9 @@ namespace KerbalKonstructs.UI
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
 
-		public StaticObject GetNextGate(StaticObject StartLine, float fNextGate)
+		public StaticInstance GetNextGate(StaticInstance StartLine, float fNextGate)
 		{
-			StaticObject soNextGate = null;
+			StaticInstance soNextGate = null;
 			string sGate = "Gate" + fNextGate.ToString();
 			string sGroup = StartLine.Group;
 
@@ -283,11 +283,11 @@ namespace KerbalKonstructs.UI
 			return soNextGate;
 		}
 
-		public float GetDistanceToGate(StaticObject soGate, Vector3 vPos)
+		public float GetDistanceToGate(StaticInstance soGate, Vector3 vPos)
 		{
 			float fDistance = 0f;
 			Vector3 vCenter = new Vector3(0, 0, 0);
-			StaticObject soNearestPole = null;
+			StaticInstance soNearestPole = null;
 
 			string sGroup = soGate.Group;
 			string sFacType = soGate.legacyfacilityID;
@@ -299,10 +299,10 @@ namespace KerbalKonstructs.UI
 			return fDistance;
 		}
 
-		public float GetGateWidth(StaticObject soGate)
+		public float GetGateWidth(StaticInstance soGate)
 		{
 			float fDistance = 0f;
-			StaticObject soNearestPole = null;
+			StaticInstance soNearestPole = null;
 
 			string sGroup = soGate.Group;
 			string sFacType = soGate.legacyfacilityID;
@@ -325,15 +325,15 @@ namespace KerbalKonstructs.UI
 			started = false;
 		}
 
-        public static StaticObject GetNearestFacility(Vector3 vPosition, string sFacilityType, string sGroup = "None")
+        public static StaticInstance GetNearestFacility(Vector3 vPosition, string sFacilityType, string sGroup = "None")
         {
-            StaticObject soFacility = null;
+            StaticInstance soFacility = null;
 
             float fLastDist = 100000000f;
             float fDistance = 0f;
             float fNearest = 0f;
 
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 if (sGroup != "None")
                 {

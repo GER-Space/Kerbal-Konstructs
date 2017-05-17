@@ -8,20 +8,20 @@ namespace KerbalKonstructs.UI
 {
 	public class SharedInterfaces
 	{
-		public static event Action<StaticObject> evFacilityOpened;
-		public static event Action<StaticObject> evFacilityClosed;
+		public static event Action<StaticInstance> evFacilityOpened;
+		public static event Action<StaticInstance> evFacilityClosed;
 
 		public static GUIStyle BoxInfo;
 		public static GUIStyle ButtonSmallText;
 
-		public static StaticObject soStoredEventObject;
+		public static StaticInstance soStoredEventObject;
 
-		public static StaticObject getStoredEventObject()
+		public static StaticInstance getStoredEventObject()
 		{
 			return soStoredEventObject;
 		}
 
-		public static void OpenCloseFacility(StaticObject selectedFacility)
+		public static void OpenCloseFacility(StaticInstance selectedFacility)
 		{
 			BoxInfo = new GUIStyle(GUI.skin.box);
 			BoxInfo.normal.textColor = Color.white;

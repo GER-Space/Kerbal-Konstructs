@@ -47,7 +47,7 @@ namespace KerbalKonstructs.Addons
                         // ASH Get openclosestate of launchsite with same name as space centre
                         openCloseState = csc.staticObject.launchSite.OpenCloseState;
 
-                        StaticObject myBase = csc.staticObject;
+                        StaticInstance myBase = csc.staticObject;
                         if (csc.staticObject.launchSite.RecoveryFactor == 0) continue;
                         spaceCenter = csc.getSpaceCenter();
                         dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));

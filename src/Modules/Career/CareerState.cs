@@ -129,7 +129,7 @@ namespace KerbalKonstructs.Modules
             foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
             {
 
-                foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+                foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
                 {
                     if (!instance.hasFacilities || instance.myFacilities.Count == 0)
                         continue;
@@ -169,7 +169,7 @@ namespace KerbalKonstructs.Modules
             ConfigNode gameNode = rootNode.AddNode("GAME");
             ConfigNode scenarioNode = gameNode.AddNode("SCENARIO");
 
-            foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+            foreach (StaticInstance instance in StaticDatabase.GetAllStatics())
             {
                 if (!instance.hasFacilities)
                     continue;

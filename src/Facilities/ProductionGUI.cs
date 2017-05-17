@@ -18,7 +18,7 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle LabelInfo;
 		public static GUIStyle ButtonSmallText;
 
-		public static void ProductionInterface(StaticObject selectedFacility, string sFacilityType)
+		public static void ProductionInterface(StaticInstance selectedFacility, string sFacilityType)
 		{
             if (selectedFacility.myFacilities.Count == 0)
                 return;

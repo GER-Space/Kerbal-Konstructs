@@ -42,7 +42,7 @@ namespace KerbalKonstructs.UI
         public static GUIStyle LabelInfo;
         public static GUIStyle BoxInfo;
 
-        public static string getResourceAlt(StaticObject instance, string sOriginal)
+        public static string getResourceAlt(StaticInstance instance, string sOriginal)
         {
             string sAlt = sOriginal;
 
@@ -57,7 +57,7 @@ namespace KerbalKonstructs.UI
                 return sOriginal;
         }
 
-        public static void FuelTanksInterface(StaticObject selectedObject)
+        public static void FuelTanksInterface(StaticInstance selectedObject)
         {
             string smessage = "";
 
@@ -555,7 +555,7 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
-        public static void doFuelOut(StaticObject selectedObject)
+        public static void doFuelOut(StaticInstance selectedObject)
         {
             FuelTanks myTank = selectedObject.myFacilities[0] as FuelTanks;
             if (SelectedResource == null) return;
@@ -600,7 +600,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        public static void doFuelIn(StaticObject selectedObject)
+        public static void doFuelIn(StaticInstance selectedObject)
         {
             FuelTanks myTank = selectedObject.myFacilities[0] as FuelTanks;
             if (SelectedResource == null) return;

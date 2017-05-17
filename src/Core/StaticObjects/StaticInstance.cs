@@ -10,7 +10,7 @@ using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
-	public class StaticObject
+	public class StaticInstance
 	{
 
         // Position

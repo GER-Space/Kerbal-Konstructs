@@ -38,10 +38,10 @@ namespace KerbalKonstructs.UI
 
         public Boolean bDisableEditingSetting = false;
 
-        public static StaticObject selectedObject = null;
-        public StaticObject selectedObjectPrevious = null;
-        public StaticObject snapTargetInstance = null;
-        StaticObject snapTargetInstancePrevious = null;
+        public static StaticInstance selectedObject = null;
+        public StaticInstance selectedObjectPrevious = null;
+        public StaticInstance snapTargetInstance = null;
+        StaticInstance snapTargetInstancePrevious = null;
 
         public float fButtonWidth = 0f;
 
@@ -70,7 +70,7 @@ namespace KerbalKonstructs.UI
         private static List<StaticModel> allStaticModels;
         //static need only be loaded once per three seconnds
         private static float lastloaded = 0f;
-        internal static StaticObject [] allStaticInstances;
+        internal static StaticInstance [] allStaticInstances;
 
 
 
@@ -761,7 +761,7 @@ namespace KerbalKonstructs.UI
             if (sGroup == "")
                 return;
 
-            foreach (StaticObject obj in StaticDatabase.GetAllStatics())
+            foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
             {
                 if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
                 {
@@ -810,7 +810,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            StaticObject myHitinstance = GetRootFromHit(hit.collider.gameObject);
+            StaticInstance myHitinstance = GetRootFromHit(hit.collider.gameObject);
 
             if (myHitinstance == null)
             {
@@ -831,7 +831,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         /// <param name="foundObject"></param>
         /// <returns></returns>
-        private StaticObject GetRootFromHit(GameObject foundObject)
+        private StaticInstance GetRootFromHit(GameObject foundObject)
         {
             for (int i = 0; i < 10; i++)
             {

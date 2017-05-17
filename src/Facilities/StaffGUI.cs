@@ -28,11 +28,11 @@ namespace KerbalKonstructs.UI
 
 		public static bool bIsBarracks = false;
 
-		public static float TotalBarracksPool(StaticObject selectedFacility)
+		public static float TotalBarracksPool(StaticInstance selectedFacility)
 		{
 			float fKerbals = 0f;
 
-			foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+			foreach (StaticInstance instance in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
@@ -54,12 +54,12 @@ namespace KerbalKonstructs.UI
 			return fKerbals;
 		}
 
-		public static StaticObject NearestBarracks(StaticObject selectedFacility, bool bUnassigned = true)
+		public static StaticInstance NearestBarracks(StaticInstance selectedFacility, bool bUnassigned = true)
 		{
-			StaticObject soNearest = null;
+			StaticInstance soNearest = null;
 			float fKerbals = 0f;
 
-			foreach (StaticObject instance in StaticDatabase.GetAllStatics())
+			foreach (StaticInstance instance in StaticDatabase.GetAllStatics())
 			{
 				//if ((string)obj.model.getSetting("DefaultFacilityType") == "None") continue;
 
@@ -105,19 +105,19 @@ namespace KerbalKonstructs.UI
 			return soNearest;
 		}
 
-		public static void DrawFromBarracks(StaticObject selectedFacility)
+		public static void DrawFromBarracks(StaticInstance selectedFacility)
 		{
             Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
             foundBarracks.ProductionRateCurrent--;
 		}
 
-		public static void UnassignToBarracks(StaticObject selectedFacility)
+		public static void UnassignToBarracks(StaticInstance selectedFacility)
 		{
             Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
             foundBarracks.ProductionRateCurrent++;
         }
 
-		public static void StaffingInterface(StaticObject selectedFacility)
+		public static void StaffingInterface(StaticInstance selectedFacility)
 		{
             Barracks myBarracks = selectedFacility.myFacilities[0] as Barracks;
 			LabelInfo = new GUIStyle(GUI.skin.label);
@@ -320,7 +320,7 @@ namespace KerbalKonstructs.UI
 								}
 								else
 								{
-									StaticObject soNearestBarracks = NearestBarracks(selectedFacility);
+									StaticInstance soNearestBarracks = NearestBarracks(selectedFacility);
 
 									if (soNearestBarracks != null)
 									{
@@ -342,7 +342,7 @@ namespace KerbalKonstructs.UI
 							}
 							else
 							{
-								StaticObject soAvailableSpace = NearestBarracks(selectedFacility, false);
+								StaticInstance soAvailableSpace = NearestBarracks(selectedFacility, false);
 
 								if (soAvailableSpace != null)
 								{

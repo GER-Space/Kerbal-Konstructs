@@ -15,9 +15,9 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-		internal static StaticObject GetStaticInstanceForGameObject(GameObject gameObject)
+		internal static StaticInstance GetStaticInstanceForGameObject(GameObject gameObject)
         {
-            List<StaticObject> objList = (from obj in StaticDatabase.allStaticInstances where obj.gameObject == gameObject select obj).ToList();
+            List<StaticInstance> objList = (from obj in StaticDatabase.allStaticInstances where obj.gameObject == gameObject select obj).ToList();
 
             if (objList.Count >= 1)
             {
@@ -49,7 +49,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal static void SetActiveRecursively(StaticObject instance, bool active)
+        internal static void SetActiveRecursively(StaticInstance instance, bool active)
         {
             
             if (instance.isActive != active)

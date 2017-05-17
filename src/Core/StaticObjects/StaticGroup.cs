@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Core
 		public String groupName;
 		public String bodyName;
 
-		public List<StaticObject> groupInstances = new List<StaticObject>();
+		public List<StaticInstance> groupInstances = new List<StaticInstance>();
 		public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
 		public Boolean alwaysActive = false;
@@ -27,13 +27,13 @@ namespace KerbalKonstructs.Core
 			visibilityRange = 0f; 
 		}
 
-		public void AddStatic(StaticObject obj)
+		public void AddStatic(StaticInstance obj)
 		{
 			groupInstances.Add(obj);
 			UpdateCacheSettings();
 		}
 
-		public void RemoveStatic(StaticObject obj)
+		public void RemoveStatic(StaticInstance obj)
 		{
 			groupInstances.Remove(obj);
 			UpdateCacheSettings();
@@ -45,7 +45,7 @@ namespace KerbalKonstructs.Core
             float furthestDist = 0;
 
             centerPoint = Vector3.zero;
-            StaticObject soCenter = null;
+            StaticInstance soCenter = null;
             Vector3 vRadPos = Vector3.zero;
 
 
@@ -102,7 +102,7 @@ namespace KerbalKonstructs.Core
             bool visible = false;
 
 
-            foreach (StaticObject instance in groupInstances)
+            foreach (StaticInstance instance in groupInstances)
 			{
 				dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
 				visible = (dist < instance.VisibilityRange);
@@ -167,7 +167,7 @@ namespace KerbalKonstructs.Core
 			return groupName;
 		}
 
-		internal void DeleteObject(StaticObject obj)
+		internal void DeleteObject(StaticInstance obj)
 		{
 			if (groupInstances.Contains(obj))
 			{
@@ -180,7 +180,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public List<StaticObject> GetStatics()
+		public List<StaticInstance> GetStatics()
 		{
 			return groupInstances;
 		}

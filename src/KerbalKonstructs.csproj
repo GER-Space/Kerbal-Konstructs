@@ -138,7 +138,7 @@
     <Compile Include="Editor\EditorGUI.cs" />
     <Compile Include="KerbalKonstructs.cs" />
     <Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
-    <Compile Include="Core\StaticObjects\StaticObject.cs" />
+    <Compile Include="Core\StaticObjects\StaticInstance.cs" />
     <Compile Include="Core\StaticObjects\StaticDatabase.cs" />
     <Compile Include="Core\StaticObjects\StaticGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

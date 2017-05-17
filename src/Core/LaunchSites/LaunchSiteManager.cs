@@ -120,7 +120,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void AttachLaunchSite(StaticObject instance, ConfigNode instanceNode)
+        internal static void AttachLaunchSite(StaticInstance instance, ConfigNode instanceNode)
         {
             if (instanceNode.HasValue("LaunchPadTransform") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchPadTransform")) && instanceNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchSiteName")))
             {
@@ -148,7 +148,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="cfgNode"></param>
-        internal static void CreateLaunchSite(StaticObject instance, ConfigNode cfgNode)
+        internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
             LaunchSite newSite = instance.gameObject.AddComponent<LaunchSite>().ParseConfig(cfgNode) as LaunchSite;
             instance.hasLauchSites = true;
@@ -407,9 +407,9 @@ namespace KerbalKonstructs.Core
         }
 
         // Returns the StaticObject of a site. Can provide a sitename or a GameObject
-        public static StaticObject getSiteStaticObject(string siteName, GameObject go = null)
+        public static StaticInstance getSiteStaticObject(string siteName, GameObject go = null)
         {
-            StaticObject soSite = null;
+            StaticInstance soSite = null;
             if (go != null)
             {
                 soSite = InstanceUtil.GetStaticInstanceForGameObject(go);
@@ -420,7 +420,7 @@ namespace KerbalKonstructs.Core
 
             string sName = "";
             object oName = null;
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances.Where(inst => inst.hasLauchSites == true))
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances.Where(inst => inst.hasLauchSites == true))
             {
 
                 oName = instance.launchSite.LaunchSiteName;

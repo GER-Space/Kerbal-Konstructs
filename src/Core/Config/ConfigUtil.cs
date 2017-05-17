@@ -59,7 +59,7 @@ namespace KerbalKonstructs.Core
                 }
 
             }
-            foreach (FieldInfo field in typeof(StaticObject).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
+            foreach (FieldInfo field in typeof(StaticInstance).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
             {
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {

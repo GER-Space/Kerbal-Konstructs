@@ -16,8 +16,8 @@ namespace KerbalKonstructs.Core
 
         //make the list private, so nobody does easily add or remove from it. the array is updated in the Add and Remove functions
         // arrays are always optimized (also in foreach loops)
-        private static List<StaticObject> _allStaticInstances = new List<StaticObject>();
-        internal static StaticObject [] allStaticInstances ;
+        private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
+        internal static StaticInstance [] allStaticInstances ;
 
         private static string activeBodyName = "";
 
@@ -28,7 +28,7 @@ namespace KerbalKonstructs.Core
         /// Adds the Instance to the instances and Group lists. Also sets the PQSCity.name
         /// </summary>
         /// <param name="instance"></param>
-        internal static void AddStatic(StaticObject instance)
+        internal static void AddStatic(StaticInstance instance)
 		{
             _allStaticInstances.Add(instance);
             allStaticInstances = _allStaticInstances.ToArray();
@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Core
         /// Removes a Instance from the group and instance lists.
         /// </summary>
         /// <param name="instance"></param>
-        internal static void RemoveStatic(StaticObject instance)
+        internal static void RemoveStatic(StaticInstance instance)
         {
             if (_allStaticInstances.Contains(instance))
             {
@@ -86,7 +86,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="newGroup"></param>
-        internal static void ChangeGroup(StaticObject instance, string newGroup)
+        internal static void ChangeGroup(StaticInstance instance, string newGroup)
         {
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
@@ -100,7 +100,7 @@ namespace KerbalKonstructs.Core
         /// Sets the PQSCity Name to Group_Modenlame_(index of the same models in group)
         /// </summary>
         /// <param name="instance"></param>
-        private static void SetNewName(StaticObject instance)
+        private static void SetNewName(StaticInstance instance)
         {
             string modelName = instance.model.name;
             string groupName = instance.Group; 
@@ -120,7 +120,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-			foreach (StaticObject obj in allStaticInstances)
+			foreach (StaticInstance obj in allStaticInstances)
 			{
 				InstanceUtil.SetActiveRecursively(obj, bActive);
 			}
@@ -136,7 +136,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticObject instance in allStaticInstances)
+			foreach (StaticInstance instance in allStaticInstances)
 			{
 				if (instance.CelestialBody == cBody)
 					InstanceUtil.SetActiveRecursively(instance, bActive);
@@ -156,7 +156,7 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticObject instance in allStaticInstances)
+			foreach (StaticInstance instance in allStaticInstances)
 			{
 				if (instance.Group == sGroup)
 					InstanceUtil.SetActiveRecursively(instance, bActive);
@@ -272,9 +272,9 @@ namespace KerbalKonstructs.Core
 						var center = group.centerPoint;
 						var dist = Vector3.Distance(center, vPlayerPos);
 
-						List<StaticObject> groupchildObjects = group.groupInstances;
+						List<StaticInstance> groupchildObjects = group.groupInstances;
 
-						foreach (StaticObject obj in groupchildObjects)
+						foreach (StaticInstance obj in groupchildObjects)
 						{
 							dist = Vector3.Distance(vPlayerPos, obj.gameObject.transform.position);
                             Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
@@ -321,7 +321,7 @@ namespace KerbalKonstructs.Core
 
 		}
 
-        internal static StaticObject[] GetAllStatics()
+        internal static StaticInstance[] GetAllStatics()
 		{
             return allStaticInstances;
 		}
@@ -354,7 +354,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static List<StaticObject> GetInstancesFromModel(StaticModel model)
+        internal static List<StaticInstance> GetInstancesFromModel(StaticModel model)
 		{
 			return (from obj in allStaticInstances where obj.model == model select obj).ToList();
 		}

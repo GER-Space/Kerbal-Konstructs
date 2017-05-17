@@ -57,7 +57,7 @@ namespace KerbalKonstructs.Core
         internal float refAlt;
         internal CelestialBody body;
 
-        internal StaticObject parentInstance;
+        internal StaticInstance parentInstance;
 
 
         internal GameObject lsGameObject;

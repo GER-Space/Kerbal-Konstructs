@@ -16,9 +16,9 @@ namespace KerbalKonstructs.UI
         private Vector3 vLineEnd = Vector3.zero;
         private Vector3 vTDL = Vector3.zero;
         private Vector3 vTDR = Vector3.zero;
-        private StaticObject soLandingGuide = null;
-        private StaticObject soTDR = null;
-        private StaticObject soTDL = null;
+        private StaticInstance soLandingGuide = null;
+        private StaticInstance soTDR = null;
+        private StaticInstance soTDL = null;
 
         private Texture tLGt = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lgtop", false);
         private Texture tLGm = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lgmiddle", false);
@@ -53,7 +53,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        public void drawTouchDownGuideL(StaticObject obj)
+        public void drawTouchDownGuideL(StaticInstance obj)
         {
             if (!IsOpen()) { return; }
             if (obj == null)
@@ -69,7 +69,7 @@ namespace KerbalKonstructs.UI
             soTDL = obj;
         }
 
-        public void drawTouchDownGuideR(StaticObject obj)
+        public void drawTouchDownGuideR(StaticInstance obj)
         {
             if (!IsOpen()) { return; }
             if (obj == null)
@@ -85,7 +85,7 @@ namespace KerbalKonstructs.UI
             soTDR = obj;
         }
 
-        public void drawLandingGuide(StaticObject obj)
+        public void drawLandingGuide(StaticInstance obj)
         {
             if (!IsOpen()) { return; }
             if (obj == null)

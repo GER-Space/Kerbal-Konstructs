@@ -23,7 +23,7 @@ namespace KerbalKonstructs.Modules
 
         internal static void DoHangaredCraftCheck()
         {
-            foreach (StaticObject instance in StaticDatabase.allStaticInstances)
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
 
 

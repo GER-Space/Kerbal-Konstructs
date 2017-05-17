@@ -25,7 +25,7 @@ namespace KerbalKonstructs.UI
 
         private Vector2 facilityscroll;
 
-        StaticObject selectedObject = null;
+        StaticInstance selectedObject = null;
 
         private Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 

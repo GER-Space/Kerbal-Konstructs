@@ -11,7 +11,7 @@ namespace KerbalKonstructs.UI
     {
         internal static string sGroup = "Ungrouped";
 
-        internal static StaticObject selectedStation = null;
+        internal static StaticInstance selectedStation = null;
 
         internal static float fRange = 0f;
         internal static float fTSRange = 90000f;
@@ -40,7 +40,7 @@ namespace KerbalKonstructs.UI
 
         internal static Boolean bNotInit = false;
 
-        internal static void TrackingInterface(StaticObject instance)
+        internal static void TrackingInterface(StaticInstance instance)
         {
             GroundStation myStation = instance.myFacilities[0] as GroundStation;
 

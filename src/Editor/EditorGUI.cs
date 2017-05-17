@@ -91,8 +91,8 @@ namespace KerbalKonstructs.UI
         #region Holders
         // Holders
 
-        internal static StaticObject selectedObject = null;
-        internal StaticObject selectedObjectPrevious = null;
+        internal static StaticInstance selectedObject = null;
+        internal StaticInstance selectedObjectPrevious = null;
         internal static LaunchSite lTargetSite = null;
 
         internal static String facType = "None";
@@ -111,8 +111,8 @@ namespace KerbalKonstructs.UI
 
         internal GameObject selectedSnapPoint = null;
         internal GameObject selectedSnapPoint2 = null;
-        internal StaticObject snapTargetInstance = null;
-        internal StaticObject snapTargetInstancePrevious = null;
+        internal StaticInstance snapTargetInstance = null;
+        internal StaticInstance snapTargetInstancePrevious = null;
 
         private Vector3 snpspos = new Vector3(0, 0, 0);
         private Vector3 snptpos = new Vector3(0, 0, 0);
@@ -206,7 +206,7 @@ namespace KerbalKonstructs.UI
         /// Wrapper to draw editors
         /// </summary>
         /// <param name="obj"></param>
-        public void drawEditor(StaticObject obj)
+        public void drawEditor(StaticInstance obj)
         {
             if (!guiInitialized)
             {
@@ -1080,7 +1080,7 @@ namespace KerbalKonstructs.UI
         /// <returns></returns>
         public void spawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
         {
-            StaticObject instance = new StaticObject();
+            StaticInstance instance = new StaticInstance();
             instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
             instance.RadiusOffset = fOffset;
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
@@ -1454,7 +1454,7 @@ namespace KerbalKonstructs.UI
         /// Updates the Window Strings to the new settings
         /// </summary>
         /// <param name="instance"></param>
-		public static void updateSelection(StaticObject instance)
+		public static void updateSelection(StaticInstance instance)
         {
             selectedObject = instance;
 

@@ -19,7 +19,7 @@ namespace KerbalKonstructs.UI
         //		public Vector2 scrollOreTransfer2;
 
         public static LaunchSite selectedSite = null;
-        public static StaticObject selectedFacility = null;
+        public static StaticInstance selectedFacility = null;
 
         float fLqFMax = 0;
         float fOxFMax = 0;
@@ -76,7 +76,7 @@ namespace KerbalKonstructs.UI
             }
 
 
-            StaticObject soObject = KerbalKonstructs.instance.selectedObject;
+            StaticInstance soObject = KerbalKonstructs.instance.selectedObject;
             KKWindow = new GUIStyle(GUI.skin.window);
             KKWindow.padding = new RectOffset(3, 3, 5, 5);
 

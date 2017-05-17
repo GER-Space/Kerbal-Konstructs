@@ -57,8 +57,8 @@ namespace KerbalKonstructs.UI
         String infFundsMax = "";
 
         public StaticModel mModel = null;
-        public StaticObject lastPreview = null;
-        public static StaticObject currPreview = null;
+        public StaticInstance lastPreview = null;
+        public static StaticInstance currPreview = null;
 
         public GameObject gModel = null;
 
@@ -552,7 +552,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        public static void DestroyPreviewInstance(StaticObject soInstance)
+        public static void DestroyPreviewInstance(StaticInstance soInstance)
         {
             if (soInstance != null)
             {
@@ -577,7 +577,7 @@ namespace KerbalKonstructs.UI
 
         public void CreatePreviewInstance(StaticModel model)
         {
-            StaticObject instance = new StaticObject();
+            StaticInstance instance = new StaticInstance();
             instance.gameObject = GameObject.Instantiate(model.prefab);
             instance.RadiusOffset = (float)FlightGlobals.ActiveVessel.altitude;
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
@@ -594,7 +594,7 @@ namespace KerbalKonstructs.UI
             currPreview = instance;
         }
 
-        public void SpinPreview(StaticObject soObject)
+        public void SpinPreview(StaticInstance soObject)
         {
             if (soObject == null || currPreview == null) return;
 

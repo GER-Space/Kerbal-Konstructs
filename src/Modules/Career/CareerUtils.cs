@@ -94,7 +94,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        internal static bool FacilityIsOpen(StaticObject instance)
+        internal static bool FacilityIsOpen(StaticInstance instance)
         {
             if (isSandboxGame)
             {
