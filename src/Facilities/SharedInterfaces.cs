@@ -1,7 +1,6 @@
 ﻿using KerbalKonstructs.Core;
 using System;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 

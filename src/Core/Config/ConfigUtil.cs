@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using KerbalKonstructs.Core;
 using UnityEngine;
 using System.Reflection;
 using KerbalKonstructs.Modules;

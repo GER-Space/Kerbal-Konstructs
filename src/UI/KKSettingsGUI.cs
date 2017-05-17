@@ -1,5 +1,4 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
 using System;
 using System.Collections.Generic;
 using LibNoise.Unity.Operator;

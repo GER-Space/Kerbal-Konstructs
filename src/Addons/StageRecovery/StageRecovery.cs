@@ -5,7 +5,6 @@ using System.Text;
 using KerbalKonstructs;
 using KerbalKonstructs.Utilities;
 using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
 
 namespace KerbalKonstructs.Addons
 {

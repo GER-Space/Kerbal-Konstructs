@@ -1,5 +1,4 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;

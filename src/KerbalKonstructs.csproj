@@ -81,15 +81,6 @@
     <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
     <Compile Include="Addons\SDTest.cs" />
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
-    <Compile Include="API\Config\ConfigCelestialBody.cs" />
-    <Compile Include="API\Config\ConfigFile.cs" />
-    <Compile Include="API\Config\ConfigDouble.cs" />
-    <Compile Include="API\Config\ConfigFloat.cs" />
-    <Compile Include="API\Config\ConfigGenericString.cs" />
-    <Compile Include="API\Config\ConfigSiteType.cs" />
-    <Compile Include="API\Config\ConfigVector3.cs" />
-    <Compile Include="API\Config\IConfigItem.cs" />
-    <Compile Include="API\KKAPI.cs" />
     <Compile Include="Core\Config\ConfigParser.cs" />
     <Compile Include="Core\Config\ConfigUtil.cs" />
     <Compile Include="Core\KKMath.cs" />

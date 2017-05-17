@@ -1,9 +1,7 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
-using LibNoise.Unity.Operator;
 using UnityEngine;
 using System.Linq;
 using System.IO;

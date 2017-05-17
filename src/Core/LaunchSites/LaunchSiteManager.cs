@@ -1,6 +1,4 @@
-﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -33,7 +31,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody body = KKAPI.GetCelestialBody("HomeWorld");
+                CelestialBody body = ConfigUtil.GetCelestialBody("HomeWorld");
                 var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d;
 
@@ -54,7 +52,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                CelestialBody body = KKAPI.GetCelestialBody("HomeWorld");
+                CelestialBody body = ConfigUtil.GetCelestialBody("HomeWorld");
                 var mods = body.pqsController.transform.GetComponentsInChildren(typeof(PQSCity), true);
                 double retval = 0d;
 
@@ -84,7 +82,7 @@ namespace KerbalKonstructs.Core
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.OpenCloseState = "Open";
-            runway.body = KKAPI.GetCelestialBody("HomeWorld");
+            runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
             runway.refLat = getKSCLat;
             runway.refLon = getKSCLon;
             runway.refAlt = 69f;
@@ -101,7 +99,7 @@ namespace KerbalKonstructs.Core
             launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.OpenCloseState = "Open";
-            launchpad.body = KKAPI.GetCelestialBody("HomeWorld");
+            launchpad.body = ConfigUtil.GetCelestialBody("HomeWorld");
             launchpad.refLat = getKSCLat;
             launchpad.refLon = getKSCLon;
             launchpad.refAlt = 72;

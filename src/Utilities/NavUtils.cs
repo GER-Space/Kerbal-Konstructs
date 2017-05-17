@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KerbalKonstructs.Core;
-using KerbalKonstructs.API;
 using UnityEngine;
 
 namespace KerbalKonstructs.Utilities

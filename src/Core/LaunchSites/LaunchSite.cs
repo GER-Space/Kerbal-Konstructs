@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using KerbalKonstructs.API;
 using KerbalKonstructs.Utilities;
 using KerbalKonstructs.Modules;
 

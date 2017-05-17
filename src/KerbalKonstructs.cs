@@ -9,8 +9,6 @@ using KerbalKonstructs.Core;
 using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
 using System.Reflection;
-using KerbalKonstructs.API;
-using KerbalKonstructs.API.Config;
 using KSP.UI.Screens;
 using Upgradeables;
 using KerbalKonstructs.Addons;
@@ -337,7 +335,7 @@ namespace KerbalKonstructs
 
                 // Tighter control over what statics are active
                 bTreatBodyAsNullForStatics = false;
-                currentBody = KKAPI.GetCelestialBody("HomeWorld");
+                currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                 Log.Normal("Homeworld is " + currentBody.name);
                 //StaticDatabase.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
                 //StaticDatabase.onBodyChanged(null);

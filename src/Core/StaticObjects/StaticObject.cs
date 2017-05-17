@@ -2,7 +2,6 @@
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
-using KerbalKonstructs.API;
 using UnityEngine;
 using KSP.UI.Screens;
 using System.Reflection;
