@@ -314,6 +314,7 @@ namespace KerbalKonstructs.UI
                 MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
                 updateSettings();
                 updateSelection();
+                this.Close();
 
             }
             GUILayout.FlexibleSpace();
