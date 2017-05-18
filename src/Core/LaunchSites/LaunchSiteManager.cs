@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Core
     public class LaunchSiteManager
     {
         private static List<LaunchSite> launchSites = new List<LaunchSite>();
-        private static string lastLaunchSite = "Runway";
+        private static string currentLaunchSite = "Runway";
         private static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
         public static float rangeNearestOpenBase = 0f;
         public static string nearestOpenBase = "";
@@ -221,6 +221,13 @@ namespace KerbalKonstructs.Core
 
         }
 
+
+        internal static LaunchSite GetCurrentLaunchSite()
+        {
+            return AllLaunchSites.Where(site => site.name == currentLaunchSite).First();
+        }
+
+        // Legacy Functions used by other mods
 
         // Returns a list of launchsites. Supports category filtering.
         public static List<LaunchSite> getLaunchSites(String usedFilter = "ALL")
@@ -677,14 +684,14 @@ namespace KerbalKonstructs.Core
                     site.facility.name = "LaunchPad";
                 }
             }
-            lastLaunchSite = site.LaunchSiteName;
+            currentLaunchSite = site.LaunchSiteName;
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
         }
 
         // Returns the internal launchSite that KSP has been told is the launchsite
         public static string getCurrentLaunchSite()
         {
-            return lastLaunchSite;
+            return currentLaunchSite;
 
         }
     }
