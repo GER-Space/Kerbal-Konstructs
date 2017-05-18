@@ -134,12 +134,12 @@ namespace KerbalKonstructs.Modules
                     if (!instance.hasFacilities || instance.myFacilities.Count == 0)
                         continue;
 
-                    if (!scenarioNode.HasNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString())))
+                    if (!scenarioNode.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
                         continue;
 
 //                    Log.Normal("Load State for Facility: " + instance.pqsCity.name);
 
-                    ConfigNode instanceNode = scenarioNode.GetNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
+                    ConfigNode instanceNode = scenarioNode.GetNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
                     foreach (var facNode in instanceNode.GetNodes())
                     {
                         int index = int.Parse(facNode.GetValue("Index"));
@@ -150,7 +150,7 @@ namespace KerbalKonstructs.Modules
 
                         } else
                         {
-                            Log.UserError("Facility Index Missmatch in fac: " + instance.pqsCity.name);
+                            Log.UserError("Facility Index Missmatch in fac: " + instance.gameObject.name);
                         }
                     }
 
@@ -174,8 +174,8 @@ namespace KerbalKonstructs.Modules
                 if (!instance.hasFacilities)
                     continue;
 
-                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString()));
-                instanceNode.SetValue("FacilityName", instance.pqsCity.name, true);
+                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
+                instanceNode.SetValue("FacilityName", instance.gameObject.name, true);
                 instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
 
                 for (int i = 0; i < instance.myFacilities.Count; i++)

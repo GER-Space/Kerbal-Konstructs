@@ -52,6 +52,7 @@ namespace KerbalKonstructs.Core
 
         internal GameObject gameObject;
         internal PQSCity pqsCity;
+        //internal PQSCity2 pqsCity2;
         internal StaticModel model;
 
         internal UrlDir.UrlConfig configUrl;
@@ -87,13 +88,13 @@ namespace KerbalKonstructs.Core
 		{
 			if (pqsCity != null)
 			{
-				pqsCity.repositionRadial = RadialPosition;
-				pqsCity.repositionRadiusOffset = RadiusOffset;
-				pqsCity.reorientInitialUp = Orientation;
-				pqsCity.reorientFinalAngle = RotationAngle;
+                pqsCity.repositionRadial = RadialPosition;
+                pqsCity.repositionRadiusOffset = RadiusOffset;
+                pqsCity.reorientInitialUp = Orientation;
+                pqsCity.reorientFinalAngle = RotationAngle;
                 pqsCity.transform.localScale = origScale * ModelScale;
                 pqsCity.Orientate();
-			}
+            }
 			// Notify modules about update
 			foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
 			    module.StaticObjectUpdate();
@@ -163,30 +164,46 @@ namespace KerbalKonstructs.Core
 			if (objvisibleRange < 1) objvisibleRange = 25000f;
 
             PQSCity.LODRange range = new PQSCity.LODRange
-			{
-				renderers = new GameObject[0],
-				objects = new GameObject[0],
-				visibleRange = objvisibleRange
-			};
+            {
+                renderers = new GameObject[0],
+                objects = new GameObject[0],
+                visibleRange = objvisibleRange
+            };
 
-			pqsCity = gameObject.AddComponent<PQSCity>();
-			pqsCity.lod = new[] { range };
-			pqsCity.frameDelta = 1; //Unknown
-			pqsCity.repositionToSphere = true; //enable repositioning
-			pqsCity.repositionToSphereSurface = false; //Snap to surface?
-			pqsCity.repositionRadial = RadialPosition; //position
-			pqsCity.repositionRadiusOffset = RadiusOffset; //height
-			pqsCity.reorientInitialUp = Orientation; //orientation
-			pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
-			pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-			gameObject.transform.parent = CelestialBody.pqsController.transform;
-			pqsCity.sphere = CelestialBody.pqsController;
+            pqsCity = gameObject.AddComponent<PQSCity>();
+            pqsCity.lod = new[] { range };
+            pqsCity.frameDelta = 1; //Unknown
+            pqsCity.repositionToSphere = true; //enable repositioning
+            pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            pqsCity.repositionRadial = RadialPosition; //position
+            pqsCity.repositionRadiusOffset = RadiusOffset; //height
+            pqsCity.reorientInitialUp = Orientation; //orientation
+            pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
+            pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
+            gameObject.transform.parent = CelestialBody.pqsController.transform;
+            pqsCity.sphere = CelestialBody.pqsController;
             origScale = pqsCity.transform.localScale;             // save the original scale for later use
             pqsCity.transform.localScale *= ModelScale;
             pqsCity.order = 100;
-			pqsCity.modEnabled = true;
+            pqsCity.modEnabled = true;
             pqsCity.OnSetup();
-			pqsCity.Orientate();
+            pqsCity.Orientate();
+
+            //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
+            //lodObject.visibleRange = VisibilityRange;
+            //lodObject.objects = new GameObject[] { };
+            //pqsCity2 = gameObject.AddComponent<PQSCity2>();
+            //pqsCity2.objects = new [] { lodObject } ;
+            //pqsCity2.lat = RefLatitude;
+            //pqsCity2.lon = RefLongitude;
+            //pqsCity2.alt = RadiusOffset;
+            //pqsCity2.up = Orientation;
+            //pqsCity2.rotation = RotationAngle;
+            //pqsCity2.sphere = CelestialBody.pqsController;
+
+
+            //pqsCity2.OnSetup();
+            //pqsCity2.Orientate();
 
 
             foreach (StaticModule module in model.modules)

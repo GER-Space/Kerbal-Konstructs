@@ -68,7 +68,7 @@ namespace KerbalKonstructs.UI
 					if (instance.model.DefaultFacilityType != "Barracks") continue;
 				}
 
-				if (instance.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+				if (instance.CelestialBody.name == FlightGlobals.currentMainBody.name)
 				{
 					var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
 					if (dist > 5000f) continue;

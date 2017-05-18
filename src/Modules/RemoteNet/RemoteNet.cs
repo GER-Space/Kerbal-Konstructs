@@ -119,7 +119,7 @@ namespace KerbalKonstructs.Modules
                 if (stationID == Guid.Empty)
                 {
                     double lng, lat, alt;
-                    alt = instance.CelestialBody.pqsController.GetSurfaceHeight(instance.pqsCity.repositionRadial) - instance.CelestialBody.pqsController.radius + 15;
+                    alt = instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.pqsController.radius + 15;
 
                     var objectPos = instance.CelestialBody.transform.InverseTransformPoint(instance.gameObject.transform.position);
                     lng = KKMath.GetLongitudeInDeg(objectPos);

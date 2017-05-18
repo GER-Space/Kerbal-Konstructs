@@ -50,7 +50,7 @@ namespace KerbalKonstructs.Addons
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances )
             {
                 group = (string)instance.Group;
-                key = instance.pqsCity.repositionRadial.ToString();
+                key = instance.RadialPosition.ToString();
 
                 switch (group)
                 {
@@ -65,11 +65,11 @@ namespace KerbalKonstructs.Addons
                             group2Center.Add(group, Vector3.zero);
                         }
                         int count = (groupMembers.ContainsKey(group)) ? groupMembers[group].Count : 0; 
-                        group2Center[group] = group2Center[group] * count/(count+1) + instance.pqsCity.repositionRadial/(count + 1) ;
+                        group2Center[group] = group2Center[group] * count/(count+1) + instance.RadialPosition/(count + 1) ;
                         break;
                 }
 
-                Add2Group(group, instance.pqsCity.repositionRadial);
+                Add2Group(group, instance.RadialPosition);
             }
             initialized = true;
         }
