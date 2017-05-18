@@ -55,7 +55,6 @@ namespace KerbalKonstructs
         #region Switches
         private Boolean atMainMenu = false;
         public Boolean VesselLaunched = false;
-        public Boolean bImportedCustom = false;
         public Boolean bStylesSet = false;
 
         public Boolean bDisablePositionEditing = false;
@@ -339,18 +338,15 @@ namespace KerbalKonstructs
                 Log.Normal("Homeworld is " + currentBody.name);
                 //StaticDatabase.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
                 //StaticDatabase.onBodyChanged(null);
-                StaticDatabase.ToggleActiveStaticsInGroup("KSCUpgrades", true);
-                StaticDatabase.ToggleActiveStaticsInGroup("KSCRace", true);
+                //StaticDatabase.ToggleActiveStaticsInGroup("KSCUpgrades", true);
+                //StaticDatabase.ToggleActiveStaticsInGroup("KSCRace", true);
+                updateCache();
                 // *********
 
             }
 
             if (data.Equals(GameScenes.MAINMENU))
             {
-                if (!bImportedCustom)
-                {
-                    bImportedCustom = true;
-                }
                 // Close all the launchsite objects
                 LaunchSiteManager.setAllLaunchsitesClosed();
                 atMainMenu = true;
@@ -729,21 +725,28 @@ namespace KerbalKonstructs
                 if (selectedObject != null)
                 {
                     playerPos = selectedObject.gameObject.transform.position;
-                    Log.Debug("updateCache using selectedObject as playerPos");
+                    //Log.Normal("updateCache using selectedObject as playerPos");
                 }
                 else if (FlightGlobals.ActiveVessel != null)
                 {
                     playerPos = FlightGlobals.ActiveVessel.transform.position;
-                    Log.Debug("updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
+                    //Log.Normal("updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
+                }
+                else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+                {
+                    var spaceCenterCam = (Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)) as SpaceCenterCamera2 []).First();
+                    playerPos = spaceCenterCam.transform.position;
+                    //Log.Normal("updateCache using SpaceCenter Camera 2 as playerPos");
+                    StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
                 }
                 else if (Camera.main != null)
                 {
                     playerPos = Camera.main.transform.position;
-                    Log.Debug("updateCache using Camera.main as playerPos");
+                    //Log.Normal("updateCache using Camera.main as playerPos");
                 }
                 else
                 {
-                    Log.Debug("KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
+                    Log.UserInfo("KerbalKonstructs.updateCache could not determine playerPos. All hell now happens.");
                 }
 
                 StaticDatabase.UpdateCache(playerPos);

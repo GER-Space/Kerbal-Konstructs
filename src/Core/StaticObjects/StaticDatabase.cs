@@ -19,7 +19,7 @@ namespace KerbalKonstructs.Core
         private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
         internal static StaticInstance [] allStaticInstances  = new StaticInstance [0] ;
 
-        private static string activeBodyName = "";
+        internal static string activeBodyName = "";
 
 
 
@@ -238,21 +238,21 @@ namespace KerbalKonstructs.Core
 
         internal static void UpdateCache(Vector3 playerPos)
 		{
-            Log.Debug("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
+            //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
 
 			Vector3 vPlayerPos = Vector3.zero;
 
 			if (FlightGlobals.ActiveVessel != null)
 			{
 				vPlayerPos = FlightGlobals.ActiveVessel.GetTransform().position;
-                Log.Debug("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
+                //Log.Normal("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
 			}
 			else
 				vPlayerPos = playerPos;
 
 			if (vPlayerPos == Vector3.zero)
 			{
-                    Log.Warning("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+                    //Log.Warning("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
 			}
 			
 			if (groupList.ContainsKey(activeBodyName))
@@ -261,7 +261,7 @@ namespace KerbalKonstructs.Core
 				{
 					if (!group.bLiveUpdate)
 					{
-                        Log.Debug("StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
+                        //Log.Normal("StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
 						
 						group.UpdateCacheSettings();
 						group.bLiveUpdate = true;
