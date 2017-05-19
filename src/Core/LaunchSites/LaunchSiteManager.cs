@@ -216,6 +216,15 @@ namespace KerbalKonstructs.Core
         }
 
 
+        internal static void DeleteLaunchSite (LaunchSite site2delete)
+        {
+            if (launchSites.Contains(site2delete))
+            {
+                launchSites.Remove(site2delete);
+            } 
+        }
+
+
         internal static LaunchSite GetCurrentLaunchSite()
         {
             return launchSites.Where(site => site.LaunchSiteName == currentLaunchSite).FirstOrDefault();

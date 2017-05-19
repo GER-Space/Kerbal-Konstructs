@@ -1026,12 +1026,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
                 {
-                    if (snapTargetInstance == selectedObject) snapTargetInstance = null;
-                    if (snapTargetInstancePrevious == selectedObject) snapTargetInstancePrevious = null;
-                    if (selectedObjectPrevious == selectedObject) selectedObjectPrevious = null;
-                    KerbalKonstructs.instance.deleteObject(selectedObject);
-                    selectedObject = null;
-                    return;
+                    DeleteInstance();                   
                 }
 
                 GUILayout.Space(15);
@@ -1068,6 +1063,28 @@ namespace KerbalKonstructs.UI
         #endregion
 
         #region Utility Functions
+
+
+        internal void DeleteInstance ()
+        {
+            if (snapTargetInstance == selectedObject)
+                snapTargetInstance = null;
+            if (snapTargetInstancePrevious == selectedObject)
+                snapTargetInstancePrevious = null;
+            if (selectedObjectPrevious == selectedObject)
+                selectedObjectPrevious = null;
+
+
+            if (selectedObject.hasLauchSites)
+            {
+                LaunchSiteManager.DeleteLaunchSite(selectedObject.launchSite);
+            }
+
+            KerbalKonstructs.instance.deleteObject(selectedObject);
+            selectedObject = null;
+
+            return;
+        }
 
 
         /// <summary>

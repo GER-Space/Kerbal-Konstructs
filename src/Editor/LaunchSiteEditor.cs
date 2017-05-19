@@ -477,6 +477,9 @@ namespace KerbalKonstructs.UI
                 selectedObject.launchSite.Category = siteCategory;
                 selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
                 selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
+                selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
+                selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
+                selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
 
                 if (addToDB)
                 {
