@@ -454,10 +454,12 @@ namespace KerbalKonstructs.UI
                 bool addToDB = false;
                 if (!selectedObject.hasLauchSites)
                 {
+                    Log.Normal("Creating LaunchSite");
                     LaunchSite lsite = new LaunchSite();
                     selectedObject.launchSite = lsite;
                     selectedObject.hasLauchSites = true;
                     lsite.parentInstance = selectedObject;
+                    selectedObject.launchSite.body = selectedObject.CelestialBody;
                     addToDB = true;
                 }
                 selectedObject.launchSite.LaunchSiteName = siteName;
@@ -478,9 +480,10 @@ namespace KerbalKonstructs.UI
 
                 if (addToDB)
                 {
+                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
                     LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
                 }
-                KerbalKonstructs.instance.saveObjects();
+                KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
                 this.Close();
             }
             GUILayout.FlexibleSpace();
@@ -535,7 +538,6 @@ namespace KerbalKonstructs.UI
 
         internal void ReadSettings()
         {
-          
             if (selectedObject.hasLauchSites)
             {
                 //LaunchSite myLaunchSite = new LaunchSite();
@@ -580,7 +582,6 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-
                 string sModelDesc = selectedObject.model.description;
 
                 // Edit or make a launchsite
@@ -588,7 +589,7 @@ namespace KerbalKonstructs.UI
                 siteTrans = selectedObject.model.DefaultLaunchPadTransform;
                 siteDesc = selectedObject.model.description;
 
-                siteCategory = "";
+                siteCategory = "Other";
                 siteHidden = "false";
                 siteType = SiteType.Any;
                 flOpenCost = 0f;
@@ -610,7 +611,7 @@ namespace KerbalKonstructs.UI
 
             stLength = string.Format("{0}", flLength);
             stWidth = string.Format("{0}", flWidth);
-            siteAuthor = !String.IsNullOrEmpty(selectedObject.launchSite.LaunchSiteAuthor) ? selectedObject.launchSite.LaunchSiteAuthor : selectedObject.model.author;
+            siteAuthor = selectedObject.model.author;
             // Debug.Log("KK: Making or editing a launchsite");
         }
 

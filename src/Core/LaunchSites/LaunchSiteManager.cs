@@ -44,7 +44,7 @@ namespace KerbalKonstructs.Core
                         break;
                     }
                 }
-                return (float)((360 + retval) % 360);
+                return (float)retval;
             }
         }
 
@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Core
                     PQSCity mod = m as PQSCity;
                     if (mod.name == "KSC")
                     {
-                        retval = (KKMath.GetLatitudeInDeg(mod.repositionRadial) * KKMath.rad2deg);
+                        retval = (KKMath.GetLatitudeInDeg(mod.repositionRadial));
                         break;
                     }
                 }
@@ -165,13 +165,11 @@ namespace KerbalKonstructs.Core
         {
             if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.parentInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
             {
-
                 site.parentInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.parentInstance.gameObject.name = site.LaunchSiteName;
 
                 FieldInfo sitesField = typeof(PSystemSetup).GetField("facilities", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();
-
+                List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();            
                 if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
                 {
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
@@ -179,14 +177,12 @@ namespace KerbalKonstructs.Core
                     newFacility.facilityName = site.LaunchSiteName;
                     newFacility.facilityPQS = site.parentInstance.CelestialBody.pqsController;
                     newFacility.facilityTransformName = site.parentInstance.gameObject.name;
-                   // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
+                    // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
                     //     newFacility.facilityTransformName = instance.gameObject.transform.name;
                     newFacility.pqsName = site.body.pqsController.name;
-
                     PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
                     spawnPoint.name = site.LaunchSiteName;
                     spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-
                     newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
                     newFacility.spawnPoints[0] = spawnPoint;
 
@@ -201,8 +197,6 @@ namespace KerbalKonstructs.Core
                 {
                     Log.Error("Launch site " + site.name + " already exists.");
                 }
-
-
                 MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (updateSitesMI == null)
                     Log.UserError("You are screwed. Failed to find SetupFacilities().");
