@@ -211,7 +211,7 @@ namespace KerbalKonstructs.Core
 
                 if (site.parentInstance.gameObject != null)
                 {                    
-                    CustomSpaceCenter.CreateFromLaunchsite(site.LaunchSiteName, site.parentInstance.gameObject);
+                    CustomSpaceCenter.CreateFromLaunchsite(site);
                 }
             }
             else
@@ -224,7 +224,7 @@ namespace KerbalKonstructs.Core
 
         internal static LaunchSite GetCurrentLaunchSite()
         {
-            return AllLaunchSites.Where(site => site.name == currentLaunchSite).First();
+            return launchSites.Where(site => site.LaunchSiteName == currentLaunchSite).FirstOrDefault();
         }
 
         // Legacy Functions used by other mods

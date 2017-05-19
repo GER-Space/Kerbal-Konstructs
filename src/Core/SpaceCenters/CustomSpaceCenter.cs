@@ -8,19 +8,19 @@ namespace KerbalKonstructs.Core
     {
         public string SpaceCenterName;
 
-        internal SpaceCenter spaceCenter;
+        private SpaceCenter _spaceCenter;
         internal StaticInstance staticObject;
         internal GameObject gameObject;
 
-        public static void CreateFromLaunchsite(string name, GameObject go)
+        public static void CreateFromLaunchsite(LaunchSite site)
         {
-            StaticInstance staticObject = InstanceUtil.GetStaticInstanceForGameObject(go);
+            StaticInstance staticObject = site.parentInstance;
             if (staticObject != null)
             {
                 var csc = new CustomSpaceCenter();
-                csc.SpaceCenterName = name;
+                csc.SpaceCenterName = site.LaunchSiteName;
                 csc.staticObject = staticObject;
-                csc.gameObject = go;
+                csc.gameObject = site.parentInstance.gameObject;
                 SpaceCenterManager.addSpaceCenter(csc);
             }
             else
@@ -29,22 +29,31 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        public SpaceCenter spaceCenter
+        {
+         get
+            {
+                return getSpaceCenter();
+            }
+        }
+
+
         public SpaceCenter getSpaceCenter()
         {
-            if (spaceCenter == null)
+            if (_spaceCenter == null)
             {
-                spaceCenter = gameObject.AddComponent<SpaceCenter>();
-                spaceCenter.cb = staticObject.CelestialBody;
-                spaceCenter.name = SpaceCenterName;
+                _spaceCenter = gameObject.AddComponent<SpaceCenter>();
+                _spaceCenter.cb = staticObject.CelestialBody;
+                _spaceCenter.name = SpaceCenterName;
 
                 // Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
 
-                FieldInfo Latitude = spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
-                Latitude.SetValue(spaceCenter, spaceCenter.cb.GetLatitude(gameObject.transform.position));
-                FieldInfo Longitude = spaceCenter.GetType().GetField("longitude", BindingFlags.NonPublic | BindingFlags.Instance);
-                Longitude.SetValue(spaceCenter, spaceCenter.cb.GetLongitude(gameObject.transform.position));
-                FieldInfo SrfNVector = spaceCenter.GetType().GetField("srfNVector", BindingFlags.NonPublic | BindingFlags.Instance);
-                SrfNVector.SetValue(spaceCenter, spaceCenter.cb.GetRelSurfaceNVector(spaceCenter.Latitude, spaceCenter.Longitude));
+                FieldInfo Latitude = _spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
+                Latitude.SetValue(_spaceCenter, _spaceCenter.cb.GetLatitude(gameObject.transform.position));
+                FieldInfo Longitude = _spaceCenter.GetType().GetField("longitude", BindingFlags.NonPublic | BindingFlags.Instance);
+                Longitude.SetValue(_spaceCenter, _spaceCenter.cb.GetLongitude(gameObject.transform.position));
+                FieldInfo SrfNVector = _spaceCenter.GetType().GetField("srfNVector", BindingFlags.NonPublic | BindingFlags.Instance);
+                SrfNVector.SetValue(_spaceCenter, _spaceCenter.cb.GetRelSurfaceNVector(_spaceCenter.Latitude, _spaceCenter.Longitude));
 
             }
             else
@@ -52,7 +61,7 @@ namespace KerbalKonstructs.Core
                 // Debug.Log("KK: getSpaceCenter was not null.");
             }
 
-            return spaceCenter;
+            return _spaceCenter;
         }
 
     }
