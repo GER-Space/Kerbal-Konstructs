@@ -140,6 +140,10 @@ namespace KerbalKonstructs
 
         private List<StaticInstance> deletedInstances = new List<StaticInstance>();
 
+
+        /// <summary>
+        /// Unity GameObject Awake function
+        /// </summary>
         void Awake()
         {
             instance = this;
@@ -260,7 +264,10 @@ namespace KerbalKonstructs
             }
         }
 
-
+        /// <summary>
+        /// GameEvent function for loading Career Sate
+        /// </summary>
+        /// <param name="node"></param>
         public void LoadState(ConfigNode node)
         {
             Log.Normal("Load State");
@@ -274,6 +281,10 @@ namespace KerbalKonstructs
             RemoteNet.LoadGroundStations();
         }
 
+        /// <summary>
+        /// GameEvent function for saving Career State
+        /// </summary>
+        /// <param name="configNode"></param>
         public void SaveState(ConfigNode configNode)
         {
             Log.Normal("Save State");
@@ -281,6 +292,10 @@ namespace KerbalKonstructs
         }
 
 
+        /// <summary>
+        /// GameEvent function for toggeling the visiblility of Statics
+        /// </summary>
+        /// <param name="data"></param>
         void onLevelWasLoaded(GameScenes data)
         {
 
@@ -384,6 +399,7 @@ namespace KerbalKonstructs
 
             if (bTreatBodyAsNullForStatics) StaticDatabase.OnBodyChanged(null);
         }
+
 
         void onDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
         {
@@ -520,7 +536,7 @@ namespace KerbalKonstructs
         }
 
         /// <summary>
-        /// Unity Late Update
+        /// Unity Late Update. Used for KeyCodes and fixing facility levels on new games...
         /// </summary>
         void LateUpdate()
         {
@@ -547,14 +563,6 @@ namespace KerbalKonstructs
 
         #endregion
 
-        #region GUI Methods
-
-        void OnGUI()
-        {
-
-        }
-        #endregion
-
         #region Object Methods
 
         public void DeletePreviewObject()
@@ -567,151 +575,10 @@ namespace KerbalKonstructs
                 }
             }
         }
-
-        //internal void DoHangaredCraftCheck()
-        //{
-        //    foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-        //    {
-
-
-        //        if (instance.facilityType == KKFacilityType.Hangar)
-        //        {
-        //            Hangar thisHanar = instance.gameObject.GetComponent<Hangar>();
-
-
-        //            string sInStorage = thisHanar.InStorage1;
-        //            string sInStorage2 = thisHanar.InStorage2;
-        //            string sInStorage3 = thisHanar.InStorage3;
-
-        //            string bHangarHasStoredCraft1 = "None";
-        //            string bHangarHasStoredCraft2 = "None";
-        //            string bHangarHasStoredCraft3 = "None";
-
-        //            bool bCraftExists = false;
-
-        //            if (sInStorage != "None" && sInStorage != "")
-        //            {
-        //                foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-        //                {
-        //                    if (vVesselStored.id.ToString() == sInStorage)
-        //                    {
-        //                        bCraftExists = true;
-        //                        break;
-        //                    }
-        //                }
-
-        //                if (bCraftExists)
-        //                    bHangarHasStoredCraft1 = "InStorage1";
-        //                else
-        //                {
-        //                    // Craft no longer exists. Clear this hangar space.
-        //                    Log.Debug("Craft InStorage no longer exists. Emptying this hangar space.");
-        //                    thisHanar.InStorage1 = "None";
-        //                }
-        //            }
-
-        //            bCraftExists = false;
-
-        //            if (sInStorage2 != "None" && sInStorage2 != "")
-        //            {
-        //                foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-        //                {
-        //                    if (vVesselStored.id.ToString() == sInStorage2)
-        //                    {
-        //                        bCraftExists = true;
-        //                        break;
-        //                    }
-        //                }
-
-        //                if (bCraftExists)
-        //                    bHangarHasStoredCraft2 = "InStorage2";
-        //                else
-        //                {
-        //                    // Craft no longer exists. Clear this hangar space.
-        //                    Log.Debug("Craft TargetID no longer exists. Emptying this hangar space.");
-        //                    thisHanar.InStorage2 = "None";
-        //                }
-        //            }
-
-        //            bCraftExists = false;
-
-        //            if (sInStorage3 != "None" && sInStorage3 != "")
-        //            {
-        //                foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-        //                {
-        //                    if (vVesselStored.id.ToString() == sInStorage3)
-        //                    {
-        //                        bCraftExists = true;
-        //                        break;
-        //                    }
-        //                }
-
-        //                if (bCraftExists)
-        //                    bHangarHasStoredCraft3 = "InStorage3";
-        //                else
-        //                {
-        //                    // Craft no longer exists. Clear this hangar space.
-        //                    Log.Debug("Craft TargetType no longer exists. Emptying this hangar space.");
-
-        //                    thisHanar.InStorage3 = "None";
-        //                }
-        //            }
-
-        //            if (bHangarHasStoredCraft1 == "None" && bHangarHasStoredCraft2 == "None" && bHangarHasStoredCraft3 == "None")
-        //            {
-
-        //            }
-        //            else
-        //            {
-        //                string sHangarSpace = "";
-
-        //                foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-        //                {
-        //                    if (vVesselStored.id.ToString() == sInStorage)
-        //                        sHangarSpace = "InStorage1";
-
-        //                    if (vVesselStored.id.ToString() == sInStorage2)
-        //                        sHangarSpace = "InStorage2";
-
-        //                    if (vVesselStored.id.ToString() == sInStorage3)
-        //                        sHangarSpace = "InStorage3";
-
-        //                    // If a vessel is hangared
-        //                    if (vVesselStored.id.ToString() == sInStorage || vVesselStored.id.ToString() == sInStorage2 || vVesselStored.id.ToString() == sInStorage3)
-        //                    {
-        //                        if (vVesselStored == FlightGlobals.ActiveVessel)
-        //                        {
-        //                            // Craft has been taken control
-        //                            // Empty the hangar
-        //                            Log.Debug("Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
-        //                            typeof(Hangar).GetField(sHangarSpace).SetValue(thisHanar, "None");
-        //                            //instance.setSetting(sHangarSpace, "None");
-        //                        }
-        //                        else
-        //                        {
-        //                            Log.Debug("Hiding vessel " + vVesselStored.vesselName + ". It is in the hangar.");
-        //                            // Hide the vessel - it is in the hangar
-
-        //                            foreach (Part p in vVesselStored.Parts)
-        //                            {
-        //                                if (p != null && p.gameObject != null)
-        //                                    p.gameObject.SetActive(false);
-        //                                else
-        //                                    continue;
-        //                            }
-
-        //                            vVesselStored.MakeInactive();
-        //                            vVesselStored.enabled = false;
-        //                            vVesselStored.Unload();
-        //                        }
-        //                    }
-
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
+      
+        /// <summary>
+        /// Invoked by invoke repeating and onLevelWasLoaded gameevent. controls the visiblility of Statics
+        /// </summary>
         public void updateCache()
         {
             if (HighLogic.LoadedSceneIsGame)
@@ -1041,7 +908,11 @@ namespace KerbalKonstructs
         }
 
 
-
+        /// <summary>
+        /// Parses a cfgnode and adds a corresponding facility component to the static instance.
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="cfgNode"></param>
         internal static void AttachFacilities(StaticInstance instance, ConfigNode cfgNode)
         {            
             if (!cfgNode.HasValue("FacilityType") && !cfgNode.HasNode("Facility"))
