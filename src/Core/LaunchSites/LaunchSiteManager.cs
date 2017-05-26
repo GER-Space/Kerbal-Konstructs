@@ -167,11 +167,13 @@ namespace KerbalKonstructs.Core
             {
                 site.parentInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.parentInstance.gameObject.name = site.LaunchSiteName;
+               
+                List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
 
-                FieldInfo sitesField = typeof(PSystemSetup).GetField("facilities", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();            
-                if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
+
+                if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
+                    Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
                     newFacility.name = "";
                     newFacility.facilityName = site.LaunchSiteName;
@@ -187,7 +189,7 @@ namespace KerbalKonstructs.Core
                     newFacility.spawnPoints[0] = spawnPoint;
 
                     facilities.Add(newFacility);
-                    sitesField.SetValue(PSystemSetup.Instance, facilities.ToArray());
+                    PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
                     site.facility = newFacility;
 
