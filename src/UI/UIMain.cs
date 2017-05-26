@@ -28,17 +28,10 @@ namespace KerbalKonstructs.UI
 		public static Texture tLaunchpadsOff;
 		public static Texture tOtherOn;
 		public static Texture tOtherOff;
-		public static Texture tRadarCover;
-		public static Texture tRadarOn;
-		public static Texture tRadarOff;
-		public static Texture tUplinksOn;
-		public static Texture tUplinksOff;
-		public static Texture tGroundCommsOn;
-		public static Texture tGroundCommsOff;
+        public static Texture tWaterOn;
+        public static Texture tWaterOff;
 		public static Texture tHideOn;
 		public static Texture tHideOff;
-		public static Texture tDownlinksOn;
-		public static Texture tDownlinksOff;
 
 		public static Texture tHorizontalSep;
 
@@ -139,19 +132,12 @@ namespace KerbalKonstructs.UI
 			tLaunchpadsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapLaunchpadsOff", false);
 			tOtherOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOn", false);
 			tOtherOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapOtherOff", false);
-			tRadarCover = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/radarcover", false);
-			tRadarOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOn", false);
-			tRadarOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapRadarOff", false);
-			tUplinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOn", false);
-			tUplinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapUplinksOff", false);
-			tGroundCommsOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOn", false);
-			tGroundCommsOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapGroundCommsOff", false);
 			tHideOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOn", false);
 			tHideOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOff", false);
-			tDownlinksOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOn", false);
-			tDownlinksOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapDownlinksOff", false);
+            tWaterOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapWaterOn", false);
+            tWaterOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapWaterOff", false);
 
-			tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+            tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
 			tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
 			tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);

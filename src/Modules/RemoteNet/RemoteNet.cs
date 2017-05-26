@@ -56,11 +56,12 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                
-
-                if (instance.myFacilities[0].OpenCloseState == "Closed" && instance.myFacilities[0].OpenCost != 0f)
+                if (!CareerUtils.isSandboxGame)
                 {
-                    continue;
+                    if (instance.myFacilities[0].OpenCloseState == "Closed" && instance.myFacilities[0].OpenCost != 0f)
+                    {
+                        continue;
+                    }
                 }
 
                 if (openRTStations.ContainsKey(instance))

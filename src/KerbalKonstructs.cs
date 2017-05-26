@@ -16,6 +16,7 @@ using KerbalKonstructs.Modules;
 
 using Debug = UnityEngine.Debug;
 
+
 namespace KerbalKonstructs
 {
 
@@ -112,15 +113,9 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean mapShowRocketbases = true;
         [KSPField]
+        public Boolean mapShowWaterLaunch = true;
+        [KSPField]
         public Boolean mapShowOther = false;
-        [KSPField]
-        public Boolean mapShowRadar = false;
-        [KSPField]
-        public Boolean mapShowDownlinks = false;
-        [KSPField]
-        public Boolean mapShowUplinks = false;
-        [KSPField]
-        public Boolean mapShowGroundComms = false;
         [KSPField]
         public Boolean mapHideIconsBehindBody = true;
         [KSPField]

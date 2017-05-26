@@ -1,10 +1,10 @@
 ﻿using KerbalKonstructs.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
+using System.Collections.Generic;
 
 
 namespace KerbalKonstructs.Core
@@ -221,6 +221,12 @@ namespace KerbalKonstructs.Core
             if (launchSites.Contains(site2delete))
             {
                 launchSites.Remove(site2delete);
+
+                CustomSpaceCenter csc = SpaceCenterManager.GetCSC(site2delete.LaunchSiteName);
+                if (csc != null)
+                {
+                    SpaceCenterManager.spaceCenters.Remove(csc);
+                }
             } 
         }
 

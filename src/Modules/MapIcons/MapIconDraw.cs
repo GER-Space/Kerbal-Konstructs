@@ -86,7 +86,11 @@ namespace KerbalKonstructs.Modules
         public void drawTrackingStations()
         {
             if (!MiscUtils.isCareerGame())
-                return;
+            {
+                KerbalKonstructs.instance.mapShowClosed = true;
+                KerbalKonstructs.instance.mapShowOpen = true;
+            }
+                
             if (!KerbalKonstructs.instance.mapShowOpenT)
                 return;
 
@@ -175,7 +179,9 @@ namespace KerbalKonstructs.Modules
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
                     continue;
-                if (!KerbalKonstructs.instance.mapShowOther && ((category == "Other") || (category == "Waterlaunch")))
+                if (!KerbalKonstructs.instance.mapShowOther && (category == "Other"))
+                    continue;
+                if (!KerbalKonstructs.instance.mapShowWaterLaunch && (category == "Waterlaunch"))
                     continue;
                 if (!KerbalKonstructs.instance.mapShowRocketbases && category == "RocketPad")
                     continue;

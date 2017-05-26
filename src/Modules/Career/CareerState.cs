@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,101 +18,35 @@ namespace KerbalKonstructs.Modules
 
         private static Dictionary<string, Dictionary<String, String>> parsedLSConfig = new Dictionary<string, Dictionary<string, string>>();
 
-        ///// <summary>
-        ///// fills the parsedConfig struckture for LoadFacilities() function
-        ///// </summary>
-        //private static void ParseFacConfig()
-        //{
-        //    parsedConfig.Clear();
-        //    string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
+        private static int loadErrorCount = 0;
 
-        //    string position = "";
-        //    string facType = "";
-
-        //    ConfigNode rootNode = new ConfigNode();
-
-        //    if (!File.Exists(saveConfigPath))
-        //    {
-        //        ConfigNode GameNode = rootNode.AddNode("GAME");
-        //        ConfigNode ScenarioNode = GameNode.AddNode("SCENARIO");
-        //        ScenarioNode.AddValue("Name", "KKStatics");
-        //        rootNode.Save(saveConfigPath);
-        //        return;
-        //    }
-        //    rootNode = ConfigNode.Load(saveConfigPath);
-        //    ConfigNode gameNode = rootNode.GetNode("GAME");
-
-        //    foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
-        //    {
-
-        //        foreach (ConfigNode facNode in scenarioNode.GetNodes("KKStatic"))
-        //        {
-        //            Dictionary<string, string> config = new Dictionary<string, string>();
-        //            position = CareerUtils.KeyFromString(facNode.GetValue("RadialPosition"));
-        //            facType = facNode.GetValue("FacilityType");
-        //            if (parsedConfig.ContainsKey(position))
-        //            {
-        //                Log.UserError("duplicate posistion key found in file: " + position);
-        //                continue;
-        //            }
-        //            foreach (string key in CareerUtils.ParametersForFacility(facType))
-        //            {
-        //                if (facNode.HasValue(key))
-        //                {
-        //                    config.Add(key, facNode.GetValue(key));
-        //                }
-        //            }
-        //            parsedConfig.Add(position, config);
-
-        //        }
-
-        //    }
-
-        //}
-
-
-
-        ///// <summary>
-        ///// Loads the state of all facilities from the .cfg file
-        ///// </summary>
-        //internal static void LoadFacilities()
-        //{
-        //    ParseFacConfig();
-        //    foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-        //    {
-
-        //        if (String.IsNullOrEmpty((string)instance.getSetting("FacilityType")) || String.Equals(((string)instance.getSetting("FacilityType")), "None", StringComparison.CurrentCultureIgnoreCase))
-        //        {
-        //            continue;
-        //        }
-        //        string instanceKey = CareerUtils.KeyFromString(instance.pqsCity.repositionRadial.ToString());
-        //        // check if we have a config loaded with the same radial position
-        //        if (parsedConfig.ContainsKey(instanceKey) )
-        //        {
-        //            config.Clear();
-        //            config = parsedConfig[instanceKey];
-
-        //            foreach (string key in config.Keys.ToList())
-        //            {
-        //                if (CareerUtils.IsString(key))
-        //                {
-        //                    instance.setSetting(key, config[key]);
-        //                    //Log.Normal("Setting: " +(string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
-        //                }
-        //                if (CareerUtils.IsFloat(key))
-        //                {
-        //                    instance.setSetting(key, float.Parse(config[key]));
-        //                    //Log.Normal("Setting: " + (string)instance.getSetting("FacilityType") + " " + key + " to: " + config[key]);
-        //                }
-        //            }
-
-        //        }
-        //    }
-        //}
+        internal static IEnumerator LoadFacilitiesDelayed()
+        {
+            yield return new WaitForSecondsRealtime(1);
+            Log.UserInfo("starting new attempt");
+            LoadFacilities();
+        }
 
 
         private static void LoadFacilities()
         {
+            if (HighLogic.SaveFolder == "DestructiblesTest")
+            {
+                if (loadErrorCount < 10)
+                {
+                    loadErrorCount++;
+                    KerbalKonstructs.instance.StartCoroutine(LoadFacilitiesDelayed());
+                    Log.UserWarning("Needed to delay SavegameState Loading.");
+                } else {
+                    Log.Error("Giving Up afer 10 attempts");
+                    loadErrorCount = 0;
+                    Log.Trace();
+                }
+                return;
+            }
+
+            loadErrorCount = 0;
+
             string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
 
             ConfigNode rootNode = new ConfigNode();
