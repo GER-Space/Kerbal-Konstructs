@@ -173,7 +173,7 @@ namespace KerbalKonstructs.Core
 
                 if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
-                    Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
+                    //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
                     newFacility.name = "";
                     newFacility.facilityName = site.LaunchSiteName;
