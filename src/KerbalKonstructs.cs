@@ -1359,6 +1359,10 @@ namespace KerbalKonstructs
 
         #region Config Methods
 
+        /// <summary>
+        /// Loads the settings of KK
+        /// </summary>
+        /// <returns></returns>
         public bool loadConfig()
         {
             string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
@@ -1385,6 +1389,9 @@ namespace KerbalKonstructs
             return false;
         }
 
+        /// <summary>
+        /// Saves the default settings of KK
+        /// </summary>
         public void saveConfig()
         {
             ConfigNode cfg = new ConfigNode();
