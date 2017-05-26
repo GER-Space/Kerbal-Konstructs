@@ -268,7 +268,7 @@ namespace KerbalKonstructs
         /// GameEvent function for loading Career Sate
         /// </summary>
         /// <param name="node"></param>
-        public void LoadState(ConfigNode node)
+        public void LoadState(ConfigNode configNode)
         {
             Log.Normal("Load State");
             if (CareerUtils.isCareerGame)
