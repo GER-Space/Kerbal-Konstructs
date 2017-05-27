@@ -98,5 +98,23 @@ namespace KerbalKonstructs.Addons
 
             return group2Center[groupName];
         }
+
+
+        /// <summary>
+        /// Prints out the usage of each model
+        /// </summary>
+        public static void GetModelStats()
+        {
+            int modelcount = 0;
+            foreach (StaticModel model in StaticDatabase.allStaticModels)
+            {
+                modelcount = StaticDatabase.GetInstancesFromModel(model).Count();
+                Log.Normal("Model " + model.configPath + " has: " + modelcount);
+
+            }
+        }
+
+
+
     }
 }
