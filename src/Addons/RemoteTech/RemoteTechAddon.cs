@@ -23,9 +23,9 @@ namespace KerbalKonstructs.Addons
         {
             get          
                 {
-                    Assembly assembly = (from a in AssemblyLoader.loadedAssemblies
+                    var assembly = (from a in AssemblyLoader.loadedAssemblies
                                          where a.name.ToLower().Equals("RemoteTech".ToLower())
-                                         select a).FirstOrDefault().assembly;
+                                         select a).FirstOrDefault();
                     return assembly != null;
                 }
         }
