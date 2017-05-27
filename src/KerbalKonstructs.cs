@@ -171,8 +171,6 @@ namespace KerbalKonstructs
             #endregion
 
             SpaceCenterManager.setKSC();
-            loadConfig();
-            saveConfig();
 
             DontDestroyOnLoad(this);
             Log.PerfStart("Object loading1");
@@ -192,7 +190,9 @@ namespace KerbalKonstructs
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
             UIMain.setTextures();
             Log.PerfStop("Awake Function");
-
+            //Log.PerfStart("Model Test");
+            //SDTest.GetModelStats();
+            //Log.PerfStop("Model Test");
         }
 
         #region Game Events
@@ -270,12 +270,25 @@ namespace KerbalKonstructs
         /// <param name="node"></param>
         public void LoadState(ConfigNode configNode)
         {
+            ConfigNode kkNode;
+
             Log.Normal("Load State");
+            if (configNode.HasNode("KerbalKonstructs"))
+            {
+                kkNode = configNode.GetNode("KerbalKonstructs");
+            }  else
+            {
+                kkNode = configNode.AddNode("KerbalKonstructs");
+            }
+
+            LoadKKConfig(kkNode);
+
+
             if (CareerUtils.isCareerGame)
             {
                 Log.Normal("Load openclose states for career game");
                 Log.PerfStart("Load Fac");
-                CareerState.Load();
+                CareerState.Load(kkNode);
                 Log.PerfStop("Load Fac");
             }
             RemoteNet.LoadGroundStations();
@@ -287,8 +300,24 @@ namespace KerbalKonstructs
         /// <param name="configNode"></param>
         public void SaveState(ConfigNode configNode)
         {
+            ConfigNode kkNode;
+
             Log.Normal("Save State");
-            CareerState.Save();
+            if (configNode.HasNode("KerbalKonstructs"))
+            {
+                kkNode = configNode.GetNode("KerbalKonstructs");
+            }
+            else
+            {
+                kkNode = configNode.AddNode("KerbalKonstructs");
+            }
+
+            SaveKKConfig(kkNode);
+
+            if (CareerUtils.isCareerGame)
+            {
+                CareerState.Save(kkNode);
+            }
         }
 
 
@@ -1363,11 +1392,16 @@ namespace KerbalKonstructs
         /// Loads the settings of KK
         /// </summary>
         /// <returns></returns>
-        public bool loadConfig()
+        public void LoadKKConfig(ConfigNode kkConfigNode)
         {
-            string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
 
-            ConfigNode cfg = ConfigNode.Load(saveConfigPath);
+            ConfigNode cfg = null;
+
+            if (kkConfigNode.HasNode("KKSettings"))
+            {
+                cfg = kkConfigNode.GetNode("KKSettings");
+            }
+
             if (cfg != null)
             {
                 foreach (FieldInfo f in GetType().GetFields())
@@ -1383,18 +1417,25 @@ namespace KerbalKonstructs
                         continue;
                     }
                 }
-                return true;
-
             }
-            return false;
         }
 
         /// <summary>
         /// Saves the default settings of KK
         /// </summary>
-        public void saveConfig()
+        public void SaveKKConfig(ConfigNode kkConfigNode)
         {
-            ConfigNode cfg = new ConfigNode();
+            ConfigNode cfg;
+            if (kkConfigNode.HasNode("KKSettings"))
+            {
+                cfg = kkConfigNode.GetNode("KKSettings");
+                cfg.ClearData();
+            }
+            else
+            {
+                cfg = kkConfigNode.AddNode("KKSettings");
+            }
+
 
             foreach (FieldInfo f in GetType().GetFields())
             {
@@ -1403,10 +1444,6 @@ namespace KerbalKonstructs
                     cfg.AddValue(f.Name, f.GetValue(this));
                 }
             }
-
-            Directory.CreateDirectory(installDir);
-            string saveConfigPath = installDir + "/KerbalKonstructs.cfg";
-            cfg.Save(saveConfigPath, "Kerbal Konstructs Settings");
         }
 
         #endregion

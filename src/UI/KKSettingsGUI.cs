@@ -816,13 +816,27 @@ namespace KerbalKonstructs.UI
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
 			GUILayout.Space(2);
-			if (GUILayout.Button("Save Config Settings", GUILayout.Height(23)))
-			{
-				KerbalKonstructs.instance.saveConfig();
-			}
+            if (GUILayout.Button("Save Config Settings", GUILayout.Height(23)))
+            {
+                ConfigNode kkNode;
+                if (HighLogic.CurrentGame.config.HasNode("KerbalKonstructs"))
+                {
+                    kkNode = HighLogic.CurrentGame.config.GetNode("KerbalKonstructs");
+                }
+                else
+                {
+                    kkNode = HighLogic.CurrentGame.config.AddNode("KerbalKonstructs");
+                }
+                KerbalKonstructs.instance.SaveKKConfig(kkNode);
+            }
 			if (GUILayout.Button("Reload Saved Settings", GUILayout.Height(23)))
 			{
-				KerbalKonstructs.instance.loadConfig();
+                ConfigNode kkNode;
+                if (HighLogic.CurrentGame.config.HasNode("KerbalKonstructs"))
+                {
+                    kkNode = HighLogic.CurrentGame.config.GetNode("KerbalKonstructs");
+                    KerbalKonstructs.instance.LoadKKConfig(kkNode);
+                }
 			}
 			if (GUILayout.Button("Reset To Factory Settings", GUILayout.Height(23)))
 			{
@@ -849,9 +863,18 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.spawnPreviewModels = true;
 				KerbalKonstructs.instance.DebugMode = false;	
 				KerbalKonstructs.instance.DevMode = false;
-				
-				KerbalKonstructs.instance.saveConfig();
-			}
+
+                ConfigNode kkNode;
+                if (HighLogic.CurrentGame.config.HasNode("KerbalKonstructs"))
+                {
+                    kkNode = HighLogic.CurrentGame.config.GetNode("KerbalKonstructs");
+                }
+                else
+                {
+                    kkNode = HighLogic.CurrentGame.config.AddNode("KerbalKonstructs");
+                }
+                KerbalKonstructs.instance.SaveKKConfig(kkNode);
+            }
 			GUILayout.Space(2);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 

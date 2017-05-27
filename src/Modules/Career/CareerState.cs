@@ -13,103 +13,50 @@ namespace KerbalKonstructs.Modules
 {
     internal static class CareerState
     {
-        private static Dictionary<string, Dictionary<String, String>> parsedConfig = new Dictionary<string, Dictionary<string, string>>();
-        private static Dictionary<string, string> config = new Dictionary<string, string>();
-
-        private static Dictionary<string, Dictionary<String, String>> parsedLSConfig = new Dictionary<string, Dictionary<string, string>>();
-
-        private static int loadErrorCount = 0;
-
-        internal static IEnumerator LoadFacilitiesDelayed()
+        private static void LoadFacilities(ConfigNode facilityNodes)
         {
-            yield return new WaitForSecondsRealtime(1);
-            Log.UserInfo("starting new attempt");
-            LoadFacilities();
-        }
 
-
-        private static void LoadFacilities()
-        {
-            if (HighLogic.SaveFolder == "DestructiblesTest")
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
-                if (loadErrorCount < 10)
+                if (!instance.hasFacilities || instance.myFacilities.Count == 0)
+                    continue;
+
+                if (!facilityNodes.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
+                    continue;
+           
+
+                ConfigNode instanceNode = facilityNodes.GetNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
+                foreach (var facNode in instanceNode.GetNodes())
                 {
-                    loadErrorCount++;
-                    KerbalKonstructs.instance.StartCoroutine(LoadFacilitiesDelayed());
-                    Log.UserWarning("Needed to delay SavegameState Loading.");
-                } else {
-                    Log.Error("Giving Up afer 10 attempts");
-                    loadErrorCount = 0;
-                    Log.Trace();
-                }
-                return;
-            }
-
-            loadErrorCount = 0;
-
-            string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
-
-            ConfigNode rootNode = new ConfigNode();
-
-            if (!File.Exists(saveConfigPath))
-            {
-                ConfigNode GameNode = rootNode.AddNode("GAME");
-                ConfigNode ScenarioNode = GameNode.AddNode("SCENARIO");
-                ScenarioNode.AddValue("Name", "KKStatics");
-                rootNode.Save(saveConfigPath);
-                return;
-            }
-            rootNode = ConfigNode.Load(saveConfigPath);
-            ConfigNode gameNode = rootNode.GetNode("GAME");
-            foreach (ConfigNode scenarioNode in gameNode.GetNodes("SCENARIO"))
-            {
-
-                foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
-                {
-                    if (!instance.hasFacilities || instance.myFacilities.Count == 0)
-                        continue;
-
-                    if (!scenarioNode.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
-                        continue;
-
-//                    Log.Normal("Load State for Facility: " + instance.pqsCity.name);
-
-                    ConfigNode instanceNode = scenarioNode.GetNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
-                    foreach (var facNode in instanceNode.GetNodes())
+                    int index = int.Parse(facNode.GetValue("Index"));
+                    if (instance.myFacilities[index].FacilityType == facNode.name)
                     {
-                        int index = int.Parse(facNode.GetValue("Index"));
-                        if (instance.myFacilities[index].FacilityType == facNode.name)
-                        {
-                            //Log.Normal("Load State: " + instance.pqsCity.name + " : "  + facNode.name);
-                            instance.myFacilities[index].LoadCareerConfig(facNode);
+                        //Log.Normal("Load State: " + instance.pqsCity.name + " : "  + facNode.name);
+                        instance.myFacilities[index].LoadCareerConfig(facNode);
 
-                        } else
-                        {
-                            Log.UserError("Facility Index Missmatch in fac: " + instance.gameObject.name);
-                        }
                     }
+                    else
+                    {
+                        Log.UserError("Facility Index Missmatch in fac: " + instance.gameObject.name);
+                    }
+                }
 
             }
-            }
+
         }
 
         /// <summary>
         /// saves the facility settings to the cfg file
         /// </summary>
-        internal static void SaveFacilities()
+        internal static void SaveFacilities(ConfigNode facilityNodes)
         {
-            string facSave = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
-
-            ConfigNode rootNode = new ConfigNode();
-            ConfigNode gameNode = rootNode.AddNode("GAME");
-            ConfigNode scenarioNode = gameNode.AddNode("SCENARIO");
 
             foreach (StaticInstance instance in StaticDatabase.GetAllStatics())
             {
                 if (!instance.hasFacilities)
                     continue;
 
-                ConfigNode instanceNode = scenarioNode.AddNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
+                ConfigNode instanceNode = facilityNodes.AddNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
                 instanceNode.SetValue("FacilityName", instance.gameObject.name, true);
                 instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
 
@@ -120,80 +67,22 @@ namespace KerbalKonstructs.Modules
                     instance.myFacilities[i].SaveCareerConfig(facnode);
                 }
             }
-            rootNode.Save(facSave);
-        }
-
-        /// <summary>
-        /// Parses the LaunchSite config for the LoadLaunchSites function
-        /// </summary>
-        internal static void ParseLSConfig()
-        {
-            string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KK.cfg";
-
-            parsedLSConfig.Clear();
-
-            ConfigNode rootNode = new ConfigNode();
-
-            if (!File.Exists(saveConfigPath))
-            {
-                // Save the current config here
-                //ConfigNode SitesNode = rootNode.AddNode("LAUNCHSITES");
-                //rootNode.Save(saveConfigPath);
-                return;
-            }
-            rootNode = ConfigNode.Load(saveConfigPath);
-            ConfigNode sitesNodes = rootNode.GetNode("LAUNCHSITES");
-
-            foreach (ConfigNode sitesNode in sitesNodes.GetNodes())
-            {
-                Dictionary<string, string> config = new Dictionary<string, string>();
-                foreach (string key in CareerUtils.ParametersForLaunchSite())
-                {
-                    if (sitesNode.HasValue(key))
-                    {
-                        config.Add(key, sitesNode.GetValue(key));
-                    }
-                }
-                if (!parsedLSConfig.ContainsKey(sitesNode.name))
-                    parsedLSConfig.Add(sitesNode.name, config);
-            }
-
         }
 
 
         /// <summary>
         /// Loads the state of the LauchSites
         /// </summary>
-        internal static void LoadLaunchSites()
+        internal static void LoadLaunchSites(ConfigNode launchSiteNodes)
         {
-            ParseLSConfig();
             foreach (LaunchSite site in LaunchSiteManager.AllLaunchSites)
             {
-
-                string name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
-
-                if (parsedLSConfig.ContainsKey(name))
+                ConfigNode lsNode;
+                if (launchSiteNodes.HasNode(CareerUtils.LSKeyFromName(site.LaunchSiteName)))
                 {
-                    config = parsedLSConfig[name];
-
-                    if (config.ContainsKey("openclosestate"))
-                    {
-                        site.OpenCloseState = config["openclosestate"];
-                    }
-                    if (config.ContainsKey("favouritesite"))
-                    {
-                        site.favouriteSite = config["favouritesite"];
-                    }
-                    if (config.ContainsKey("missionlog"))
-                    {
-                        site.MissionLog = config["missionlog"];
-                    }
-                    if (config.ContainsKey("missioncount"))
-                    {
-                        site.MissionCount = float.Parse(config["missioncount"]);
-                    }
+                    lsNode = launchSiteNodes.GetNode(CareerUtils.LSKeyFromName(site.LaunchSiteName));
+                    site.LoadCareerConfig(lsNode);
                 }
-
             }
             
 
@@ -203,63 +92,63 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Loads the state of all facilities and LaunchSites
         /// </summary>
-        internal static void Load()
+        internal static void Load(ConfigNode kkcfgNode)
         {
-            LoadFacilities();
-            LoadLaunchSites();
+            ConfigNode facNode;
+            ConfigNode lsNode;
+
+            if (kkcfgNode.HasNode("FacilityState"))
+            {
+                facNode = kkcfgNode.GetNode("FacilityState");
+                LoadFacilities(facNode);
+            }
+            if (kkcfgNode.HasNode("LaunchSites"))
+            {
+                lsNode = kkcfgNode.GetNode("LaunchSites");
+                LoadLaunchSites(lsNode);
+            }
 
         }
 
-        /// <summary>
-        /// Makes Backups of the StateFiles
-        /// </summary>
-        internal static void BackupSaves()
-        {
-            string facSave = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilities.cfg";
-            string facSaveBackup = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKFacilitiesBack.cfg";
 
-
-            string lsSave = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KK.cfg";
-            string lsSaveBackup = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KKBack.cfg";
-
-            if (File.Exists(facSave))
-            {
-                File.Copy(facSave, facSaveBackup, true);
-            }
-
-            if (File.Exists(lsSave))
-            {
-                File.Copy(lsSave, lsSaveBackup, true);
-            }
-        }
-
-
-
-        internal static void SaveLaunchsites()
+        internal static void SaveLaunchsites(ConfigNode launchSiteNode)
         {
             string name = null;
-            string saveConfigPath = KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/KK.cfg";
-
-            ConfigNode rootNode = new ConfigNode();
-            ConfigNode lsNodes = rootNode.AddNode("LAUNCHSITES");
 
             foreach (LaunchSite site in LaunchSiteManager.AllLaunchSites)
             {
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
-                ConfigNode lsNode = lsNodes.AddNode(name);
-                lsNode.SetValue("openclosestate", site.OpenCloseState, true);
-                lsNode.SetValue("favouritesite", site.favouriteSite, true);
-                lsNode.SetValue("missioncount", site.MissionCount.ToString(), true);
-                lsNode.SetValue("missionlog", site.MissionLog, true);
+                ConfigNode lsNode = launchSiteNode.AddNode(name);
+                site.SaveCareerConfig(lsNode);
             }
-            rootNode.Save(saveConfigPath);
         }
 
-        internal static void Save()
+        internal static void Save(ConfigNode kkcfgNode)
         {
-            BackupSaves();
-            SaveFacilities();
-            SaveLaunchsites();
+            ConfigNode facNode;
+            ConfigNode lsNode;
+
+            if (kkcfgNode.HasNode("FacilityState"))
+            {
+                facNode = kkcfgNode.GetNode("FacilityState");
+                facNode.ClearData();
+            } else
+            {
+                facNode = kkcfgNode.AddNode("FacilityState");
+            }
+            SaveFacilities(facNode);
+
+            if (kkcfgNode.HasNode("LaunchSites"))
+            {
+                lsNode = kkcfgNode.GetNode("LaunchSites");
+                lsNode.ClearData();
+            }
+            else
+            {
+                lsNode = kkcfgNode.AddNode("LaunchSites");
+            }
+
+            SaveLaunchsites(lsNode);
         }
 
         internal static void FixKSCFacilities ()
