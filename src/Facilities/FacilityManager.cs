@@ -25,13 +25,8 @@ namespace KerbalKonstructs.UI
         float fOxFMax = 0;
         float fMoFMax = 0;
 
-        public float iFundsOpen = 0;
-        public float iFundsClose = 0;
-        public float iFundsOpen2 = 0;
-        public float iFundsClose2 = 0;
         float fAlt = 0f;
 
-        public Boolean isOpen = false;
         public Boolean isOpen2 = false;
         public Boolean bChangeTargetType = false;
 
@@ -271,12 +266,8 @@ namespace KerbalKonstructs.UI
 
                 SharedInterfaces.OpenCloseFacility(selectedFacility);
 
-                iFundsOpen2 = selectedFacility.myFacilities[0].OpenCost;
-                isOpen2 = (selectedFacility.myFacilities[0].OpenCloseState == "Open");
-                float iFundsDefaultCost = selectedFacility.model.cost;
-                if (iFundsOpen2 == 0) iFundsOpen2 = iFundsDefaultCost;
+                isOpen2 = selectedFacility.myFacilities[0].isOpen;
 
-                if (iFundsOpen2 == 0) isOpen2 = true;
 
                 GUILayout.Space(2);
                 GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));

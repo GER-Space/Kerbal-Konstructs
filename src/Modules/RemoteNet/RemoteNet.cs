@@ -56,12 +56,10 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                if (!CareerUtils.isSandboxGame)
+                // we check here for the gamemode etc
+                if (!instance.myFacilities[0].isOpen)
                 {
-                    if (instance.myFacilities[0].OpenCloseState == "Closed" && instance.myFacilities[0].OpenCost != 0f)
-                    {
                         continue;
-                    }
                 }
 
                 if (openRTStations.ContainsKey(instance))
@@ -69,10 +67,7 @@ namespace KerbalKonstructs.Modules
                 if (openCNStations.Contains(instance))
                     continue;
 
-                if (CareerUtils.isSandboxGame || CareerUtils.FacilityIsOpen(instance))
-                {
                     AttachGroundStation(instance);
-                }
             }
         }
 

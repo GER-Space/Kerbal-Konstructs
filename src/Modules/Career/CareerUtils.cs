@@ -96,26 +96,14 @@ namespace KerbalKonstructs.Modules
         /// <returns></returns>
         internal static bool FacilityIsOpen(StaticInstance instance)
         {
-            if (isSandboxGame)
+            if (instance.myFacilities[0].isOpen)
             {
                 return true;
             }
-            if (isCareerGame)
+            else
             {
-                if (instance.myFacilities[0].OpenCloseState == "Open" || instance.myFacilities[0].OpenCloseState == "OpenLocked" )
-                {
-                    return true;
-                }
-
-                if ( instance.myFacilities[0].OpenCost == 0f  )
-                {
-                    return true;
-                }
-
+                return false;
             }
-
-            return false;
-
         }
 
         internal static bool IsString (string parameter)

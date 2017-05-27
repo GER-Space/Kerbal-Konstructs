@@ -188,7 +188,7 @@ namespace KerbalKonstructs.UI
 				float fFireRefund = 2500;
 				float fFireRepCost = 1;
 
-				bIsOpen = (myBarracks.OpenCloseState == "Open");
+				bIsOpen = myBarracks.isOpen;
 
 				if (!bIsOpen)
 				{

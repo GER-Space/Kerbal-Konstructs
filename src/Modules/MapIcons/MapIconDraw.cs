@@ -85,7 +85,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         public void drawTrackingStations()
         {
-            if (!MiscUtils.isCareerGame())
+            if (CareerUtils.isSandboxGame)
             {
                 KerbalKonstructs.instance.mapShowClosed = true;
                 KerbalKonstructs.instance.mapShowOpen = true;
@@ -95,7 +95,7 @@ namespace KerbalKonstructs.Modules
                 return;
 
             bool display2 = false;
-            string openclosed3 = "Closed";
+            bool isOpen = false;
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
             StaticInstance groundStation;
 
@@ -110,14 +110,15 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                openclosed3 = ((GroundStation)groundStation.myFacilities[0]).OpenCloseState;
+                isOpen = ((GroundStation)groundStation.myFacilities[0]).isOpen;
+
 
 
                 if (KerbalKonstructs.instance.mapShowOpenT)
                     display2 = true;
-                if (!KerbalKonstructs.instance.mapShowClosed && openclosed3 == "Closed")
+                if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
                     display2 = false;
-                if (!KerbalKonstructs.instance.mapShowOpen && openclosed3 == "Open")
+                if (!KerbalKonstructs.instance.mapShowOpen && isOpen)
                     display2 = false;
 
                 if (!display2)
@@ -167,14 +168,15 @@ namespace KerbalKonstructs.Modules
             displayingTooltip = false;
             LaunchSite launchSite;
             CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
-            string openclosed, category;
+            string category;
+            bool isOpen = false;
 
             // Then do launchsites
             for (int index = 0; index < lauchSites.Length; index++)
             {
                 launchSite = lauchSites[index];
                 // check if we should display the site or not this is the fastst check, so it shoud be first
-                openclosed = launchSite.OpenCloseState;
+                isOpen = launchSite.isOpen;
                 category = launchSite.Category;
 
                 if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
@@ -190,16 +192,14 @@ namespace KerbalKonstructs.Modules
 
                 if (MiscUtils.isCareerGame())
                 {
-                    if (!KerbalKonstructs.instance.mapShowOpen && openclosed == "Open")
+                    if (!KerbalKonstructs.instance.mapShowOpen && isOpen)
                         continue;
-                    if (!KerbalKonstructs.instance.mapShowClosed && openclosed == "Closed")
+                    if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
                         continue;
-                    if (KerbalKonstructs.instance.disableDisplayClosed && openclosed == "Closed")
-                        continue;
-                    if (openclosed == "OpenLocked" || openclosed == "ClosedLocked")
+                    if (KerbalKonstructs.instance.disableDisplayClosed && !isOpen)
                         continue;
                     // don't show hidden bases when closed
-                    if (launchSite.LaunchSiteIsHidden && (launchSite.OpenCloseState == "Closed"))
+                    if (launchSite.LaunchSiteIsHidden && !isOpen )
                         continue;
                 }
 

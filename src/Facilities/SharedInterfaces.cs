@@ -54,7 +54,7 @@ namespace KerbalKonstructs.UI
 
 			if (MiscUtils.isCareerGame())
 			{
-				bool isOpen2 = (selectedFacility.myFacilities[0].OpenCloseState == "Open");
+				bool isOpen2 = selectedFacility.myFacilities[0].isOpen;
 
 				GUILayout.BeginHorizontal();
 				{

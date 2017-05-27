@@ -54,10 +54,7 @@ namespace KerbalKonstructs.Addons
 
                         if (dist < smallestDist)
                         {
-                            bool bBaseIsOpen = true;
-                            if (openCloseState == "Closed" || openCloseState == "ClosedLocked" || openCloseState == "OpenLocked") bBaseIsOpen = false;
-
-                            if (bBaseIsOpen)
+                            if (csc.staticObject.launchSite.isOpen)
                             {
                                 closestSpaceCenter = spaceCenter;
                                 smallestDist = dist;

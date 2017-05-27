@@ -371,8 +371,7 @@ namespace KerbalKonstructs.Core
             {
                 if (site.LaunchSiteName == sSiteName)
                 {
-                    if ((site.OpenCloseState == "Open") || (site.OpenCloseState == "OpenLocked"))
-                        return true;
+                        return site.isOpen;
                 }
             }
             return false;
@@ -386,8 +385,7 @@ namespace KerbalKonstructs.Core
             {
                 if (site.LaunchSiteName == sSiteName)
                 {
-                    if (site.OpenCloseState == "Closed")
-                        return true;
+                        return (!site.isOpen);
                 }
             }
             return false;
@@ -532,7 +530,6 @@ namespace KerbalKonstructs.Core
             SpaceCenter KSC = SpaceCenter.Instance;
             var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
             string sNearestBase = "";
-            string sOpenCloseState = "";
             LaunchSite lNearestBase = null;
             LaunchSite lKSC = null;
 
@@ -540,12 +537,8 @@ namespace KerbalKonstructs.Core
 
             foreach (LaunchSite site in basesites)
             {
-                sOpenCloseState = site.OpenCloseState;
 
-                if (!MiscUtils.isCareerGame())
-                    sOpenCloseState = "Open";
-
-                if (sOpenCloseState == "Open")
+                if (site.isOpen)
                 {
                     var radialposition = site.lsGameObject.transform.position;
                     var dist = Vector3.Distance(position, radialposition);
