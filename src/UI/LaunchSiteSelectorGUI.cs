@@ -327,24 +327,23 @@ namespace KerbalKonstructs.UI
                     {
                         if (!bOpenOn)
                         {
-                            if (site.OpenCloseState == "Open" || site.OpenCost == 0)
+                            if (site.isOpen)
                                 continue;
                         }
 
                         if (!bClosedOn)
                         {
-                            if (site.OpenCloseState == "Closed")
+                            if (!site.isOpen)
                                 continue;
                         }
 
                         // Don't show hidden closed Bases
-                        if (site.LaunchSiteIsHidden && (site.OpenCloseState == "Closed"))
+                        if (site.LaunchSiteIsHidden && (!site.isOpen))
                             continue;
 
                         GUILayout.BeginHorizontal();
-                        if (site.OpenCloseState == "Open" || site.OpenCost == 0 && site.OpenCloseState != "OpenLocked" && site.OpenCloseState != "ClosedLocked")
+                        if (site.isOpen)
                         {
-                            site.OpenCloseState = "Open";
                             GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
                         }
                         else
@@ -373,9 +372,8 @@ namespace KerbalKonstructs.UI
 
                     if (MiscUtils.isCareerGame())
                     {
-                        if (site.OpenCloseState == "Open" || site.OpenCost == 0 && site.OpenCloseState != "OpenLocked" && site.OpenCloseState != "ClosedLocked")
+                        if (site.isOpen)
                         {
-                            site.OpenCloseState = "Open";
                             GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
                         }
                         else
@@ -451,7 +449,7 @@ namespace KerbalKonstructs.UI
                         {
                             if (MiscUtils.isCareerGame())
                             {
-                                if (DefaultSite.OpenCloseState == "OpenLocked" || DefaultSite.OpenCloseState == "ClosedLocked" || (DefaultSite.OpenCloseState != "Open" && DefaultSite.OpenCost != 0))
+                                if (!DefaultSite.isOpen)
                                 {
                                     smessage = "Default site is closed.";
                                     MiscUtils.HUDMessage(smessage, 10, 0);
@@ -476,7 +474,7 @@ namespace KerbalKonstructs.UI
                         {
                             if (MiscUtils.isCareerGame())
                             {
-                                if (DefaultSite.OpenCloseState == "OpenLocked" || DefaultSite.OpenCloseState == "ClosedLocked" || (DefaultSite.OpenCloseState != "Open" && DefaultSite.OpenCost != 0))
+                                if (!DefaultSite.isOpen)
                                 {
                                     smessage = "Default site is closed.";
                                     MiscUtils.HUDMessage(smessage, 10, 0);
