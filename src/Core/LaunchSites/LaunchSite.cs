@@ -97,7 +97,7 @@ namespace KerbalKonstructs.Core
             refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
           
-            refAlt = (float)launchSite.parentInstance.RadiusOffset;
+            refAlt = launchSite.parentInstance.RadiusOffset;
 
 
             return launchSite;
