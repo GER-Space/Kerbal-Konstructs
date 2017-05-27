@@ -134,6 +134,66 @@ namespace KerbalKonstructs.Core
         }
 
         /// <summary>
+        /// Reads a property setting from a ConfigNode and writes the content to the targets field with the same name
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <param name="cfgNode"></param>
+        internal static void ReadCFGNode(object target, PropertyInfo property, ConfigNode cfgNode)
+        {
+            if (!cfgNode.HasValue(property.Name))
+                return;
+
+            if (!string.IsNullOrEmpty(cfgNode.GetValue(property.Name)))
+            {
+                switch (property.PropertyType.ToString())
+                {
+                    case "System.String":
+                        property.SetValue(target, cfgNode.GetValue(property.Name), null);
+                        break;
+                    case "System.Int32":
+                        property.SetValue(target, int.Parse(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "System.Single":
+                        property.SetValue(target, float.Parse(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "System.Double":
+                        property.SetValue(target, double.Parse(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "System.Boolean":
+                        bool result;
+                        bool.TryParse(cfgNode.GetValue(property.Name), out result);
+                        property.SetValue(target, result, null);
+                        break;
+                    case "UnityEngine.Vector3":
+                        property.SetValue(target, ConfigNode.ParseVector3(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "UnityEngine.Vector3d":
+                        property.SetValue(target, ConfigNode.ParseVector3D(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "CelestialBody":
+                        property.SetValue(target, ConfigUtil.GetCelestialBody(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "KerbalKonstructs.Core.SiteType":
+                        SiteType value = SiteType.Any;
+                        try
+                        {
+                            value = (SiteType)Enum.Parse(typeof(SiteType), cfgNode.GetValue(property.Name));
+
+                        }
+                        catch
+                        {
+                            value = SiteType.Any;
+                        }
+                        property.SetValue(target, value, null);
+                        break;
+                }
+
+            }
+        }
+
+
+        /// <summary>
         /// Writes a setting from an object to a confignode
         /// </summary>
         /// <param name="source"></param>
@@ -173,6 +233,48 @@ namespace KerbalKonstructs.Core
                     break;
             }
         }
+
+        /// <summary>
+        /// Writes a property setting from an object to a confignode
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="property"></param>
+        /// <param name="cfgNode"></param>
+        internal static void Write2CfgNode(object source, PropertyInfo property, ConfigNode cfgNode)
+        {
+
+            switch (property.PropertyType.ToString())
+            {
+                case "System.String":
+                    cfgNode.SetValue(property.Name, (string)property.GetValue(source, null), true);
+                    break;
+                case "System.Int32":
+                    cfgNode.SetValue(property.Name, (int)property.GetValue(source, null), true);
+                    break;
+                case "System.Single":
+                    cfgNode.SetValue(property.Name, (float)property.GetValue(source, null), true);
+                    break;
+                case "System.Double":
+                    cfgNode.SetValue(property.Name, (double)property.GetValue(source, null), true);
+                    break;
+                case "System.Boolean":
+                    cfgNode.SetValue(property.Name, (bool)property.GetValue(source, null), true);
+                    break;
+                case "UnityEngine.Vector3":
+                    cfgNode.SetValue(property.Name, (Vector3)property.GetValue(source, null), true);
+                    break;
+                case "UnityEngine.Vector3d":
+                    cfgNode.SetValue(property.Name, (Vector3d)property.GetValue(source, null), true);
+                    break;
+                case "CelestialBody":
+                    cfgNode.SetValue(property.Name, ((CelestialBody)property.GetValue(source, null)).name, true);
+                    break;
+                case "KerbalKonstructs.Core.SiteType":
+                    cfgNode.SetValue(property.Name, ((SiteType)property.GetValue(source, null)).ToString(), true);
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// Fast convert of a bodyname to a CelestianBody object also Supports "Homeworld" as a key
