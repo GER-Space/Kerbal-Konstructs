@@ -389,11 +389,11 @@ namespace KerbalKonstructs.UI
                         bAreFacilities = true;
                         GUILayout.BeginHorizontal();
                         {
-                            bIsOpen = (allFacilities[i].myFacilities[0].OpenCloseState == "Open");
+                            bIsOpen = allFacilities[i].myFacilities[0].isOpen;
 
                             if (!bIsOpen)
                             {
-                                iFundsOpen2 = allFacilities[i].model.cost;
+                                iFundsOpen2 = allFacilities[i].myFacilities[0].OpenCost;
                                 if (iFundsOpen2 == 0) bIsOpen = true;
                             }
 
