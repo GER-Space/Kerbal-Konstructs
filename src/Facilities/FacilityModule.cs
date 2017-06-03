@@ -94,6 +94,7 @@ namespace KerbalKonstructs.Modules
 
         private bool openState = false;
         private string openString = "Closed";
+        internal string defaultState = "Closed";
 
         private static Dictionary<string, FieldInfo> myFields;
         private static Dictionary<string, PropertyInfo> myProperties;
@@ -129,6 +130,10 @@ namespace KerbalKonstructs.Modules
                 {
                     ConfigUtil.ReadCFGNode(this, field, cfgNode);
                 }
+                if (field.Name == "OpenCloseState")
+                {
+                    defaultState = openString; 
+                }
             }
 
             FacilityType = this.GetType().Name;
@@ -157,7 +162,7 @@ namespace KerbalKonstructs.Modules
             {
                 if (field.Key == "OpenCloseState")
                 {
-                    cfgNode.SetValue("OpenCloseState", openString, true);
+                    cfgNode.SetValue("OpenCloseState", defaultState, true);
                     continue;
                 } 
 
