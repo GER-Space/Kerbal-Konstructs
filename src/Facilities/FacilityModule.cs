@@ -132,6 +132,7 @@ namespace KerbalKonstructs.Modules
                 }
                 if (field.Name == "OpenCloseState")
                 {
+                    // openString should be set via OpenCloseState
                     defaultState = openString; 
                 }
             }
@@ -222,13 +223,13 @@ namespace KerbalKonstructs.Modules
             foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
                 myFields.Add(field.Name, field);
-                Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
+            //    Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
             }
 
             foreach (PropertyInfo property in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 myProperties.Add(property.Name, property);
-                Log.Normal("Parser Facility (" + this.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
+             //   Log.Normal("Parser Facility (" + this.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
             }
 
             allFields.Add(this.GetType().Name, myFields);
