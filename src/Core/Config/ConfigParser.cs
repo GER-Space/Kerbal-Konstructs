@@ -149,7 +149,8 @@ namespace KerbalKonstructs.Core
             if (instance.hasFacilities)
             {               
                 for (int i = 0; i < instance.myFacilities.Count; i++)
-                { 
+                {
+                     
                     ConfigNode facNode = cfgNode.AddNode("Facility");
                     instance.myFacilities[i].WriteConfig(facNode);
                 }
