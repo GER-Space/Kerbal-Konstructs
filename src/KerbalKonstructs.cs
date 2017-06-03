@@ -386,14 +386,17 @@ namespace KerbalKonstructs
 
             if (data.Equals(GameScenes.MAINMENU))
             {
-                // Close all the launchsite objects
-                LaunchSiteManager.setAllLaunchsitesClosed();
+                CareerState.ResetFacilitiesOpenState();
+                //// Close all the launchsite objects
+                //LaunchSiteManager.setAllLaunchsitesClosed();
                 atMainMenu = true;
                 bTreatBodyAsNullForStatics = false;
                 iMenuCount = iMenuCount + 1;
                 // reset this for the next Newgame
                 if (InitialisedFacilities)
+                {
                     InitialisedFacilities = false;
+                }
             }
 
             if (data.Equals(GameScenes.EDITOR))

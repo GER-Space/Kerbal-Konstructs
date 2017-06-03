@@ -494,15 +494,15 @@ namespace KerbalKonstructs.Core
             return null;
         }
 
-        // Closes all launchsites. Necessary when leaving a career game and going to the main menu
-        public static void setAllLaunchsitesClosed()
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                site.OpenCloseState = "Closed";
-            }
-        }
+        //// Closes all launchsites. Necessary when leaving a career game and going to the main menu
+        //public static void setAllLaunchsitesClosed()
+        //{
+        //    List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
+        //    foreach (LaunchSite site in sites)
+        //    {
+        //        site.OpenCloseState = "Closed";
+        //    }
+        //}
 
         // Returns the distance in m from a position to a specified Launchsite
         public static float getDistanceToBase(Vector3 position, LaunchSite lTarget)

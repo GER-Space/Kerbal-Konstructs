@@ -151,6 +151,22 @@ namespace KerbalKonstructs.Modules
             SaveLaunchsites(lsNode);
         }
 
+        internal static void ResetFacilitiesOpenState()
+        {
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+            {
+                if (instance.hasFacilities)
+                {
+                    instance.myFacilities[0].OpenCloseState = instance.myFacilities[0].defaultState;
+                }
+                if (instance.hasLauchSites)
+                {
+                    instance.launchSite.OpenCloseState = instance.launchSite.defaultState;
+                }
+            }
+        }
+
+
         internal static void FixKSCFacilities ()
         {
             if ((HighLogic.LoadedScene == GameScenes.SPACECENTER) && (!KerbalKonstructs.InitialisedFacilities))
