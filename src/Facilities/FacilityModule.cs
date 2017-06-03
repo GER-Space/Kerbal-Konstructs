@@ -123,6 +123,14 @@ namespace KerbalKonstructs.Modules
                 }
             }
 
+            foreach (var field in myProperties.Values)
+            {
+                if (Attribute.IsDefined(field, typeof(CFGSetting)))
+                {
+                    ConfigUtil.ReadCFGNode(this, field, cfgNode);
+                }
+            }
+
             FacilityType = this.GetType().Name;
             return this;
         }
@@ -130,7 +138,8 @@ namespace KerbalKonstructs.Modules
 
         internal virtual void WriteConfig(ConfigNode cfgNode)
         {
-
+            // Close everything before saving.
+            isOpen = false;
             myFields = allFields[this.GetType().Name];
             cfgNode.SetValue("FacilityType", this.GetType().Name,true);
 
@@ -141,9 +150,15 @@ namespace KerbalKonstructs.Modules
                     if (field.Value.GetValue(this) == null)
                         continue;
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
-
                 }
             }
+
+            foreach (var field in myProperties)
+            {
+                if (Attribute.IsDefined(field.Value, typeof(CFGSetting)))
+                    ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+            }
+
         }
 
         internal virtual void SaveCareerConfig(ConfigNode cfgNode)
