@@ -154,7 +154,6 @@ namespace KerbalKonstructs.UI
             // check if we can access the staffing variables
             if (selectedFacility.FacilityType == "Barracks" || selectedFacility.FacilityType == "Business" || selectedFacility.FacilityType == "Research")
             {
-                Log.Normal("20001");
                 fStaff = myBarracks.StaffCurrent;
                 fMaxStaff = myBarracks.StaffMax;
 
@@ -171,7 +170,6 @@ namespace KerbalKonstructs.UI
                         myBarracks.StaffMax = fMaxStaff;
                     }
                 }
-                Log.Normal("20002");
             }
             else
             {  
@@ -183,7 +181,6 @@ namespace KerbalKonstructs.UI
 
             if (fMaxStaff > 0)
 			{
-                Log.Normal("20003");
                 float fHireFundCost = 5000;
 				float fFireRefund = 2500;
 				float fFireRepCost = 1;
@@ -228,7 +225,6 @@ namespace KerbalKonstructs.UI
 				{
 					GUILayout.Box("Assigned Staff: " + fStaff.ToString("#0") + "/" + fMaxStaff.ToString("#0"), BoxInfo);
 				}
-                Log.Normal("20004");
                 if (bIsBarracks)
 				{
 					GUILayout.BeginHorizontal();
