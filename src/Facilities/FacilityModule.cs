@@ -155,6 +155,12 @@ namespace KerbalKonstructs.Modules
 
             foreach (var field in myProperties)
             {
+                if (field.Key == "OpenCloseState")
+                {
+                    cfgNode.SetValue("OpenCloseState", openString, true);
+                    continue;
+                } 
+
                 if (Attribute.IsDefined(field.Value, typeof(CFGSetting)))
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
             }
