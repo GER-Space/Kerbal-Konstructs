@@ -33,11 +33,13 @@ namespace KerbalKonstructs.UI
         private static String facType = "None";
         private string infTrackingShort, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax = "";
 
-        String infFacMassCap = "";
-        String infFacCraftCap = "";
-        String infLqFMax = "";
-        String infOxFMax = "";
-        String infMoFMax = "";
+        private string infFacMassCap = "";
+        private string infFacCraftCap = "";
+        private string infLqFMax = "";
+        private string infOxFMax = "";
+        private string infMoFMax = "";
+
+        private string defaultOpenState;
 
 
 
@@ -70,13 +72,18 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            
+            if (KerbalKonstructs.instance.selectedObject != null)
+            {
+                selectedObject = KerbalKonstructs.instance.selectedObject;
+                updateSelection();
+            }
             base.Open();
         }
 
 
         public override void Close()
         {
+            selectedObject = null;
             base.Close();
         }
 
@@ -203,6 +210,14 @@ namespace KerbalKonstructs.UI
             infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
             GUILayout.Label("\\F", LabelWhite);
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Default State: ", LabelGreen);
+            GUILayout.FlexibleSpace();
+            defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
+            GUILayout.Label("Open|Closed", LabelWhite);
+            GUILayout.EndHorizontal();
+
             if (facType == "GroundStation")
             {
                 GUILayout.BeginHorizontal();
@@ -579,11 +594,28 @@ namespace KerbalKonstructs.UI
                 default:
                     break;
             }
+
+            if (facType != "None" )
+            {
+                selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
+                selectedObject.myFacilities[0].CloseValue = selectedObject.myFacilities[0].OpenCost / 4;
+                selectedObject.myFacilities[0].defaultState = defaultOpenState;
+            }
+
         }
 
 
         private void updateSelection()
         {
+            if (selectedObject.hasFacilities )
+            {
+                facType = selectedObject.myFacilities[0].FacilityType;
+            } else
+            {
+                facType = "None";
+            }
+
+
             if (facType == null || facType == "")
             {
                 facType = selectedObject.model.DefaultFacilityType;
@@ -648,6 +680,7 @@ namespace KerbalKonstructs.UI
             }
             if (selectedObject.hasFacilities)
             {
+                defaultOpenState = selectedObject.myFacilities[0].defaultState;
                 infOpenCost = selectedObject.myFacilities[0].OpenCost.ToString();
                 if (infOpenCost == "0" || infOpenCost == "")
                     infOpenCost = selectedObject.model.cost.ToString();
