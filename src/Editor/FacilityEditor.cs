@@ -598,7 +598,7 @@ namespace KerbalKonstructs.UI
             if (facType != "None" )
             {
                 selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
-                selectedObject.myFacilities[0].CloseValue = selectedObject.myFacilities[0].OpenCost / 4;
+                selectedObject.myFacilities[0].CloseValue = (float)Math.Round((selectedObject.myFacilities[0].OpenCost / 4), 0);
                 selectedObject.myFacilities[0].defaultState = defaultOpenState;
             }
 
