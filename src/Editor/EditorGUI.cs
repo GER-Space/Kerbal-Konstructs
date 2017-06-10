@@ -23,18 +23,9 @@ namespace KerbalKonstructs.UI
 
         #region Texture Definitions
         // Texture definitions
-        internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-        internal Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+        internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);        
         internal Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        internal Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-        internal Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        internal Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-        internal Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-        internal Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-        internal Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-        internal Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-        internal Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
+        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);                       
         internal Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
         internal Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
         internal Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
@@ -53,20 +44,14 @@ namespace KerbalKonstructs.UI
 
         //   public static Boolean editingFacility = false;
 
-        internal Boolean creatingInstance = false;
-        internal Boolean showLocal = false;
-        internal Boolean onNGS = false;
-        internal Boolean displayingInfo = false;
         internal Boolean SnapRotateMode = false;
 
-        internal Boolean bChangeFacilityType = false;
 
         #endregion
 
         #region GUI Windows
         // GUI Windows
         internal Rect toolRect = new Rect(300, 35, 330, 695);
-        internal Rect siteEditorRect = new Rect(400, 45, 360, 625);
 
         #endregion
 
@@ -779,6 +764,14 @@ namespace KerbalKonstructs.UI
                     if (GUILayout.Button(new GUIContent("R", "On Right"), GUILayout.Height(21), GUILayout.Width(18)))
                     {
                         orientation = new Vector3(-1, 0, 0); saveSettings();
+                    }
+                    if (GUILayout.Button(new GUIContent("F", "On Front"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
+                        orientation = new Vector3(0, 0, 1); saveSettings();
+                    }
+                    if (GUILayout.Button(new GUIContent("B", "On Back"), GUILayout.Height(21), GUILayout.Width(18)))
+                    {
+                        orientation = new Vector3(0, 0, -1); saveSettings();
                     }
                 }
                 GUILayout.EndHorizontal();
