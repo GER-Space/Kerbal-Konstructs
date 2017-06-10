@@ -13,7 +13,7 @@ namespace KerbalKonstructs.UI
     class StaticsEditorGUI : KKWindow
     {
 
-        Rect editorRect = new Rect(10, 25, 540, 540);
+        Rect editorRect = new Rect(10, 25, 680, 540);
 
         GUIStyle DeadButton;
         GUIStyle DeadButtonRed;
@@ -404,7 +404,7 @@ namespace KerbalKonstructs.UI
                         if (!foldedIn)
                         {
                             GUILayout.FlexibleSpace();
-                            if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(140), GUILayout.Height(23)))
+                            if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
                             {
                                 KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
                                 KerbalKonstructs.GUI_ModelInfo.Open();
