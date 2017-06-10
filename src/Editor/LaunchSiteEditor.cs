@@ -16,47 +16,10 @@ namespace KerbalKonstructs.UI
 
         private List<Transform> transformList = new List<Transform>();
 
-        public Boolean foldedIn = false;
-        public Boolean doneFold = false;
 
         #region Texture Definitions
         // Texture definitions
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-        public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
-        public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-        public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-        public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-        public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
-        public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
-        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
-
-        #endregion
-
-        #region Switches
-        // Switches
-        public Boolean enableColliders = false;
-        internal static bool isScanable = false;
-
-
-        //   public static Boolean editingFacility = false;
-
-        public Boolean creatingInstance = false;
-        public Boolean showLocal = false;
-        public Boolean onNGS = false;
-        public Boolean displayingInfo = false;
-        public Boolean SnapRotateMode = false;
-
-        public Boolean bChangeFacilityType = false;
+        private Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
         #endregion
 
@@ -519,7 +482,6 @@ namespace KerbalKonstructs.UI
         {
             selectedObject = instance;
 
-            isScanable = selectedObject.isScanable;
 
             vis = instance.VisibilityRange;
             facType = instance.FacilityType;
