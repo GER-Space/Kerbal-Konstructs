@@ -193,6 +193,7 @@ namespace KerbalKonstructs
             //Log.PerfStart("Model Test");
             //SDTest.GetModelStats();
             //Log.PerfStop("Model Test");
+            //SDTest.GetShaderStats();
         }
 
         #region Game Events
@@ -759,10 +760,23 @@ namespace KerbalKonstructs
 
         }
 
+
         /// <summary>
-        /// Tes for getting information out of the prebuild static models.
+        /// Loads all Squad assets into the ModelDatabase
         /// </summary>
-        public void LoadSquadModels()
+        internal void LoadSquadModels()
+        {
+            LoadSquadKSCModels();
+            LoadSquadAnomalies();
+            LoadSquadAnomaliesLevel2();
+            LoadSquadAnomaliesLevel3();
+        }
+
+
+        /// <summary>
+        /// Loads the Models from the KSC into the model Database
+        /// </summary>
+        public void LoadSquadKSCModels()
         {
 
             // first we find get all upgradeable facilities
@@ -775,7 +789,7 @@ namespace KerbalKonstructs
                 {
 
                     string modelName = "KSC_" + facility.name + "_level_" + (i + 1).ToString();
-                    string modelTitle = "KSC " + facility.name + " level " + (i + 1).ToString();
+                    string modelTitle = "KSC " + facility.name + " lv " + (i + 1).ToString();
 
                     // don't double register the models a second time (they will do this) 
                     // maybe with a "without green flag" and filter that our later at spawn in mangle
@@ -811,10 +825,256 @@ namespace KerbalKonstructs
 
 
                     StaticDatabase.RegisterModel(model, modelName);
+
+                    // try to extract the wrecks from the facilities
+                    var transforms = model.prefab.transform.GetComponentsInChildren<Transform>(true);
+                    int wreckCount = 0;
+                    foreach (var transform in transforms)
+                    {
+
+                        if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            wreckCount++;
+                            StaticModel wreck = new StaticModel();
+                            string wreckName = modelName + "_wreck_" + wreckCount.ToString();
+                            wreck.name = wreckName;
+
+                            // Fill in FakeNews errr values
+                            wreck.path = "KerbalKonstructs/" + wreckName;
+                            wreck.configPath = wreck.path + ".cfg";
+                            wreck.keepConvex = true;
+                            wreck.title = modelTitle + " wreck " + wreckCount.ToString();
+                            wreck.mesh = wreckName;
+                            wreck.category = "Squad KSC";
+                            wreck.author = "Squad";
+                            wreck.manufacturer = "Squad";
+                            wreck.description = "Squad original " + wreck.title;
+
+                            wreck.isSquad = true;
+                            wreck.prefab = transform.gameObject;
+                            wreck.prefab.GetComponent<Transform>().parent = null;
+                            StaticDatabase.RegisterModel(wreck, wreck.name);
+
+                        }
+                    }
+
+
                 }
             }
 
         }
+
+        /// <summary>
+        /// Loads all non KSC models into the ModelDatabase
+        /// </summary>
+        public static void LoadSquadAnomalies()
+        {
+
+            foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
+            {
+                if (pqs.gameObject.name == "KSC" || pqs.gameObject.name == "KSC2" || pqs.gameObject.name == "Pyramids"  || pqs.gameObject.name == "Pyramid")
+                    continue;
+
+
+                string modelName = "SQUAD_" + pqs.gameObject.name;
+                string modelTitle = "Squad " + pqs.gameObject.name;
+
+                // don't double register the models a second time (they will do this) 
+                // maybe with a "without green flag" and filter that our later at spawn in mangle
+                if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                    continue;
+
+                StaticModel model = new StaticModel();
+                model.name = modelName;
+
+                // Fill in FakeNews errr values
+                model.path = "KerbalKonstructs/" + modelName;
+                model.configPath = model.path + ".cfg";
+                model.keepConvex = true;
+                model.title = modelTitle;
+                model.mesh = modelName;
+                model.category = "Squad Anomalies";
+                model.author = "Squad";
+                model.manufacturer = "Squad";
+                model.description = "Squad original " + modelTitle;
+
+                model.isSquad = true;
+
+
+                // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                model.prefab = pqs.gameObject;
+
+
+                StaticDatabase.RegisterModel(model, modelName);
+
+            }
+
+            foreach (PQSCity2 pqs2 in Resources.FindObjectsOfTypeAll<PQSCity2>())
+            {
+
+                string modelName = "SQUAD_" + pqs2.gameObject.name;
+                string modelTitle = "Squad " + pqs2.gameObject.name;
+
+                // don't double register the models a second time (they will do this) 
+                // maybe with a "without green flag" and filter that our later at spawn in mangle
+                if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                    continue;
+
+                StaticModel model = new StaticModel();
+                model.name = modelName;
+
+                // Fill in FakeNews errr values
+                model.path = "KerbalKonstructs/" + modelName;
+                model.configPath = model.path + ".cfg";
+                model.keepConvex = true;
+                model.title = modelTitle;
+                model.mesh = modelName;
+                model.category = "Squad Anomalies";
+                model.author = "Squad";
+                model.manufacturer = "Squad";
+                model.description = "Squad original " + modelTitle;
+
+                model.isSquad = true;
+
+
+                // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                model.prefab = pqs2.gameObject;
+                StaticDatabase.RegisterModel(model, modelName);
+            }
+        }
+
+        /// <summary>
+        /// Loads the statics of the KSC2
+        /// </summary>
+        public static void LoadSquadAnomaliesLevel2()
+        {
+
+            foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
+            {
+                if (pqs.gameObject.name != "KSC2" && pqs.gameObject.name != "Pyramids")
+                    continue;
+
+                GameObject baseGameObject = pqs.gameObject;
+                foreach (var child in baseGameObject.GetComponentsInChildren<Transform>(true))
+                {
+                    // we only want to be one level down.
+                    if (child.parent.gameObject != baseGameObject)
+                    {
+                        continue;
+                    }
+
+                    string modelName = "SQUAD_" + pqs.gameObject.name + "_" + child.gameObject.name;
+                    string modelTitle = "Squad " + pqs.gameObject.name + " " + child.gameObject.name;
+
+                    // don't double register the models a second time (they will do this) 
+                    // maybe with a "without green flag" and filter that our later at spawn in mangle
+                    if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                        continue;
+
+                    // filter out some unneded stuff
+                    if (modelName.Contains("ollider") || modelName.Contains("onolit"))
+                        continue;
+
+
+                    StaticModel model = new StaticModel();
+                    model.name = modelName;
+
+                    // Fill in FakeNews errr values
+                    model.path = "KerbalKonstructs/" + modelName;
+                    model.configPath = model.path + ".cfg";
+                    model.keepConvex = true;
+                    model.title = modelTitle;
+                    model.mesh = modelName;
+                    model.category = "Squad Anomalies";
+                    model.author = "Squad";
+                    model.manufacturer = "Squad";
+                    model.description = "Squad original " + modelTitle;
+
+                    model.isSquad = true;
+
+
+                    // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                    model.prefab = child.gameObject;
+
+
+                    StaticDatabase.RegisterModel(model, modelName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// used for loading the pyramid parts
+        /// </summary>
+        public static void LoadSquadAnomaliesLevel3()
+        {
+
+            foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
+            {
+                if (pqs.gameObject.name != "Pyramids") 
+                    continue;
+
+
+                // find the lv2 parent
+                GameObject baseGameObject = pqs.gameObject;
+                GameObject baseGameObject2 = null;
+
+                foreach (var child in baseGameObject.GetComponentsInChildren<Transform>(true))
+                {
+                    // we only want to be one level down.
+                    if (child.parent.gameObject != baseGameObject)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        baseGameObject2 = child.gameObject;
+                    }
+                }
+
+
+                foreach (var child in baseGameObject.GetComponentsInChildren<Transform>(true))
+                {
+                    // we only want to be one level down.
+                    if (child.parent.gameObject != baseGameObject2)
+                    {
+                        continue;
+                    }
+
+                    string modelName = "SQUAD_" + pqs.gameObject.name + "_" + child.gameObject.name;
+                    string modelTitle = "Squad " + pqs.gameObject.name + " " + child.gameObject.name;
+
+                    // don't double register the models a second time (they will do this) 
+                    // maybe with a "without green flag" and filter that our later at spawn in mangle
+                    if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                        continue;
+
+                    StaticModel model = new StaticModel();
+                    model.name = modelName;
+
+                    // Fill in FakeNews errr values
+                    model.path = "KerbalKonstructs/" + modelName;
+                    model.configPath = model.path + ".cfg";
+                    model.keepConvex = true;
+                    model.title = modelTitle;
+                    model.mesh = modelName;
+                    model.category = "Squad Anomalies";
+                    model.author = "Squad";
+                    model.manufacturer = "Squad";
+                    model.description = "Squad original " + modelTitle;
+
+                    model.isSquad = true;
+
+
+                    // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                    model.prefab = child.gameObject;
+
+
+                    StaticDatabase.RegisterModel(model, modelName);
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Loads the models and creates the prefab objects, which are referenced by the instance loader
