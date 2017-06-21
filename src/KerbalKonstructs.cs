@@ -51,6 +51,9 @@ namespace KerbalKonstructs
         public Double dRecoveryValue = 0;
         public Double dActualRecoveryValue = 0;
 
+        internal String defaultVABlaunchsite = "LaunchPad";
+        internal String defaultSPHlaunchsite = "Runway";
+
         #endregion
 
         #region Switches
@@ -79,25 +82,20 @@ namespace KerbalKonstructs
         internal static LandingGuideUI GUI_Landinguide = new LandingGuideUI();
         #endregion
 
+
+
         #region Configurable Variables
-        [KSPField]
-        public String defaultVABlaunchsite = "LaunchPad";
-        [KSPField]
-        public String defaultSPHlaunchsite = "Runway";
+
+
+
         [KSPField]
         public Boolean launchFromAnySite = false;
         [KSPField]
         public Boolean disableCareerStrategyLayer = false;
         [KSPField]
-        public Boolean disableCustomLaunchsites = false;
-        [KSPField]
         public Boolean disableRemoteBaseOpening = false;
         [KSPField]
-        public Boolean disableAllInstanceEditing = true;
-        [KSPField]
         public Double facilityUseRange = 100;
-        [KSPField]
-        public Boolean disableDisplayClosed = false;
         [KSPField]
         public Boolean toggleIconsWithBB = false;
         [KSPField]
@@ -130,8 +128,6 @@ namespace KerbalKonstructs
         public Boolean spawnPreviewModels = true;
         [KSPField]
         public Boolean DebugMode = false;
-        [KSPField]
-        public Boolean DevMode = false;
         [KSPField]
         public Boolean enableRT = true;
         [KSPField]

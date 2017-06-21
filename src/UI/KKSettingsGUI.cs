@@ -275,27 +275,27 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 
-			GUILayout.Label("Should it be possible to launch from sites other than the KSC?", LabelInfo);
-			GUILayout.BeginHorizontal();
-			if (!KerbalKonstructs.instance.disableCustomLaunchsites)
-			{
-				if (GUILayout.Button("Disable Custom Launchsites", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.disableCustomLaunchsites = true;
-				}
+			//GUILayout.Label("Should it be possible to launch from sites other than the KSC?", LabelInfo);
+			//GUILayout.BeginHorizontal();
+			//if (!KerbalKonstructs.instance.disableCustomLaunchsites)
+			//{
+			//	if (GUILayout.Button("Disable Custom Launchsites", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.disableCustomLaunchsites = true;
+			//	}
 
-				GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			else
-			{
-				if (GUILayout.Button("Disable Custom Launchsites", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.disableCustomLaunchsites = false;
-				}
+			//	GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//else
+			//{
+			//	if (GUILayout.Button("Disable Custom Launchsites", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.disableCustomLaunchsites = false;
+			//	}
 
-				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			GUILayout.EndHorizontal();
+			//	GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//GUILayout.EndHorizontal();
 
 			GUILayout.Label("Should it only be possible to open bases at the base?", LabelInfo);
 			GUILayout.BeginHorizontal();
@@ -452,26 +452,26 @@ namespace KerbalKonstructs.UI
             GUILayout.Space(3);
 			GUILayout.Box("Tracking/Map View Settngs");
 			GUILayout.Label("Never show the icons of closed launchsites?", LabelInfo);
-			GUILayout.BeginHorizontal();
-			if (!KerbalKonstructs.instance.disableDisplayClosed)
-			{
-				if (GUILayout.Button("Never Display Closed Launchsites", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.disableDisplayClosed = true;
-				}
+			//GUILayout.BeginHorizontal();
+			//if (!KerbalKonstructs.instance.disableDisplayClosed)
+			//{
+			//	if (GUILayout.Button("Never Display Closed Launchsites", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.disableDisplayClosed = true;
+			//	}
 
-				GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			else
-			{
-				if (GUILayout.Button("Never Display Closed Launchsites", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.disableDisplayClosed = false;
-				}
+			//	GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//else
+			//{
+			//	if (GUILayout.Button("Never Display Closed Launchsites", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.disableDisplayClosed = false;
+			//	}
 
-				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			GUILayout.EndHorizontal();
+			//	GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//GUILayout.EndHorizontal();
 			GUILayout.Label("Toggle icon display with Base Boss display?", LabelInfo);
 			GUILayout.BeginHorizontal();
 			if (!KerbalKonstructs.instance.toggleIconsWithBB)
@@ -762,54 +762,54 @@ namespace KerbalKonstructs.UI
 				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
 			}
 			GUILayout.EndHorizontal();
-			GUILayout.Label("WARNING: This will enable unfinished features that will NOT WORK properly. They may break your save games. Any changes made to static instances will NOT be tagged as custom and CANNOT be exported.", LabelInfo);
+			//GUILayout.Label("WARNING: This will enable unfinished features that will NOT WORK properly. They may break your save games. Any changes made to static instances will NOT be tagged as custom and CANNOT be exported.", LabelInfo);
 
-			GUILayout.BeginHorizontal();
-			if (!KerbalKonstructs.instance.DevMode)
-			{
-				if (GUILayout.Button("Developer Mode", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.DevMode = true;
-				}
+			//GUILayout.BeginHorizontal();
+			//if (!KerbalKonstructs.instance.DevMode)
+			//{
+			//	if (GUILayout.Button("Developer Mode", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.DevMode = true;
+			//	}
 
-				GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			else
-			{
-				if (GUILayout.Button("Developer Mode", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.DevMode = false;
-				}
+			//	GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//else
+			//{
+			//	if (GUILayout.Button("Developer Mode", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.DevMode = false;
+			//	}
 
-				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			GUILayout.EndHorizontal();
+			//	GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//GUILayout.EndHorizontal();
 
-			if (KerbalKonstructs.instance.DevMode)
-			{
-				GUILayout.Label("All instances will be exported to appropriate group folders. This process may take some time and will lag the game whilst working!", LabelInfo);
+			//if (KerbalKonstructs.instance.DevMode)
+			//{
+			//	GUILayout.Label("All instances will be exported to appropriate group folders. This process may take some time and will lag the game whilst working!", LabelInfo);
 
-				if (GUILayout.Button("Export Masters", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.saveObjects();
-					KerbalKonstructs.instance.exportMasters();
-				}
+			//	if (GUILayout.Button("Export Masters", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.saveObjects();
+			//		KerbalKonstructs.instance.exportMasters();
+			//	}
 
-				GUILayout.Label("WARNING: If you are not a developer and don't know what you're doing, don't click the button below. It deletes all current instances and then re-writes all core config files without instances.", LabelInfo);
+			//	GUILayout.Label("WARNING: If you are not a developer and don't know what you're doing, don't click the button below. It deletes all current instances and then re-writes all core config files without instances.", LabelInfo);
 
-				if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
-				{
-					foreach (StaticModel model in StaticDatabase.allStaticModels)
-					{
-						foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
-						{
-							KerbalKonstructs.instance.deleteObject(obj);
-						}
-					}
+			//	if (GUILayout.Button("Clean Core Configs", GUILayout.Height(23)))
+			//	{
+			//		foreach (StaticModel model in StaticDatabase.allStaticModels)
+			//		{
+			//			foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
+			//			{
+			//				KerbalKonstructs.instance.deleteObject(obj);
+			//			}
+			//		}
 
-					KerbalKonstructs.instance.saveObjects();
-				}
-			}
+			//		KerbalKonstructs.instance.saveObjects();
+			//	}
+			//}
 
 			GUILayout.EndScrollView();
 			GUILayout.Space(2);
@@ -844,10 +844,10 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.defaultSPHlaunchsite = "Runway";
 				KerbalKonstructs.instance.launchFromAnySite = false;
 				KerbalKonstructs.instance.disableCareerStrategyLayer = false;
-				KerbalKonstructs.instance.disableCustomLaunchsites = false;
+				//KerbalKonstructs.instance.disableCustomLaunchsites = false;
 				KerbalKonstructs.instance.disableRemoteBaseOpening = false;
 				KerbalKonstructs.instance.facilityUseRange = 100;
-				KerbalKonstructs.instance.disableDisplayClosed = false;
+				//KerbalKonstructs.instance.disableDisplayClosed = false;
 				KerbalKonstructs.instance.toggleIconsWithBB = false;
 				KerbalKonstructs.instance.mapShowOpen = true;
 				KerbalKonstructs.instance.mapShowClosed = false;
@@ -862,7 +862,7 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.maxEditorVisRange = 100000;
 				KerbalKonstructs.instance.spawnPreviewModels = true;
 				KerbalKonstructs.instance.DebugMode = false;	
-				KerbalKonstructs.instance.DevMode = false;
+				
 
                 ConfigNode kkNode;
                 if (HighLogic.CurrentGame.config.HasNode("KerbalKonstructs"))

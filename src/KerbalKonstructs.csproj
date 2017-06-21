@@ -83,6 +83,7 @@
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="Core\Config\ConfigParser.cs" />
     <Compile Include="Core\Config\ConfigUtil.cs" />
+    <Compile Include="Core\Config\KKCustomParameters.cs" />
     <Compile Include="Core\KKMath.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />

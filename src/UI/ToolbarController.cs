@@ -32,7 +32,7 @@ namespace KerbalKonstructs.UI
         internal static void ToggleButtonOn()
         {
             
-            if  ( (!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
+            if  (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 KerbalKonstructs.GUI_LaunchSiteSelector.Open();
                 return;
@@ -59,7 +59,7 @@ namespace KerbalKonstructs.UI
         internal static void ToggleButtonOff()
         {
 
-            if ((!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
+            if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 KerbalKonstructs.GUI_LaunchSiteSelector.Close();
                 KerbalKonstructs.GUI_BaseManager.Close();
@@ -87,7 +87,7 @@ namespace KerbalKonstructs.UI
         internal void OnHover()
         {
 
-            if ((!KKmain.disableCustomLaunchsites) && (HighLogic.LoadedScene == GameScenes.EDITOR))
+            if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 string hovermessage = "Selected launchsite is " + EditorLogic.fetch.launchSiteName;
                 MiscUtils.HUDMessage(hovermessage, 10, 0);

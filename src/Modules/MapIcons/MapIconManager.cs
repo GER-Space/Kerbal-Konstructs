@@ -78,18 +78,15 @@ namespace KerbalKonstructs.Modules
                         KerbalKonstructs.instance.mapShowOpen = true;
                 }
 
-                if (!KerbalKonstructs.instance.disableDisplayClosed)
+                if (KerbalKonstructs.instance.mapShowClosed)
                 {
-                    if (KerbalKonstructs.instance.mapShowClosed)
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOn, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowClosed = false;
-                    }
-                    else
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowClosed = true;
-                    }
+                    if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOn, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                        KerbalKonstructs.instance.mapShowClosed = false;
+                }
+                else
+                {
+                    if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                        KerbalKonstructs.instance.mapShowClosed = true;
                 }
             }
             GUI.enabled = true;

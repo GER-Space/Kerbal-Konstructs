@@ -196,8 +196,6 @@ namespace KerbalKonstructs.Modules
                         continue;
                     if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
                         continue;
-                    if (KerbalKonstructs.instance.disableDisplayClosed && !isOpen)
-                        continue;
                     // don't show hidden bases when closed
                     if (launchSite.LaunchSiteIsHidden && !isOpen )
                         continue;
