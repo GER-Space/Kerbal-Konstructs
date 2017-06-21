@@ -273,6 +273,9 @@ namespace KerbalKonstructs
         /// <param name="node"></param>
         public void LoadState(ConfigNode configNode)
         {
+            // better save than sorry.
+            CareerState.ResetFacilitiesOpenState();
+
             ConfigNode kkNode;
 
             Log.Normal("Load State");
@@ -281,6 +284,7 @@ namespace KerbalKonstructs
                 kkNode = configNode.GetNode("KerbalKonstructs");
             }  else
             {
+                Log.UserInfo("creating a new savegame state");
                 kkNode = configNode.AddNode("KerbalKonstructs");
             }
 
@@ -690,11 +694,11 @@ namespace KerbalKonstructs
                     continue;
 
                 // create RadialPosition, If we don't have one.
-                if (instance.RadialPosition.Equals(Vector3.zero) )
+                if (instance.RadialPosition.Equals(Vector3.zero))
                 {
-                    if (instance.RefLatitude != 361f && instance.RefLongitude != 361f )
-                    {                   
-                        instance.RadialPosition = (instance.CelestialBody.GetRelSurfaceNVector(instance.RefLatitude , instance.RefLongitude).normalized * instance.CelestialBody.Radius);
+                    if (instance.RefLatitude != 361f && instance.RefLongitude != 361f)
+                    {
+                        instance.RadialPosition = (instance.CelestialBody.GetRelSurfaceNVector(instance.RefLatitude, instance.RefLongitude).normalized * instance.CelestialBody.Radius);
                         Log.UserInfo("creating new RadialPosition for: " + instance.configPath + " " + instance.RadialPosition.ToString());
                     }
                     else
@@ -702,11 +706,15 @@ namespace KerbalKonstructs
                         Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
                         continue;
                     }
-                } else
+                }
+                else
                 {
-                    // create LAT & LON out of Radialposition
-                    instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-                    instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
+                    // create LAT & LON out of Radialposition, when not changed by config
+                    if (instance.RefLatitude == 361f || instance.RefLongitude == 361f)
+                    {
+                        instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
+                        instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
+                    }
                 }
 
                 // sometimes we need a second pass.. (do we???)

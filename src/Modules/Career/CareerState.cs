@@ -22,8 +22,10 @@ namespace KerbalKonstructs.Modules
                     continue;
 
                 if (!facilityNodes.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
+                {
+                    Log.UserWarning("No entry foud in savegame: " + instance.gameObject.name);
                     continue;
-           
+                }
 
                 ConfigNode instanceNode = facilityNodes.GetNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
                 foreach (var facNode in instanceNode.GetNodes())
