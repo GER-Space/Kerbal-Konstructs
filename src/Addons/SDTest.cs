@@ -5,6 +5,7 @@ using System.Text;
 using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using UnityEngine;
+using System.IO;
 
 /// <summary>
 /// Test implementation for Simga88
@@ -138,6 +139,94 @@ namespace KerbalKonstructs.Addons
             }
         }
 
+        internal static void WriteTextures()
+        {
+
+            Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KKTextures/");
+            Texture2D mainTexture = null;
+            Texture2D emissiveTexture = null;
+            HashSet<Texture2D> mytextures = new HashSet<Texture2D>();
+
+
+            foreach (StaticModel model in StaticDatabase.allStaticModels)
+            {
+                // we don't want to rebuild the sqad models, so we don't need the textures
+                if (model.isSquad)
+                    continue;
+
+
+                int texCount = 0;
+                foreach (var renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                {
+                    texCount++;
+                    mainTexture = renderer.material.GetTexture("_MainTex") as Texture2D;
+
+                    if (mainTexture != null && !mytextures.Contains(mainTexture))
+                    {
+                        var mainTextureblob = CopyTexture(mainTexture).EncodeToPNG();
+                        // For testing purposes, also write to a file in the project folder
+                        File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/KKTextures/" + model.name + "_MainTex" + texCount.ToString() + ".png", mainTextureblob);
+                        mytextures.Add(mainTexture);
+                    }
+
+                    emissiveTexture = renderer.material.GetTexture("_Emissive") as Texture2D;
+
+
+                    if (emissiveTexture != null && !mytextures.Contains(emissiveTexture))
+                    {
+                        var emissiveTextureblob = CopyTexture(emissiveTexture).EncodeToPNG();
+                        // For testing purposes, also write to a file in the project folder
+                        File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/KKTextures/" + model.name + "_Emissive" + texCount.ToString() + ".png", emissiveTextureblob);
+                        mytextures.Add(emissiveTexture);
+                    }
+
+                }
+
+            }
+
+
+
+        }
+
+
+        private static Texture2D CopyTexture (Texture2D texture)
+        {
+
+            RenderTexture tmp = RenderTexture.GetTemporary(
+            texture.width,
+            texture.height,
+            0,
+            RenderTextureFormat.Default,
+            RenderTextureReadWrite.Linear);
+
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(texture, tmp);
+
+            // Backup the currently set RenderTexture
+            RenderTexture previous = RenderTexture.active;
+
+            // Set the current RenderTexture to the temporary one we created
+            RenderTexture.active = tmp;
+
+            // Create a new readable Texture2D to copy the pixels to it
+            Texture2D myTexture2D = new Texture2D(texture.width, texture.height);
+
+            // Copy the pixels from the RenderTexture to the new Texture
+            myTexture2D.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            myTexture2D.Apply();
+
+            // Reset the active RenderTexture
+            RenderTexture.active = previous;
+
+            // Release the temporary RenderTexture
+            RenderTexture.ReleaseTemporary(tmp);
+
+            UnityEngine.Object.Destroy(tmp);
+
+            return myTexture2D;
+
+
+        } 
 
     }
 }

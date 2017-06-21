@@ -178,6 +178,8 @@ namespace KerbalKonstructs
             LoadSquadModels();
 
             LoadModels();
+          //  SDTest.WriteTextures();
+
             Log.PerfStop("Object loading1");
             Log.PerfStart("Object loading2");
 
@@ -688,7 +690,7 @@ namespace KerbalKonstructs
                     continue;
 
                 // create RadialPosition, If we don't have one.
-                if (instance.RadialPosition == Vector3.zero)
+                if (instance.RadialPosition.Equals(Vector3.zero) )
                 {
                     if (instance.RefLatitude != 361f && instance.RefLongitude != 361f )
                     {                   
