@@ -123,8 +123,6 @@ namespace KerbalKonstructs
         internal bool disableRemoteRecovery { get { return KKCustomParameters0.instance.disableRemoteRecovery; } set { KKCustomParameters0.instance.disableRemoteRecovery = value; } }
         internal double defaultRecoveryFactor { get { return (double)KKCustomParameters0.instance.defaultRecoveryFactor;  } set { KKCustomParameters0.instance.defaultRecoveryFactor = (float)value; } }
         internal double defaultEffectiveRange { get { return (double)KKCustomParameters0.instance.defaultEffectiveRange; } set { KKCustomParameters0.instance.defaultEffectiveRange = (float)value; } }
-
-
         internal bool toggleIconsWithBB { get { return KKCustomParameters0.instance.toggleIconsWithBB; } set { KKCustomParameters0.instance.toggleIconsWithBB = value; } }
         internal double maxEditorVisRange { get { return (double)KKCustomParameters1.instance.maxEditorVisRange; } set { KKCustomParameters1.instance.maxEditorVisRange = (float)value; } }
         internal bool DebugMode
@@ -144,9 +142,9 @@ namespace KerbalKonstructs
             }
         }
         internal bool spawnPreviewModels { get { return KKCustomParameters1.instance.spawnPreviewModels; } set { KKCustomParameters1.instance.spawnPreviewModels = value; } }
-
         internal static string newInstancePath { get { return KKCustomParameters1.instance.newInstancePath; } set { KKCustomParameters1.instance.newInstancePath = value; } }
 
+        // map icon settings. These are saved manually
         [KSPField]
         public Boolean mapShowOpen = true;
         [KSPField]
@@ -192,7 +190,8 @@ namespace KerbalKonstructs
             GameEvents.OnMapExited.Add(GUI_MapIcons.Close);
             //process save game loading
             GameEvents.onGameStateSave.Add(SaveState);
-            GameEvents.onGameStateLoad.Add(LoadState);
+            // we can be late to the party. 
+            GameEvents.onGameStatePostLoad.Add(LoadState);
             #endregion
 
             #region Other Mods Hooks
@@ -663,9 +662,18 @@ namespace KerbalKonstructs
                 }
                 else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
-                    var spaceCenterCam = (Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)) as SpaceCenterCamera2 []).First();
-                    playerPos = spaceCenterCam.transform.position;
-                    //Log.Normal("updateCache using SpaceCenter Camera 2 as playerPos");
+
+                    //var spaceCenterCam = (Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)) as SpaceCenterCamera2 []).FirstOrDefault();
+                    //if (spaceCenterCam != null)
+                    //{
+                    //    playerPos = spaceCenterCam.transform.position;
+                    //    //Log.Normal("updateCache using SpaceCenter Camera 2 as playerPos");
+                        
+                    //} else
+                    {
+                        // we can always use the SpaceCenter position as our position
+                        playerPos = SpaceCenter.Instance.gameObject.transform.position;
+                    }
                     StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
                 }
                 else if (Camera.main != null)
