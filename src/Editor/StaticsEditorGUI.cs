@@ -263,8 +263,7 @@ namespace KerbalKonstructs.UI
                     EditorGUI.CloseEditors();
                     creatingInstance = false;
                     showLocal = false;
-                    KerbalKonstructs.instance.DeletePreviewObject();
-                    KerbalKonstructs.instance.disableAllInstanceEditing = bDisableEditingSetting;
+                    KerbalKonstructs.instance.DeletePreviewObject();                   
                 }
 
                 GUI.enabled = true;
@@ -503,21 +502,8 @@ namespace KerbalKonstructs.UI
                                 snapTargetInstance = null;
                                 KerbalKonstructs.instance.snapTargetInstance = null;
                             }
+                            KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
 
-                            if (!KerbalKonstructs.instance.disableAllInstanceEditing)
-                                KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
-                            else
-                            {
-                                if (!showLocal)
-                                {
-                                    KerbalKonstructs.instance.bDisablePositionEditing = true;
-                                    KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, false, false);
-                                }
-                                else
-                                {
-                                    KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
-                                }
-                            }
                             //obj.selectObject(false);
 
                             Color highlightColor2 = XKCDColors.Green_Yellow;
@@ -656,32 +642,20 @@ namespace KerbalKonstructs.UI
                     //}
                     GUILayout.EndHorizontal();
 
-                    if (!KerbalKonstructs.instance.disableAllInstanceEditing)
-                    {
-                        GUILayout.BeginHorizontal();
-                        if (GUILayout.Button("Disable Camera Focus/Position Editing", GUILayout.Height(23)))
-                        {
-                            KerbalKonstructs.instance.disableAllInstanceEditing = true;
-                            bDisableEditingSetting = true;
-                        }
 
-                        GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-                        GUILayout.EndHorizontal();
-                    }
-                    else
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Disable Camera Focus/Position Editing", GUILayout.Height(23)))
                     {
-                        GUILayout.BeginHorizontal();
-                        if (GUILayout.Button("Disable Camera Focus/Position Editing", GUILayout.Height(23)))
-                        {
-                            KerbalKonstructs.instance.disableAllInstanceEditing = false;
-                            bDisableEditingSetting = false;
-                        }
 
-                        GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-                        GUILayout.EndHorizontal();
+                        bDisableEditingSetting = true;
                     }
+
+                    GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+                    GUILayout.EndHorizontal();
+
+
                 }
-            }
+             }
 
             if (showLocal)
             {

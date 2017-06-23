@@ -717,26 +717,26 @@ namespace KerbalKonstructs.UI
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.Label("Should a preview of a static model be spawned when editing a model config?", LabelInfo);
-			GUILayout.BeginHorizontal();
-			if (!KerbalKonstructs.instance.spawnPreviewModels)
-			{
-				if (GUILayout.Button("Spawn Preview Static Models", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.spawnPreviewModels = true;
-				}
+			//GUILayout.BeginHorizontal();
+			//if (!KerbalKonstructs.instance.spawnPreviewModels)
+			//{
+			//	if (GUILayout.Button("Spawn Preview Static Models", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.spawnPreviewModels = true;
+			//	}
 
-				GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			else
-			{
-				if (GUILayout.Button("Spawn Preview Static Models", GUILayout.Height(23)))
-				{
-					KerbalKonstructs.instance.spawnPreviewModels = false;
-				}
+			//	GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//else
+			//{
+			//	if (GUILayout.Button("Spawn Preview Static Models", GUILayout.Height(23)))
+			//	{
+			//		KerbalKonstructs.instance.spawnPreviewModels = false;
+			//	}
 
-				GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-			}
-			GUILayout.EndHorizontal();
+			//	GUILayout.Button(tTick, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
+			//}
+			//GUILayout.EndHorizontal();
 
 			GUILayout.Space(3);
 			GUILayout.Box("Modes");
@@ -860,7 +860,7 @@ namespace KerbalKonstructs.UI
 				KerbalKonstructs.instance.defaultRecoveryFactor = 50;
 				KerbalKonstructs.instance.defaultEffectiveRange = 100000;
 				KerbalKonstructs.instance.maxEditorVisRange = 100000;
-				KerbalKonstructs.instance.spawnPreviewModels = true;
+				//KerbalKonstructs.instance.spawnPreviewModels = true;
 				KerbalKonstructs.instance.DebugMode = false;	
 				
 

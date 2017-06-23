@@ -1022,8 +1022,8 @@ namespace KerbalKonstructs.UI
             //}
 
             instance.model = model;
-            Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/NewInstances/");
-            instance.configPath = "KerbalKonstructs/NewInstances/" + model.name + "-instances.cfg";
+            Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath );
+            instance.configPath = KerbalKonstructs.newInstancePath + "/" + model.name + "-instances.cfg";
             instance.configUrl = null;
 
             enableColliders = false;

@@ -6,136 +6,206 @@ using UnityEngine;
 using KerbalKonstructs;
 using System.Collections;
 using System.Reflection;
+using KerbalKonstructs.Addons;
 
 namespace KerbalKonstructs.Core
 {
-    public class KKCustomParameters : GameParameters.CustomParameterNode
+    public class KKCustomParameters0 : GameParameters.CustomParameterNode
     {
-        private static KKCustomParameters instance;
+        private static KKCustomParameters0 _instance;
 
 
-        public static KKCustomParameters Instance
+        public static KKCustomParameters0 instance
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
                     if (HighLogic.CurrentGame != null)
                     {
-                        instance = HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters>();
+                        _instance = HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>();
                     }
                 }
-                return instance;
+                return _instance;
             }
         }
 
-
-
-        public override string Title { get { return "Kerbal Konstructs Settings"; } }
+        public override string Title { get { return "Gameplay Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
         public override string DisplaySection { get { return "Kerbal Konstructs"; } }
         public override int SectionOrder { get { return 0; } }
         public override bool HasPresets { get { return false; } }
-  
-
-
 
 
         // GamePlay settings
-        [GameParameters.CustomParameterUI("Enable RemoteTech GroundStation", title = "GamePlay Settings", toolTip = "Kerbal Konstricts will place RemoteTech ground antennas to any open GroundStation", autoPersistance = true)]
+        [GameParameters.CustomStringParameterUI("Gameplay settings", title = "GamePlay Settings", lines = 1)]
+        public string blank0 = "";
+        [GameParameters.CustomParameterUI("Enable RemoteTech GroundStation", toolTip = "Kerbal Konstricts will place RemoteTech ground antennas to any open GroundStation", autoPersistance = true)]
         public bool enableRT = true;
         [GameParameters.CustomParameterUI("Enable CommNet GroundStations", toolTip = "Kerbal Konstricts will place CommNet ground antennas to any open GroundStation", autoPersistance = true)]
         public bool enableCommNet = true;
 
         // difficulty setting
+        [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
+        public string blank01 = "";
+        [GameParameters.CustomStringParameterUI("", title = "Difficulty Settings", lines = 1)]
+        public string blank1 = "";
         [GameParameters.CustomParameterUI("Open bases only when landed", toolTip = "Enable this if you don't want to use the trackingstation to open new bases.\n " +
-                                            "With this enabled you need to land at a base to open it", title = "Difficulty Settings", autoPersistance = true)]
+                                            "With this enabled you need to land at a base to open it", autoPersistance = true)]
         public bool disableRemoteBaseOpening = false;
 
-
-        public double facilityUseRange = 300;
+        [GameParameters.CustomFloatParameterUI("max facility range", toolTip = "Until which distance should a facility be usable", minValue = 50, maxValue = 8000 , stepCount = 50,  autoPersistance = true)]
+        public float facilityUseRange = 300;
 
         [GameParameters.CustomParameterUI("Disable Remote Recoovery", toolTip = "Disable the usage of open bases for the calculation of the recovery value", autoPersistance = true)]
         public bool disableRemoteRecovery = false;
         [GameParameters.CustomFloatParameterUI("Default recovery factor" , toolTip = "How good is KK base at recovering a vessel, this might be overwritten the bases configuration" , minValue = 0 , maxValue = 100 , autoPersistance = true)]
         public float defaultRecoveryFactor = 50;
-
+        [GameParameters.CustomFloatParameterUI("Default recovery range", toolTip = "until which distance should a base be able to recover a vessel, this might be overwritten the bases configuration",  minValue = 0, maxValue = 500000, stepCount = 100, autoPersistance = true)]
         public float defaultEffectiveRange = 100000;
 
-
-        // cheats
-        [GameParameters.CustomParameterUI("Launch from any Site", toolTip = "With this set to true you could launch a plane from the SHP on a rocket launchpad. or vice versa",title = "Cheats", autoPersistance = true)]
-        public bool launchFromAnySite = false;
-        [GameParameters.CustomParameterUI("Open everything", toolTip = "Use every base and facility without paying money", autoPersistance = true , gameMode = GameParameters.GameMode.CAREER)]
-        public bool disableCareerStrategyLayer = false;
-
         // remove this
-        [GameParameters.CustomParameterUI("Show Icons only with LS selector", toolTip = "Show only the icons on the map, when the KK selector is opened",title = "Map Control", autoPersistance = true)]
+        [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
+        public string blank03 = "";
+        [GameParameters.CustomStringParameterUI("", title = "Map Options", lines = 1)]
+        public string blank3 = "";
+        [GameParameters.CustomParameterUI("Show Icons only with LS selector", toolTip = "Show only the icons on the map, when the KK selector is opened", autoPersistance = true)]
         public bool toggleIconsWithBB = false;
 
 
+        public override bool Interactible(MemberInfo member, GameParameters parameters)
+        {
+            if (member.Name == "enableRT") //This Field must always be Interactible.
+            {
+                if (RemoteTechAddon.isInstalled)
+                {
+                    return true;
+                } else
+                {
+                    enableRT = false;
+                    return false;
+                }
+            }
+            else
+                return true;
+        }
 
+    }
+
+    public class KKCustomParameters1 : GameParameters.CustomParameterNode
+    {
+        private static KKCustomParameters1 _instance;
+
+        public enum NewInstancePath
+        {
+            INTERNAL,
+            EXTERNAL,
+        }
+
+        public static KKCustomParameters1 instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    if (HighLogic.CurrentGame != null)
+                    {
+                        _instance = HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>();
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        public override string Title { get { return "Editor Settings"; } }
+        public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
+        public override string Section { get { return "Kerbal Konstructs"; } }
+        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+        public override int SectionOrder { get { return 1; } }
+        public override bool HasPresets { get { return false; } }
+
+
+
+        [GameParameters.CustomStringParameterUI("", title = "Editor Settings", lines = 1)]
+        public string blank1 = "";
         // editor settings
-
-        public double maxEditorVisRange = 100000;
+        [GameParameters.CustomFloatParameterUI("Maximum editor local range", minValue = 5000, maxValue = 200000, stepCount = 100, autoPersistance = true)]
+        public float maxEditorVisRange = 100000;
         [GameParameters.CustomParameterUI("Spawn preview models", toolTip = "just leave this to true", autoPersistance = true)]
         public bool spawnPreviewModels = true;
+
+        [GameParameters.CustomParameterUI("Directory for new Instances", toolTip = "Path under GameData where newly placed static configs should be saved", autoPersistance = true )]
+        public NewInstancePath newInstanceEnum = NewInstancePath.INTERNAL;
+        [GameParameters.CustomStringParameterUI("Directory for new Instances",lines = 2, autoPersistance = true )]
+        public string newInstancePath = "KerbalKonstructs/NewInstances";
+
+
+        [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
+        public string blank02 = "";
+        [GameParameters.CustomStringParameterUI("", title = "Debug Settings", lines = 1)]
+        public string blank2 = "";
         [GameParameters.CustomParameterUI("Debug Mode", toolTip = "enable this to get a lot of debug messages.", autoPersistance = true)]
         public bool DebugMode = false;
 
 
-
-
-
-
-
-
-
-
-        [GameParameters.CustomParameterUI("My Boolean - Mod Enabled?", toolTip = "test bool tooltip")]
-        public bool MyBool = true;
-        [GameParameters.CustomStringParameterUI("Test String UI", autoPersistance = true, lines = 2, title = "This is what should show Test string#1", toolTip = "test string tooltip")]
-        public string UIstring = "";
-        [GameParameters.CustomFloatParameterUI("My Float", minValue = 0.0f, maxValue = 50.0f)]
-        public double MyFloat = 1.0f;
-        [GameParameters.CustomIntParameterUI("My Integer", maxValue = 10)]
-        public int MyInt = 1;
-        [GameParameters.CustomIntParameterUI("My Non-Sandbox Integer", gameMode = GameParameters.GameMode.CAREER | GameParameters.GameMode.SCIENCE)]
-        public int MyCareerInt = 1;
-        [GameParameters.CustomIntParameterUI("My New Game Integer", newGameOnly = true)]
-        public int MyNewGameInt = 1;
-        [GameParameters.CustomFloatParameterUI("My Percentage", asPercentage = true)]
-        public double MyPercentage = 0.5f;
-        [GameParameters.CustomIntParameterUI("My Stepped Integer", maxValue = 500000, stepSize = 1000)]
-        public int MySteppedInt = 1000;
-
-
-
-        public override bool Enabled(MemberInfo member, GameParameters parameters)
-        {
-            if (member.Name == "MyBool") //This Field must always be enabled.
-                return true;
-            if (MyBool == false) //Otherwise it depends on the value of MyBool if it's false return false
-            {
-                if (member.Name == "UIstring" || member.Name == "MyFloat") // Example these fields are Enabled (visible) all the time.
-                    return true;
-                return false;
-            }
-
-            return true; //otherwise return true
-        }
-
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
-            if (member.Name == "MyBool") //This Field must always be Interactible.
-                return true;
-            if (MyBool == false)  //Otherwise it depends on the value of MyBool if it's false return false
-                return false;
-            return true; //otherwise return true
+            if (newInstanceEnum == NewInstancePath.INTERNAL)
+            {
+                newInstancePath = "KerbalKonstructs/NewInstances";
+            } else
+            {
+                newInstancePath = "NewInstances";
+            }
+
+            return true;
         }
+
+
+    }
+
+
+    public class KKCustomParameters2 : GameParameters.CustomParameterNode
+    {
+        private static KKCustomParameters2 _instance;
+
+
+
+        public static KKCustomParameters2 instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    if (HighLogic.CurrentGame != null)
+                    {
+                        _instance = HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>();
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        public override string Title { get { return "Cheats"; } }
+        public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
+        public override string Section { get { return "Kerbal Konstructs"; } }
+        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+        public override int SectionOrder { get { return 2; } }
+        public override bool HasPresets { get { return false; } }
+
+
+
+
+        [GameParameters.CustomParameterUI("Launch from any Site", toolTip = "With this set to true you could launch a plane from the SHP on a rocket launchpad. or vice versa", autoPersistance = true)]
+        public bool launchFromAnySite = false;
+        [GameParameters.CustomParameterUI("Open everything", toolTip = "Use every base and facility without paying money", autoPersistance = true, gameMode = GameParameters.GameMode.CAREER)]
+        public bool disableCareerStrategyLayer = false;
+
+
 
 
 
     }
+
 }

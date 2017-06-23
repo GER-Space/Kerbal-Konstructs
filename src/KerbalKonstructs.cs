@@ -24,44 +24,41 @@ namespace KerbalKonstructs
     public class KerbalKonstructs : MonoBehaviour
     {
         // Hello
-        public static KerbalKonstructs instance;
-        public static string installDir = AssemblyLoader.loadedAssemblies.GetPathByType(typeof(KerbalKonstructs));
-        private Dictionary<UpgradeableFacility, int> facilityLevels = new Dictionary<UpgradeableFacility, int>();
+        internal static KerbalKonstructs instance;       
 
-        public static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+        internal static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
         #region Holders
-        public StaticInstance selectedObject;
+        internal StaticInstance selectedObject;
         internal StaticModel selectedModel;
-        public StaticInstance snapTargetInstance;
-        public CameraController camControl = new CameraController();
+        internal StaticInstance snapTargetInstance;
+        internal CameraController camControl = new CameraController();
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
 
-        public int iMenuCount = 0;
 
-        public Double VesselCost = 0;
-        public Double RefundAmount = 0;
+        internal double VesselCost = 0;
+        internal double RefundAmount = 0;
 
-        public string lastRecoveryBase = "";
-        public float lastRecoveryDistance = 0f;
-        public float fRecovFactor = 0f;
-        public float fRecovRange = 0f;
-        public float fLaunchRefund = 0f;
-        public Double dRecoveryValue = 0;
-        public Double dActualRecoveryValue = 0;
+        internal string lastRecoveryBase = "";
+        internal float lastRecoveryDistance = 0f;
+        internal float fRecovFactor = 0f;
+        internal float fRecovRange = 0f;
+        internal float fLaunchRefund = 0f;
+        internal double dRecoveryValue = 0;
+        internal double dActualRecoveryValue = 0;
 
-        internal String defaultVABlaunchsite = "LaunchPad";
-        internal String defaultSPHlaunchsite = "Runway";
+        internal string defaultVABlaunchsite = "LaunchPad";
+        internal string defaultSPHlaunchsite = "Runway";
 
         #endregion
 
         #region Switches
-        private Boolean atMainMenu = false;
-        public Boolean VesselLaunched = false;
-        public Boolean bStylesSet = false;
+        private bool atMainMenu = false;
+        internal bool VesselLaunched = false;
+        internal bool bStylesSet = false;
 
-        public Boolean bDisablePositionEditing = false;
+        internal bool bDisablePositionEditing = false;
         #endregion
 
         #region GUI Windows
@@ -86,18 +83,70 @@ namespace KerbalKonstructs
 
         #region Configurable Variables
 
+        
+        internal bool enableRT
+        {
+            get
+            {
+                if (RemoteTechAddon.isInstalled)
+                {
+                    return KKCustomParameters0.instance.enableRT;
+                } else
+                {
+                    return false;
+                }
+            }
+            set
+            { KKCustomParameters0.instance.enableRT = value;
+            }
+        }
+        internal bool enableCommNet
+        {
+            get
+            {   if (CommNet.CommNetScenario.CommNetEnabled)
+                {
+                    return KKCustomParameters0.instance.enableCommNet;
+                } else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                KKCustomParameters0.instance.enableCommNet = value;
+            }
+        }
+        internal bool launchFromAnySite { get { return KKCustomParameters2.instance.launchFromAnySite; } set { KKCustomParameters2.instance.launchFromAnySite = value; } }
+        internal bool disableCareerStrategyLayer { get { return KKCustomParameters2.instance.disableCareerStrategyLayer; } set { KKCustomParameters2.instance.disableCareerStrategyLayer = value; } }
+        internal bool disableRemoteBaseOpening { get { return KKCustomParameters0.instance.disableRemoteBaseOpening; } set { KKCustomParameters0.instance.disableRemoteBaseOpening = value; } }
+        internal double facilityUseRange { get { return (double)KKCustomParameters0.instance.facilityUseRange; } set { KKCustomParameters0.instance.facilityUseRange = (float)value; } }
+        internal bool disableRemoteRecovery { get { return KKCustomParameters0.instance.disableRemoteRecovery; } set { KKCustomParameters0.instance.disableRemoteRecovery = value; } }
+        internal double defaultRecoveryFactor { get { return (double)KKCustomParameters0.instance.defaultRecoveryFactor;  } set { KKCustomParameters0.instance.defaultRecoveryFactor = (float)value; } }
+        internal double defaultEffectiveRange { get { return (double)KKCustomParameters0.instance.defaultEffectiveRange; } set { KKCustomParameters0.instance.defaultEffectiveRange = (float)value; } }
 
 
-        [KSPField]
-        public Boolean launchFromAnySite = false;
-        [KSPField]
-        public Boolean disableCareerStrategyLayer = false;
-        [KSPField]
-        public Boolean disableRemoteBaseOpening = false;
-        [KSPField]
-        public Double facilityUseRange = 100;
-        [KSPField]
-        public Boolean toggleIconsWithBB = false;
+        internal bool toggleIconsWithBB { get { return KKCustomParameters0.instance.toggleIconsWithBB; } set { KKCustomParameters0.instance.toggleIconsWithBB = value; } }
+        internal double maxEditorVisRange { get { return (double)KKCustomParameters1.instance.maxEditorVisRange; } set { KKCustomParameters1.instance.maxEditorVisRange = (float)value; } }
+        internal bool DebugMode
+        {
+            get
+            {
+                if (KKCustomParameters1.instance != null)
+                {
+                    return KKCustomParameters1.instance.DebugMode;
+                } else
+                {
+                    return false;
+                }
+            }
+            set
+            { KKCustomParameters1.instance.DebugMode = value;
+            }
+        }
+        internal bool spawnPreviewModels { get { return KKCustomParameters1.instance.spawnPreviewModels; } set { KKCustomParameters1.instance.spawnPreviewModels = value; } }
+
+        internal static string newInstancePath { get { return KKCustomParameters1.instance.newInstancePath; } set { KKCustomParameters1.instance.newInstancePath = value; } }
+
         [KSPField]
         public Boolean mapShowOpen = true;
         [KSPField]
@@ -114,24 +163,8 @@ namespace KerbalKonstructs
         public Boolean mapShowWaterLaunch = true;
         [KSPField]
         public Boolean mapShowOther = false;
-        [KSPField]
-        public Boolean mapHideIconsBehindBody = true;
-        [KSPField]
-        public Boolean disableRemoteRecovery = false;
-        [KSPField]
-        public Double defaultRecoveryFactor = 50;
-        [KSPField]
-        public Double defaultEffectiveRange = 100000;
-        [KSPField]
-        public Double maxEditorVisRange = 100000;
-        [KSPField]
-        public Boolean spawnPreviewModels = true;
-        [KSPField]
-        public Boolean DebugMode = false;
-        [KSPField]
-        public Boolean enableRT = true;
-        [KSPField]
-        public Boolean enableCommNet = true;
+
+
         #endregion
 
         private List<StaticInstance> deletedInstances = new List<StaticInstance>();
@@ -394,7 +427,6 @@ namespace KerbalKonstructs
                 //LaunchSiteManager.setAllLaunchsitesClosed();
                 atMainMenu = true;
                 bTreatBodyAsNullForStatics = false;
-                iMenuCount = iMenuCount + 1;
                 // reset this for the next Newgame
                 if (InitialisedFacilities)
                 {
@@ -1673,7 +1705,7 @@ namespace KerbalKonstructs
 
             if (cfg != null)
             {
-                foreach (FieldInfo f in GetType().GetFields())
+                foreach (FieldInfo f in GetType().GetFields(BindingFlags.Public))
                 {
                     if (Attribute.IsDefined(f, typeof(KSPField)))
                     {
@@ -1682,10 +1714,13 @@ namespace KerbalKonstructs
                     }
                     else
                     {
-                        Log.Debug("Attribute not defined as KSPField. This is harmless.");
+                        //Log.Debug("Attribute not defined as KSPField. This is harmless.");
                         continue;
                     }
                 }
+            } else
+            {
+                Log.UserWarning("Settings could not be loaded");
             }
         }
 
