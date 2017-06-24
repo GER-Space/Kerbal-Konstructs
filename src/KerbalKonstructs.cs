@@ -1614,8 +1614,8 @@ namespace KerbalKonstructs
 
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
-            InputLockManager.RemoveControlLock("KKCamControls");
             InputLockManager.RemoveControlLock("KKCamModes");
+
 
             if (camControl.active) camControl.disable();
 
