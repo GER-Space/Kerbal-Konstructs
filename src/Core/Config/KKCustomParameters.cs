@@ -19,7 +19,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                if (_instance == null)
+                //if (_instance == null)
                 {
                     if (HighLogic.CurrentGame != null)
                     {
@@ -134,6 +134,8 @@ namespace KerbalKonstructs.Core
         public float maxEditorVisRange = 100000;
         [GameParameters.CustomParameterUI("Spawn preview models", toolTip = "just leave this to true", autoPersistance = true)]
         public bool spawnPreviewModels = true;
+        [GameParameters.CustomParameterUI("Use alterative editor camera", toolTip = "Use the legacy KK editor camera, which can go under the surface", autoPersistance = true)]
+        public bool useLegacyCamera = false;
 
         [GameParameters.CustomParameterUI("Directory for new Instances", toolTip = "Path under GameData where newly placed static configs should be saved", autoPersistance = true )]
         public NewInstancePath newInstanceEnum = NewInstancePath.INTERNAL;

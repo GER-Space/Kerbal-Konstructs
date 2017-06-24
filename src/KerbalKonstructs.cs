@@ -90,14 +90,14 @@ namespace KerbalKonstructs
             {
                 if (RemoteTechAddon.isInstalled)
                 {
-                    return KKCustomParameters0.instance.enableRT;
+                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().enableRT;
                 } else
                 {
                     return false;
                 }
             }
             set
-            { KKCustomParameters0.instance.enableRT = value;
+            { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().enableRT = value;
             }
         }
         internal bool enableCommNet
@@ -105,7 +105,7 @@ namespace KerbalKonstructs
             get
             {   if (CommNet.CommNetScenario.CommNetEnabled)
                 {
-                    return KKCustomParameters0.instance.enableCommNet;
+                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().enableCommNet;
                 } else
                 {
                     return false;
@@ -113,17 +113,17 @@ namespace KerbalKonstructs
             }
             set
             {
-                KKCustomParameters0.instance.enableCommNet = value;
+                HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().enableCommNet = value;
             }
         }
-        internal bool launchFromAnySite { get { return KKCustomParameters2.instance.launchFromAnySite; } set { KKCustomParameters2.instance.launchFromAnySite = value; } }
-        internal bool disableCareerStrategyLayer { get { return KKCustomParameters2.instance.disableCareerStrategyLayer; } set { KKCustomParameters2.instance.disableCareerStrategyLayer = value; } }
-        internal bool disableRemoteBaseOpening { get { return KKCustomParameters0.instance.disableRemoteBaseOpening; } set { KKCustomParameters0.instance.disableRemoteBaseOpening = value; } }
-        internal double facilityUseRange { get { return (double)KKCustomParameters0.instance.facilityUseRange; } set { KKCustomParameters0.instance.facilityUseRange = (float)value; } }
-        internal bool disableRemoteRecovery { get { return KKCustomParameters0.instance.disableRemoteRecovery; } set { KKCustomParameters0.instance.disableRemoteRecovery = value; } }
-        internal double defaultRecoveryFactor { get { return (double)KKCustomParameters0.instance.defaultRecoveryFactor;  } set { KKCustomParameters0.instance.defaultRecoveryFactor = (float)value; } }
-        internal double defaultEffectiveRange { get { return (double)KKCustomParameters0.instance.defaultEffectiveRange; } set { KKCustomParameters0.instance.defaultEffectiveRange = (float)value; } }
-        internal bool toggleIconsWithBB { get { return KKCustomParameters0.instance.toggleIconsWithBB; } set { KKCustomParameters0.instance.toggleIconsWithBB = value; } }
+        internal bool launchFromAnySite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().launchFromAnySite; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().launchFromAnySite = value; } }
+        internal bool disableCareerStrategyLayer { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
+        internal bool disableRemoteBaseOpening { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteBaseOpening; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteBaseOpening = value; } }
+        internal double facilityUseRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().facilityUseRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().facilityUseRange = (float)value; } }
+        internal bool disableRemoteRecovery { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteRecovery; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteRecovery = value; } }
+        internal double defaultRecoveryFactor { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultRecoveryFactor;  } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultRecoveryFactor = (float)value; } }
+        internal double defaultEffectiveRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultEffectiveRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultEffectiveRange = (float)value; } }
+        internal bool toggleIconsWithBB { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB = value; } }
         internal double maxEditorVisRange { get { return (double)KKCustomParameters1.instance.maxEditorVisRange; } set { KKCustomParameters1.instance.maxEditorVisRange = (float)value; } }
         internal bool DebugMode
         {
@@ -131,18 +131,20 @@ namespace KerbalKonstructs
             {
                 if (KKCustomParameters1.instance != null)
                 {
-                    return KKCustomParameters1.instance.DebugMode;
+                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().DebugMode;
                 } else
                 {
                     return false;
                 }
             }
             set
-            { KKCustomParameters1.instance.DebugMode = value;
+            {
+                HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().DebugMode = value;
             }
         }
-        internal bool spawnPreviewModels { get { return KKCustomParameters1.instance.spawnPreviewModels; } set { KKCustomParameters1.instance.spawnPreviewModels = value; } }
-        internal static string newInstancePath { get { return KKCustomParameters1.instance.newInstancePath; } set { KKCustomParameters1.instance.newInstancePath = value; } }
+        internal bool spawnPreviewModels { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels = value; } }
+        internal static string newInstancePath { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath = value; } }
+        internal static bool useLegacyCamera { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera; } }
 
         // map icon settings. These are saved manually
         [KSPField]
@@ -624,6 +626,13 @@ namespace KerbalKonstructs
                 {
                     GUI_StaticsEditor.SelectMouseObject();
                 }
+
+                if (useLegacyCamera && camControl.active)
+                {
+                    camControl.updateCamera();
+                }
+
+
             }
         }
 
@@ -1633,6 +1642,8 @@ namespace KerbalKonstructs
                 InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
                 InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
                 InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
+
+
 
                 if (selectedObject != null)
                     deselectObject(true, true);
