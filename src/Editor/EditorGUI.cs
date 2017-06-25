@@ -27,7 +27,6 @@ namespace KerbalKonstructs.UI
         #region Variable Declarations
         private List<Transform> transformList = new List<Transform>();
         private CelestialBody body;
-        internal static FacilityEditor GUI_FacilityEditor = new FacilityEditor();
 
         internal Boolean foldedIn = false;
         internal Boolean doneFold = false;
@@ -803,8 +802,8 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
                 {
-                    if (!GUI_FacilityEditor.IsOpen())
-                        GUI_FacilityEditor.Open();
+                    if (!FacilityEditor.instance.IsOpen())
+                        FacilityEditor.instance.Open();
                 }
             }
 
@@ -968,7 +967,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public static void CloseEditors()
         {
-            GUI_FacilityEditor.Close();
+            FacilityEditor.instance.Close();
             LaunchSiteEditor.instance.Close();
         }
 

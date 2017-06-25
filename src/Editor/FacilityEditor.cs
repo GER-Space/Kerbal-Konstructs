@@ -12,6 +12,20 @@ namespace KerbalKonstructs.UI
 {
     class FacilityEditor : KKWindow
     {
+        private static FacilityEditor _instance = null;
+        internal static FacilityEditor instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new FacilityEditor();
+
+                }
+                return _instance;
+            }
+        }
+
         private bool guiInitialized = false;
         private Rect facilityEditorRect = new Rect(400, 45, 360, 370);
 
