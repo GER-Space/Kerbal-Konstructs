@@ -116,23 +116,23 @@ namespace KerbalKonstructs.Core
 
 				if (sFacType == "LandingGuide")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawLandingGuide(instance);
+					if (visible) LandingGuideUI.instance.drawLandingGuide(instance);
 					else
-						KerbalKonstructs.GUI_Landinguide.drawLandingGuide(null);
+                        LandingGuideUI.instance.drawLandingGuide(null);
 				}
 
 				if (sFacType == "TouchdownGuideL")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(instance);
+					if (visible) LandingGuideUI.instance.drawTouchDownGuideL(instance);
 					else
-						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideL(null);
+                        LandingGuideUI.instance.drawTouchDownGuideL(null);
 				}
 
 				if (sFacType == "TouchdownGuideR")
 				{
-					if (visible) KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(instance);
+					if (visible) LandingGuideUI.instance.drawTouchDownGuideR(instance);
 					else
-						KerbalKonstructs.GUI_Landinguide.drawTouchDownGuideR(null);
+                        LandingGuideUI.instance.drawTouchDownGuideR(null);
 				}
 
 				if (sFacType == "CityLights")

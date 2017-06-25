@@ -61,29 +61,8 @@ namespace KerbalKonstructs
         internal bool bDisablePositionEditing = false;
         #endregion
 
-        #region GUI Windows
-        internal static EditorGUI GUI_Editor = new EditorGUI();
-        internal static LaunchSiteEditor GUI_LSEditor = new LaunchSiteEditor();
-        internal static StaticsEditorGUI GUI_StaticsEditor = new StaticsEditorGUI();
-        internal static NavGuidanceSystem GUI_NGS = new NavGuidanceSystem();
-        internal static BaseBossFlight GUI_FlightManager = new BaseBossFlight();
-        internal static FacilityManager GUI_FacilityManager = new FacilityManager();
-        internal static LaunchSiteSelectorGUI GUI_LaunchSiteSelector = new LaunchSiteSelectorGUI();
-        internal static Modules.MapIconManager GUI_MapIconManager = new Modules.MapIconManager();
-        internal static Modules.MapIconDraw GUI_MapIcons = new Modules.MapIconDraw();
-        internal static KSCManager GUI_KSCManager = new KSCManager();
-        internal static AirRacing GUI_AirRacingApp = new AirRacing();
-        internal static BaseManager GUI_BaseManager = new BaseManager();
-        internal static KKSettingsGUI GUI_Settings = new KKSettingsGUI();
-        internal static ModelInfo GUI_ModelInfo = new ModelInfo();
-        internal static LandingGuideUI GUI_Landinguide = new LandingGuideUI();
-        #endregion
 
-
-
-        #region Configurable Variables
-
-        
+        #region Configurable Variables    
         internal bool enableRT
         {
             get
@@ -188,8 +167,8 @@ namespace KerbalKonstructs
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecovery);
             GameEvents.OnVesselRollout.Add(OnVesselLaunched);
             // draw map icons when needed
-            GameEvents.OnMapEntered.Add(GUI_MapIcons.Open);
-            GameEvents.OnMapExited.Add(GUI_MapIcons.Close);
+            GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
+            GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
             //process save game loading
             GameEvents.onGameStateSave.Add(SaveState);
             // we can be late to the party. 
@@ -438,13 +417,13 @@ namespace KerbalKonstructs
             if (data.Equals(GameScenes.EDITOR))
             {
                 // Prevent abuse if selector left open when switching to from VAB and SPH
-                GUI_LaunchSiteSelector.Close();
+                LaunchSiteSelectorGUI.instance.Close();
 
                 // Default selected launchsite when switching between save games
                 switch (EditorDriver.editorFacility)
                 {
                     case EditorFacility.SPH:
-                        GUI_LaunchSiteSelector.setEditorType(SiteType.SPH);
+                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.SPH);
                         if (atMainMenu)
                         {
                             LaunchSiteManager.setLaunchSite(LaunchSiteManager.runway);
@@ -452,7 +431,7 @@ namespace KerbalKonstructs
                         }
                         break;
                     case EditorFacility.VAB:
-                        GUI_LaunchSiteSelector.setEditorType(SiteType.VAB);
+                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.VAB);
                         if (atMainMenu)
                         {
                             LaunchSiteManager.setLaunchSite(LaunchSiteManager.launchpad);
@@ -460,7 +439,7 @@ namespace KerbalKonstructs
                         }
                         break;
                     default:
-                        GUI_LaunchSiteSelector.setEditorType(SiteType.Any);
+                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.Any);
                         break;
                 }
             }
@@ -616,15 +595,15 @@ namespace KerbalKonstructs
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                GUI_Editor.CheckEditorKeys();
+                EditorGUI.instance.CheckEditorKeys();
 
                 if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
                 {
-                    GUI_StaticsEditor.ToggleEditor();
+                    StaticsEditorGUI.instance.ToggleEditor();
                 }
-                if (Input.GetKeyDown(KeyCode.Tab) && GUI_StaticsEditor.IsOpen())
+                if (Input.GetKeyDown(KeyCode.Tab) && StaticsEditorGUI.instance.IsOpen())
                 {
-                    GUI_StaticsEditor.SelectMouseObject();
+                    StaticsEditorGUI.instance.SelectMouseObject();
                 }
 
                 if (useLegacyCamera && camControl.active)

@@ -9,7 +9,22 @@ namespace KerbalKonstructs.UI
 {
 	class BaseManager :KKWindow
 	{
-		public static Rect BaseManagerRect = new Rect(250, 60, 185, 650);
+        private static BaseManager _instance = null;
+        internal static BaseManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new BaseManager();
+
+                }
+                return _instance;
+            }
+        }
+
+
+        public static Rect BaseManagerRect = new Rect(250, 60, 185, 650);
 
 		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
 		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);

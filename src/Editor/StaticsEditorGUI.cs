@@ -13,6 +13,21 @@ namespace KerbalKonstructs.UI
     class StaticsEditorGUI : KKWindow
     {
 
+        private static StaticsEditorGUI _instance = null;
+
+        internal static StaticsEditorGUI instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new StaticsEditorGUI();
+
+                }
+                return _instance;
+            }
+        }
+
         Rect editorRect = new Rect(10, 25, 680, 540);
 
         GUIStyle DeadButton;
@@ -106,12 +121,12 @@ namespace KerbalKonstructs.UI
         {
             allStaticModels = StaticDatabase.allStaticModels;
             base.Open();
-            KerbalKonstructs.GUI_Editor.Open();
+            EditorGUI.instance.Open();
         }
 
         public override void Close()
         {
-            KerbalKonstructs.GUI_Editor.Close();
+            EditorGUI.instance.Close();
             KerbalKonstructs.instance.DeletePreviewObject();
             base.Close();
         }
@@ -406,7 +421,7 @@ namespace KerbalKonstructs.UI
                             if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
                             {
                                 KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
-                                KerbalKonstructs.GUI_ModelInfo.Open();
+                                ModelInfo.instance.Open();
                             }
                         }
 
@@ -754,7 +769,7 @@ namespace KerbalKonstructs.UI
         /// <param name="model"></param>
 		public void spawnInstance(StaticModel model)
         {
-            KerbalKonstructs.GUI_Editor.spawnInstance(model,
+            EditorGUI.instance.spawnInstance(model,
                 (float)FlightGlobals.ActiveVessel.altitude,
                 KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
                 0f);

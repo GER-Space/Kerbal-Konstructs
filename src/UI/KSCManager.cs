@@ -6,6 +6,23 @@ namespace KerbalKonstructs.UI
 {
     class KSCManager : KKWindow
     {
+        private static KSCManager _instance = null;
+
+        internal static KSCManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new KSCManager();
+
+                }
+                return _instance;
+            }
+        }
+
+
+
         Rect KSCmanagerRect = new Rect(150, 50, 410, 300);
 
         public Texture tTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscadminister", false);
@@ -52,8 +69,7 @@ namespace KerbalKonstructs.UI
         }
 
         public override void Close()
-        {
-            KerbalKonstructs.GUI_Settings.Close();
+        {           
             base.Close();
         }
 
@@ -157,17 +173,12 @@ namespace KerbalKonstructs.UI
 
 
             GUILayout.Space(3);
-            GUILayout.Box("Only used @KSC to access Mod Settings");
+            GUILayout.Box("the settings for Kerbal Konstructs are now found in the KSP difficulty settings");
             GUILayout.Label("Use this button in other GameScenes like in-flight, Trackingstation or on the map", LabelInfo);
 
             GUILayout.FlexibleSpace();
             GUILayout.Label("TIP: To use the KK editor, hit Ctrl+K when inflight, preferably when landed near the base you want to edit or the location you want to make a new base.", LabelTip);
             GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Mod Settings"))
-            {
-                KerbalKonstructs.GUI_Settings.Toggle();
-            }
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }

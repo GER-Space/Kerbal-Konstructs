@@ -8,6 +8,21 @@ namespace KerbalKonstructs.UI
 {
     class FacilityManager : KKWindow
     {
+        private static FacilityManager _instance = null;
+        internal static FacilityManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new FacilityManager();
+
+                }
+                return _instance;
+            }
+        }
+
+
         Rect targetSelectorRect = new Rect(640, 120, 220, 420);
         public static Rect facilityManagerRect = new Rect(150, 75, 320, 670);
 

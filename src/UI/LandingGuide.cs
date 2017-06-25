@@ -12,6 +12,20 @@ namespace KerbalKonstructs.UI
 {
     class LandingGuideUI :KKWindow
     {
+        private static LandingGuideUI _instance = null;
+        internal static LandingGuideUI instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new LandingGuideUI();
+
+                }
+                return _instance;
+            }
+        }
+
         private Vector3 vLineStart = Vector3.zero;
         private Vector3 vLineEnd = Vector3.zero;
         private Vector3 vTDL = Vector3.zero;

@@ -8,6 +8,20 @@ namespace KerbalKonstructs.UI
 {
     class LaunchSiteSelectorGUI : KKWindow
     {
+        private static LaunchSiteSelectorGUI _instance = null;
+        internal static LaunchSiteSelectorGUI instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new LaunchSiteSelectorGUI();
+
+                }
+                return _instance;
+            }
+        }
+
         public Texture tFavesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOn", false);
         public Texture tFavesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOff", false);
 
@@ -50,7 +64,7 @@ namespace KerbalKonstructs.UI
             sites = null;
             InputLockManager.RemoveControlLock("KKEditorLock");
             InputLockManager.RemoveControlLock("KKEditorLock2");
-            KerbalKonstructs.GUI_BaseManager.Close();
+            BaseManager.instance.Close();
             base.Close();
         }
 
@@ -511,7 +525,7 @@ namespace KerbalKonstructs.UI
             if (selectedSite != null)
             {
                 BaseManager.setSelectedSite(selectedSite);
-                KerbalKonstructs.GUI_BaseManager.Open();
+                BaseManager.instance.Open();
             }
             else
             {
@@ -520,7 +534,7 @@ namespace KerbalKonstructs.UI
                     selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
                     LaunchSiteManager.setLaunchSite(selectedSite);
                     BaseManager.setSelectedSite(selectedSite);
-                    KerbalKonstructs.GUI_BaseManager.Open();
+                    BaseManager.instance.Open();
                 }
                 else
                 {

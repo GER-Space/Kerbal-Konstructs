@@ -8,6 +8,20 @@ namespace KerbalKonstructs.UI
 {
     class ModelInfo : KKWindow
     {
+        private static ModelInfo _instance = null;
+        internal static ModelInfo instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new ModelInfo();
+
+                }
+                return _instance;
+            }
+        }
+
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
         //		public PQSCity pqsCity;
@@ -181,7 +195,7 @@ namespace KerbalKonstructs.UI
                     if (currPreview != null)
                         DestroyPreviewInstance(currPreview);
 
-                    KerbalKonstructs.GUI_ModelInfo.Close();
+                    ModelInfo.instance.Close();
                     mModel = null;
                     KerbalKonstructs.instance.selectedModel = null;
                 }
@@ -445,7 +459,7 @@ namespace KerbalKonstructs.UI
                 if (currPreview != null)
                     DestroyPreviewInstance(currPreview);
 
-                KerbalKonstructs.GUI_ModelInfo.Close();
+                ModelInfo.instance.Close();
                 mModel = null;
                 KerbalKonstructs.instance.selectedModel = null;
             }

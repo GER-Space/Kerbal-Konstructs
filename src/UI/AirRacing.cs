@@ -9,8 +9,22 @@ using System.IO;
 namespace KerbalKonstructs.UI
 {
 	class AirRacing : KKWindow
-	{
-		Rect racingRect = new Rect(40, 80, 320, 170);
+    {
+        private static AirRacing _instance = null;
+        internal static AirRacing instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new AirRacing();
+
+                }
+                return _instance;
+            }
+        }
+
+        Rect racingRect = new Rect(40, 80, 320, 170);
 		Rect orbitalRect = new Rect(40, 80, 420, 80);
 
 		public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);

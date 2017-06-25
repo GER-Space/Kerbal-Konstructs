@@ -10,6 +10,21 @@ namespace KerbalKonstructs.Modules
 {
     class MapIconManager : KKWindow
     {
+        private static MapIconManager _instance = null;
+        internal static MapIconManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new MapIconManager();
+
+                }
+                return _instance;
+            }
+        }
+
+
         Rect mapManagerRect = new Rect(250, 40, 415, 75);
 
         public float iFundsOpen = 0;
@@ -28,11 +43,6 @@ namespace KerbalKonstructs.Modules
 
         Vector3 ObjectPos = new Vector3(0, 0, 0);
 
-
-
-        public MapIconManager()
-        {
-        }
 
         public override void Draw()
         {

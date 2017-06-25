@@ -10,12 +10,23 @@ namespace KerbalKonstructs.UI
 {
     class EditorGUI : KKWindow
     {
+
+        private static EditorGUI _instance = null;
+        internal static EditorGUI instance
+        {
+            get
+            { if   (_instance == null)
+                {
+                    _instance = new EditorGUI();
+                    
+                }
+                return _instance;
+            }
+        }
+
         #region Variable Declarations
-
         private List<Transform> transformList = new List<Transform>();
-
         private CelestialBody body;
-
         internal static FacilityEditor GUI_FacilityEditor = new FacilityEditor();
 
         internal Boolean foldedIn = false;
@@ -887,7 +898,7 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
-            GUI.enabled = !KerbalKonstructs.GUI_LSEditor.IsOpen();
+            GUI.enabled = !LaunchSiteEditor.instance.IsOpen();
             // Make a new LaunchSite here:
             if (!foldedIn)
             {
@@ -898,7 +909,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button((selectedObject.hasLauchSites ? "Edit" : "Make") + " Launchsite", GUILayout.Height(23)))
                 {
 
-                    KerbalKonstructs.GUI_LSEditor.Open();
+                    LaunchSiteEditor.instance.Open();
                 }
             }
 
@@ -958,7 +969,7 @@ namespace KerbalKonstructs.UI
         public static void CloseEditors()
         {
             GUI_FacilityEditor.Close();
-            KerbalKonstructs.GUI_LSEditor.Close();
+            LaunchSiteEditor.instance.Close();
         }
 
 

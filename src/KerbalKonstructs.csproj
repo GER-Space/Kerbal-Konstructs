@@ -127,7 +127,6 @@
     <Compile Include="UI\AirRacing.cs" />
     <Compile Include="UI\BaseManager.cs" />
     <Compile Include="Editor\ModelInfo.cs" />
-    <Compile Include="UI\KKSettingsGUI.cs" />
     <Compile Include="Editor\StaticsEditorGUI.cs" />
     <Compile Include="Facilities\FuelTanks\FuelTanksGUI.cs" />
     <Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />

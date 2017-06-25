@@ -10,6 +10,21 @@ namespace KerbalKonstructs.UI
 {
     class BaseBossFlight : KKWindow
     {
+        private static BaseBossFlight _instance = null;
+        internal static BaseBossFlight instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new BaseBossFlight();
+
+                }
+                return _instance;
+            }
+        }
+
+
         public StaticInstance selectedObject = null;
 
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
@@ -68,7 +83,7 @@ namespace KerbalKonstructs.UI
         public override void Close()
         {
             bShowFacilities = false;
-            KerbalKonstructs.GUI_FacilityManager.Close();
+            FacilityManager.instance.Close();
             base.Close();
         }
 
@@ -152,7 +167,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Space(2);
                 GUILayout.Label("ATC ", LabelInfo);
 
-                if (KerbalKonstructs.GUI_Landinguide.IsOpen())
+                if (LandingGuideUI.instance.IsOpen())
                     tToggle = tIconOpen;
                 else
                     tToggle = tIconClosed;
@@ -160,13 +175,13 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
                 {
                     KerbalKonstructs.instance.updateCache();
-                    KerbalKonstructs.GUI_Landinguide.Toggle();
+                    LandingGuideUI.instance.Toggle();
                 }
 
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("NGS ", LabelInfo);
 
-                if (KerbalKonstructs.GUI_NGS.IsOpen())
+                if (NavGuidanceSystem.instance.IsOpen())
                 {
                     tToggle2 = tIconOpen;
                 }
@@ -176,7 +191,7 @@ namespace KerbalKonstructs.UI
                 }
                 if (GUILayout.Button(tToggle2, GUILayout.Height(18), GUILayout.Width(18)))
                 {
-                    KerbalKonstructs.GUI_NGS.Toggle();
+                    NavGuidanceSystem.instance.Toggle();
                 }
 
 
@@ -216,7 +231,7 @@ namespace KerbalKonstructs.UI
                         GUILayout.Label("Nearest Open: ", LabelInfo);
                         GUILayout.Label(snearestopen, LabelInfo, GUILayout.Width(150));
 
-                        if (KerbalKonstructs.GUI_NGS.IsOpen())
+                        if (NavGuidanceSystem.instance.IsOpen())
                         {
                             GUILayout.FlexibleSpace();
                             if (GUILayout.Button("NGS", GUILayout.Height(21)))
@@ -258,7 +273,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Label("Nearest Base: ", LabelInfo);
                     GUILayout.Label(sNearestbase, LabelInfo, GUILayout.Width(150));
 
-                    if (KerbalKonstructs.GUI_NGS.IsOpen())
+                    if (NavGuidanceSystem.instance.IsOpen())
                     {
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("NGS", GUILayout.Height(21)))
@@ -402,7 +417,7 @@ namespace KerbalKonstructs.UI
                                 selectedObject = allFacilities[i];
                                 KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
                                 FacilityManager.selectedFacility = allFacilities[i];
-                                KerbalKonstructs.GUI_FacilityManager.Open();
+                                FacilityManager.instance.Open();
                             }
 
                             if (bIsOpen)
@@ -460,18 +475,18 @@ namespace KerbalKonstructs.UI
             GUILayout.Box("Other Features", BoxNoBorder);
             if (GUILayout.Button("Start Air Racing!", GUILayout.Height(23)))
             {
-                KerbalKonstructs.GUI_AirRacingApp.Open();
+                AirRacing.instance.Open();
                 AirRacing.runningRace = true;
-                KerbalKonstructs.GUI_NGS.Close();
-                KerbalKonstructs.GUI_FacilityManager.Close();
+                NavGuidanceSystem.instance.Close();
+                FacilityManager.instance.Close();
             }
             if (GUILayout.Button("Basic Orbital Data", GUILayout.Height(23)))
             {
-                KerbalKonstructs.GUI_AirRacingApp.Open();
+                AirRacing.instance.Open();
                 AirRacing.runningRace = false;
                 AirRacing.basicorbitalhud = true;
-                KerbalKonstructs.GUI_NGS.Close();
-                KerbalKonstructs.GUI_FacilityManager.Close();
+                NavGuidanceSystem.instance.Close();
+                FacilityManager.instance.Close();
             }
             GUILayout.Space(5);
 

@@ -10,7 +10,21 @@ namespace KerbalKonstructs.UI
 {
 	class NavGuidanceSystem :KKWindow
 	{
-		Rect NGSRect = new Rect(250, 50, 400, 120);
+        private static NavGuidanceSystem _instance = null;
+        internal static NavGuidanceSystem instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new NavGuidanceSystem();
+
+                }
+                return _instance;
+            }
+        }
+
+        Rect NGSRect = new Rect(250, 50, 400, 120);
 
 		public bool bClosing = false;
 		public int iCorrection = 3;
@@ -36,10 +50,6 @@ namespace KerbalKonstructs.UI
 		public Texture tTextureLeft = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
 		public Texture tTextureRight = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
 		public Texture tTextureMiddle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-
-		public NavGuidanceSystem()
-		{
-		}
 
         public override void Draw()
         {

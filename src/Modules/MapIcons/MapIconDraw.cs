@@ -14,6 +14,19 @@ namespace KerbalKonstructs.Modules
 {
     class MapIconDraw : KKWindow
     {
+        private static MapIconDraw _instance = null;
+        internal static MapIconDraw instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new MapIconDraw();
+
+                }
+                return _instance;
+            }
+        }
 
         private Boolean displayingTooltip = false;
         private Boolean displayingTooltip2 = false;
@@ -156,7 +169,7 @@ namespace KerbalKonstructs.Modules
                     {                    
                         selectedFacility = groundStation;
                         FacilityManager.selectedFacility = groundStation;
-                        KerbalKonstructs.GUI_FacilityManager.Open();
+                        FacilityManager.instance.Open();
                     }
                 }
             }
@@ -266,7 +279,7 @@ namespace KerbalKonstructs.Modules
                         BaseManager.setSelectedSite(launchSite);
                         selectedSite = launchSite;
                         NavGuidanceSystem.setTargetSite(selectedSite);
-                        KerbalKonstructs.GUI_BaseManager.Open();
+                        BaseManager.instance.Open();
                     }
                 }
             }

@@ -12,6 +12,22 @@ namespace KerbalKonstructs.UI
 {
     class LaunchSiteEditor : KKWindow
     {
+
+        private static LaunchSiteEditor _instance = null;
+
+        internal static LaunchSiteEditor instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new LaunchSiteEditor();
+
+                }
+                return _instance;
+            }
+        }
+
         #region Variable Declarations
 
         private List<Transform> transformList = new List<Transform>();

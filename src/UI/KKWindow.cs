@@ -7,7 +7,6 @@ namespace KerbalKonstructs.UI
 {
     abstract internal class KKWindow
     {
-
         /// <summary>
         /// Basic drawing function. Put excludes or references to other drawing functions in a override here
         /// </summary>

@@ -1,10 +1,10 @@
-﻿using KerbalKonstructs.Utilities;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
 using System.Collections.Generic;
+using KerbalKonstructs.UI;
 
 
 namespace KerbalKonstructs.Core
@@ -577,7 +577,7 @@ namespace KerbalKonstructs.Core
             rangeNearestOpenBase = (float)smallestDist;
 
             // Air traffic control messaging
-            if (KerbalKonstructs.GUI_Landinguide.IsOpen())
+            if (LandingGuideUI.instance.IsOpen())
             {
                 if (sNearestBase != nearestOpenBase)
                 {
