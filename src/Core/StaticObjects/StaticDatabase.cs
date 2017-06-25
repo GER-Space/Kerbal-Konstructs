@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Core
         /// Removes a Instance from the group and instance lists.
         /// </summary>
         /// <param name="instance"></param>
-        internal static void RemoveStatic(StaticInstance instance)
+        internal static void DeleteStatic(StaticInstance instance)
         {
             if (_allStaticInstances.Contains(instance))
             {
@@ -75,7 +75,7 @@ namespace KerbalKonstructs.Core
             {
                 if (groupList[bodyName].ContainsKey(groupName))
                 {
-                    Debug.Log("KK: StaticDatabase deleteObject");
+                    Log.Normal("StaticDatabase deleteObject");
                     groupList[bodyName][groupName].DeleteObject(instance);
                 }
             }
@@ -91,8 +91,34 @@ namespace KerbalKonstructs.Core
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
 
-            RemoveStatic(instance);
-            AddStatic(instance);
+            instance.Group = newGroup;
+
+            if (groupList.ContainsKey(bodyName))
+            {
+                if (groupList[bodyName].ContainsKey(groupName))
+                {
+                    Log.Normal("StaticDatabase deleteObject");
+                    groupList[bodyName][groupName].RemoveStatic(instance);
+                }
+            }
+
+            if (!groupList.ContainsKey(bodyName))
+                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+
+            if (!groupList[bodyName].ContainsKey(newGroup))
+            {
+                StaticGroup group = new StaticGroup(newGroup, bodyName);
+                if (newGroup == "Ungrouped")
+                {
+                    group.alwaysActive = true;
+
+                }
+                group.active = true;
+                groupList[bodyName].Add(newGroup, group);
+            }
+            groupList[bodyName][newGroup].AddStatic(instance);
+
+            SetNewName(instance);
         }
 
 
@@ -106,6 +132,12 @@ namespace KerbalKonstructs.Core
             string groupName = instance.Group; 
 
             int modelCount = (from obj in groupList[instance.CelestialBody.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
+            if (modelCount == 0)
+            {
+                Log.Warning("Shock and Horror! We cannot find at least ourself in our own group");
+                return;
+            }
+
             modelCount--;
             instance.indexInGroup = modelCount;
             instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + modelCount;

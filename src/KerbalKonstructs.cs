@@ -1188,17 +1188,31 @@ namespace KerbalKonstructs
                     Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
                     continue;
                 }
-                if (model.keepConvex == true)
-                { }
-                else
+                if (model.keepConvex != true)
                 {
-                    MeshCollider[] concave = model.prefab.GetComponentsInChildren<MeshCollider>(true);
-                    foreach (MeshCollider collider in concave)
+                    foreach (MeshCollider collider in model.prefab.GetComponentsInChildren<MeshCollider>(true))
                     {
                         Log.Debug("Making collider " + collider.name + " concave.");
                         collider.convex = false;
                     }
                 }
+
+                // apply any new shader
+                if (! string.Equals(model.useShader, "Default", StringComparison.CurrentCultureIgnoreCase)  && !string.IsNullOrEmpty(model.useShader))
+                {
+                    if (KKShader.HasShader(model.useShader))
+                    {
+                        foreach (var renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                        {
+                            renderer.material.shader = KKShader.GetShader(model.useShader);
+                        }
+                    } else
+                    {
+                        Log.UserWarning("Shader " + model.useShader + " not found for " + model.name);
+                    }
+                } 
+
+
                 StaticDatabase.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
                 loadInstances(conf, model, false);
@@ -1316,6 +1330,9 @@ namespace KerbalKonstructs
             }
 
         }
+
+
+
 
         /// <summary>
         /// saves the model definition and the direct instances
@@ -1606,7 +1623,7 @@ namespace KerbalKonstructs
             // check later when saving if this file is empty
             deletedInstances.Add(obj);
 
-            StaticDatabase.RemoveStatic(obj);
+            StaticDatabase.DeleteStatic(obj);
         }
 
         public void setSnapTarget(StaticInstance obj)
