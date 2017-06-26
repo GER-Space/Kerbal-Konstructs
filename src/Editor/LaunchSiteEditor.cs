@@ -514,13 +514,15 @@ namespace KerbalKonstructs.UI
                     Log.Debug ("launchsite: " + selectedObject.launchSite);
                     Log.Debug("body: " + selectedObject.launchSite.body);
 
+					bool regenerateILSConfig = false;
                     Log.Debug ("old name: " + oldName);
                     Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
-                    if (oldName != null && !oldName.Equals (siteName))
-                        ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
+					if (oldName != null && !oldName.Equals (siteName)) {
+						ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
+						regenerateILSConfig = true;
+					}
 
                     Log.Debug ("old category: " + oldCategory);
-                    bool regenerateILSConfig = false;
                     if (oldCategory != null && !oldCategory.Equals (siteCategory)) {
                         ILSConfig.handleCategoryChange (selectedObject.launchSite.Category,
                             siteCategory, selectedObject);

@@ -18,8 +18,6 @@ namespace KerbalKonstructs
 
 		public static void generateFullILSConfig(StaticInstance inst) 
 		{
-			ScreenMessages.PostScreenMessage ("generateILSConfig()");
-
 			// As long as we depend on working NavUtilities installation, we 
 			// can call its methods instead of copypasting
 
@@ -131,7 +129,7 @@ namespace KerbalKonstructs
 		}
 
 		public static void renameSite(String oldName, String newName) {
-			ScreenMessages.PostScreenMessage ("renameSite()");
+			dropILSConfig (oldName, false);
 		}
 
 		public static bool detectNavUtils() {
