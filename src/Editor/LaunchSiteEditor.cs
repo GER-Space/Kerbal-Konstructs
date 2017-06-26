@@ -16,7 +16,6 @@ namespace KerbalKonstructs.UI
 
         private static LaunchSiteEditor _instance = null;
 
-<<<<<<< 247cea96ff951c56aa4bd0106fe4d75b52efb63a
         internal static LaunchSiteEditor instance
         {
             get
@@ -24,7 +23,14 @@ namespace KerbalKonstructs.UI
                 if (_instance == null)
                 {
                     _instance = new LaunchSiteEditor();
-=======
+				}
+				return _instance;
+			}
+		}
+
+		#region Variable Declarations
+
+		private List<Transform> transformList = new List<Transform>();
         private CultureInfo culture = new CultureInfo ("en-US");
 
         #region Texture Definitions
@@ -47,23 +53,6 @@ namespace KerbalKonstructs.UI
         public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
         public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
         public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
-
-        #endregion
->>>>>>> Initial version that generates reasonable ILS configs
-
-                }
-                return _instance;
-            }
-        }
-
-        #region Variable Declarations
-
-        private List<Transform> transformList = new List<Transform>();
-
-
-        #region Texture Definitions
-        // Texture definitions
-        private Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
         #endregion
 
@@ -518,15 +507,13 @@ namespace KerbalKonstructs.UI
                     Log.Debug ("launchsite: " + selectedObject.launchSite);
                     Log.Debug("body: " + selectedObject.launchSite.body);
 
-					bool regenerateILSConfig = false;
                     Log.Debug ("old name: " + oldName);
                     Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
-					if (oldName != null && !oldName.Equals (siteName)) {
-						ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
-						regenerateILSConfig = true;
-					}
+                    if (oldName != null && !oldName.Equals (siteName))
+                        ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
 
                     Log.Debug ("old category: " + oldCategory);
+                    bool regenerateILSConfig = false;
                     if (oldCategory != null && !oldCategory.Equals (siteCategory)) {
                         ILSConfig.handleCategoryChange (selectedObject.launchSite.Category,
                             siteCategory, selectedObject);
