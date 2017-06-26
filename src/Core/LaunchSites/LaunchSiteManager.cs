@@ -167,11 +167,16 @@ namespace KerbalKonstructs.Core
             {
                 site.parentInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.parentInstance.gameObject.name = site.LaunchSiteName;
+<<<<<<< 247cea96ff951c56aa4bd0106fe4d75b52efb63a
                
                 List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
 
 
                 if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
+=======
+                List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
+                if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
+>>>>>>> Initial version that generates reasonable ILS configs
                 {
                     //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
@@ -187,8 +192,11 @@ namespace KerbalKonstructs.Core
                     spawnPoint.spawnTransformURL = site.LaunchPadTransform;
                     newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
                     newFacility.spawnPoints[0] = spawnPoint;
-
                     facilities.Add(newFacility);
+<<<<<<< 247cea96ff951c56aa4bd0106fe4d75b52efb63a
+=======
+                    //sitesField.SetValue(
+>>>>>>> Initial version that generates reasonable ILS configs
                     PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
                     site.facility = newFacility;
@@ -214,7 +222,6 @@ namespace KerbalKonstructs.Core
             {
                 Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
             }
-
         }
 
 
