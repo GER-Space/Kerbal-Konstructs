@@ -1227,7 +1227,6 @@ namespace KerbalKonstructs.UI
                 rightVR.Vector = selectedObject.pqsCity.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.draw();
-
             }
             if (referenceSystem == Space.World)
             {
@@ -1471,7 +1470,7 @@ namespace KerbalKonstructs.UI
         /// Updates the Window Strings to the new settings
         /// </summary>
         /// <param name="instance"></param>
-		public static void updateSelection(StaticInstance instance)
+        public static void updateSelection(StaticInstance instance)
         {
             selectedObject = instance;
 

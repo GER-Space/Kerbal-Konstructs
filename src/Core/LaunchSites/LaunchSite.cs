@@ -39,6 +39,8 @@ namespace KerbalKonstructs.Core
         public float RecoveryRange = 0f;
         [CFGSetting]
         public bool LaunchSiteIsHidden = false;
+        [CFGSetting]
+        public bool ILSIsActive = false;
 
         [CareerSetting]
         public string favouriteSite = "No";

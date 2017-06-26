@@ -167,9 +167,7 @@ namespace KerbalKonstructs.Core
             {
                 site.parentInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.parentInstance.gameObject.name = site.LaunchSiteName;
-
-                FieldInfo sitesField = typeof(PSystemSetup).GetField("facilities", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<PSystemSetup.SpaceCenterFacility> facilities = ((PSystemSetup.SpaceCenterFacility[])sitesField.GetValue(PSystemSetup.Instance)).ToList();            
+                List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
                 if (PSystemSetup.Instance.GetSpaceCenterFacility(site.LaunchSiteName) == null)
                 {
                     PSystemSetup.SpaceCenterFacility newFacility = new PSystemSetup.SpaceCenterFacility();
@@ -185,9 +183,9 @@ namespace KerbalKonstructs.Core
                     spawnPoint.spawnTransformURL = site.LaunchPadTransform;
                     newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
                     newFacility.spawnPoints[0] = spawnPoint;
-
                     facilities.Add(newFacility);
-                    sitesField.SetValue(PSystemSetup.Instance, facilities.ToArray());
+                    //sitesField.SetValue(
+                    PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
                     site.facility = newFacility;
 
@@ -212,7 +210,6 @@ namespace KerbalKonstructs.Core
             {
                 Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
             }
-
         }
 
 
