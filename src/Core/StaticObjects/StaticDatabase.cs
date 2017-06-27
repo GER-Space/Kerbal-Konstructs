@@ -353,7 +353,7 @@ namespace KerbalKonstructs.Core
 
 		}
 
-        internal static StaticInstance[] GetAllStatics()
+        public static StaticInstance[] GetAllStatics()
 		{
             return allStaticInstances;
 		}
