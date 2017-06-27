@@ -8,18 +8,18 @@ namespace KerbalKonstructs.UI
 {
 	public class SharedInterfaces
 	{
-		public static event Action<StaticInstance> evFacilityOpened;
-		public static event Action<StaticInstance> evFacilityClosed;
+		//public static event Action<StaticInstance> evFacilityOpened;
+		//public static event Action<StaticInstance> evFacilityClosed;
 
 		public static GUIStyle BoxInfo;
 		public static GUIStyle ButtonSmallText;
 
-		public static StaticInstance soStoredEventObject;
+		//public static StaticInstance soStoredEventObject;
 
-		public static StaticInstance getStoredEventObject()
-		{
-			return soStoredEventObject;
-		}
+		//public static StaticInstance getStoredEventObject()
+		//{
+		//	return soStoredEventObject;
+		//}
 
 		public static void OpenCloseFacility(StaticInstance selectedFacility)
 		{
@@ -81,9 +81,9 @@ namespace KerbalKonstructs.UI
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
 
 								// Save new state to persistence
-								soStoredEventObject = selectedFacility;
-								if (evFacilityOpened != null)
-									evFacilityOpened(selectedFacility);
+								//soStoredEventObject = selectedFacility;
+								//if (evFacilityOpened != null)
+								//	evFacilityOpened(selectedFacility);
 
                                 // Callback to CommNet.
                                 
@@ -114,9 +114,9 @@ namespace KerbalKonstructs.UI
 							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Structures);
 							selectedFacility.myFacilities[0].OpenCloseState =  "Closed";
 
-							soStoredEventObject = selectedFacility;
-							if (evFacilityClosed != null)
-								evFacilityClosed(selectedFacility);
+							//soStoredEventObject = selectedFacility;
+							//if (evFacilityClosed != null)
+							//	evFacilityClosed(selectedFacility);
 
                             // Callback to CommNet.
                             if ((selectedFacility.myFacilities[0].FacilityType) == "GroundStation")
