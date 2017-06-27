@@ -50,7 +50,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void InitTypes()
         {
-            foreach (FieldInfo field in typeof(StaticModel).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
+            foreach (FieldInfo field in typeof(StaticModel).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
@@ -59,7 +59,7 @@ namespace KerbalKonstructs.Core
                 }
 
             }
-            foreach (FieldInfo field in typeof(StaticInstance).GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
+            foreach (FieldInfo field in typeof(StaticInstance).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {

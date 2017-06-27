@@ -15,59 +15,60 @@ namespace KerbalKonstructs.Core
 
         // Position
         [CFGSetting]
-        internal CelestialBody CelestialBody;
+        public CelestialBody CelestialBody;
         [CFGSetting]
-        internal Vector3 RadialPosition = Vector3.zero;
+        public Vector3 RadialPosition = Vector3.zero;
         [CFGSetting]
-        internal Vector3 Orientation;
+        public Vector3 Orientation;
         [CFGSetting]
-        internal float RadiusOffset;
+        public float RadiusOffset;
         [CFGSetting]
-        internal float RotationAngle;
+        public float RotationAngle;
         [CFGSetting]
-        internal bool isScanable = false;
+        public bool isScanable = false;
         [CFGSetting]
-        internal float ModelScale = 1f;
+        public float ModelScale = 1f;
 
         // Legacy Faclility Setting
         [CFGSetting]
-        internal string FacilityType = "None";
+        public string FacilityType = "None";
 
         // Calculated References
         [CFGSetting]
-        internal double RefLatitude = 361f;
+        public double RefLatitude = 361f;
         [CFGSetting]
-        internal double RefLongitude = 361f;
+        public double RefLongitude = 361f;
 
         // Visibility and Grouping
         [CFGSetting]
-        internal float VisibilityRange = 25000f;
+        public float VisibilityRange = 25000f;
         [CFGSetting]
-        internal string Group  = "Ungrouped";
+        public string Group  = "Ungrouped";
         [CFGSetting]
-        internal string GroupCenter = "false";
+        public string GroupCenter = "false";
+        [CFGSetting]
+        public bool useRadiusOffset = true;
 
 
 
-
-        internal GameObject gameObject;
-        internal PQSCity pqsCity;
-        //internal PQSCity2 pqsCity2;
+        public GameObject gameObject;
+        public PQSCity pqsCity;
+        //public PQSCity2 pqsCity2;
         internal StaticModel model;
 
-        internal UrlDir.UrlConfig configUrl;
-        internal String configPath;
+        public UrlDir.UrlConfig configUrl;
+        public String configPath;
 
-        internal bool hasFacilities = false;
-        internal bool hasLauchSites = false;
-        internal LaunchSite launchSite;
+        public bool hasFacilities = false;
+        public bool hasLauchSites = false;
+        public LaunchSite launchSite;
 
-        internal KKFacilityType facilityType = KKFacilityType.None; 
-        internal List<KKFacility> myFacilities = new List<KKFacility>();
+        public KKFacilityType facilityType = KKFacilityType.None; 
+        public List<KKFacility> myFacilities = new List<KKFacility>();
 
 
         // used for non KKFacility objects like AirRace
-        internal string legacyfacilityID;
+        public string legacyfacilityID;
 
 
 		internal Boolean editing;
@@ -84,7 +85,7 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Updates the static instance with new settings
         /// </summary>
-		internal void update()
+		public void update()
 		{
 			if (pqsCity != null)
 			{
@@ -172,9 +173,7 @@ namespace KerbalKonstructs.Core
 
             pqsCity = gameObject.AddComponent<PQSCity>();
             pqsCity.lod = new[] { range };
-            pqsCity.frameDelta = 1; //Unknown
-            pqsCity.repositionToSphere = true; //enable repositioning
-            pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
             pqsCity.repositionRadial = RadialPosition; //position
             pqsCity.repositionRadiusOffset = RadiusOffset; //height
             pqsCity.reorientInitialUp = Orientation; //orientation
@@ -186,14 +185,26 @@ namespace KerbalKonstructs.Core
             pqsCity.transform.localScale *= ModelScale;
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
+            pqsCity.repositionToSphere = true; //enable repositioning
+            pqsCity.repositionToSphereSurface = false; //Snap to surface?
+
+
+
+
+            CelestialBody.pqsController.GetSurfaceHeight(RadialPosition);
+
             pqsCity.OnSetup();
             pqsCity.Orientate();
+
+
+
 
             //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
             //lodObject.visibleRange = VisibilityRange;
             //lodObject.objects = new GameObject[] { };
             //pqsCity2 = gameObject.AddComponent<PQSCity2>();
             //pqsCity2.objects = new [] { lodObject } ;
+            //pqsCity2.objectName = ""; 
             //pqsCity2.lat = RefLatitude;
             //pqsCity2.lon = RefLongitude;
             //pqsCity2.alt = RadiusOffset;
