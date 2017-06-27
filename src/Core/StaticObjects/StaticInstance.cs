@@ -233,13 +233,13 @@ namespace KerbalKonstructs.Core
 						}
 						else
 						{
-							Debug.Log("KK: WARNING: Field " + fieldName + " does not exist in " + module.moduleClassname);
+							Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
 						}
 					}
 				}
 				else
 				{
-					Debug.Log("KK: WARNING: Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
+                    Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
 				}
 			}
 
