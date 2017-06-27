@@ -606,7 +606,7 @@ namespace KerbalKonstructs.UI
             {
                 if (GUILayout.Button("Snap to Terrain", GUILayout.Height(21)))
                 {
-                    altitude = 1.0d + ((pqsc.GetSurfaceHeight(selectedObject.RadialPosition) - pqsc.radius - selectedObject.RadiusOffset));
+                    altitude = 1.0d + (pqsc.GetSurfaceHeight(selectedObject.RadialPosition) - pqsc.radius);
                     saveSettings();
                 }
             }
