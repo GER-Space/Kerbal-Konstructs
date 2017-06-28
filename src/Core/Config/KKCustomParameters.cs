@@ -65,14 +65,15 @@ namespace KerbalKonstructs.Core
         [GameParameters.CustomFloatParameterUI("Default recovery range", toolTip = "until which distance should a base be able to recover a vessel, this might be overwritten the bases configuration",  minValue = 0, maxValue = 500000, stepCount = 100, autoPersistance = true)]
         public float defaultEffectiveRange = 100000;
 
-        // remove this
+        // misc settings
         [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
         public string blank03 = "";
         [GameParameters.CustomStringParameterUI("", title = "Map Options", lines = 1)]
         public string blank3 = "";
         [GameParameters.CustomParameterUI("Show Icons only with LS selector", toolTip = "Show only the icons on the map, when the KK selector is opened", autoPersistance = true)]
         public bool toggleIconsWithBB = false;
-
+        [GameParameters.CustomFloatParameterUI("The master volume for KK sound objects", toolTip = "Set here to adjust the loudness of the AudioPlayer objects.", minValue = 0 , maxValue = 1 , asPercentage = true , stepCount = 100, autoPersistance = true)]
+        public float soundMasterVolume = 1f;
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {

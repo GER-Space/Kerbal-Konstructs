@@ -103,7 +103,9 @@ namespace KerbalKonstructs
         internal double defaultRecoveryFactor { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultRecoveryFactor;  } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultRecoveryFactor = (float)value; } }
         internal double defaultEffectiveRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultEffectiveRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().defaultEffectiveRange = (float)value; } }
         internal bool toggleIconsWithBB { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB = value; } }
-        internal double maxEditorVisRange { get { return (double)KKCustomParameters1.instance.maxEditorVisRange; } set { KKCustomParameters1.instance.maxEditorVisRange = (float)value; } }
+
+        internal static float soundMasterVolume { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().soundMasterVolume; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().soundMasterVolume = value; } }
+        internal double maxEditorVisRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().maxEditorVisRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().maxEditorVisRange = (float)value; } }
         internal bool DebugMode
         {
             get

@@ -32,7 +32,7 @@ namespace KerbalKonstructs
             audioPlayer.minDistance = minDistance;
             audioPlayer.maxDistance = maxDistance;
             audioPlayer.loop = loop;
-            audioPlayer.volume = volume;
+            audioPlayer.volume = volume * KerbalKonstructs.soundMasterVolume;
             audioPlayer.playOnAwake = true;
             audioPlayer.Play();
         }
