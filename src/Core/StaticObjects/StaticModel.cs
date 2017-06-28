@@ -41,10 +41,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal bool isSquad = false;
 
-
-        [CFGSetting]
-        internal string useShader = "Default";
-
         // need checking
         [CFGSetting]
         internal float cost;

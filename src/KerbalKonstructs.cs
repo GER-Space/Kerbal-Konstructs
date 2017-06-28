@@ -1197,22 +1197,6 @@ namespace KerbalKonstructs
                     }
                 }
 
-                // apply any new shader
-                if (! string.Equals(model.useShader, "Default", StringComparison.CurrentCultureIgnoreCase)  && !string.IsNullOrEmpty(model.useShader))
-                {
-                    if (KKShader.HasShader(model.useShader))
-                    {
-                        foreach (var renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
-                        {
-                            renderer.material.shader = KKShader.GetShader(model.useShader);
-                        }
-                    } else
-                    {
-                        Log.UserWarning("Shader " + model.useShader + " not found for " + model.name);
-                    }
-                } 
-
-
                 StaticDatabase.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
                 loadInstances(conf, model, false);
