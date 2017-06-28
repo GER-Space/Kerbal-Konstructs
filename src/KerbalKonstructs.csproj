@@ -85,6 +85,7 @@
     <Compile Include="Core\Config\ConfigUtil.cs" />
     <Compile Include="Core\Config\KKCustomParameters.cs" />
     <Compile Include="Core\KKMath.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Editor\FacilityEditor.cs" />
@@ -147,7 +148,9 @@
     <Compile Include="Utilities\KKShader.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Core\StaticObjects\StaticModules\AdvTextures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
