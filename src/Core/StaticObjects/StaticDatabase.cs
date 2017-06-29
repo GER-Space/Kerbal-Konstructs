@@ -6,7 +6,7 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	internal static class StaticDatabase
+	public static class StaticDatabase
 	{
 		//Groups are stored by name within the body name
 		private static Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
