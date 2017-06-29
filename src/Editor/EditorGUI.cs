@@ -163,6 +163,8 @@ namespace KerbalKonstructs.UI
             if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
             {
                 drawEditor(KerbalKonstructs.instance.selectedObject);
+
+                DrawObject.DrawObjects(KerbalKonstructs.instance.selectedObject.gameObject);
             }
         }
 
