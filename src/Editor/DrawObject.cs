@@ -39,18 +39,18 @@ namespace KerbalKonstructs.UI
 
         internal static void DrawObjects(GameObject go)
         {
-           
+
 
             if (transforms)
             {
-                
+
                 DrawTools.DrawTransform(go.transform, 0.3f);
 
             }
 
             if (colliders)
             {
-               
+
                 Collider[] comp = go.GetComponents<Collider>();
                 for (int i = 0; i < comp.Length; i++)
                 {
@@ -58,7 +58,7 @@ namespace KerbalKonstructs.UI
 
                     if (baseCol is BoxCollider)
                     {
-   
+
                         BoxCollider box = baseCol as BoxCollider;
                         DrawTools.DrawLocalCube(box.transform, box.size, Color.yellow, box.center);
 
@@ -66,7 +66,7 @@ namespace KerbalKonstructs.UI
 
                     if (baseCol is SphereCollider)
                     {
-  
+
                         SphereCollider sphere = baseCol as SphereCollider;
                         DrawTools.DrawSphere(sphere.transform.TransformPoint(sphere.center), Color.red, sphere.radius);
 
@@ -86,7 +86,7 @@ namespace KerbalKonstructs.UI
                     if (baseCol is MeshCollider)
                     {
                         continue;
-                       
+
 
                     }
                 }
@@ -112,7 +112,7 @@ namespace KerbalKonstructs.UI
                     DrawTools.DrawLocalCube(mesh[i].transform, mesh[i].mesh.bounds.size, XKCDColors.Pink, mesh[i].mesh.bounds.center);
                 }
 
-            }           
+            }
 
 
 
