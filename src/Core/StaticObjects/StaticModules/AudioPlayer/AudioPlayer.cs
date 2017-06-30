@@ -52,7 +52,5 @@ namespace KerbalKonstructs
                 audioPlayer.maxDistance = maxDistance * scale;
             }
         }
-
     }
-
 }
