@@ -170,7 +170,6 @@ namespace KerbalKonstructs.Core
 
 				List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
 
-
                 if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
                     //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
@@ -188,8 +187,8 @@ namespace KerbalKonstructs.Core
                     newFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
                     newFacility.spawnPoints[0] = spawnPoint;
 
-                    facilities.Add(newFacility);
-                    PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
+					facilities.Add(newFacility);
+					PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
                     site.facility = newFacility;
 
