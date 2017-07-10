@@ -54,9 +54,9 @@ namespace KerbalKonstructs
 				if (isRunway) {
 					// If it is runway, generate config for reversed direction
 					Bounds bnd = ILSConfig.getBounds (inst.gameObject);
-					Vector3 rwyLength = Vector3.Project(bnd.size, launchpad.forward);
+					float rwyLength = Math.Max(Math.Max(bnd.size.x, bnd.size.y), bnd.size.z);
 					Log.Debug(String.Format("KK-ILS: runway length based on colliders: {0}", rwyLength));
-					Vector3 farEnd = launchpad.position + rwyLength;
+					Vector3 farEnd = launchpad.forward * rwyLength;
 					Log.Debug(String.Format("KK-ILS: runway far end: {0}", farEnd));
 					hdg = (hdg + 180) % 360;
 					dg0 = hdg / 10 % 10;
