@@ -18,15 +18,12 @@ namespace KerbalKonstructs
 
 		public static void generateFullILSConfig(StaticInstance inst) 
 		{
-			// As long as we depend on working NavUtilities installation, we 
-			// can call its methods instead of copypasting
-
 			if (!(bool)detected)
 				return;
 
 			try {
 				string siteName = inst.launchSite.LaunchSiteName;
-				Log.Debug ("site name = " + siteName);
+				Log.Debug ("KK-ILS: site name = " + siteName);
 				string category = inst.launchSite.Category;
 				bool isRunway = category != null && category.Equals ("Runway");
 
@@ -49,15 +46,21 @@ namespace KerbalKonstructs
 					KSPUtil.ApplicationRootPath,
 					siteNameAndHdg);
 				Log.Debug ("KK-ILS: writing NavUtils config to: " + fileName);
+				Log.Debug(String.Format("KK-ILS: launchpad lat/lon: {0}, {1}",
+					FlightGlobals.ActiveVessel.mainBody.GetLatitude(launchpad.position),
+					FlightGlobals.ActiveVessel.mainBody.GetLongitude(launchpad.position)));
 
 
 				if (isRunway) {
-					// If it is runway, generate config for reversed direction
+					// If it is runway, generate config for opposite direction
 					Bounds bnd = ILSConfig.getBounds (inst.gameObject);
 					float rwyLength = Math.Max(Math.Max(bnd.size.x, bnd.size.y), bnd.size.z);
 					Log.Debug(String.Format("KK-ILS: runway length based on colliders: {0}", rwyLength));
-					Vector3 farEnd = launchpad.forward * rwyLength;
+					Vector3 farEnd = launchpad.position + launchpad.forward.normalized * rwyLength;
 					Log.Debug(String.Format("KK-ILS: runway far end: {0}", farEnd));
+					Log.Debug(String.Format("KK-ILS: launchpad far end lat/lon: {0}, {1}",
+							FlightGlobals.ActiveVessel.mainBody.GetLatitude(farEnd),
+							FlightGlobals.ActiveVessel.mainBody.GetLongitude(farEnd)));
 					hdg = (hdg + 180) % 360;
 					dg0 = hdg / 10 % 10;
 					dg1 = hdg / 100 % 10;
@@ -101,6 +104,7 @@ namespace KerbalKonstructs
 			ILScfg.AddValue ("gsLongitude", body.GetLongitude (endpoint));
 			ILScfg.AddValue ("locLatitude", localizer.x);
 			ILScfg.AddValue ("locLongitude", localizer.y);
+			// marker distances are blankly hardcoded as of now
 			ILScfg.AddValue ("outerMarkerDist", 8000);
 			ILScfg.AddValue ("middleMarkerDist", 2000);
 			ILScfg.AddValue ("innerMarkerDist", 300);
@@ -166,6 +170,9 @@ namespace KerbalKonstructs
 
 		private static Vector2d generateLocalizerCoords(Vector3d coords, float heading) {
 			
+			// As long as we depend on working NavUtilities installation, we 
+			// can call its methods instead of copypasting
+
 			CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
 			Type t = navUtilAssm.assembly.GetType("NavUtilLib.Utils");
 			var methodInfo = t.GetMethod ("CalcCoordinatesFromInitialPointBearingDistance",
