@@ -155,7 +155,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
 
 IF $(ConfigurationName) == Release (
