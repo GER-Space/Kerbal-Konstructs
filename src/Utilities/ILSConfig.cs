@@ -15,7 +15,7 @@ namespace KerbalKonstructs
 		private static AssemblyLoader.LoadedAssembly navUtilAssm;
 		private static String NavUtilsHome = "";
 		private static String rwyHome = "Runways";
-		// This one changed since 1.1-1.2 times and don't seem to be easy extractable
+		// This one changed since 1.1-1.2 times and don't seem to be easily extractable
 		private static String cfgNodeName = "NavUtilRunway";
 
 		public ILSConfig ()
@@ -98,7 +98,10 @@ namespace KerbalKonstructs
 			ConfigNode ILScfg = new ConfigNode ();
 			ILScfg.name = cfgNodeName;
 			ILScfg.AddValue ("ident", siteName);
-			ILScfg.AddValue ("custom", "True"); // Make it editable via NavUtils menu
+			// Well, if we make it editable, than NavUtilities will save this runway into custom.cfg
+			// And next time there will be two duplicate runways. Not a good thing.
+			// We'll try to address it from NavUtilities side
+			// ILScfg.AddValue ("custom", "True"); // Make it editable via NavUtils menu
 			ILScfg.AddValue("shortID", siteName);
 			ILScfg.AddValue ("hdg", heading);
 			ILScfg.AddValue ("body", body.name);
