@@ -46,7 +46,27 @@ namespace KerbalKonstructs.Core
                     transform.parent = null;
                     GameObject.Destroy(transform.gameObject);
                 }
+
+                if (transform.name.Equals("commnetnode", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    transform.parent = null;
+                    GameObject.Destroy(transform.gameObject);
+                }
             }
+
+            PQSCity2 pqs2 = gameObject.GetComponent<PQSCity2>();
+            if (pqs2 != null)
+            {
+                GameObject.Destroy(pqs2);
+            }
+
+            CommNet.CommNetHome bla = gameObject.GetComponent<CommNet.CommNetHome>();
+            if (bla != null)
+            {
+                GameObject.Destroy(bla);
+            }
+
+
         }
 
         internal static void SetActiveRecursively(StaticInstance instance, bool active)

@@ -907,7 +907,7 @@ namespace KerbalKonstructs
 
             foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
             {
-                if (pqs.gameObject.name == "KSC" || pqs.gameObject.name == "KSC2" || pqs.gameObject.name == "Pyramids"  || pqs.gameObject.name == "Pyramid")
+                if (pqs.gameObject.name == "KSC" || pqs.gameObject.name == "KSC2" || pqs.gameObject.name == "Pyramids"  || pqs.gameObject.name == "Pyramid" || pqs.gameObject.name == "CommNetDish")
                     continue;
 
 
@@ -986,7 +986,7 @@ namespace KerbalKonstructs
 
             foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
             {
-                if (pqs.gameObject.name != "KSC2" && pqs.gameObject.name != "Pyramids")
+                if (pqs.gameObject.name != "KSC2" && pqs.gameObject.name != "Pyramids" && pqs.gameObject.name != "CommNetDish")
                     continue;
 
                 GameObject baseGameObject = pqs.gameObject;
