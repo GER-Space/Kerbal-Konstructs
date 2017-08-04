@@ -19,6 +19,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\GameData\KerbalKonstructs\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
+    <!-- To compile for ksp 1.2 use these constants: DEBUG,KSP12 -->
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -150,10 +151,11 @@
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />
     <Compile Include="Utilities\KKShader.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
+    <Compile Include="Utilities\ILSConfig.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
     <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
 
 IF $(ConfigurationName) == Release (

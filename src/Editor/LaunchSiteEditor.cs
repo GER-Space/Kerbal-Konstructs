@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.IO;
+using System.Globalization;
 using Upgradeables;
 using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
@@ -22,20 +23,36 @@ namespace KerbalKonstructs.UI
                 if (_instance == null)
                 {
                     _instance = new LaunchSiteEditor();
+				}
+				return _instance;
+			}
+		}
 
-                }
-                return _instance;
-            }
-        }
+		#region Variable Declarations
 
-        #region Variable Declarations
-
-        private List<Transform> transformList = new List<Transform>();
-
+		private List<Transform> transformList = new List<Transform>();
+        private CultureInfo culture = new CultureInfo ("en-US");
 
         #region Texture Definitions
         // Texture definitions
-        private Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+        public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
+        public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
+        public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
+        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
+        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
+        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
+        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
+        public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
+        public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
+        public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
+        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
+        public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
+        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
+        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
+        public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
 
         #endregion
 
@@ -74,7 +91,7 @@ namespace KerbalKonstructs.UI
         internal static String facType = "None";
         internal static String sGroup = "Ungrouped";
         internal String increment = "0.1";
-        internal String siteName, siteTrans, siteDesc, siteAuthor, siteCategory, siteHidden;
+        internal String siteName, siteTrans, siteDesc, siteAuthor, siteCategory, siteHidden, ILSActive;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
 
@@ -417,9 +434,24 @@ namespace KerbalKonstructs.UI
             GUI.enabled = !(siteHidden == "true");
             if (GUILayout.Button("Yes", GUILayout.Width(40), GUILayout.Height(23)))
                 siteHidden = "true";
-            GUILayout.EndHorizontal();
             GUI.enabled = true;
+            GUILayout.EndHorizontal();
 
+            if (ILSConfig.detectNavUtils ()) {
+                // NavUtilities config generator
+                GUILayout.BeginHorizontal ();
+                GUILayout.Label ("ILS/HSI on (NavUtilities)", GUILayout.Width (115));
+                GUILayout.Label (ILSActive, GUILayout.Width (85));
+                GUILayout.FlexibleSpace ();
+                GUI.enabled = !(ILSActive == "False");
+                if (GUILayout.Button ("No", GUILayout.Width (40), GUILayout.Height (23)))
+                    ILSActive = "False";
+                GUI.enabled = !(ILSActive == "True");
+                if (GUILayout.Button ("Yes", GUILayout.Width (40), GUILayout.Height (23)))
+                    ILSActive = "True";
+                GUILayout.EndHorizontal ();
+            }
+            GUI.enabled = true;
             GUILayout.Label("Description: ");
             descScroll = GUILayout.BeginScrollView(descScroll);
             siteDesc = GUILayout.TextArea(siteDesc, GUILayout.ExpandHeight(true));
@@ -427,6 +459,7 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
             GUILayout.BeginHorizontal();
+            GUI.enabled = siteName.Length > 0;
             if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
             {
                 bool addToDB = false;
@@ -435,11 +468,17 @@ namespace KerbalKonstructs.UI
                     Log.Normal("Creating LaunchSite");
                     LaunchSite lsite = new LaunchSite();
                     selectedObject.launchSite = lsite;
+                    Log.Debug ("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
                     selectedObject.hasLauchSites = true;
                     lsite.parentInstance = selectedObject;
                     selectedObject.launchSite.body = selectedObject.CelestialBody;
                     addToDB = true;
                 }
+
+                string oldName = selectedObject.launchSite.LaunchSiteName;
+                string oldCategory = selectedObject.launchSite.Category;
+                bool oldState = selectedObject.launchSite.ILSIsActive;
+
                 selectedObject.launchSite.LaunchSiteName = siteName;
                 selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
                 selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
@@ -454,10 +493,43 @@ namespace KerbalKonstructs.UI
                 selectedObject.launchSite.OpenCloseState = "Open";
                 selectedObject.launchSite.Category = siteCategory;
                 selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
+                selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
                 selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
                 selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
                 selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
                 selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
+
+                if (ILSConfig.detectNavUtils ()) {
+                    Log.Debug ("NavUtils detected");
+                    Log.Debug ("object: " + selectedObject);
+                    Log.Debug ("launchsite: " + selectedObject.launchSite);
+                    Log.Debug("body: " + selectedObject.launchSite.body);
+
+					bool regenerateILSConfig = false;
+                    Log.Debug ("old name: " + oldName);
+                    Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
+					if (oldName != null && !oldName.Equals (siteName)) {
+						ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
+						regenerateILSConfig = true;
+					}
+
+                    Log.Debug ("old category: " + oldCategory);
+                    if (oldCategory != null && !oldCategory.Equals (siteCategory)) {
+                        ILSConfig.handleCategoryChange (selectedObject.launchSite.Category,
+                            siteCategory, selectedObject);
+                        regenerateILSConfig = true;
+                    }
+
+                    bool state = bool.Parse (ILSActive);
+                    Log.Debug ("new state: " + state + "; old state: " + oldState);
+                    if (oldState != state || regenerateILSConfig) {
+                        if (state)
+                            ILSConfig.generateFullILSConfig (selectedObject);
+                        else
+                            ILSConfig.dropILSConfig (selectedObject.launchSite.name, true);
+                    }
+                }
+
 
                 if (addToDB)
                 {
@@ -467,6 +539,7 @@ namespace KerbalKonstructs.UI
                 KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
                 this.Close();
             }
+            GUI.enabled = true;
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Cancel", GUILayout.Width(115), GUILayout.Height(23)))
             {
@@ -494,7 +567,7 @@ namespace KerbalKonstructs.UI
         /// Updates the Window Strings to the new settings
         /// </summary>
         /// <param name="instance"></param>
-		public static void updateSelection(StaticInstance instance)
+        public static void updateSelection(StaticInstance instance)
         {
             selectedObject = instance;
 
@@ -537,6 +610,8 @@ namespace KerbalKonstructs.UI
 
                 siteCategory = selectedObject.launchSite.Category;
                 siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
+                ILSActive = culture.TextInfo.ToTitleCase(
+                    selectedObject.launchSite.ILSIsActive.ToString ());
                 siteType = selectedObject.launchSite.LaunchSiteType;
                 flOpenCost = selectedObject.launchSite.OpenCost;
                 flCloseValue = selectedObject.launchSite.CloseValue;

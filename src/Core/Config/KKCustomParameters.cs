@@ -33,7 +33,9 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Gameplay Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+	#if !KSP12
+	    public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+	#endif
         public override int SectionOrder { get { return 0; } }
         public override bool HasPresets { get { return false; } }
 
@@ -122,7 +124,9 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Editor Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+	#if !KSP12
+		public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+	#endif
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return false; } }
 
@@ -193,8 +197,10 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Cheats"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
-        public override int SectionOrder { get { return 2; } }
+	#if !KSP12
+		public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+    #endif
+		public override int SectionOrder { get { return 2; } }
         public override bool HasPresets { get { return false; } }
 
 
