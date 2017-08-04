@@ -61,7 +61,5 @@ namespace KerbalKonstructs
             renderer.material.shader = newShader;
         }
 
-
-
     }
 }
