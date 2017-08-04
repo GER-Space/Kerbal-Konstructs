@@ -414,7 +414,7 @@ namespace KerbalKonstructs.UI
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
-            if (ILSConfig.detectNavUtils ()) {
+            if (ILSConfig.DetectNavUtils ()) {
                 // NavUtilities config generator
                 GUILayout.BeginHorizontal ();
                 GUILayout.Label ("ILS/HSI on (NavUtilities)", GUILayout.Width (115));
@@ -476,7 +476,7 @@ namespace KerbalKonstructs.UI
                 selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
                 selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
 
-                if (ILSConfig.detectNavUtils ()) {
+                if (ILSConfig.DetectNavUtils ()) {
                     Log.Debug ("NavUtils detected");
                     Log.Debug ("object: " + selectedObject);
                     Log.Debug ("launchsite: " + selectedObject.launchSite);
@@ -486,13 +486,13 @@ namespace KerbalKonstructs.UI
                     Log.Debug ("old name: " + oldName);
                     Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
 					if (oldName != null && !oldName.Equals (siteName)) {
-						ILSConfig.renameSite (selectedObject.launchSite.LaunchSiteName, siteName);
+						ILSConfig.RenameSite (selectedObject.launchSite.LaunchSiteName, siteName);
 						regenerateILSConfig = true;
 					}
 
                     Log.Debug ("old category: " + oldCategory);
                     if (oldCategory != null && !oldCategory.Equals (siteCategory)) {
-                        ILSConfig.handleCategoryChange (selectedObject.launchSite.Category,
+                        ILSConfig.HandleCategoryChange (selectedObject.launchSite.Category,
                             siteCategory, selectedObject);
                         regenerateILSConfig = true;
                     }
@@ -501,9 +501,9 @@ namespace KerbalKonstructs.UI
                     Log.Debug ("new state: " + state + "; old state: " + oldState);
                     if (oldState != state || regenerateILSConfig) {
                         if (state)
-                            ILSConfig.generateFullILSConfig (selectedObject);
+                            ILSConfig.GenerateFullILSConfig (selectedObject);
                         else
-                            ILSConfig.dropILSConfig (selectedObject.launchSite.name, true);
+                            ILSConfig.DropILSConfig (selectedObject.launchSite.name, true);
                     }
                 }
 
