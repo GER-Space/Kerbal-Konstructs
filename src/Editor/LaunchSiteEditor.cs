@@ -33,29 +33,6 @@ namespace KerbalKonstructs.UI
 		private List<Transform> transformList = new List<Transform>();
         private CultureInfo culture = new CultureInfo ("en-US");
 
-        #region Texture Definitions
-        // Texture definitions
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-        public Texture tBilleted = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/billeted", false);
-        public Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        public Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-        public Texture tVAB = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-        public Texture tSPH = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/SPHMapIcon", false);
-        public Texture tANY = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
-        public Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
-        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        public Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
-
-        #endregion
-
         #region GUI Windows
         // GUI Windows
         Rect siteEditorRect = new Rect(400, 45, 360, 625);
@@ -311,7 +288,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
@@ -550,7 +527,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
 
             GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
