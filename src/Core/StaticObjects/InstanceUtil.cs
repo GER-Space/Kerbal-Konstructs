@@ -60,10 +60,16 @@ namespace KerbalKonstructs.Core
                 GameObject.Destroy(pqs2);
             }
 
-            CommNet.CommNetHome bla = gameObject.GetComponent<CommNet.CommNetHome>();
-            if (bla != null)
+            CommNet.CommNetHome cnhome = gameObject.GetComponent<CommNet.CommNetHome>();
+            if (cnhome != null)
             {
-                GameObject.Destroy(bla);
+                GameObject.Destroy(cnhome);
+            }
+
+            DestructibleBuilding destBuilding = gameObject.GetComponentInChildren<DestructibleBuilding>();
+            if (destBuilding != null)
+            {
+                GameObject.Destroy(destBuilding);
             }
 
 

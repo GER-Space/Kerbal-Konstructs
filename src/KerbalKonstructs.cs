@@ -170,10 +170,6 @@ namespace KerbalKonstructs
             // draw map icons when needed
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
-            ////process save game loading
-            //GameEvents.onGameStateSave.Add(SaveState);
-            //// we can be late to the party. 
-            //GameEvents.onGameStateLoad.Add(LoadState);
             #endregion
 
             #region Other Mods Hooks
@@ -277,51 +273,6 @@ namespace KerbalKonstructs
             }
         }
 
-        ///// <summary>
-        ///// GameEvent function for loading Career Sate
-        ///// </summary>
-        ///// <param name="node"></param>
-        //public void LoadState(ConfigNode configNode)
-        //{
-        //    ConfigNode kkNode;
-
-        //    Log.Normal("Load Settings");
-        //    if (configNode.HasNode("KerbalKonstructs"))
-        //    {
-        //        kkNode = configNode.GetNode("KerbalKonstructs");
-        //    }  else
-        //    {
-        //        Log.UserInfo("creating new KerbalKonstructs savegame node");
-        //        kkNode = configNode.AddNode("KerbalKonstructs");
-        //    }
-
-        //    LoadKKConfig(kkNode);
-
-        //    RemoteNet.LoadGroundStations();
-        //}
-
-        ///// <summary>
-        ///// GameEvent function for saving Career State
-        ///// </summary>
-        ///// <param name="configNode"></param>
-        //public void SaveState(ConfigNode configNode)
-        //{
-        //    ConfigNode kkNode;
-
-        //    Log.Normal("Save Settings");
-        //    if (configNode.HasNode("KerbalKonstructs"))
-        //    {
-        //        kkNode = configNode.GetNode("KerbalKonstructs");
-        //    }
-        //    else
-        //    {
-        //        kkNode = configNode.AddNode("KerbalKonstructs");
-        //    }
-
-        //    SaveKKConfig(kkNode);
-        //}
-
-
         /// <summary>
         /// GameEvent function for toggeling the visiblility of Statics
         /// </summary>
@@ -375,10 +326,6 @@ namespace KerbalKonstructs
                 bTreatBodyAsNullForStatics = false;
                 currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                 Log.Normal("Homeworld is " + currentBody.name);
-                //StaticDatabase.onBodyChanged(KKAPI.getCelestialBody("Kerbin"));
-                //StaticDatabase.onBodyChanged(null);
-                //StaticDatabase.ToggleActiveStaticsInGroup("KSCUpgrades", true);
-                //StaticDatabase.ToggleActiveStaticsInGroup("KSCRace", true);
                 updateCache();
                 // *********
 
