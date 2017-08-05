@@ -108,6 +108,7 @@
     <Compile Include="Core\LaunchSites\LaunchSite.cs" />
     <Compile Include="Facilities\RadarStation\RadarStation.cs" />
     <Compile Include="Facilities\Research\Research.cs" />
+    <Compile Include="Modules\Career\CareerScenario.cs" />
     <Compile Include="Modules\Career\CareerState.cs" />
     <Compile Include="Modules\Career\CareerUtils.cs" />
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />

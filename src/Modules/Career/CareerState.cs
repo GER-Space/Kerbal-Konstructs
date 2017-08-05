@@ -99,9 +99,9 @@ namespace KerbalKonstructs.Modules
             ConfigNode facNode;
             ConfigNode lsNode;
 
-            if (kkcfgNode.HasNode("FacilityState"))
+            if (kkcfgNode.HasNode("Facilities"))
             {
-                facNode = kkcfgNode.GetNode("FacilityState");
+                facNode = kkcfgNode.GetNode("Facilities");
                 LoadFacilities(facNode);
             }
             if (kkcfgNode.HasNode("LaunchSites"))
@@ -130,13 +130,13 @@ namespace KerbalKonstructs.Modules
             ConfigNode facNode;
             ConfigNode lsNode;
 
-            if (kkcfgNode.HasNode("FacilityState"))
+            if (kkcfgNode.HasNode("Facilities"))
             {
-                facNode = kkcfgNode.GetNode("FacilityState");
+                facNode = kkcfgNode.GetNode("Facilities");
                 facNode.ClearData();
             } else
             {
-                facNode = kkcfgNode.AddNode("FacilityState");
+                facNode = kkcfgNode.AddNode("Facilities");
             }
             SaveFacilities(facNode);
 

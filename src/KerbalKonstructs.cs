@@ -170,10 +170,10 @@ namespace KerbalKonstructs
             // draw map icons when needed
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
-            //process save game loading
-            GameEvents.onGameStateSave.Add(SaveState);
-            // we can be late to the party. 
-            GameEvents.onGameStatePostLoad.Add(LoadState);
+            ////process save game loading
+            //GameEvents.onGameStateSave.Add(SaveState);
+            //// we can be late to the party. 
+            //GameEvents.onGameStateLoad.Add(LoadState);
             #endregion
 
             #region Other Mods Hooks
@@ -277,65 +277,49 @@ namespace KerbalKonstructs
             }
         }
 
-        /// <summary>
-        /// GameEvent function for loading Career Sate
-        /// </summary>
-        /// <param name="node"></param>
-        public void LoadState(ConfigNode configNode)
-        {
-            // better save than sorry.
-            CareerState.ResetFacilitiesOpenState();
+        ///// <summary>
+        ///// GameEvent function for loading Career Sate
+        ///// </summary>
+        ///// <param name="node"></param>
+        //public void LoadState(ConfigNode configNode)
+        //{
+        //    ConfigNode kkNode;
 
-            ConfigNode kkNode;
+        //    Log.Normal("Load Settings");
+        //    if (configNode.HasNode("KerbalKonstructs"))
+        //    {
+        //        kkNode = configNode.GetNode("KerbalKonstructs");
+        //    }  else
+        //    {
+        //        Log.UserInfo("creating new KerbalKonstructs savegame node");
+        //        kkNode = configNode.AddNode("KerbalKonstructs");
+        //    }
 
-            Log.Normal("Load State");
-            if (configNode.HasNode("KerbalKonstructs"))
-            {
-                kkNode = configNode.GetNode("KerbalKonstructs");
-            }  else
-            {
-                Log.UserInfo("creating a new savegame state");
-                kkNode = configNode.AddNode("KerbalKonstructs");
-            }
+        //    LoadKKConfig(kkNode);
 
-            LoadKKConfig(kkNode);
+        //    RemoteNet.LoadGroundStations();
+        //}
 
+        ///// <summary>
+        ///// GameEvent function for saving Career State
+        ///// </summary>
+        ///// <param name="configNode"></param>
+        //public void SaveState(ConfigNode configNode)
+        //{
+        //    ConfigNode kkNode;
 
-            if (CareerUtils.isCareerGame)
-            {
-                Log.Normal("Load openclose states for career game");
-                Log.PerfStart("Load Fac");
-                CareerState.Load(kkNode);
-                Log.PerfStop("Load Fac");
-            }
-            RemoteNet.LoadGroundStations();
-        }
+        //    Log.Normal("Save Settings");
+        //    if (configNode.HasNode("KerbalKonstructs"))
+        //    {
+        //        kkNode = configNode.GetNode("KerbalKonstructs");
+        //    }
+        //    else
+        //    {
+        //        kkNode = configNode.AddNode("KerbalKonstructs");
+        //    }
 
-        /// <summary>
-        /// GameEvent function for saving Career State
-        /// </summary>
-        /// <param name="configNode"></param>
-        public void SaveState(ConfigNode configNode)
-        {
-            ConfigNode kkNode;
-
-            Log.Normal("Save State");
-            if (configNode.HasNode("KerbalKonstructs"))
-            {
-                kkNode = configNode.GetNode("KerbalKonstructs");
-            }
-            else
-            {
-                kkNode = configNode.AddNode("KerbalKonstructs");
-            }
-
-            SaveKKConfig(kkNode);
-
-            if (CareerUtils.isCareerGame)
-            {
-                CareerState.Save(kkNode);
-            }
-        }
+        //    SaveKKConfig(kkNode);
+        //}
 
 
         /// <summary>
@@ -344,7 +328,6 @@ namespace KerbalKonstructs
         /// <param name="data"></param>
         void onLevelWasLoaded(GameScenes data)
         {
-
             bool bTreatBodyAsNullForStatics = true;
             DeletePreviewObject();
 
@@ -404,8 +387,7 @@ namespace KerbalKonstructs
             if (data.Equals(GameScenes.MAINMENU))
             {
                 CareerState.ResetFacilitiesOpenState();
-                //// Close all the launchsite objects
-                //LaunchSiteManager.setAllLaunchsitesClosed();
+
                 atMainMenu = true;
                 bTreatBodyAsNullForStatics = false;
                 // reset this for the next Newgame
