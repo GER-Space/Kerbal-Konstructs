@@ -414,20 +414,20 @@ namespace KerbalKonstructs.UI
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
-            if (ILSConfig.DetectNavUtils ()) {
+            //if (ILSConfig.DetectNavUtils ()) {
                 // NavUtilities config generator
                 GUILayout.BeginHorizontal ();
                 GUILayout.Label ("ILS/HSI on (NavUtilities)", GUILayout.Width (115));
                 GUILayout.Label (ILSActive, GUILayout.Width (85));
                 GUILayout.FlexibleSpace ();
-                GUI.enabled = !(ILSActive == "False");
+                GUI.enabled = !(ILSActive == "false");
                 if (GUILayout.Button ("No", GUILayout.Width (40), GUILayout.Height (23)))
-                    ILSActive = "False";
-                GUI.enabled = !(ILSActive == "True");
+                    ILSActive = "false";
+                GUI.enabled = !(ILSActive == "true");
                 if (GUILayout.Button ("Yes", GUILayout.Width (40), GUILayout.Height (23)))
-                    ILSActive = "True";
+                    ILSActive = "true";
                 GUILayout.EndHorizontal ();
-            }
+            //}
             GUI.enabled = true;
             GUILayout.Label("Description: ");
             descScroll = GUILayout.BeginScrollView(descScroll);
@@ -445,7 +445,7 @@ namespace KerbalKonstructs.UI
                     Log.Normal("Creating LaunchSite");
                     LaunchSite lsite = new LaunchSite();
                     selectedObject.launchSite = lsite;
-                    Log.Debug ("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
+                    Log.Normal ("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
                     selectedObject.hasLauchSites = true;
                     lsite.parentInstance = selectedObject;
                     selectedObject.launchSite.body = selectedObject.CelestialBody;
@@ -477,7 +477,7 @@ namespace KerbalKonstructs.UI
                 selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
 
                 if (ILSConfig.DetectNavUtils ()) {
-                    Log.Debug ("NavUtils detected");
+                    Log.Normal ("NavUtils detected");
                     Log.Debug ("object: " + selectedObject);
                     Log.Debug ("launchsite: " + selectedObject.launchSite);
                     Log.Debug("body: " + selectedObject.launchSite.body);
@@ -498,7 +498,7 @@ namespace KerbalKonstructs.UI
                     }
 
                     bool state = bool.Parse (ILSActive);
-                    Log.Debug ("new state: " + state + "; old state: " + oldState);
+                    Log.Normal ("new state: " + state + "; old state: " + oldState);
                     if (oldState != state || regenerateILSConfig) {
                         if (state)
                             ILSConfig.GenerateFullILSConfig (selectedObject);
@@ -587,8 +587,7 @@ namespace KerbalKonstructs.UI
 
                 siteCategory = selectedObject.launchSite.Category;
                 siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
-                ILSActive = culture.TextInfo.ToTitleCase(
-                    selectedObject.launchSite.ILSIsActive.ToString ());
+                ILSActive = selectedObject.launchSite.ILSIsActive.ToString();
                 siteType = selectedObject.launchSite.LaunchSiteType;
                 flOpenCost = selectedObject.launchSite.OpenCost;
                 flCloseValue = selectedObject.launchSite.CloseValue;
@@ -623,6 +622,7 @@ namespace KerbalKonstructs.UI
 
                 siteCategory = "Other";
                 siteHidden = "false";
+                ILSActive = "false";
                 siteType = SiteType.Any;
                 flOpenCost = 0f;
                 flCloseValue = 0f;
