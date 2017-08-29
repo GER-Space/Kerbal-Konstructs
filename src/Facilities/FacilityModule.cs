@@ -175,19 +175,28 @@ namespace KerbalKonstructs.Modules
 
         internal virtual void SaveCareerConfig(ConfigNode cfgNode)
         {
-            myFields = allFields[this.GetType().Name];
-            myProperties = allProperties[this.GetType().Name];
-
-            foreach (var field in myFields)
+            try
             {
-                if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
-                    ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                myFields = allFields[this.GetType().Name];
+                myProperties = allProperties[this.GetType().Name];
+
+                foreach (var field in myFields)
+                {
+                    if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                        ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                }
+
+                foreach (var field in myProperties)
+                {
+                    if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                        ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                }
             }
-
-            foreach (var field in myProperties)
+            catch
             {
-                if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
-                    ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                StaticInstance failedinstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
+                Log.Error("Exception saving Facility" +  failedinstance.gameObject.name) ;
+                Log.Error("FacType:" + this.FacilityType.ToString());
             }
 
         }

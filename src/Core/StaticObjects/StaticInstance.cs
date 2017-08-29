@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Core
 
         // Position
         [CFGSetting]
-        public CelestialBody CelestialBody;
+        public CelestialBody CelestialBody = null;
         [CFGSetting]
         public Vector3 RadialPosition = Vector3.zero;
         [CFGSetting]
