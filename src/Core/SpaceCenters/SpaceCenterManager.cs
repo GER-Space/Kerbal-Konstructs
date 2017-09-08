@@ -31,7 +31,7 @@ namespace KerbalKonstructs.Core
             return null;
         }
 
-        public static void getClosestSpaceCenter(Vessel vessel, out SpaceCenter ClosestCenter, out float ClosestDistance, 
+        public static void getClosestSpaceCenter(Vessel vessel, out SpaceCenter closestCenter, out float closestDistance, 
 			out float RecoveryFactor, out float RecoveryRange, out string BaseName)
 		{
 			CustomSpaceCenter closest = null;
@@ -42,40 +42,28 @@ namespace KerbalKonstructs.Core
 
 			bool isCareer = CareerUtils.isCareerGame;
 
-
-			string sOpenCloseState = "Closed";
 			string sBaseName = "";
 			float fMyBaseRecovFact = 0f;
 			float fMyBaseRecovRang = 0f;
 
-			foreach (CustomSpaceCenter csc in spaceCenters)
+
+            foreach (CustomSpaceCenter csc in spaceCenters)
 			{
-				if (isCareer)
-				{
-					 sOpenCloseState = csc.staticObject.launchSite.OpenCloseState;
-					// ASH Get openclosestate of launchsite with same name as space centre					
-				}
 
-
-				if (csc.staticObject.launchSite.RecoveryFactor == 0) continue;
+				if (csc.staticInstance.launchSite.RecoveryFactor == 0) continue;
                 sc = csc.getSpaceCenter();
                 //float dist = Vector3.Distance(position, csc.getStaticObject().gameObject.transform.position);
                 var dist = (float)sc.GreatCircleDistance(sc.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
 				if (dist < smallestDist)
 				{
-					bool bBaseIsOpen = true;
-					if (sOpenCloseState == "Closed" || sOpenCloseState == "ClosedLocked" || sOpenCloseState == "OpenLocked") bBaseIsOpen = false;
-
-					if (isCareer && !bBaseIsOpen)
-					{ }
-					else
+					if (isCareer && csc.staticInstance.launchSite.isOpen )
 					{
-						closest = csc;
+                        closest = csc;
 						smallestDist = dist;
-						fMyBaseRecovFact = csc.staticObject.launchSite.RecoveryFactor;
-						fMyBaseRecovRang = csc.staticObject.launchSite.RecoveryRange;
-						sBaseName = csc.staticObject.launchSite.LaunchSiteName;
+						fMyBaseRecovFact = csc.staticInstance.launchSite.RecoveryFactor;
+						fMyBaseRecovRang = csc.staticInstance.launchSite.RecoveryRange;
+						sBaseName = csc.staticInstance.launchSite.LaunchSiteName;
 						// Debug.Log("KK: closest updated to " + closest.SpaceCenterName + ", distance " + smallestDist);
 					}
 				}
@@ -103,8 +91,8 @@ namespace KerbalKonstructs.Core
 				sBaseName = "KSC";
 			}
 
-			ClosestCenter = sc;
-			ClosestDistance = smallestDist;
+			closestCenter = sc;
+			closestDistance = smallestDist;
 			RecoveryFactor = fMyBaseRecovFact;
 			RecoveryRange = fMyBaseRecovRang;
 			BaseName = sBaseName;

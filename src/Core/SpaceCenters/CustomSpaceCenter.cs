@@ -9,17 +9,17 @@ namespace KerbalKonstructs.Core
         public string SpaceCenterName;
 
         private SpaceCenter _spaceCenter;
-        internal StaticInstance staticObject;
+        internal StaticInstance staticInstance;
         internal GameObject gameObject;
 
         public static void CreateFromLaunchsite(LaunchSite site)
         {
-            StaticInstance staticObject = site.parentInstance;
-            if (staticObject != null)
+            StaticInstance parentinstance = site.parentInstance;
+            if (parentinstance != null)
             {
                 var csc = new CustomSpaceCenter();
                 csc.SpaceCenterName = site.LaunchSiteName;
-                csc.staticObject = staticObject;
+                csc.staticInstance = parentinstance;
                 csc.gameObject = site.parentInstance.gameObject;
                 SpaceCenterManager.addSpaceCenter(csc);
             }
@@ -42,19 +42,28 @@ namespace KerbalKonstructs.Core
         {
             if (_spaceCenter == null)
             {
-                _spaceCenter = gameObject.AddComponent<SpaceCenter>();
-                _spaceCenter.cb = staticObject.CelestialBody;
+                _spaceCenter = staticInstance.gameObject.AddComponent<SpaceCenter>();
+                _spaceCenter.cb = staticInstance.CelestialBody;
                 _spaceCenter.name = SpaceCenterName;
+                _spaceCenter.AreaRadius = 3000;
+//                _spaceCenter.spaceCenterAreaTrigger = new Collider();
 
-                // Debug.Log("KK: getSpaceCenter set spaceCenter.name to " + SpaceCenterName);
+                _spaceCenter.SpaceCenterTransform = staticInstance.gameObject.transform;
+
+                Log.Normal("SpaceCenter Position: " + _spaceCenter.SpaceCenterTransform); 
+
 
                 FieldInfo Latitude = _spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
-                Latitude.SetValue(_spaceCenter, _spaceCenter.cb.GetLatitude(gameObject.transform.position));
+                Latitude.SetValue(_spaceCenter, staticInstance.RefLatitude);
                 FieldInfo Longitude = _spaceCenter.GetType().GetField("longitude", BindingFlags.NonPublic | BindingFlags.Instance);
-                Longitude.SetValue(_spaceCenter, _spaceCenter.cb.GetLongitude(gameObject.transform.position));
+                Longitude.SetValue(_spaceCenter, staticInstance.RefLongitude);
+
+
                 FieldInfo SrfNVector = _spaceCenter.GetType().GetField("srfNVector", BindingFlags.NonPublic | BindingFlags.Instance);
                 SrfNVector.SetValue(_spaceCenter, _spaceCenter.cb.GetRelSurfaceNVector(_spaceCenter.Latitude, _spaceCenter.Longitude));
 
+                FieldInfo altitudeField = _spaceCenter.GetType().GetField("altitude", BindingFlags.NonPublic | BindingFlags.Instance);
+                altitudeField.SetValue(_spaceCenter, staticInstance.RadiusOffset);
             }
             else
             {
