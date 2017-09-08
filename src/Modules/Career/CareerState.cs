@@ -121,14 +121,7 @@ namespace KerbalKonstructs.Modules
             {
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = launchSiteNode.AddNode(name);
-                try
-                {
-                    site.SaveCareerConfig(lsNode);
-                } catch
-                {
-                    Log.Error("Failed saving Launchsite: " + site.LaunchSiteName);
-                    Log.Error("Body: " + site.body.name);
-                }
+                site.SaveCareerConfig(lsNode);
             }
         }
 

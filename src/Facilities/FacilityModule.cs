@@ -38,6 +38,7 @@ namespace KerbalKonstructs.Modules
         [CFGSetting]
         internal string FacilityType;
 
+
         [CareerSetting]
         public  bool isOpen
         {
@@ -96,6 +97,8 @@ namespace KerbalKonstructs.Modules
         private string openString = "Closed";
         internal string defaultState = "Closed";
 
+        private bool initialized = false;
+
         private static Dictionary<string, FieldInfo> myFields;
         private static Dictionary<string, PropertyInfo> myProperties;
 
@@ -106,10 +109,9 @@ namespace KerbalKonstructs.Modules
 
 
 
-
         internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
         {
-            if(!initializedModules.Contains(this.GetType().Name))
+            if(!initialized)
             {
                 InitTypes();
             }
@@ -144,6 +146,11 @@ namespace KerbalKonstructs.Modules
 
         internal virtual void WriteConfig(ConfigNode cfgNode)
         {
+            if (!initialized)
+            {
+                InitTypes();
+            }
+
             // Close everything before saving.
             isOpen = false;
             myFields = allFields[this.GetType().Name];
@@ -175,34 +182,36 @@ namespace KerbalKonstructs.Modules
 
         internal virtual void SaveCareerConfig(ConfigNode cfgNode)
         {
-            try
+            if (!initialized)
             {
-                myFields = allFields[this.GetType().Name];
-                myProperties = allProperties[this.GetType().Name];
-
-                foreach (var field in myFields)
-                {
-                    if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
-                        ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
-                }
-
-                foreach (var field in myProperties)
-                {
-                    if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
-                        ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
-                }
+                InitTypes();
             }
-            catch
+
+            myFields = allFields[this.GetType().Name];
+            myProperties = allProperties[this.GetType().Name];
+
+            foreach (var field in myFields)
             {
-                StaticInstance failedinstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
-                Log.Error("Exception saving Facility" +  failedinstance.gameObject.name) ;
-                Log.Error("FacType:" + this.FacilityType.ToString());
+                if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                    ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
             }
+
+            foreach (var field in myProperties)
+            {
+                if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                    ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+            }
+
 
         }
 
         internal virtual void LoadCareerConfig(ConfigNode cfgNode)
         {
+            if (!initialized)
+            {
+                InitTypes();
+            }
+
             myFields = allFields[this.GetType().Name];
             myProperties = allProperties[this.GetType().Name];
 
@@ -226,24 +235,30 @@ namespace KerbalKonstructs.Modules
 
         private void InitTypes()
         {
-            myFields = new Dictionary<string, FieldInfo>();
-            myProperties = new Dictionary<string, PropertyInfo>();
 
-            foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+            if (!initializedModules.Contains(this.GetType().Name))
             {
-                myFields.Add(field.Name, field);
-            //    Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
-            }
 
-            foreach (PropertyInfo property in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-            {
-                myProperties.Add(property.Name, property);
-             //   Log.Normal("Parser Facility (" + this.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
-            }
+                myFields = new Dictionary<string, FieldInfo>();
+                myProperties = new Dictionary<string, PropertyInfo>();
 
-            allFields.Add(this.GetType().Name, myFields);
-            allProperties.Add(this.GetType().Name, myProperties);
-            initializedModules.Add(this.GetType().Name);
+                foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    myFields.Add(field.Name, field);
+                    //    Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
+                }
+
+                foreach (PropertyInfo property in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    myProperties.Add(property.Name, property);
+                    //   Log.Normal("Parser Facility (" + this.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
+                }
+
+                allFields.Add(this.GetType().Name, myFields);
+                allProperties.Add(this.GetType().Name, myProperties);
+                initializedModules.Add(this.GetType().Name);
+            }
+            initialized = true;
         }
     }
 }
