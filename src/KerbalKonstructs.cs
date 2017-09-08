@@ -423,13 +423,12 @@ namespace KerbalKonstructs
                                 }
                             }
                         }
-
-                        Log.Normal("Distance to closest SpaceCenter is: " + customSC.SpaceCenterName + ", distance " + smallestDist);
-
+                       
                         if (customSC != null)
                         {
+                            Log.Normal("Distance to closest SpaceCenter is: " + customSC.SpaceCenterName + ", distance " + smallestDist);
                             recoveryExraRefund = ((dialog.fundsEarned / recovery) * (customSC.staticInstance.launchSite.RecoveryFactor / 100)) - dialog.fundsEarned;
-                            dialog.recoveryLocation = "At " + customSC.SpaceCenterName;
+                            dialog.recoveryLocation = Math.Round(smallestDist,1).ToString() + "m from "+ customSC.SpaceCenterName;
                             dialog.recoveryFactor = customSC.staticInstance.launchSite.RecoveryFactor.ToString() + "%";
                             dialog.fundsEarned = (dialog.fundsEarned / recovery) * (customSC.staticInstance.launchSite.RecoveryFactor / 100);
                             dialog.totalFunds = (dialog.totalFunds + recoveryExraRefund);
