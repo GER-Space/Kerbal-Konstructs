@@ -1022,17 +1022,6 @@ namespace KerbalKonstructs.UI
             instance.Orientation = Vector3.up;
             instance.VisibilityRange = 25000f;
 
-            //string sPad = model.DefaultLaunchPadTransform;
-            //if (!String.IsNullOrEmpty(sPad))
-            //{
-            //    instance.setSetting("LaunchPadTransform", sPad);
-            //}
-
-            //if (!KerbalKonstructs.instance.DevMode)
-            //{
-            //    instance.setSetting("CustomInstance", "True");
-            //}
-
             instance.model = model;
             Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath );
             instance.configPath = KerbalKonstructs.newInstancePath + "/" + model.name + "-instances.cfg";
