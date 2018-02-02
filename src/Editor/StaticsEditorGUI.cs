@@ -139,7 +139,7 @@ namespace KerbalKonstructs.UI
             KerbalKonstructs.instance.DeletePreviewObject();
             base.Close();
 
-            // Notify the modules the editor is open
+            // Notify the modules the editor is close
             foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
                 if (staticInstance.isActive) {
                     foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
