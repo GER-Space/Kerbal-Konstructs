@@ -14,8 +14,8 @@ namespace KerbalKonstructs.Core
 		
 		public virtual void StaticObjectUpdate() {}
 
-		public virtual void StaticObjectEditorOpen () {}
+        public virtual void StaticObjectEditorOpen () {}
 
-		public virtual void StaticObjectEditorClose () {}
+        public virtual void StaticObjectEditorClose () {}
 	}
 }

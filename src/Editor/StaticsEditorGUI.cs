@@ -123,14 +123,14 @@ namespace KerbalKonstructs.UI
             base.Open();
             EditorGUI.instance.Open();
 
-			// Notify the modules the editor is open
-			foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
-				if (staticInstance.isActive) {
-					foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
-						module.StaticObjectEditorOpen ();
-					}
-				}
-			}
+            // Notify the modules the editor is open
+            foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
+                if (staticInstance.isActive) {
+                    foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
+                        module.StaticObjectEditorOpen ();
+                    }
+                }
+            }
         }
 
         public override void Close()
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.UI
             KerbalKonstructs.instance.DeletePreviewObject();
             base.Close();
 
-			// Notify the modules the editor is close
+			// Notify the modules the editor is open
 			foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
 				if (staticInstance.isActive) {
 					foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
