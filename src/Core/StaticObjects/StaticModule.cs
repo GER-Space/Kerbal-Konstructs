@@ -13,5 +13,9 @@ namespace KerbalKonstructs.Core
 		public Dictionary<String, String> moduleFields = new Dictionary<string,string>();
 		
 		public virtual void StaticObjectUpdate() {}
+
+		public virtual void StaticObjectEditorOpen () {}
+
+		public virtual void StaticObjectEditorClose () {}
 	}
 }
