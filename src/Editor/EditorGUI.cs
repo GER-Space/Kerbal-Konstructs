@@ -95,25 +95,6 @@ namespace KerbalKonstructs.UI
         internal String increment = "0.1";
 
 
-
-        internal Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
-        internal Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
-
-        internal Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
-        internal Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
-
-        internal String sSTROT = "";
-
-        internal GameObject selectedSnapPoint = null;
-        internal GameObject selectedSnapPoint2 = null;
-        internal StaticInstance snapTargetInstance = null;
-        internal StaticInstance snapTargetInstancePrevious = null;
-
-        private Vector3 snpspos = new Vector3(0, 0, 0);
-        private Vector3 snptpos = new Vector3(0, 0, 0);
-        private Vector3 vDrift = new Vector3(0, 0, 0);
-        private Vector3 vCurrpos = new Vector3(0, 0, 0);
-
         private VectorRenderer upVR = new VectorRenderer();
         private VectorRenderer fwdVR = new VectorRenderer();
         private VectorRenderer rightVR = new VectorRenderer();
@@ -390,15 +371,15 @@ namespace KerbalKonstructs.UI
                 {
                     if (GUILayout.Button(new GUIContent(tSnap, "Snap to Target"), GUILayout.Width(23), GUILayout.Height(23)))
                     {
-                        if (snapTargetInstance == null)
+                        if (StaticsEditorGUI.instance.snapTargetInstance == null)
                         {
-
+                            Log.UserError("No Snaptarget selected");
                         }
                         else
                         {
-                            selectedObject.RadialPosition = snapTargetInstance.RadialPosition;
-                            selectedObject.RadiusOffset = snapTargetInstance.RadiusOffset;
-                            selectedObject.Orientation = snapTargetInstance.Orientation;
+                            referenceVector = StaticsEditorGUI.instance.snapTargetInstance.RadialPosition;
+                            altitude = StaticsEditorGUI.instance.snapTargetInstance.RadiusOffset;
+                            rotation = StaticsEditorGUI.instance.snapTargetInstance.RotationAngle;
                             saveSettings();
                         }
                     }
@@ -983,10 +964,10 @@ namespace KerbalKonstructs.UI
 
         internal void DeleteInstance ()
         {
-            if (snapTargetInstance == selectedObject)
-                snapTargetInstance = null;
-            if (snapTargetInstancePrevious == selectedObject)
-                snapTargetInstancePrevious = null;
+            if (StaticsEditorGUI.instance.snapTargetInstance == selectedObject)
+                StaticsEditorGUI.instance.snapTargetInstance = null;
+            if (StaticsEditorGUI.instance.selectedObjectPrevious == selectedObject)
+                StaticsEditorGUI.instance.selectedObjectPrevious = null;
             if (selectedObjectPrevious == selectedObject)
                 selectedObjectPrevious = null;
 
@@ -1398,51 +1379,6 @@ namespace KerbalKonstructs.UI
             selectedObject.update();
         }
 
-
-
-        void FixDrift(bool bRotate = false)
-        {
-            if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-            if (selectedObject == null || snapTargetInstance == null) return;
-
-            Vector3 snapSourceLocalPos = selectedSnapPoint.transform.localPosition;
-            Vector3 snapSourceWorldPos = selectedSnapPoint.transform.position;
-            Vector3 selSourceWorldPos = selectedObject.gameObject.transform.position;
-            float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-            Vector3 snapTargetLocalPos = selectedSnapPoint2.transform.localPosition;
-            Vector3 snapTargetWorldPos = selectedSnapPoint2.transform.position;
-            Vector3 selTargetWorldPos = snapTargetInstance.gameObject.transform.position;
-            float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
-            var spdist = 0f;
-
-            if (!bRotate) spdist = Vector3.Distance(snapSourceWorldPos, snapTargetWorldPos);
-            if (bRotate) spdist = Vector3.Distance(selSourceRot * snapSourceWorldPos, selTargetRot * snapTargetWorldPos);
-
-            int iGiveUp = 0;
-
-            while (spdist > 0.01 && iGiveUp < 100)
-            {
-                if (!bRotate)
-                {
-                    snpspos = selectedSnapPoint.transform.position;
-                    snptpos = selectedSnapPoint2.transform.position;
-
-                    vDrift = snpspos - snptpos;
-                    vCurrpos = selectedObject.pqsCity.repositionRadial;
-                    selectedObject.RadialPosition = vCurrpos + vDrift;
-                    updateSelection(selectedObject);
-
-                    spdist = Vector3.Distance(selectedSnapPoint.transform.position, selectedSnapPoint2.transform.position);
-                    iGiveUp = iGiveUp + 1;
-                }
-
-                if (bRotate)
-                {
-                    iGiveUp = 100;
-                }
-            }
-        }
-
         float getIncrement
         {
             get
@@ -1503,80 +1439,6 @@ namespace KerbalKonstructs.UI
             }
 
         }
-
-        void SnapToTarget(bool bRotate = false)
-        {
-            if (selectedSnapPoint == null || selectedSnapPoint2 == null) return;
-            if (selectedObject == null || snapTargetInstance == null) return;
-
-            Vector3 snapPointRelation = new Vector3(0, 0, 0);
-            Vector3 snapPoint2Relation = new Vector3(0, 0, 0);
-            Vector3 snapVector = new Vector3(0, 0, 0);
-            Vector3 snapVectorNoRot = new Vector3(0, 0, 0);
-            Vector3 vFinalPos = new Vector3(0, 0, 0);
-
-            Vector3 snapSourcePos = selectedSnapPoint.transform.localPosition;
-            snapSourceWorldPos = selectedSnapPoint.transform.position;
-            Vector3 selSourcePos = selectedObject.gameObject.transform.position;
-            float selSourceRot = selectedObject.pqsCity.reorientFinalAngle;
-            Vector3 snapTargetPos = selectedSnapPoint2.transform.localPosition;
-            snapTargetWorldPos = selectedSnapPoint2.transform.position;
-            Vector3 selTargetPos = snapTargetInstance.gameObject.transform.position;
-            float selTargetRot = snapTargetInstance.pqsCity.reorientFinalAngle;
-
-            vbsnapangle1 = selectedSnapPoint.transform.position;
-            vbsnapangle2 = selectedSnapPoint2.transform.position;
-
-            if (!bRotate)
-            {
-                // Quaternion quatSelObj = Quaternion.AngleAxis(selSourceRot, selSourcePos);
-                snapPointRelation = snapSourcePos;
-                //quatSelObj * snapSourcePos;
-
-                //Quaternion quatSelTar = Quaternion.AngleAxis(selTargetRot, selTargetPos);
-                snapPoint2Relation = snapTargetPos;
-                //quatSelTar * snapTargetPos;
-
-                snapVector = (snapPoint2Relation - snapPointRelation);
-                vFinalPos = snapTargetInstance.RadialPosition + snapVector;
-            }
-            else
-            {
-                // THIS SHIT DO NOT WORK
-                //MiscUtils.HUDMessage("Snapping with rotation.", 60, 2);
-                // Stick the origins on each other
-                vFinalPos = snapTargetInstance.RadialPosition;
-                selectedObject.RadialPosition = vFinalPos;
-                updateSelection(selectedObject);
-
-                // Get the offset of the source and move by that
-                Vector3 vAngles = new Vector3(0, selectedObject.pqsCity.reorientFinalAngle, 0);
-                snapPointRelation = selectedObject.gameObject.transform.position -
-                    selectedSnapPoint.transform.TransformPoint(selectedSnapPoint.transform.localPosition);
-                MiscUtils.HUDMessage("" + snapPointRelation.ToString(), 60, 2);
-                vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPointRelation;
-                selectedObject.RadialPosition = vFinalPos;
-                updateSelection(selectedObject);
-
-                // Get the offset of the target and move by that
-                vAngles = new Vector3(0, snapTargetInstance.pqsCity.reorientFinalAngle, 0);
-                snapPoint2Relation = snapTargetInstance.gameObject.transform.position -
-                    selectedSnapPoint2.transform.TransformPoint(selectedSnapPoint2.transform.localPosition);
-                MiscUtils.HUDMessage("" + snapPoint2Relation.ToString(), 60, 2);
-                vFinalPos = snapTargetInstance.pqsCity.repositionRadial + snapPoint2Relation;
-            }
-
-            snapSourcePos = selectedSnapPoint.transform.localPosition;
-            snapTargetPos = selectedSnapPoint2.transform.localPosition;
-            snapVectorNoRot = (snapSourcePos - snapTargetPos);
-
-            selectedObject.RadialPosition = vFinalPos;
-            selectedObject.RadiusOffset = (float)snapTargetInstance.RadiusOffset + snapVectorNoRot.y;
-
-            updateSelection(selectedObject);
-            if (!bRotate) FixDrift();
-        }
-
         #endregion
     }
 }

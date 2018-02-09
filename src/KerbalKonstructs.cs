@@ -31,7 +31,6 @@ namespace KerbalKonstructs
         #region Holders
         internal StaticInstance selectedObject;
         internal StaticModel selectedModel;
-        internal StaticInstance snapTargetInstance;
         internal CameraController camControl = new CameraController();
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
@@ -1485,8 +1484,8 @@ namespace KerbalKonstructs
 
             if (camControl.active) camControl.disable();
 
-            if (snapTargetInstance == obj)
-                snapTargetInstance = null;
+            if ( StaticsEditorGUI.instance.snapTargetInstance == obj)
+                StaticsEditorGUI.instance.snapTargetInstance = null;
 
             Log.Debug("deleteObject");
 
@@ -1494,11 +1493,6 @@ namespace KerbalKonstructs
             deletedInstances.Add(obj);
 
             StaticDatabase.DeleteStatic(obj);
-        }
-
-        public void setSnapTarget(StaticInstance obj)
-        {
-            snapTargetInstance = obj;
         }
 
         public void selectObject(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)

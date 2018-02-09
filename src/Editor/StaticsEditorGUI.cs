@@ -515,7 +515,6 @@ namespace KerbalKonstructs.UI
                             if (snapTargetInstance == allStaticInstances[ix])
                             {
                                 snapTargetInstance = null;
-                                KerbalKonstructs.instance.snapTargetInstance = null;
                             }
                             KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
 
@@ -539,7 +538,6 @@ namespace KerbalKonstructs.UI
                                 }
 
                                 snapTargetInstance = allStaticInstances[ix];
-                                KerbalKonstructs.instance.setSnapTarget(allStaticInstances[ix]);
 
                                 Color highlightColor4 = XKCDColors.RedPink;
                                 allStaticInstances[ix].HighlightObject(highlightColor4);
