@@ -44,9 +44,9 @@ namespace KerbalKonstructs.Core
         [GameParameters.CustomStringParameterUI("Gameplay settings", title = "GamePlay Settings", lines = 1)]
         public string blank0 = "";
         [GameParameters.CustomParameterUI("Enable RemoteTech GroundStation", toolTip = "Kerbal Konstricts will place RemoteTech ground antennas to any open GroundStation", autoPersistance = true)]
-        public bool enableRT = true;
+        public bool enableRT = false;
         [GameParameters.CustomParameterUI("Enable CommNet GroundStations", toolTip = "Kerbal Konstricts will place CommNet ground antennas to any open GroundStation", autoPersistance = true)]
-        public bool enableCommNet = true;
+        public bool enableCommNet = false;
 
         // difficulty setting
         [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
