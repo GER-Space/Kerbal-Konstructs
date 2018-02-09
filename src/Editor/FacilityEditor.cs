@@ -133,7 +133,6 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Box((string)selectedObject.model.title);
             GUILayout.Space(1);
-
             if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
                 bChangeFacilityType = true;
 
@@ -218,20 +217,20 @@ namespace KerbalKonstructs.UI
                 ChangeFacility();
                 updateSelection();
             }
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Open Cost: ", LabelGreen);
-            GUILayout.FlexibleSpace();
-            infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
-            GUILayout.Label("\\F", LabelWhite);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Default State: ", LabelGreen);
-            GUILayout.FlexibleSpace();
-            defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
-            GUILayout.Label("Open|Closed", LabelWhite);
-            GUILayout.EndHorizontal();
-
+            if (facType != "None") {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Open Cost: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("\\F", LabelWhite);
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Default State: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("Open|Closed", LabelWhite);
+                GUILayout.EndHorizontal();
+            }
             if (facType == "GroundStation")
             {
                 GUILayout.BeginHorizontal();
@@ -241,7 +240,6 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("m", LabelWhite);
                 GUILayout.EndHorizontal();
             }
-
 
             if (facType == "Barracks" || facType == "Research" || facType == "Business")
             {
@@ -355,7 +353,6 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Space(1);
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
             GUILayout.Space(2);
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
