@@ -130,6 +130,7 @@ namespace KerbalKonstructs.UI
 
         private static Vector3d position = Vector3d.zero;
         private Vector3d referenceVector = Vector3d.zero;
+        private Vector3d savedReferenceVector = Vector3d.zero;
         private Vector3 orientation = Vector3.zero;
 
         private static double altitude;
@@ -366,6 +367,7 @@ namespace KerbalKonstructs.UI
                 {
                     savedpos = true;
                     savedposition = position;
+                    savedReferenceVector = referenceVector;
 
                     savedalt = altitude;
                     savedrot = rotation;
@@ -376,6 +378,7 @@ namespace KerbalKonstructs.UI
                     if (savedpos)
                     {
                         position = savedposition;
+                        referenceVector = savedReferenceVector;
                         altitude = savedalt;
                         rotation = savedrot;
                         saveSettings();
@@ -393,12 +396,11 @@ namespace KerbalKonstructs.UI
                         }
                         else
                         {
-                            Vector3 snapTargetPos = (Vector3)snapTargetInstance.RadialPosition;
-                            float snapTargetAlt = (float)snapTargetInstance.RadiusOffset;
-                            selectedObject.RadialPosition = snapTargetPos;
-                            selectedObject.RadiusOffset = snapTargetAlt;
+                            selectedObject.RadialPosition = snapTargetInstance.RadialPosition;
+                            selectedObject.RadiusOffset = snapTargetInstance.RadiusOffset;
+                            selectedObject.Orientation = snapTargetInstance.Orientation;
+                            saveSettings();
                         }
-                        updateSelection(selectedObject);
                     }
                 }
 
