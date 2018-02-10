@@ -4,7 +4,7 @@ using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	internal class StaticModel
+	public class StaticModel
 	{
         internal GameObject prefab;
        // internal Dictionary<string, object> settings = new Dictionary<string, object>();

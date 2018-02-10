@@ -765,7 +765,7 @@ namespace KerbalKonstructs.UI
         /// wrapper for editorGUI spawnInstance
         /// </summary>
         /// <param name="model"></param>
-		public void spawnInstance(StaticModel model)
+		internal void spawnInstance(StaticModel model)
         {
             EditorGUI.instance.spawnInstance(model,
                 (float)FlightGlobals.ActiveVessel.altitude,
