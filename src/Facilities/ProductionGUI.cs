@@ -36,7 +36,6 @@ namespace KerbalKonstructs.UI
 
         private static float currentTime;
         private static float daysPast;
-        private static float fProduced ;
 
 
 
