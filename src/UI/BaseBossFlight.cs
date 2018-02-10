@@ -71,11 +71,11 @@ namespace KerbalKonstructs.UI
             KKWindow = new GUIStyle(GUI.skin.window);
             KKWindow.padding = new RectOffset(3, 3, 5, 5);
 
-            if (obj != null)
-            {
-                if (selectedObject != obj)
-                    EditorGUI.updateSelection(obj);
-            }
+            //if (obj != null)
+            //{
+            //    if (selectedObject != obj)
+            //        EditorGUI.updateSelection(obj);
+            //}
 
             managerRect = GUI.Window(0xB00B1E2, managerRect, drawBaseManagerWindow, "", KKWindow);
         }

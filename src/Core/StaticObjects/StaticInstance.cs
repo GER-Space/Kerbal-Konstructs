@@ -96,9 +96,11 @@ namespace KerbalKonstructs.Core
                 pqsCity.transform.localScale = origScale * ModelScale;
                 pqsCity.Orientate();
             }
-			// Notify modules about update
-			foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
-			    module.StaticObjectUpdate();
+            // Notify modules about update
+            foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
+            {
+                module.StaticObjectUpdate();
+            }
 		}
 
         internal void HighlightObject(Color highlightColor)

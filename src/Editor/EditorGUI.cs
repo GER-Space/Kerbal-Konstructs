@@ -192,40 +192,43 @@ namespace KerbalKonstructs.UI
                 InitializeLayout();
                 guiInitialized = true;
             }
-            if (obj != null)
+            if (obj == null)
             {
-                if (selectedObject != obj)
-                {
-                    updateSelection(obj);
-                    position = selectedObject.gameObject.transform.position;
-                    Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-                    SetupVectors();
-                }
-
-
-                if (foldedIn)
-                {
-                    if (!doneFold)
-                        toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width - 45, toolRect.height - 250);
-
-                    doneFold = true;
-                }
-
-                if (!foldedIn)
-                {
-                    if (doneFold)
-                        toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width + 45, toolRect.height + 250);
-
-                    doneFold = false;
-                }
-
-                toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
-
-                //if (editingLaunchSite)
-                //{
-                //    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
-                //}
+                return;
             }
+
+            if (selectedObject != obj)
+            {
+                updateSelection(obj);
+                position = selectedObject.gameObject.transform.position;
+                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+                SetupVectors();
+            }
+
+
+            if (foldedIn)
+            {
+                if (!doneFold)
+                    toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width - 45, toolRect.height - 250);
+
+                doneFold = true;
+            }
+
+            if (!foldedIn)
+            {
+                if (doneFold)
+                    toolRect = new Rect(toolRect.xMin, toolRect.yMin, toolRect.width + 45, toolRect.height + 250);
+
+                doneFold = false;
+            }
+
+            toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
+
+            //if (editingLaunchSite)
+            //{
+            //    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
+            //}
+
         }
 
         #endregion
@@ -855,8 +858,10 @@ namespace KerbalKonstructs.UI
                 {
                     bool isScanable2 = GUILayout.Toggle(isScanable, "Static will show up on anomaly scanners", GUILayout.Width(250), GUILayout.Height(23));
                     if (isScanable2 != isScanable)
+                    {
                         isScanable = isScanable2;
-                    saveSettings();
+                        saveSettings();
+                    }
                 }
                 GUILayout.EndHorizontal();
 

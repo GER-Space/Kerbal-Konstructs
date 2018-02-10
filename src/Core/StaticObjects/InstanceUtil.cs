@@ -82,11 +82,10 @@ namespace KerbalKonstructs.Core
             {
                 instance.isActive = active;
 
-
-                
                 foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
+                {
                     module.StaticObjectUpdate();
-
+                }
 
                 instance.gameObject.SetActive(active);
                 
