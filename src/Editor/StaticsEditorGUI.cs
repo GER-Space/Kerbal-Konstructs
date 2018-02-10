@@ -80,6 +80,7 @@ namespace KerbalKonstructs.UI
         public Boolean doneFold = false;
         public Boolean bSortCategory = false;
         public Boolean bSortTitle = false;
+        private string smessage = "";
 
         // models change only once
         private static List<StaticModel> allStaticModels;
@@ -87,6 +88,7 @@ namespace KerbalKonstructs.UI
         private static float lastloaded = 0f;
         internal static StaticInstance [] allStaticInstances;
 
+        private static bool isInitialized = false;
 
 
         public void ToggleEditor()
@@ -155,7 +157,8 @@ namespace KerbalKonstructs.UI
             editorRect = GUI.Window(0xB00B1E5, editorRect, drawEditorWindow, "", KKWindow);
         }
 
-        void drawEditorWindow(int id)
+
+        private void InititializeLayout ()
         {
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
@@ -209,7 +212,16 @@ namespace KerbalKonstructs.UI
             DeadButtonRed.fontSize = 12;
             DeadButtonRed.fontStyle = FontStyle.Bold;
 
-            string smessage = "";
+            isInitialized = true;
+        }
+
+        private void drawEditorWindow(int id)
+        {
+            
+            if (isInitialized == false )
+            {
+                InititializeLayout();
+            }
 
             GUILayout.BeginHorizontal();
             {
@@ -270,9 +282,14 @@ namespace KerbalKonstructs.UI
 
                 GUI.enabled = creatingInstance || showLocal;
 
-                if (foldedIn) sButtonText = "All";
-                else sButtonText = "All Instances";
-
+                if (foldedIn)
+                {
+                    sButtonText = "All";
+                }
+                else
+                {
+                    sButtonText = "All Instances";
+                }
                 if (GUILayout.Button("" + sButtonText, GUILayout.Width(fButtonWidth), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
