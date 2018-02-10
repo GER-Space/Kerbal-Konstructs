@@ -18,190 +18,211 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle LabelInfo;
 		public static GUIStyle ButtonSmallText;
 
-		public static void ProductionInterface(StaticInstance selectedFacility, string sFacilityType)
+        private static bool isInitialized = false;
+
+        private static Type facField;
+        private static Research myResearch;
+        private static Business myBusiness;
+
+        private static float currentStaff = 0;
+        private static float currentProductionRate = 0;
+        private static float lastCheckTime = 0;
+
+        private static float defaultProductionRate;
+
+        private static string produces = "";
+        private static float maxProduced = 0f;
+        private static float currentProduced = 0f;
+
+        private static float currentTime;
+        private static float daysPast;
+        private static float fProduced ;
+
+
+
+    internal static void InitializeLayout ()
+        {
+            isInitialized = true;
+
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.white;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.white;
+            DeadButton.focused.textColor = Color.white;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Bold;
+
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
+            DeadButtonRed.normal.background = null;
+            DeadButtonRed.hover.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.focused.background = null;
+            DeadButtonRed.normal.textColor = Color.red;
+            DeadButtonRed.hover.textColor = Color.yellow;
+            DeadButtonRed.active.textColor = Color.red;
+            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.fontSize = 12;
+            DeadButtonRed.fontStyle = FontStyle.Bold;
+
+            BoxNoBorder = new GUIStyle(GUI.skin.box);
+            BoxNoBorder.normal.background = null;
+            BoxNoBorder.normal.textColor = Color.white;
+
+            Yellowtext = new GUIStyle(GUI.skin.box);
+            Yellowtext.normal.textColor = Color.yellow;
+            Yellowtext.normal.background = null;
+
+            LabelInfo = new GUIStyle(GUI.skin.label);
+            LabelInfo.normal.background = null;
+            LabelInfo.normal.textColor = Color.white;
+            LabelInfo.fontSize = 13;
+            LabelInfo.fontStyle = FontStyle.Bold;
+            LabelInfo.padding.left = 3;
+            LabelInfo.padding.top = 0;
+            LabelInfo.padding.bottom = 0;
+
+            ButtonSmallText = new GUIStyle(GUI.skin.button);
+            ButtonSmallText.fontSize = 12;
+            ButtonSmallText.fontStyle = FontStyle.Normal;
+        }
+
+
+
+		public static void ProductionInterface(StaticInstance selectedFacility, string facilityType)
 		{
             if (selectedFacility.myFacilities.Count == 0)
                 return;
 
-            Type facField;
 
-            if (sFacilityType == "Research")
+            if (isInitialized == false)
+            {
+                InitializeLayout();
+            }
+
+            if (facilityType == "Research")
             {
                 facField = typeof(Research);
             }else
             {
                 facField = typeof(Business);
             }
-            Barracks allFacs = selectedFacility.myFacilities[0] as Barracks;
-            Research myResearch = selectedFacility.myFacilities[0] as Research;
-            //if (sFacilityType == "Research")
-            Business myBusiness = selectedFacility.myFacilities[0] as Business;
+            myResearch = selectedFacility.myFacilities[0] as Research;
+            myBusiness = selectedFacility.myFacilities[0] as Business;
 
-            DeadButton = new GUIStyle(GUI.skin.button);
-			DeadButton.normal.background = null;
-			DeadButton.hover.background = null;
-			DeadButton.active.background = null;
-			DeadButton.focused.background = null;
-			DeadButton.normal.textColor = Color.white;
-			DeadButton.hover.textColor = Color.white;
-			DeadButton.active.textColor = Color.white;
-			DeadButton.focused.textColor = Color.white;
-			DeadButton.fontSize = 14;
-			DeadButton.fontStyle = FontStyle.Bold;
+            lastCheckTime = (float)facField.GetField("LastCheck").GetValue(selectedFacility.myFacilities[0]);
 
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
-			DeadButtonRed.normal.background = null;
-			DeadButtonRed.hover.background = null;
-			DeadButtonRed.active.background = null;
-			DeadButtonRed.focused.background = null;
-			DeadButtonRed.normal.textColor = Color.red;
-			DeadButtonRed.hover.textColor = Color.yellow;
-			DeadButtonRed.active.textColor = Color.red;
-			DeadButtonRed.focused.textColor = Color.red;
-			DeadButtonRed.fontSize = 12;
-			DeadButtonRed.fontStyle = FontStyle.Bold;
-
-			BoxNoBorder = new GUIStyle(GUI.skin.box);
-			BoxNoBorder.normal.background = null;
-			BoxNoBorder.normal.textColor = Color.white;
-
-			Yellowtext = new GUIStyle(GUI.skin.box);
-			Yellowtext.normal.textColor = Color.yellow;
-			Yellowtext.normal.background = null;
-
-			LabelInfo = new GUIStyle(GUI.skin.label);
-			LabelInfo.normal.background = null;
-			LabelInfo.normal.textColor = Color.white;
-			LabelInfo.fontSize = 13;
-			LabelInfo.fontStyle = FontStyle.Bold;
-			LabelInfo.padding.left = 3;
-			LabelInfo.padding.top = 0;
-			LabelInfo.padding.bottom = 0;
-
-			ButtonSmallText = new GUIStyle(GUI.skin.button);
-			ButtonSmallText.fontSize = 12;
-			ButtonSmallText.fontStyle = FontStyle.Normal;
-
-			float fStaffing = 0;
-			float fProductionRate = 0;
-			float fLastCheck = 0;
-
-
-			fStaffing = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
-            fProductionRate = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]) * (fStaffing / 2f);
-
-			if (fProductionRate < 0.01f)
+			if (lastCheckTime == 0)
 			{
-				float fDefaultRate = 0.01f;
-
-				if (sFacilityType == "Business") fDefaultRate = 0.10f;
-
-                facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0],fDefaultRate);
-				fProductionRate = fDefaultRate * (fStaffing / 2f);
+				lastCheckTime = (float)Planetarium.GetUniversalTime();
+                facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], lastCheckTime);
 			}
 
-			fLastCheck = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]);
-
-			if (fLastCheck == 0)
+            if (facilityType == "Research" || facilityType == "Business")
 			{
-				fLastCheck = (float)Planetarium.GetUniversalTime();
-                facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], fLastCheck);
-			}
-            if (sFacilityType == "Research" || sFacilityType == "Business")
-			{
-				string sProduces = "";
-				float fMax = 0f;
-				float fCurrent = 0f;
+				produces = "";
+				maxProduced = 0f;
+                defaultProductionRate = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]);
 
-				if (sFacilityType == "Research")
+                if (facilityType == "Research")
 				{
-					sProduces = "Science";
-					fMax = myResearch.ScienceOMax;
+					produces = "Science";
+					maxProduced = myResearch.ScienceOMax;
 
-					if (fMax < 1)
-					{
-						fMax = (float)selectedFacility.model.DefaultScienceOMax;
+                    if (defaultProductionRate < 0.1f)
+                    {
+                        defaultProductionRate = 0.1f;
+                    }
 
-						if (fMax < 1) fMax = 10f;
+                    if (maxProduced < 1)
+                    {
+                        maxProduced = selectedFacility.model.DefaultScienceOMax;
 
-                        myResearch.ScienceOMax = fMax;
-					}
+                        if (maxProduced < 1) maxProduced = 10f;
+                        {
+                            myResearch.ScienceOMax = maxProduced;
+                        }
+                    }
+                    maxProduced = myResearch.ScienceOMax;
+                }
 
-					fCurrent = myResearch.ScienceOCurrent;
-				}
-				if (sFacilityType == "Business")
+				if (facilityType == "Business")
 				{
-					sProduces = "Funds";
-					fMax = myBusiness.FundsOMax;
+					produces = "Funds";
+					maxProduced = myBusiness.FundsOMax;
 
-					if (fMax < 1)
+                    if (defaultProductionRate < 10f)
+                    {
+                        defaultProductionRate = 10f;
+                    }
+
+                    if (maxProduced < 1)
 					{
-						fMax = selectedFacility.model.DefaultFundsOMax;
+						maxProduced = selectedFacility.model.DefaultFundsOMax;
 
-						if (fMax < 1) fMax = 10000f;
-
-                        myBusiness.FundsOMax =  fMax;
+                        if (maxProduced < 1)
+                        {
+                            myBusiness.FundsOMax = 10000f;
+                        }
 					}
+                    maxProduced = myBusiness.FundsOMax;
+                }
 
-					fCurrent = myBusiness.FundsOCurrent;
-				}
-                double dTime = Planetarium.GetUniversalTime();
+                facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0], defaultProductionRate);
+
+                currentStaff = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
+                currentProductionRate = defaultProductionRate * currentStaff;
+
+                currentTime = (float)Planetarium.GetUniversalTime();
+                Log.Normal("Current time: " + currentTime);
 
 				// Deal with revert exploits
-				if (fLastCheck > (float)dTime)
+				if (lastCheckTime > currentTime)
 				{
-                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], (float)dTime);
+                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
 				}
 
-				if ((float)dTime - fLastCheck > 43200)
-				{
-					float fDays = (((float)dTime - fLastCheck) / 43200);
+                daysPast = ((currentTime - lastCheckTime) / 21600f);
+                currentProduced = daysPast * currentProductionRate;
+                
+                if (currentProduced > maxProduced)
+                {
+                    currentProduced = maxProduced;
 
-					float fProduced = fDays * fProductionRate;
-
-					fCurrent = fCurrent + fProduced;
-					if (fCurrent > fMax) fCurrent = fMax;
-
-					if (sFacilityType == "Research")
-					{
-                        myResearch.ScienceOCurrent =  fCurrent;
-					}
-					if (sFacilityType == "Business")
-					{
-                        myBusiness.FundsOCurrent = fCurrent;
-					}
-
-                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], (float)dTime);
-				}
-
+                }
 				GUILayout.BeginHorizontal();
-				GUILayout.Label("Produces: " + sProduces, LabelInfo);
+				GUILayout.Label("Produces: " + produces, LabelInfo);
 				GUILayout.FlexibleSpace();
-				GUILayout.Label("Current: " + fCurrent.ToString("#0") + " | Max: " + fMax.ToString("#0"), LabelInfo);
+				GUILayout.Label("Current: " + currentProduced.ToString("#0") + " | Max: " + maxProduced.ToString("#0"), LabelInfo);
 				GUILayout.EndHorizontal();
 
-                if (sFacilityType == "Research")
+                if (facilityType == "Research")
 				{
 					if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
 					{
-						ResearchAndDevelopment.Instance.AddScience(fCurrent, TransactionReasons.Cheating);
+						ResearchAndDevelopment.Instance.AddScience(currentProduced, TransactionReasons.Cheating);
                         myResearch.ScienceOCurrent = 0f;
-					}
+                        facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
+                    }
 
 				}
-				if (sFacilityType == "Business")
+				if (facilityType == "Business")
 				{
 					if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
 					{
-						Funding.Instance.AddFunds((double)fCurrent, TransactionReasons.Cheating);
+						Funding.Instance.AddFunds(currentProduced, TransactionReasons.Cheating);
                         myBusiness.FundsOCurrent = 0f;
-					}
+                        facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
+                    }
 				}				
 
 				GUILayout.Space(5);
 				GUILayout.BeginHorizontal();
 				{
-					GUILayout.Label("Production Rate: Up to " + fProductionRate.ToString("#0.00") + " per 12 hrs", LabelInfo);
+					GUILayout.Label("Production Rate: Up to " + currentProductionRate.ToString("#0.00") + " a Kerbin day", LabelInfo);
 					GUILayout.FlexibleSpace();
 					//if (GUILayout.Button(" Upgrade ", ButtonSmallText, GUILayout.Height(20)))
 					//{ }
