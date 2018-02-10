@@ -8,11 +8,11 @@ using System.IO;
 
 namespace KerbalKonstructs.UI
 {
-    class EditorGUI : KKWindow
+    public class EditorGUI : KKWindow
     {
 
         private static EditorGUI _instance = null;
-        internal static EditorGUI instance
+        public static EditorGUI instance
         {
             get
             { if   (_instance == null)

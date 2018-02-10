@@ -10,12 +10,12 @@ using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {
-    class StaticsEditorGUI : KKWindow
+    public class StaticsEditorGUI : KKWindow
     {
 
         private static StaticsEditorGUI _instance = null;
 
-        internal static StaticsEditorGUI instance
+        public static StaticsEditorGUI instance
         {
             get
             {
