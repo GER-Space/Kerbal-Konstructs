@@ -71,8 +71,8 @@ namespace KerbalKonstructs.Core
         {
             LaunchSite launchSite = base.ParseConfig(node) as LaunchSite;
             launchSite.lsGameObject = launchSite.gameObject;
-            // clean up
-            launchSite.parentInstance = staticInstance;
+            // this is might be slow
+            launchSite.parentInstance = InstanceUtil.GetStaticInstanceForGameObject(lsGameObject);
             launchSite.body = parentInstance.CelestialBody;
 
             if ( ! string.IsNullOrEmpty(LaunchSiteLogo) )
