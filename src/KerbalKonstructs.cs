@@ -528,6 +528,12 @@ namespace KerbalKonstructs
         {
             if (HighLogic.LoadedSceneIsGame)
             {
+                // Don't update visiblility when Editor is open
+                if (StaticsEditorGUI.instance.IsOpen())
+                {
+                    return;
+                }
+
                 Vector3 playerPos = Vector3.zero;
                 if (selectedObject != null)
                 {
@@ -1506,8 +1512,23 @@ namespace KerbalKonstructs
             StaticDatabase.DeleteStatic(obj);
         }
 
+
+        /// <summary>
+        /// Selects an object for editing
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="isEditing"></param>
+        /// <param name="bFocus"></param>
+        /// <param name="bPreview"></param>
         public void selectObject(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)
         {
+            // enable any object for editing
+            if (StaticsEditorGUI.instance.IsOpen())
+            {
+                InstanceUtil.SetActiveRecursively(obj, true);
+            }
+
+
             if (bFocus)
             {
                 InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
