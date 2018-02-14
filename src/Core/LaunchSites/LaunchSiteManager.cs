@@ -150,10 +150,9 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
-            LaunchSite newSite = instance.gameObject.AddComponent<LaunchSite>().ParseConfig(cfgNode) as LaunchSite;
+            LaunchSite newSite = (instance.gameObject.AddComponent<LaunchSite>()).ParseConfig(cfgNode) as LaunchSite;
             instance.hasLauchSites = true;
             instance.launchSite = newSite;
-            newSite.parentInstance = instance;
             RegisterLaunchSite(newSite);
         }
 
