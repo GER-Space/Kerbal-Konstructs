@@ -540,6 +540,10 @@ namespace KerbalKonstructs.UI
                     break;
             }
             Log.Normal("FacEditor: Change Finished");
+            foreach (var facility in selectedObject.myFacilities)
+            {
+                facility.staticInstance = selectedObject;
+            }
         }
 
 
@@ -611,6 +615,11 @@ namespace KerbalKonstructs.UI
                 selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
                 selectedObject.myFacilities[0].CloseValue = (float)Math.Round((selectedObject.myFacilities[0].OpenCost / 4), 0);
                 selectedObject.myFacilities[0].defaultState = defaultOpenState;
+            }
+
+            foreach (var facility in selectedObject.myFacilities)
+            {
+                facility.staticInstance = selectedObject;
             }
 
         }

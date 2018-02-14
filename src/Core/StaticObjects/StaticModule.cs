@@ -11,6 +11,7 @@ namespace KerbalKonstructs.Core
 		public string moduleNamespace;
 		public string moduleClassname;
 		public Dictionary<String, String> moduleFields = new Dictionary<string,string>();
+        public StaticInstance staticInstance = null;
 		
 		public virtual void StaticObjectUpdate() {}
 	}

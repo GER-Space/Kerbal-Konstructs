@@ -171,6 +171,11 @@ namespace KerbalKonstructs
             SpaceCenterManager.setKSC();
 
             DontDestroyOnLoad(this);
+
+            // PQSMapDecal
+            MapDecalUtils.GetSquadMaps();
+
+            // end PQSMapDecal
             Log.PerfStart("Object loading1");
 
             LoadSquadModels();
@@ -674,6 +679,12 @@ namespace KerbalKonstructs
                 AttachFacilities(instance, instanceCfgNode);
 
                 LaunchSiteManager.AttachLaunchSite(instance, instanceCfgNode);
+
+                // update the references
+                foreach (var facility in instance.myFacilities)
+                {
+                    facility.staticInstance = instance;
+                }
 
             }
 

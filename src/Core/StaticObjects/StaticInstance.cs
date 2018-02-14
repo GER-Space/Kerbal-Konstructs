@@ -222,10 +222,11 @@ namespace KerbalKonstructs.Core
             foreach (StaticModule module in model.modules)
 			{
 				Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
-				MonoBehaviour mod = gameObject.AddComponent(moduleType) as MonoBehaviour;
+                StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
 				if (mod != null)
 				{
+                    mod.staticInstance = this;
 					foreach (string fieldName in module.moduleFields.Keys)
 					{
 						FieldInfo field = mod.GetType().GetField(fieldName);

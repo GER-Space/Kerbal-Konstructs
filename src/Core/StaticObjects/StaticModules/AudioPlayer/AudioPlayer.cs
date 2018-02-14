@@ -28,7 +28,7 @@ namespace KerbalKonstructs
                 return;
             }
 
-            float scale = InstanceUtil.GetStaticInstanceForGameObject(gameObject).ModelScale;
+            float scale = staticInstance.ModelScale;
 
 
             audioPlayer = gameObject.AddComponent<AudioSource>();
@@ -47,7 +47,7 @@ namespace KerbalKonstructs
         {
             if (audioPlayer != null)
             {
-                float scale = InstanceUtil.GetStaticInstanceForGameObject(gameObject).ModelScale;
+                float scale = staticInstance.ModelScale;
                 audioPlayer.minDistance = minDistance * scale;
                 audioPlayer.maxDistance = maxDistance * scale;
             }

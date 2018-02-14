@@ -97,6 +97,8 @@ namespace KerbalKonstructs.Modules
         private string openString = "Closed";
         internal string defaultState = "Closed";
 
+        internal StaticInstance staticInstance = null;
+
         private bool initialized = false;
 
         private static Dictionary<string, FieldInfo> myFields;
