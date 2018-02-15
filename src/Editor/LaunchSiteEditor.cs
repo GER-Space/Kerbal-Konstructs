@@ -238,34 +238,6 @@ namespace KerbalKonstructs.UI
         /// <param name="id"></param>
         void drawLaunchSiteEditorWindow(int id)
         {
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
 
             GUILayout.BeginHorizontal();
             {
@@ -447,6 +419,7 @@ namespace KerbalKonstructs.UI
                     selectedObject.launchSite = lsite;
                     Log.Normal ("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
                     selectedObject.hasLauchSites = true;
+                    lsite.staticInstance = selectedObject;
                     lsite.parentInstance = selectedObject;
                     selectedObject.launchSite.body = selectedObject.CelestialBody;
                     addToDB = true;
