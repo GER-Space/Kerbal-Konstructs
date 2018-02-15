@@ -106,11 +106,31 @@ namespace KerbalKonstructs.Addons
         public static void GetModelStats()
         {
             int modelcount = 0;
+
+            int vertexcount = 0;
+            int triangles = 0;
+
+            Log.Normal("111: Modelname , Number of instances , Vertex count , triangles");
             foreach (StaticModel model in StaticDatabase.allStaticModels)
             {
+                if (model.isSquad)
+                    continue;
                 modelcount = StaticDatabase.GetInstancesFromModel(model).Count();
-                Log.Normal("Model " + model.configPath + " has: " + modelcount);
+                // Log.Normal("Model " + model.configPath + " has: " + modelcount);
+                var meshfilter = model.prefab.GetComponentsInChildren<MeshFilter>(true);
+                if (meshfilter == null)
+                    continue;
 
+                foreach (var mf in meshfilter)
+                {
+                    Mesh mesh = mf.mesh;
+                    triangles += mesh.triangles.Length;
+                    vertexcount += mesh.vertexCount;
+
+                }
+                Log.Normal("111:" + model.configPath + " , " + model.title + " , " + modelcount + " , " + vertexcount + " , " + triangles/3);
+                vertexcount = 0;
+                triangles = 0;
             }
         }
 
