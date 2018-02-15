@@ -245,7 +245,7 @@ namespace KerbalKonstructs.UI
                 Vector3d point2 = mapLengthMult * (Start + (Scale * 0.95 * Vector));
                 Vector3d point3 = mapLengthMult * (Start + (Scale * Vector));
 
-                label.fontSize = (int)(12.0 * (Width / 0.2) * Scale);
+                label.fontSize = (int)(12.0 * (Width / 0.2) * Math.Min(30,Scale));
 
                 useWidth = (float)(Width * Scale * mapWidthMult);
 
