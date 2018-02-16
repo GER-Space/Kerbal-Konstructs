@@ -6,7 +6,7 @@ namespace KerbalKonstructs.Core
 {
 	public class MapDecalsMap
 	{
-        internal MapSO map;
+        internal MapSO map = null;
         internal bool isHeightMap = false;
 
         [CFGSetting]

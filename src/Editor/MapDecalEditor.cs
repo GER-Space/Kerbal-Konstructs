@@ -658,7 +658,7 @@ namespace KerbalKonstructs.UI
 
             GUILayout.BeginHorizontal();
             {
-                if (GUILayout.Button("Save/Apply", GUILayout.Width(180), GUILayout.Height(23)))
+                if (GUILayout.Button("Apply & Save", GUILayout.Width(180), GUILayout.Height(23)))
                 {
                     SaveSettings();
                     smessage = "Saved changes to this object.";

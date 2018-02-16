@@ -91,7 +91,7 @@ namespace KerbalKonstructs.Core
         {
             if (!heightMapList.ContainsKey(name))
             {
-                Log.UserError("No HeightMap found with name: " + name);
+                Log.UserWarning("No HeightMap found with name: " + name);
                 return null;
             }
             else
