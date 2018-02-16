@@ -86,12 +86,17 @@
     <Compile Include="Core\Config\ConfigUtil.cs" />
     <Compile Include="Core\Config\KKCustomParameters.cs" />
     <Compile Include="Core\KKMath.cs" />
+    <Compile Include="Core\MapDecals\DecalsDatabase.cs" />
+    <Compile Include="Core\MapDecals\MapDecalInstance.cs" />
+    <Compile Include="Core\MapDecals\MapDecalsMap.cs" />
+    <Compile Include="Core\MapDecals\MapDecalUtils.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Editor\DrawObject.cs" />
     <Compile Include="Editor\DrawTools.cs" />
+    <Compile Include="Editor\MapDecalEditor.cs" />
     <Compile Include="Editor\FacilityEditor.cs" />
     <Compile Include="Editor\LaunchSiteEditor.cs" />
     <Compile Include="Editor\VectorRenderer.cs" />

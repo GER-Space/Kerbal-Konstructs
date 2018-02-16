@@ -173,8 +173,10 @@ namespace KerbalKonstructs
             DontDestroyOnLoad(this);
 
             // PQSMapDecal
+            Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();
-
+            ConfigParser.LoadAllMapDecals();
+            Log.PerfStop("loading MapDecals");
             // end PQSMapDecal
             Log.PerfStart("Object loading1");
 
@@ -597,11 +599,13 @@ namespace KerbalKonstructs
 
             foreach (ConfigNode instanceCfgNode in configurl.config.GetNodes("Instances"))
             {
-                StaticInstance instance = new StaticInstance();
-                instance.model = model;
-                instance.configUrl = configurl;
-                instance.configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg";
-                instance.gameObject = Instantiate(model.prefab);
+                StaticInstance instance = new StaticInstance
+                {
+                    model = model,
+                    configUrl = configurl,
+                    configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg",
+                    gameObject = Instantiate(model.prefab)
+                };
                 if (instance.gameObject == null)
                 {
                     Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");

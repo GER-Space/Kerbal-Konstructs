@@ -47,8 +47,12 @@ namespace KerbalKonstructs.UI
         public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
         public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 
-        public Boolean creatingInstance = false;
-        public Boolean showLocal = false;
+        // List items
+        private static bool creatingInstance = false;
+        private static bool showLocal = true;
+        private static bool showAll = false;
+        private static bool editDecals = false;
+
         public Boolean enableColliders = false;
 
         public Boolean bDisableEditingSetting = false;
@@ -130,6 +134,7 @@ namespace KerbalKonstructs.UI
         {
             EditorGUI.instance.Close();
             KerbalKonstructs.instance.DeletePreviewObject();
+            MapDecalEditor.Instance.Close();
             base.Close();
         }
 
@@ -151,8 +156,10 @@ namespace KerbalKonstructs.UI
                 doneFold = false;
             }
 
-            KKWindow = new GUIStyle(GUI.skin.window);
-            KKWindow.padding = new RectOffset(8, 8, 3, 3);
+            KKWindow = new GUIStyle(GUI.skin.window)
+            {
+                padding = new RectOffset(8, 8, 3, 3)
+            };
 
             editorRect = GUI.Window(0xB00B1E5, editorRect, drawEditorWindow, "", KKWindow);
         }
@@ -275,12 +282,14 @@ namespace KerbalKonstructs.UI
                 {
                     EditorGUI.CloseEditors();
                     creatingInstance = true;
+                    showAll = false;
                     showLocal = false;
+                    editDecals = false;
                 }
 
                 GUILayout.Space(5);
 
-                GUI.enabled = creatingInstance || showLocal;
+                GUI.enabled = !showAll;
 
                 if (foldedIn)
                 {
@@ -294,13 +303,15 @@ namespace KerbalKonstructs.UI
                 {
                     EditorGUI.CloseEditors();
                     creatingInstance = false;
+                    showAll = true;
                     showLocal = false;
+                    editDecals = false;
                     KerbalKonstructs.instance.DeletePreviewObject();                   
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
-                GUI.enabled = creatingInstance || !showLocal;
+                GUI.enabled = !showLocal;
 
                 if (foldedIn) sButtonText = "Local";
                 else sButtonText = "Local Instances";
@@ -310,8 +321,31 @@ namespace KerbalKonstructs.UI
                     EditorGUI.CloseEditors();
                     creatingInstance = false;
                     showLocal = true;
+                    showAll = false;
+                    editDecals = false;
                     KerbalKonstructs.instance.DeletePreviewObject();
                 }
+
+                GUI.enabled = true;
+                GUILayout.Space(2);
+                GUI.enabled = !editDecals;
+
+                if (foldedIn) sButtonText = "Decal";
+                else sButtonText = "Edit MapDecals";
+
+                if (GUILayout.Button("" + sButtonText, GUILayout.Width(fButtonWidth), GUILayout.Height(23)))
+                {
+                    if (EditorGUI.instance.IsOpen())
+                    {
+                        EditorGUI.instance.Close();
+                    }
+                    editDecals = true;
+                    showAll = false;
+                    creatingInstance = false;
+                    showLocal = false;
+                    KerbalKonstructs.instance.DeletePreviewObject();
+                }
+
 
                 GUI.enabled = true;
 
@@ -353,223 +387,245 @@ namespace KerbalKonstructs.UI
 
             bool showStatic = false;
             scrollPos = GUILayout.BeginScrollView(scrollPos);
-            if (creatingInstance)
             {
-
-
-                if (bSortCategory)
+                // spawning new instances
+                if (creatingInstance)
                 {
-                    allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
-                    {
-                        return (a.category).CompareTo(b.category);
-                    });
-                }
 
-                if (bSortTitle)
-                {
-                    allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
-                    {
-                        return (a.title).CompareTo(b.title);
-                    });
-                }
 
-                for (int idx = 0; idx < allStaticModels.Count; idx++)
-                {
-                    if (titlefilterset == "" && categoryfilterset == "")
-                        showStatic = true;
-
-                    if (titlefilterset != "")
+                    if (bSortCategory)
                     {
-                        sTitleHolder = allStaticModels[idx].title;
-                        if (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0)
+                        allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
+                        {
+                            return (a.category).CompareTo(b.category);
+                        });
+                    }
+
+                    if (bSortTitle)
+                    {
+                        allStaticModels.Sort(delegate (StaticModel a, StaticModel b)
+                        {
+                            return (a.title).CompareTo(b.title);
+                        });
+                    }
+
+                    for (int idx = 0; idx < allStaticModels.Count; idx++)
+                    {
+                        if (titlefilterset == "" && categoryfilterset == "")
                             showStatic = true;
-                        else
-                            showStatic = false;
-                    }
 
-                    if (categoryfilterset != "")
-                    {
-                        sCategoryHolder = allStaticModels[idx].category;
-                        if (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0)
-                            showStatic = true;
-                        else
-                            showStatic = false;
-                    }
-
-                    if (categoryfilterset != "" && titlefilterset != "")
-                    {
-                        sTitleHolder = (string)allStaticModels[idx].title;
-                        sCategoryHolder = (string)allStaticModels[idx].category;
-                        if ((sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0) && (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0))
-                            showStatic = true;
-                        else
-                            showStatic = false;
-                    }
-
-                    if (showStatic)
-                    {
-                        GUILayout.BeginHorizontal();
-
-                        if (!foldedIn)
+                        if (titlefilterset != "")
                         {
-                            if (GUILayout.Button(new GUIContent("" + allStaticModels[idx].category, "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
+                            sTitleHolder = allStaticModels[idx].title;
+                            if (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0)
+                                showStatic = true;
+                            else
+                                showStatic = false;
+                        }
+
+                        if (categoryfilterset != "")
+                        {
+                            sCategoryHolder = allStaticModels[idx].category;
+                            if (sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0)
+                                showStatic = true;
+                            else
+                                showStatic = false;
+                        }
+
+                        if (categoryfilterset != "" && titlefilterset != "")
+                        {
+                            sTitleHolder = (string)allStaticModels[idx].title;
+                            sCategoryHolder = (string)allStaticModels[idx].category;
+                            if ((sCategoryHolder.IndexOf(categoryfilterset, StringComparison.OrdinalIgnoreCase) >= 0) && (sTitleHolder.IndexOf(titlefilterset, StringComparison.OrdinalIgnoreCase) >= 0))
+                                showStatic = true;
+                            else
+                                showStatic = false;
+                        }
+
+                        if (showStatic)
+                        {
+                            GUILayout.BeginHorizontal();
+
+                            if (!foldedIn)
                             {
-                                categoryfilter = allStaticModels[idx].category;
-                                categoryfilterset = categoryfilter;
-                                titlefilterset = titlefilter;
+                                if (GUILayout.Button(new GUIContent("" + allStaticModels[idx].category, "Filter"), DeadButton, GUILayout.Width(110), GUILayout.Height(23)))
+                                {
+                                    categoryfilter = allStaticModels[idx].category;
+                                    categoryfilterset = categoryfilter;
+                                    titlefilterset = titlefilter;
+                                }
+                                //GUILayout.FlexibleSpace();
+                                GUILayout.Space(5);
                             }
-                            //GUILayout.FlexibleSpace();
-                            GUILayout.Space(5);
-                        }
 
-                        if (GUILayout.Button(new GUIContent("" + "" + allStaticModels[idx].title, "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
-                        {
-                            EditorGUI.CloseEditors();
-                            KerbalKonstructs.instance.DeletePreviewObject();
-                            KerbalKonstructs.instance.bDisablePositionEditing = false;
-                            spawnInstance(allStaticModels[idx]);
-                            smessage = "Spawned " + allStaticModels[idx].title;
-                            MiscUtils.HUDMessage(smessage, 10, 2);
-                        }
-
-                        if (!foldedIn)
-                        {
-                            GUILayout.FlexibleSpace();
-                            if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                            if (GUILayout.Button(new GUIContent("" + "" + allStaticModels[idx].title, "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
                             {
-                                KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
-                                ModelInfo.instance.Open();
+                                EditorGUI.CloseEditors();
+                                KerbalKonstructs.instance.DeletePreviewObject();
+                                KerbalKonstructs.instance.bDisablePositionEditing = false;
+                                SpawnInstance(allStaticModels[idx]);
+                                smessage = "Spawned " + allStaticModels[idx].title;
+                                MiscUtils.HUDMessage(smessage, 10, 2);
                             }
-                        }
 
-                        GUILayout.EndHorizontal();
-                        GUILayout.Space(2);
+                            if (!foldedIn)
+                            {
+                                GUILayout.FlexibleSpace();
+                                if (GUILayout.Button(new GUIContent(" " + allStaticModels[idx].mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                                {
+                                    KerbalKonstructs.instance.selectedModel = allStaticModels[idx];
+                                    ModelInfo.instance.Open();
+                                }
+                            }
+
+                            GUILayout.EndHorizontal();
+                            GUILayout.Space(2);
+                        }
                     }
                 }
-            }
-
-            if (!creatingInstance)
-            {
-                UpdateInstances();
-                for (int ix = 0; ix < allStaticInstances.Length; ix++)
-                //foreach (StaticObject obj in allStaticInstances)
+                // edting existing instances
+                if (showAll || showLocal)
                 {
-                    bool isLocal = true;
-
-                    if (showLocal)
+                    UpdateInstances();
+                    for (int ix = 0; ix < allStaticInstances.Length; ix++)
+                    //foreach (StaticObject obj in allStaticInstances)
                     {
-                        if (allStaticInstances[ix].pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
-                        {
-                            var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
-                            isLocal = dist < localRange;
-                        }
-                        else
-                            isLocal = false;
-                    }
-
-                    string sGroupHolder = "";
-                    if (!showLocal)
-                    {
-                        if (groupfilterset != "")
-                        {
-                            sGroupHolder = allStaticInstances[ix].Group;
-                            if (!sGroupHolder.Contains(groupfilterset))
-                            {
-                                isLocal = false;
-                            }
-                        }
-                    }
-
-                    string sLaunchType = "";
-
-                    if (isLocal)
-                    {
-                        GUILayout.BeginHorizontal();
-                        if (!foldedIn)
-                        {
-                            GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
-                            if (allStaticInstances[ix].hasLauchSites)
-                            {
-                                sLaunchType = allStaticInstances[ix].launchSite.Category;
-                            }
-                            switch (sLaunchType)
-                            {
-                                case "Runway":
-                                    GUILayout.Button(UIMain.runWayIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                                case "Helipad":
-                                    GUILayout.Button(UIMain.heliPadIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                                case "RocketPad":
-                                    GUILayout.Button(UIMain.VABIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                                case "Waterlaunch":
-                                    GUILayout.Button(UIMain.waterLaunchIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                                case "Other":
-                                    GUILayout.Button(UIMain.ANYIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                                default:
-                                    GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                    break;
-                            }
-                        }
-
-                        //GUI.enabled = (obj != selectedObject);
-                        if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title + " ( " + allStaticInstances[ix].indexInGroup.ToString() + " )" , "Edit this instance."), GUILayout.Height(23)))
-                        {
-                            KerbalKonstructs.instance.bDisablePositionEditing = false;
-                            enableColliders = true;
-                            EditorGUI.CloseEditors();
-
-                            if (selectedObject != null)
-                            {
-                                selectedObjectPrevious = selectedObject;
-                                Color highlightColor = new Color(0, 0, 0, 0);
-                                allStaticInstances[ix].HighlightObject(highlightColor);
-                            }
-
-                            if (snapTargetInstance == allStaticInstances[ix])
-                            {
-                                snapTargetInstance = null;
-                            }
-                            KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
-
-                            //obj.selectObject(false);
-
-                            Color highlightColor2 = XKCDColors.Green_Yellow;
-                            allStaticInstances[ix].HighlightObject(highlightColor2);
-                        }
-                        //GUI.enabled = true;
+                        bool isLocal = true;
 
                         if (showLocal)
                         {
-                            GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
-                            if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
+                            if (allStaticInstances[ix].pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
                             {
-                                if (snapTargetInstance != null)
+                                var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
+                                isLocal = dist < localRange;
+                            }
+                            else
+                                isLocal = false;
+                        }
+
+                        string sGroupHolder = "";
+                        if (!showLocal)
+                        {
+                            if (groupfilterset != "")
+                            {
+                                sGroupHolder = allStaticInstances[ix].Group;
+                                if (!sGroupHolder.Contains(groupfilterset))
                                 {
-                                    snapTargetInstancePrevious = snapTargetInstance;
-                                    Color highlightColor3 = new Color(0, 0, 0, 0);
-                                    snapTargetInstance.HighlightObject(highlightColor3);
+                                    isLocal = false;
+                                }
+                            }
+                        }
+
+                        string sLaunchType = "";
+
+                        if (isLocal)
+                        {
+                            GUILayout.BeginHorizontal();
+                            if (!foldedIn)
+                            {
+                                GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
+                                if (allStaticInstances[ix].hasLauchSites)
+                                {
+                                    sLaunchType = allStaticInstances[ix].launchSite.Category;
+                                }
+                                switch (sLaunchType)
+                                {
+                                    case "Runway":
+                                        GUILayout.Button(UIMain.runWayIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                    case "Helipad":
+                                        GUILayout.Button(UIMain.heliPadIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                    case "RocketPad":
+                                        GUILayout.Button(UIMain.VABIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                    case "Waterlaunch":
+                                        GUILayout.Button(UIMain.waterLaunchIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                    case "Other":
+                                        GUILayout.Button(UIMain.ANYIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                    default:
+                                        GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                                        break;
+                                }
+                            }
+
+                            //GUI.enabled = (obj != selectedObject);
+                            if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title + " ( " + allStaticInstances[ix].indexInGroup.ToString() + " )", "Edit this instance."), GUILayout.Height(23)))
+                            {
+                                KerbalKonstructs.instance.bDisablePositionEditing = false;
+                                enableColliders = true;
+                                EditorGUI.CloseEditors();
+
+                                if (selectedObject != null)
+                                {
+                                    selectedObjectPrevious = selectedObject;
+                                    Color highlightColor = new Color(0, 0, 0, 0);
+                                    allStaticInstances[ix].HighlightObject(highlightColor);
                                 }
 
-                                snapTargetInstance = allStaticInstances[ix];
+                                if (snapTargetInstance == allStaticInstances[ix])
+                                {
+                                    snapTargetInstance = null;
+                                }
+                                KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
 
-                                Color highlightColor4 = XKCDColors.RedPink;
-                                allStaticInstances[ix].HighlightObject(highlightColor4);
+                                //obj.selectObject(false);
+
+                                Color highlightColor2 = XKCDColors.Green_Yellow;
+                                allStaticInstances[ix].HighlightObject(highlightColor2);
                             }
-                            GUI.enabled = true;
+                            //GUI.enabled = true;
+
+                            if (showLocal)
+                            {
+                                GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
+                                if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
+                                {
+                                    if (snapTargetInstance != null)
+                                    {
+                                        snapTargetInstancePrevious = snapTargetInstance;
+                                        Color highlightColor3 = new Color(0, 0, 0, 0);
+                                        snapTargetInstance.HighlightObject(highlightColor3);
+                                    }
+
+                                    snapTargetInstance = allStaticInstances[ix];
+
+                                    Color highlightColor4 = XKCDColors.RedPink;
+                                    allStaticInstances[ix].HighlightObject(highlightColor4);
+                                }
+                                GUI.enabled = true;
+                            }
+                            GUILayout.EndHorizontal();
+                            GUILayout.Space(2);
                         }
-                        GUILayout.EndHorizontal();
-                        GUILayout.Space(2);
                     }
                 }
+
+                // PQS List
+                if (editDecals)
+                {
+                    foreach (var mapDecalInstance in DecalsDatabase.allMapDecalInstances)
+                    {
+                        if (GUILayout.Button(new GUIContent(" " +  mapDecalInstance.Name, "Edit this instance."), GUILayout.Height(23)))
+                        {
+                            EditorGUI.CloseEditors();
+                            MapDecalEditor.Instance.Close();
+                            MapDecalEditor.selectedDecal = mapDecalInstance;
+                            MapDecalEditor.Instance.Open();
+                        }
+
+                    }
+
+                }
+
             }
             GUILayout.EndScrollView();
 
-            GUI.enabled = true;
+            #region  Buttons below scroll view
 
+            GUI.enabled = true;
             if (!foldedIn)
             {
                 if (creatingInstance)
@@ -606,7 +662,7 @@ namespace KerbalKonstructs.UI
 
             if (!foldedIn)
             {
-                if (!showLocal && !creatingInstance)
+                if (showAll)
                 {
                     GUILayout.BeginHorizontal();
                     {
@@ -625,7 +681,7 @@ namespace KerbalKonstructs.UI
                     }
                     GUILayout.EndHorizontal();
 
-                    GUILayout.BeginHorizontal();
+                    // GUILayout.BeginHorizontal();
                     //{
                     //    GUILayout.Label("Pack Name: ", GUILayout.Width(140));
                     //    //GUILayout.FlexibleSpace();
@@ -670,7 +726,7 @@ namespace KerbalKonstructs.UI
                     //    }
                     //    GUI.enabled = true;
                     //}
-                    GUILayout.EndHorizontal();
+                    //GUILayout.EndHorizontal();
 
 
                     GUILayout.BeginHorizontal();
@@ -738,13 +794,41 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("" + sButtonText, GUILayout.Width(fButtonWidth)))
                 {
-                    setLocalsGroup(customgroup, localRange);
+                    SetLocalsGroup(customgroup, localRange);
                     smessage = "Set group as " + customgroup;
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
                 GUI.enabled = true;
                 GUILayout.EndHorizontal();
             }
+
+            if (editDecals)
+            {
+                GUILayout.BeginHorizontal();
+
+                //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
+                //GUILayout.FlexibleSpace();
+                //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
+                if (GUILayout.Button("Spawn new MapDecal", GUILayout.Width(170)))
+                {
+                    if (EditorGUI.instance.IsOpen())
+                    {
+                        EditorGUI.instance.Close();
+                    }
+
+                    MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
+
+                    if (MapDecalEditor.selectedDecal == null) Log.UserError("No MapDecalInstance created");
+
+                    MapDecalEditor.Instance.Open();
+
+                    Log.Normal("MapDecal Editor spawned");
+
+                }
+                GUILayout.EndHorizontal();
+            }
+
+            #endregion
 
             GUILayout.Space(1);
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
@@ -760,7 +844,7 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
-        void setLocalsGroup(string sGroup, float fRange)
+        void SetLocalsGroup(string sGroup, float fRange)
         {
             if (sGroup == "")
                 return;
@@ -782,7 +866,7 @@ namespace KerbalKonstructs.UI
         /// wrapper for editorGUI spawnInstance
         /// </summary>
         /// <param name="model"></param>
-		internal void spawnInstance(StaticModel model)
+		internal void SpawnInstance(StaticModel model)
         {
             EditorGUI.instance.spawnInstance(model,
                 (float)FlightGlobals.ActiveVessel.altitude,
@@ -808,8 +892,7 @@ namespace KerbalKonstructs.UI
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); ;
             int layerMask = ~0;
 
-            RaycastHit hit;
-            if (!Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+            if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 return;
             }

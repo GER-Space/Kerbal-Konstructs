@@ -38,6 +38,8 @@ namespace KerbalKonstructs.Core
         internal static Dictionary<string, FieldInfo> modelFields = new Dictionary<string, FieldInfo>();
         internal static Dictionary<string, FieldInfo> instanceFields = new Dictionary<string, FieldInfo>();
 
+        internal static Dictionary<string, FieldInfo> mapDecalFields = new Dictionary<string, FieldInfo>();
+
         internal static HashSet<string> facilitiyTypes = new HashSet<string>();
 
 
@@ -65,6 +67,14 @@ namespace KerbalKonstructs.Core
                 {
                     instanceFields.Add(field.Name, field);
                     //Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
+                }
+            }
+
+            foreach (FieldInfo field in typeof(MapDecalInstance).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (Attribute.IsDefined(field, typeof(CFGSetting)))
+                {
+                    mapDecalFields.Add(field.Name, field);
                 }
             }
 
