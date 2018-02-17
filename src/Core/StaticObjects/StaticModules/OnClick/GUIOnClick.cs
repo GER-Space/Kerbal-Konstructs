@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
-	public class GUIOnClick : MonoBehaviour
+	public class GUIOnClick : StaticModule
 	{
 		public string collider;
 		public string FacilityType;

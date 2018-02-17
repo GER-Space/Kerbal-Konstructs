@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
-	public class AnimateOnClick : MonoBehaviour
+	public class AnimateOnClick : StaticModule
 	{
 		public string collider;
 		public string animationName;
