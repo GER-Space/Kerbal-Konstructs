@@ -14,12 +14,12 @@ namespace KerbalKonstructs.Core
             MapDecalsMap noHeighmap = new MapDecalsMap();
             noHeighmap.map = null;
             noHeighmap.isHeightMap = true;
-            noHeighmap.name = "None";
+            noHeighmap.Name = "None";
 
             MapDecalsMap noColormap = new MapDecalsMap();
             noColormap.map = null;
             noColormap.isHeightMap = false;
-            noColormap.name = "None";
+            noColormap.Name = "None";
 
             DecalsDatabase.RegisterMap(noHeighmap);
             DecalsDatabase.RegisterMap(noColormap);
@@ -36,7 +36,7 @@ namespace KerbalKonstructs.Core
                     MapDecalsMap heightMap = new MapDecalsMap();
                     heightMap.isHeightMap = true;
                     heightMap.map = mapDecal.heightMap;
-                    heightMap.name = "height_" + mapDecal.name;
+                    heightMap.Name = "height_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(heightMap);
 
                     Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
@@ -48,7 +48,7 @@ namespace KerbalKonstructs.Core
                     MapDecalsMap colorMap = new MapDecalsMap();
                     colorMap.isHeightMap = false;
                     colorMap.map = mapDecal.colorMap;
-                    colorMap.name = "color_" + mapDecal.name;
+                    colorMap.Name = "color_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(colorMap);
                     Log.Normal("MapDecal: colormap: " + mapDecal.colorMap.name);
                 }
@@ -86,7 +86,7 @@ namespace KerbalKonstructs.Core
                     MapDecalsMap heightMap = new MapDecalsMap();
                     heightMap.isHeightMap = true;
                     heightMap.map = mapDecal.heightMap;
-                    heightMap.name = "height_" + mapDecal.name;
+                    heightMap.Name = "height_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(heightMap);
                     Log.Normal("MapDecalTGT: heightmap: " + mapDecal.heightMap.name);
                 }
@@ -96,7 +96,7 @@ namespace KerbalKonstructs.Core
                     MapDecalsMap colorMap = new MapDecalsMap();
                     colorMap.isHeightMap = false;
                     colorMap.map = mapDecal.colorMap;
-                    colorMap.name = "color_" + mapDecal.name;
+                    colorMap.Name = "color_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(colorMap);
                     Log.Normal("MapDecalTGT: colormap: " + mapDecal.colorMap.name);
                 }
@@ -126,17 +126,6 @@ namespace KerbalKonstructs.Core
             //{
             //    Log.Normal("DecalMap: " + map.name);
             //}
-        }
-
-        internal static void SpawnDecalInstanceFromCfgNode(ConfigNode node)
-        {
-
-            MapDecalInstance decalInstance = new MapDecalInstance();
-
-
-
-
-
         }
 
         internal static MapDecalInstance SpawnNewDecalInstance()

@@ -534,9 +534,9 @@ namespace KerbalKonstructs.UI
 
                 foreach (var newmap in DecalsDatabase.allHeightMaps)
                 {
-                    if (GUILayout.Button(newmap.name, GUILayout.Height(23)))
+                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
                     {
-                        selectedDecal.HeightMapName = newmap.name;
+                        selectedDecal.HeightMapName = newmap.Name;
                         selectHeightMap = false;
                     }
 
@@ -595,9 +595,9 @@ namespace KerbalKonstructs.UI
 
                 foreach (var newmap in DecalsDatabase.allColorMaps)
                 {
-                    if (GUILayout.Button(newmap.name, GUILayout.Height(23)))
+                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
                     {
-                        selectedDecal.ColorMapName = newmap.name;
+                        selectedDecal.ColorMapName = newmap.Name;
                         selectColorMap = false;
                     }
 

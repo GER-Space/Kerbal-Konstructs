@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
+using System.IO;
 
 namespace KerbalKonstructs.Core
 {
@@ -147,10 +148,10 @@ namespace KerbalKonstructs.Core
             }
 
             if (instance.hasFacilities)
-            {               
+            {
                 for (int i = 0; i < instance.myFacilities.Count; i++)
                 {
-                     
+
                     ConfigNode facNode = cfgNode.AddNode("Facility");
                     instance.myFacilities[i].WriteConfig(facNode);
                 }
@@ -181,6 +182,22 @@ namespace KerbalKonstructs.Core
         }
 
         /// <summary>
+        /// Parser for MapDecalInstance Objects
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="cfgNode"></param>
+        internal static void ParseDecalsMapConfig(MapDecalsMap target, ConfigNode cfgNode)
+        {
+            if (!ConfigUtil.initialized)
+                ConfigUtil.InitTypes();
+
+            foreach (var field in ConfigUtil.mapDecalsMapFields.Values)
+            {
+                ConfigUtil.ReadCFGNode(target, field, cfgNode);
+            }
+        }
+
+        /// <summary>
         /// Writer for MapDecalObjects
         /// </summary>
         /// <param name="mapDecalInstance"></param>
@@ -198,6 +215,9 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        /// <summary>
+        /// Loads all KK_MAPDecals and places them on the planets
+        /// </summary>
         internal static void LoadAllMapDecals()
         {
             UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("KK_MapDecal");
@@ -217,7 +237,7 @@ namespace KerbalKonstructs.Core
             // remove all instances where no planet was assigned
             foreach (MapDecalInstance instance in DecalsDatabase.allMapDecalInstances)
             {
-                if (instance.CelestialBody == null )
+                if (instance.CelestialBody == null)
                 {
                     Log.Normal("No valid CelestialBody found: removing MapDecal instance " + instance.configPath);
                     DecalsDatabase.DeleteMapDecalInstance(instance);
@@ -231,7 +251,7 @@ namespace KerbalKonstructs.Core
                         bodies2Update.Add(instance.CelestialBody);
                     }
 
-                   
+
                     instance.mapDecal.transform.position = instance.CelestialBody.GetWorldSurfacePosition(instance.Latitude, instance.Longitude, instance.AbsolutOffset);
                     instance.mapDecal.transform.up = instance.CelestialBody.GetSurfaceNVector(instance.Latitude, instance.Longitude);
 
@@ -239,10 +259,6 @@ namespace KerbalKonstructs.Core
                 }
 
             }
-
-
-
-
             // Rebuild spheres on all plants with new MapDecals
             foreach (CelestialBody body in bodies2Update)
             {
@@ -252,7 +268,10 @@ namespace KerbalKonstructs.Core
 
         }
 
-
+        /// <summary>
+        /// Writes out a mapdecal config
+        /// </summary>
+        /// <param name="instance"></param>
         internal static void SaveMapDecalInstance(MapDecalInstance instance)
         {
 
@@ -277,5 +296,39 @@ namespace KerbalKonstructs.Core
         }
 
 
+
+        internal static void LoadAllMapDecalMaps()
+        {
+            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("KK_DecalsMap");
+
+            foreach (UrlDir.UrlConfig conf in configs)
+            {
+                //create new Instance and Register in Database
+                MapDecalsMap newMapDecalInstance = new MapDecalsMap();
+                // Load Settings into instance
+                ParseDecalsMapConfig(newMapDecalInstance, conf.config);
+
+                newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
+                newMapDecalInstance.mapTexture = GameDatabase.Instance.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
+
+                if (newMapDecalInstance.mapTexture == null)
+                {
+                    Log.UserError("Image File " + newMapDecalInstance.path + "/" + newMapDecalInstance.Image + " could not be loaded");
+                    continue;
+                }
+
+                if (newMapDecalInstance.UseAsHeighMap) {
+                    newMapDecalInstance.CreateMap(MapSO.MapDepth.Greyscale, newMapDecalInstance.mapTexture);
+                    newMapDecalInstance.isHeightMap = true;
+                } else
+                {
+                    newMapDecalInstance.CreateMap(MapSO.MapDepth.RGB, newMapDecalInstance.mapTexture);
+                }
+                Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + newMapDecalInstance.isHeightMap.ToString());
+
+                newMapDecalInstance.map = newMapDecalInstance as MapSO;
+                DecalsDatabase.RegisterMap(newMapDecalInstance);
+            }
+        }
     }
 }

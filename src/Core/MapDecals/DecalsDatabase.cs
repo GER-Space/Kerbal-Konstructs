@@ -58,28 +58,28 @@ namespace KerbalKonstructs.Core
             if (decalMap.isHeightMap)
             {
 
-                if (heightMapList.ContainsKey(decalMap.name))
+                if (heightMapList.ContainsKey(decalMap.Name))
                 {
-                    Log.UserInfo("duplicate DecalMap name: " + decalMap.name + " ,found");
+                    Log.UserInfo("duplicate DecalMap name: " + decalMap.Name + " ,found");
                     return;
                 }
                 else
                 {
-                    heightMapList.Add(decalMap.name, decalMap);
+                    heightMapList.Add(decalMap.Name, decalMap);
                     allHeightMaps.Add(decalMap);
                 }
             }
             else
             {
 
-                if (colorMapList.ContainsKey(decalMap.name))
+                if (colorMapList.ContainsKey(decalMap.Name))
                 {
-                    Log.UserInfo("duplicate DecalMap name: " + decalMap.name + " ,found");
+                    Log.UserInfo("duplicate DecalMap name: " + decalMap.Name + " ,found");
                     return;
                 }
                 else
                 {
-                    colorMapList.Add(decalMap.name, decalMap);
+                    colorMapList.Add(decalMap.Name, decalMap);
                     allColorMaps.Add(decalMap);
                 }
             }

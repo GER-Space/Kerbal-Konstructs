@@ -175,6 +175,7 @@ namespace KerbalKonstructs
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();
+            ConfigParser.LoadAllMapDecalMaps();
             ConfigParser.LoadAllMapDecals();
             Log.PerfStop("loading MapDecals");
             // end PQSMapDecal
