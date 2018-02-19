@@ -1150,6 +1150,7 @@ namespace KerbalKonstructs
             {
                 return;
             }
+
             KKFacilityType facType;
             try
             {

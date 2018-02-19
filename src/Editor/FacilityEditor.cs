@@ -55,7 +55,8 @@ namespace KerbalKonstructs.UI
 
         private string defaultOpenState;
 
-
+        // put herer the facilities that should not be selected
+        private HashSet<string> hiddenFacilities = new HashSet<string> { "TrackingStation" };
 
 
 
@@ -134,80 +135,32 @@ namespace KerbalKonstructs.UI
             GUILayout.Box((string)selectedObject.model.title);
             GUILayout.Space(1);
             if (GUILayout.Button("Facility Type: " + facType, GUILayout.Height(23)))
+            {
                 bChangeFacilityType = true;
+            }
 
             if (bChangeFacilityType)
             {
                 facilityscroll = GUILayout.BeginScrollView(facilityscroll);
-                if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
-                    bChangeFacilityType = false;
-
-                if (GUILayout.Button("None", GUILayout.Height(23)))
                 {
-                    facType = "None";
-                    bChangeFacilityType = false;
-                }
+                    if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
+                        bChangeFacilityType = false;
 
-                if (GUILayout.Button("Barracks", GUILayout.Height(23)))
-                {
-                    facType = "Barracks";
-                    bChangeFacilityType = false;
-                }
+                    foreach (string facility in Enum.GetNames(typeof(KKFacilityType)))
+                    {
+                        if (hiddenFacilities.Contains(facility))
+                        {
+                            continue;
+                        }
 
-                if (GUILayout.Button("Business", GUILayout.Height(23)))
-                {
-                    facType = "Business";
-                    bChangeFacilityType = false;
-                }
+                        if (GUILayout.Button(facility, GUILayout.Height(23)))
+                        {
+                            facType = facility;
+                            bChangeFacilityType = false;
+                        }
+                    }
 
-                if (GUILayout.Button("Fuel Tanks", GUILayout.Height(23)))
-                {
-                    facType = "FuelTanks";
-                    bChangeFacilityType = false;
                 }
-
-                if (GUILayout.Button("Hangar", GUILayout.Height(23)))
-                {
-                    facType = "Hangar";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Research", GUILayout.Height(23)))
-                {
-                    facType = "Research";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Ground Station", GUILayout.Height(23)))
-                {
-                    facType = "GroundStation";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("City Lights", GUILayout.Height(23)))
-                {
-                    facType = "CityLights";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Landing Guide", GUILayout.Height(23)))
-                {
-                    facType = "LandingGuide";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Touchdown R", GUILayout.Height(23)))
-                {
-                    facType = "TouchdownGuideR";
-                    bChangeFacilityType = false;
-                }
-
-                if (GUILayout.Button("Touchdown L", GUILayout.Height(23)))
-                {
-                    facType = "TouchdownGuideL";
-                    bChangeFacilityType = false;
-                }
-
                 GUILayout.EndScrollView();
             }
             // Update editor window button
@@ -231,104 +184,125 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Open|Closed", LabelWhite);
                 GUILayout.EndHorizontal();
             }
-            if (facType == "GroundStation")
+
+            switch (selectedObject.facilityType)
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Short Range: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("m", LabelWhite);
-                GUILayout.EndHorizontal();
-            }
+                case KKFacilityType.Barracks:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Staff: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                case KKFacilityType.Business:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Staff: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Production Rate: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
 
-            if (facType == "Barracks" || facType == "Research" || facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Staff: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
+                        GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Funds: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                case KKFacilityType.FuelTanks:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max LiquidFuel: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infLqFMax = GUILayout.TextField(infLqFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
 
-            if (facType == "Research" || facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Production Rate: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Oxidizer: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infOxFMax = GUILayout.TextField(infOxFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
 
-                GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
-            }
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Monoprop: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infMoFMax = GUILayout.TextField(infMoFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                case KKFacilityType.GroundStation:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Short Range: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infTrackingShort = GUILayout.TextField(infTrackingShort, 15, GUILayout.Width(130), GUILayout.Height(18));
+                        GUILayout.Label("m", LabelWhite);
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                case KKFacilityType.Hangar:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Craft Mass: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infFacMassCap = GUILayout.TextField(infFacMassCap, 4, GUILayout.Width(130), GUILayout.Height(18));
+                        GUILayout.Label("T", LabelWhite, GUILayout.Width(20));
+                        GUILayout.EndHorizontal();
 
-            if (facType == "Research")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Science: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Craft: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        GUILayout.Label("" + infFacCraftCap, LabelWhite, GUILayout.Width(30));
 
-            if (facType == "Business")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Funds: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
+                        if (GUILayout.Button("1", GUILayout.Width(23), GUILayout.Height(23)))
+                        {
+                            infFacCraftCap = "1";
+                        }
+                        if (GUILayout.Button("2", GUILayout.Width(23), GUILayout.Height(23)))
+                        {
+                            infFacCraftCap = "2";
+                        }
 
-            if (facType == "FuelTanks")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max LiquidFuel: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infLqFMax = GUILayout.TextField(infLqFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
+                        if (GUILayout.Button("3", GUILayout.Width(23), GUILayout.Height(23)))
+                        {
+                            infFacCraftCap = "3";
+                        }
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                case KKFacilityType.Research:
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Staff: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infStaffMax = GUILayout.TextField(infStaffMax, 2, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Production Rate: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infProdRateMax = GUILayout.TextField(infProdRateMax, 5, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Oxidizer: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infOxFMax = GUILayout.TextField(infOxFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
+                        GUILayout.Label("Amount produced every 12 hours is production rate multiplied by current number of staff.", LabelWhite);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Max Science: ", LabelGreen);
+                        GUILayout.FlexibleSpace();
+                        infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
+                        GUILayout.EndHorizontal();
+                    }
+                    break;
+                default:
+                    break;
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Monoprop: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infMoFMax = GUILayout.TextField(infMoFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
-
-            if (facType == "Hangar")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Craft Mass: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infFacMassCap = GUILayout.TextField(infFacMassCap, 4, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("T", LabelWhite, GUILayout.Width(20));
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Craft: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("" + infFacCraftCap, LabelWhite, GUILayout.Width(30));
-
-                if (GUILayout.Button("1", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "1";
-                }
-                if (GUILayout.Button("2", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "2";
-                }
-
-                if (GUILayout.Button("3", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "3";
-                }
-                GUILayout.EndHorizontal();
-            }
+            }        
 
             GUILayout.FlexibleSpace();
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
@@ -406,37 +380,7 @@ namespace KerbalKonstructs.UI
             LabelWhite.padding.top = 1;
         }
 
-        /// <summary>
-        /// Parses a string to a double within a range
-        /// </summary>
-        /// <param name="sText"></param>
-        /// <param name="RangeMax"></param>
-        /// <param name="RangeMin"></param>
-        /// <returns></returns>
-        private static bool ValidateStringToDouble(string sText, double RangeMax = 0, double RangeMin = 0)
-        {
-            double parsedValue;
-            bool parsed = double.TryParse(sText, out parsedValue);
-
-            if (parsed)
-            {
-                if (RangeMax > 0)
-                {
-                    if (parsedValue > RangeMax) return false;
-                }
-
-                if (RangeMin > 0)
-                {
-                    if (parsedValue < RangeMin) return false;
-                }
-
-                return true;
-            }
-            else
-                return false;
-        }
-
-
+    
         /// <summary>
         /// Removes add previous facility settings from Static Object
         /// </summary>
@@ -506,10 +450,6 @@ namespace KerbalKonstructs.UI
             {
                 case KKFacilityType.GroundStation:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
-                    break;
-                case KKFacilityType.TrackingStation:
-                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
-                    selectedObject.facilityType = KKFacilityType.GroundStation;
                     break;
                 case KKFacilityType.FuelTanks:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
