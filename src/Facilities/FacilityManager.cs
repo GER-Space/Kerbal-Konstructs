@@ -305,11 +305,7 @@ namespace KerbalKonstructs.UI
                     ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
                 }
 
-                fLqFMax = selectedFacility.model.LqFMax;
-                fOxFMax = selectedFacility.model.OxFMax;
-                fMoFMax = selectedFacility.model.MoFMax;
-
-                if (fLqFMax > 0 || fOxFMax > 0 || fMoFMax > 0 || sFacilityType == "FuelTanks")
+                if (sFacilityType == "FuelTanks")
                 {
                     FuelTanksGUI.FuelTanksInterface(selectedFacility);
                 }
