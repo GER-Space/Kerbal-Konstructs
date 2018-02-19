@@ -79,9 +79,13 @@ namespace KerbalKonstructs.UI
         private VectorRenderer upVR = new VectorRenderer();
         private VectorRenderer fwdVR = new VectorRenderer();
         private VectorRenderer rightVR = new VectorRenderer();
+        private VectorRenderer backVR = new VectorRenderer();
+        private VectorRenderer leftVR = new VectorRenderer();
 
         private VectorRenderer northVR = new VectorRenderer();
         private VectorRenderer eastVR = new VectorRenderer();
+        private VectorRenderer southVR = new VectorRenderer();
+        private VectorRenderer westVR = new VectorRenderer();
 
 
         private static Space referenceSystem = Space.World;
@@ -468,10 +472,12 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
+                    selectedDecal.Radius = Math.Max(0, selectedDecal.Radius);
                 }
                 if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
+                    selectedDecal.Radius = Math.Max(0, selectedDecal.Radius);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -552,7 +558,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
                     selectedDecal.HeightMapDeformity -= increment;
-                    selectedDecal.HeightMapDeformity = Math.Max(0, selectedDecal.HeightMapDeformity);
+                    //selectedDecal.HeightMapDeformity = Math.Max(0, selectedDecal.HeightMapDeformity);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                 {
@@ -808,14 +814,23 @@ namespace KerbalKonstructs.UI
                 fwdVR.SetShow(true);
                 upVR.SetShow(true);
                 rightVR.SetShow(true);
+                backVR.SetShow(true);
+                leftVR.SetShow(true);
 
                 northVR.SetShow(false);
                 eastVR.SetShow(false);
+                southVR.SetShow(false);
+                westVR.SetShow(false);
 
                 fwdVR.Vector = selectedDecal.gameObject.transform.forward;
                 fwdVR.Start = VectorDrawPosition;
                 fwdVR.Scale = Math.Max(1, selectedDecal.Radius);
                 fwdVR.draw();
+
+                backVR.Vector = -selectedDecal.gameObject.transform.forward;
+                backVR.Start = VectorDrawPosition;
+                backVR.Scale = Math.Max(1, selectedDecal.Radius);
+                backVR.draw();
 
                 upVR.Vector = selectedDecal.gameObject.transform.up;
                 upVR.Start = VectorDrawPosition;
@@ -826,25 +841,44 @@ namespace KerbalKonstructs.UI
                 rightVR.Start = VectorDrawPosition;
                 rightVR.Scale = Math.Max(1, selectedDecal.Radius); 
                 rightVR.draw();
+
+                leftVR.Vector = -selectedDecal.gameObject.transform.right;
+                leftVR.Start = VectorDrawPosition;
+                leftVR.Scale = Math.Max(1, selectedDecal.Radius);
+                leftVR.draw();
             }
             if (referenceSystem == Space.World)
             {
                 northVR.SetShow(true);
                 eastVR.SetShow(true);
+                southVR.SetShow(true);
+                westVR.SetShow(true);
 
                 fwdVR.SetShow(false);
                 upVR.SetShow(false);
                 rightVR.SetShow(false);
+                backVR.SetShow(false);
+                leftVR.SetShow(false);
 
                 northVR.Vector = NorthVector;
                 northVR.Start = VectorDrawPosition;
                 northVR.Scale = Math.Max(1, selectedDecal.Radius);
                 northVR.draw();
 
+                southVR.Vector = -NorthVector;
+                southVR.Start = VectorDrawPosition;
+                southVR.Scale = Math.Max(1, selectedDecal.Radius);
+                southVR.draw();
+
                 eastVR.Vector = EastVector;
                 eastVR.Start = VectorDrawPosition;
                 eastVR.Scale = Math.Max(1, selectedDecal.Radius);
                 eastVR.draw();
+
+                westVR.Vector = -EastVector;
+                westVR.Start = VectorDrawPosition;
+                westVR.Scale = Math.Max(1, selectedDecal.Radius);
+                westVR.draw();
             }
         }
 
@@ -862,6 +896,13 @@ namespace KerbalKonstructs.UI
             fwdVR.Width = 0.01d;
             fwdVR.SetLayer(5);
 
+            backVR.Color = new Color(0.972f, 1, 0.627f);
+            backVR.Vector = -selectedDecal.gameObject.transform.forward;
+            backVR.Scale = Math.Max(1, selectedDecal.Radius);
+            backVR.Start = VectorDrawPosition;
+            backVR.Width = 0.01d;
+            backVR.SetLayer(5);
+
             upVR.Color = new Color(0, 1, 0);
             upVR.Vector = selectedDecal.gameObject.transform.up;
             upVR.Scale = 30d;
@@ -876,6 +917,12 @@ namespace KerbalKonstructs.UI
             rightVR.SetLabel("right");
             rightVR.Width = 0.01d;
 
+            leftVR.Color = new Color(0.972f, 1, 0.627f);
+            leftVR.Vector = -selectedDecal.gameObject.transform.right;
+            leftVR.Scale = Math.Max(1, selectedDecal.Radius);
+            leftVR.Start = VectorDrawPosition;
+            leftVR.Width = 0.01d;
+
             northVR.Color = new Color(0.9f, 0.3f, 0.3f);
             northVR.Vector = NorthVector;
             northVR.Scale = Math.Max(1, selectedDecal.Radius);
@@ -883,12 +930,25 @@ namespace KerbalKonstructs.UI
             northVR.SetLabel("north");
             northVR.Width = 0.01d;
 
+            southVR.Color = new Color(0.972f, 1, 0.627f);
+            southVR.Vector = -NorthVector;
+            southVR.Scale = Math.Max(1, selectedDecal.Radius);
+            southVR.Start = VectorDrawPosition;
+            southVR.Width = 0.01d;
+
             eastVR.Color = new Color(0.3f, 0.3f, 0.9f);
             eastVR.Vector = EastVector;
             eastVR.Scale = Math.Max(1, selectedDecal.Radius);
             eastVR.Start = VectorDrawPosition;
             eastVR.SetLabel("east");
             eastVR.Width = 0.01d;
+
+            westVR.Color = new Color(0.972f, 1, 0.627f);
+            westVR.Vector = -EastVector;
+            westVR.Scale = Math.Max(1, selectedDecal.Radius);
+            westVR.Start = VectorDrawPosition;
+            westVR.Width = 0.01d;
+
         }
 
         /// <summary>
@@ -901,6 +961,12 @@ namespace KerbalKonstructs.UI
             fwdVR.SetShow(false);
             upVR.SetShow(false);
             rightVR.SetShow(false);
+
+            backVR.SetShow(false);
+            leftVR.SetShow(false);
+            westVR.SetShow(false);
+            southVR.SetShow(false);
+
         }
 
         /// <summary>

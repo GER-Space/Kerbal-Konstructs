@@ -36,9 +36,6 @@ namespace KerbalKonstructs.UI
         public static LaunchSite selectedSite = null;
         public static StaticInstance selectedFacility = null;
 
-        float fLqFMax = 0;
-        float fOxFMax = 0;
-        float fMoFMax = 0;
 
         float fAlt = 0f;
 
