@@ -261,9 +261,9 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                if (sFacilityType == "TrackingStation")
+                if (sFacilityType == "GroundStation")
                 {
-                    sPurpose = "Thís Facility can be a GroundStation for RemoteTech/CommNet";
+                    sPurpose = "This Facility can be a GroundStation for RemoteTech/CommNet";
                     bHalfwindow = true;
                 }
                 else

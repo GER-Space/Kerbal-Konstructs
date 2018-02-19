@@ -59,6 +59,17 @@ namespace KerbalKonstructs.UI
         GUIStyle BoxNoBorder;
         GUIStyle LabelInfo;
 
+        internal string Base;
+        internal string Base2;
+        internal float Range;
+        internal LaunchSite lNearest;
+        internal LaunchSite lBase;
+        internal LaunchSite lBase2;
+        internal string smessage = "";
+        internal string sClosed;
+        internal float fOpenCost;
+
+        private bool isInitialized = false;
 
         public override void Draw()
         {
@@ -68,8 +79,10 @@ namespace KerbalKonstructs.UI
             }
 
             var obj = KerbalKonstructs.instance.selectedObject;
-            KKWindow = new GUIStyle(GUI.skin.window);
-            KKWindow.padding = new RectOffset(3, 3, 5, 5);
+            KKWindow = new GUIStyle(GUI.skin.window)
+            {
+                padding = new RectOffset(3, 3, 5, 5)
+            };
 
             //if (obj != null)
             //{
@@ -89,50 +102,12 @@ namespace KerbalKonstructs.UI
 
         void drawBaseManagerWindow(int windowID)
         {
-            string Base;
-            string Base2;
-            float Range;
-            LaunchSite lNearest;
-            LaunchSite lBase;
-            LaunchSite lBase2;
-            string smessage = "";
 
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
+            if (!isInitialized)
+            {
+                InitializeLayout();
+            }
 
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
 
             GUILayout.BeginHorizontal();
             {
@@ -299,8 +274,6 @@ namespace KerbalKonstructs.UI
 
                 if (Range < 2000)
                 {
-                    string sClosed;
-                    float fOpenCost;
                     LaunchSiteManager.getSiteOpenCloseState(Base, out sClosed, out fOpenCost);
                     fOpenCost = fOpenCost / 2f;
 
@@ -496,14 +469,64 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
+        private void InitializeLayout()
+        {
 
+            BoxNoBorder = new GUIStyle(GUI.skin.box);
+            BoxNoBorder.normal.background = null;
+            BoxNoBorder.normal.textColor = Color.white;
+
+            LabelInfo = new GUIStyle(GUI.skin.label);
+            LabelInfo.normal.background = null;
+            LabelInfo.normal.textColor = Color.white;
+            LabelInfo.fontSize = 13;
+            LabelInfo.fontStyle = FontStyle.Bold;
+            LabelInfo.padding.left = 3;
+            LabelInfo.padding.top = 0;
+            LabelInfo.padding.bottom = 0;
+
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.white;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.white;
+            DeadButton.focused.textColor = Color.white;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Bold;
+
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
+            DeadButtonRed.normal.background = null;
+            DeadButtonRed.hover.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.focused.background = null;
+            DeadButtonRed.normal.textColor = Color.red;
+            DeadButtonRed.hover.textColor = Color.yellow;
+            DeadButtonRed.active.textColor = Color.red;
+            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.fontSize = 12;
+            DeadButtonRed.fontStyle = FontStyle.Bold;
+
+            isInitialized = true;
+        }
+
+
+        /// <summary>
+        /// Caches the facilities on button open
+        /// </summary>
         private void CacheFacilities()
         {
 
             StaticInstance [] allStatics = StaticDatabase.allStaticInstances;
+            allFacilities = new List<StaticInstance>();
 
             for (int i = 0; i < allStatics.Length; i++)
             {
+                // No facility assigned
+                if (!allStatics[i].hasFacilities)
+                    continue;
                 //not anywhere here
                 if (!allStatics[i].isActive)
                     continue;
