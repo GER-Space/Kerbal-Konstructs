@@ -95,7 +95,6 @@ namespace KerbalKonstructs.Core
                     icon = GameDatabase.Instance.GetTexture(launchSite.parentInstance.model.path + "/" + launchSite.LaunchSiteIcon, false);
             }
 
-
             refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
           

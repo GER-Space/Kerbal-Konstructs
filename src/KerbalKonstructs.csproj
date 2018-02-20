@@ -108,6 +108,8 @@
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
     <Compile Include="Facilities\Hangar\Hangar.cs" />
     <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
+    <Compile Include="Facilities\Merchant\Merchant.cs" />
+    <Compile Include="Facilities\Merchant\MerchantGUI.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
     <Compile Include="Facilities\Hangar\HangarGUI.cs" />
     <Compile Include="Core\LaunchSites\LaunchSite.cs" />

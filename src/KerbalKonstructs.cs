@@ -1178,6 +1178,9 @@ namespace KerbalKonstructs
 
             switch (facType)
             {
+                case KKFacilityType.Merchant:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Merchant>().ParseConfig(cfgNode));
+                    break;
                 case KKFacilityType.GroundStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     break;

@@ -222,6 +222,10 @@ namespace KerbalKonstructs.UI
             isInitialized = true;
         }
 
+        /// <summary>
+        /// draw the editor window
+        /// </summary>
+        /// <param name="id"></param>
         private void drawEditorWindow(int id)
         {
             
