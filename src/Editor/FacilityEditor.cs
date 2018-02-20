@@ -262,12 +262,14 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void MerchantFields()
         {
+            GUI.enabled = true;
             Merchant facMerchant = selectedObject.myFacilities[0] as Merchant;
+            GUILayout.Space(4);
             if (GUILayout.Button("Add Resources", GUILayout.Width(100), GUILayout.Height(23)))
             {
                 showResourceSelection = true;
             }
-
+            GUILayout.Space(4);
             if (showResourceSelection)
             {
                 resourceScrollPos = GUILayout.BeginScrollView(resourceScrollPos);
@@ -277,7 +279,8 @@ namespace KerbalKonstructs.UI
                         showResourceSelection = false;
                     }
 
-                    foreach (PartResourceDefinition availableResource in (List<PartResourceDefinition>)PartResourceLibrary.Instance.resourceDefinitions.GetEnumerator() )
+
+                    foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions )
                     {
                         if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null )
                         {
@@ -287,32 +290,39 @@ namespace KerbalKonstructs.UI
                         if (GUILayout.Button(availableResource.name, GUILayout.Height(23)))
                         {
                             facMerchant.tradedResources.Add(new TradedResource() { resource = availableResource });
-                            bChangeFacilityType = false;
+                            showResourceSelection = false;
                         }
                     }
                 }
                 GUILayout.EndScrollView();
             } else {
-                merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
+                if (facMerchant.tradedResources.Count > 0)
                 {
-                    foreach (TradedResource tradedResource in facMerchant.tradedResources)
+                    merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
                     {
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Label("Name: ", LabelGreen);
-                        GUILayout.Label(tradedResource.resource.name, LabelWhite);
-                        GUILayout.FlexibleSpace();
-                        GUILayout.Label("Price mult: ", LabelGreen);
-                        tradedResource.resourceCostMultiplier = float.Parse(GUILayout.TextField(tradedResource.resourceCostMultiplier.ToString(), 15, GUILayout.Width(70), GUILayout.Height(18)));
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
+                        foreach (TradedResource tradedResource in facMerchant.tradedResources)
                         {
-                            facMerchant.tradedResources.Remove(tradedResource);
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("Name: ", LabelGreen);
+                            GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Width(120));
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("Price mult: ", LabelGreen);
+                            tradedResource.resourceCostMultiplier = float.Parse(GUILayout.TextField(tradedResource.resourceCostMultiplier.ToString(), 15, GUILayout.Width(70), GUILayout.Height(18)));
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
+                            {
+                                facMerchant.tradedResources.Remove(tradedResource);
+                            }
+                            GUILayout.EndHorizontal();
                         }
-                        GUILayout.EndHorizontal();
                     }
+                    GUILayout.EndScrollView();
+
                 }
-                GUILayout.EndScrollView();
+
             }
+            GUILayout.FlexibleSpace();
+
         }
 
 

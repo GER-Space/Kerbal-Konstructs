@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -51,6 +52,8 @@ namespace KerbalKonstructs.UI
         string sFacilityName = "Unknown";
         string sFacilityType = "Unknown";
 
+        private string sPurpose = "";
+
         // string sOreTransferAmount = "0";
 
         Vector3 objectPos = new Vector3(0, 0, 0);
@@ -65,6 +68,8 @@ namespace KerbalKonstructs.UI
         GUIStyle BoxNoBorder;
         GUIStyle LabelInfo;
         GUIStyle ButtonSmallText;
+
+        private bool layoutInitialized = false;
 
 
         public override void Close()
@@ -111,6 +116,188 @@ namespace KerbalKonstructs.UI
 
         void drawFacilityManagerWindow(int windowID)
         {
+           
+            if (!layoutInitialized)
+            {
+                InitializeLayout();
+                layoutInitialized = true;
+            }
+
+            GUILayout.BeginHorizontal();
+            {
+                GUI.enabled = false;
+                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
+
+                GUILayout.FlexibleSpace();
+
+                GUILayout.Button("Facility Manager", DeadButton, GUILayout.Height(16));
+
+                GUILayout.FlexibleSpace();
+
+                GUI.enabled = true;
+
+                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
+                {
+                    selectedFacility = null;
+                    this.Close();
+                    return;
+
+                }
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(1);
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+            GUILayout.Space(2);
+
+            if (selectedFacility != null)
+            {
+                sFacilityType = selectedFacility.FacilityType;
+
+                if (sFacilityType == "GroundStation")
+                {
+                    sFacilityName = "Ground Station";
+                    bHalfwindow = true;
+                }
+                else
+                    sFacilityName = selectedFacility.model.title;
+
+                GUILayout.Box("" + sFacilityName, Yellowtext);
+                GUILayout.Space(5);
+
+                fAlt = selectedFacility.RadiusOffset;
+
+                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
+                disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
+                disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
+
+                if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
+
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Space(5);
+                    GUILayout.Label("Alt. " + fAlt.ToString("#0.0") + "m", LabelInfo);
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("Lat. " + disObjectLat.ToString("#0.000"), LabelInfo);
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("Lon. " + disObjectLon.ToString("#0.000"), LabelInfo);
+                    GUILayout.Space(5);
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.Space(5);
+
+                sPurpose = "";
+
+                switch (selectedFacility.facilityType)
+                {
+                    case KKFacilityType.Hangar:
+                        {
+                            sPurpose = "Craft can be stored in this building for launching from the base at a later date. The building has limited space.";
+                            bHalfwindow = true;
+                            break;
+                        }
+                    case KKFacilityType.Barracks:
+                        {
+                            sPurpose = "This facility provides a temporary home for base-staff. Other facilities can draw staff from the pool available at this facility.";
+                            bHalfwindow = true;
+                            break;
+                        }
+                    case KKFacilityType.RadarStation:
+                        {
+                            sPurpose = "This facility tracks craft in the planet's atmosphere at a limited range. It provides bonuses for recovery operations by the nearest open base.";
+                            bHalfwindow = true;
+                            break;
+                        }
+
+                    case KKFacilityType.Research:
+                        {
+                            sPurpose = "This facility carries out research and generates Science.";
+                            bHalfwindow = true;
+                            break;
+                        }
+                    case KKFacilityType.Business:
+                        {
+                            sPurpose = "This facility carries out business related to the space program in order to generate Funds.";
+                            bHalfwindow = true;
+                            break;
+                        }
+                    case KKFacilityType.GroundStation:
+                        {
+                            sPurpose = "This facility can be a GroundStation for RemoteTech/CommNet";
+                            bHalfwindow = true;
+                            break;
+                        }
+                    case KKFacilityType.FuelTanks:
+                        {
+                            sPurpose = "This facility stores fuel for craft.";
+                            bHalfwindow = false;
+                            break;
+                        }
+                    case KKFacilityType.Merchant:
+                        {
+                            sPurpose = "You can buy and sell Resources here";
+                            bHalfwindow = false;
+                            break;
+                        }
+
+                }
+
+                GUILayout.Label(sPurpose, LabelInfo);
+                GUILayout.Space(2);
+                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Space(3);
+
+                SharedInterfaces.OpenCloseFacility(selectedFacility);
+
+                GUILayout.Space(2);
+                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Space(3);
+
+                GUI.enabled = selectedFacility.myFacilities[0].isOpen;
+
+                switch (selectedFacility.facilityType)
+                {
+                    case KKFacilityType.GroundStation:
+                        TrackingStationGUI.TrackingInterface(selectedFacility);
+                        break;
+                    case KKFacilityType.Hangar:
+                        HangarGUI.HangarInterface(selectedFacility);
+                        break;
+                    case KKFacilityType.Research:
+                    case KKFacilityType.Business:
+                        ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
+                        break;
+                    case KKFacilityType.FuelTanks:
+                        FuelTanksGUI.FuelTanksInterface(selectedFacility);
+                        break;
+                    case KKFacilityType.Merchant:
+                        MerchantGUI.MerchantInterface(selectedFacility);
+                        break;
+                }
+
+
+                GUI.enabled = true;
+
+                GUILayout.Space(2);
+                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Space(2);
+
+                GUI.enabled = selectedFacility.myFacilities[0].isOpen;
+                StaffGUI.StaffingInterface(selectedFacility);
+                GUI.enabled = true;
+            }
+
+            GUILayout.FlexibleSpace();
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Space(3);
+
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+
+        private void InitializeLayout()
+        {
             DeadButton = new GUIStyle(GUI.skin.button);
             DeadButton.normal.background = null;
             DeadButton.hover.background = null;
@@ -155,174 +342,7 @@ namespace KerbalKonstructs.UI
             ButtonSmallText = new GUIStyle(GUI.skin.button);
             ButtonSmallText.fontSize = 12;
             ButtonSmallText.fontStyle = FontStyle.Normal;
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("Facility Manager", DeadButton, GUILayout.Height(16));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
-                {
-                    selectedFacility = null;
-                    this.Close();
-                    return;
-
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            if (selectedFacility != null)
-            {
-                sFacilityType = (string)selectedFacility.FacilityType;
-
-                if (sFacilityType == "GroundStation")
-                {
-                    sFacilityName = "Ground Station";
-                    bHalfwindow = true;
-                }
-                else
-                    sFacilityName = selectedFacility.model.title;
-
-                GUILayout.Box("" + sFacilityName, Yellowtext);
-                GUILayout.Space(5);
-
-                fAlt = selectedFacility.RadiusOffset;
-
-                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
-                //dObjectLat = NavUtils.GetLatitude(ObjectPos);
-                //dObjectLon = NavUtils.GetLongitude(ObjectPos);
-                //disObjectLat = dObjectLat * 180 / Math.PI;
-                //disObjectLon = dObjectLon * 180 / Math.PI;
-                disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
-                disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
-
-                if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
-
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Space(5);
-                    GUILayout.Label("Alt. " + fAlt.ToString("#0.0") + "m", LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Lat. " + disObjectLat.ToString("#0.000"), LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Lon. " + disObjectLon.ToString("#0.000"), LabelInfo);
-                    GUILayout.Space(5);
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.Space(5);
-
-                string sPurpose = "";
-
-                if (sFacilityType == "Hangar")
-                {
-                    sPurpose = "Craft can be stored in this building for launching from the base at a later date. The building has limited space.";
-                    bHalfwindow = true;
-                }
-                else
-                if (sFacilityType == "Barracks")
-                {
-                    sPurpose = "This facility provides a temporary home for base-staff. Other facilities can draw staff from the pool available at this facility.";
-                    bHalfwindow = true;
-                }
-                else
-                if (sFacilityType == "RadarStation")
-                {
-                    sPurpose = "This facility tracks craft in the planet's atmosphere at a limited range. It provides bonuses for recovery operations by the nearest open base.";
-                    bHalfwindow = true;
-                }
-                else
-                if (sFacilityType == "Research")
-                {
-                    sPurpose = "This facility carries out research and generates Science.";
-                    bHalfwindow = true;
-                }             
-                
-                else
-                if (sFacilityType == "Business")
-                {
-                    sPurpose = "This facility carries out business related to the space program in order to generate Funds.";
-                    bHalfwindow = true;
-                }
-                else
-                if (sFacilityType == "GroundStation")
-                {
-                    sPurpose = "This Facility can be a GroundStation for RemoteTech/CommNet";
-                    bHalfwindow = true;
-                }
-                else
-                if (sFacilityType == "FuelTanks")
-                {
-                    sPurpose = "This facility stores fuel for craft.";
-                    bHalfwindow = false;
-                }
-
-
-                GUILayout.Label(sPurpose, LabelInfo);
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(3);
-
-                SharedInterfaces.OpenCloseFacility(selectedFacility);
-
-                isOpen2 = selectedFacility.myFacilities[0].isOpen;
-
-
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(3);
-
-                GUI.enabled = isOpen2;
-
-                if (sFacilityType == "GroundStation")
-                {
-                    TrackingStationGUI.TrackingInterface(selectedFacility);
-                }
-
-                if (sFacilityType == "Hangar")
-                {
-                    HangarGUI.HangarInterface(selectedFacility);
-                }
-
-                if (sFacilityType == "Research" || sFacilityType == "Business" )
-                {
-                    ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
-                }
-
-                if (sFacilityType == "FuelTanks")
-                {
-                    FuelTanksGUI.FuelTanksInterface(selectedFacility);
-                }
-
-                GUI.enabled = true;
-
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(2);
-
-                GUI.enabled = isOpen2;
-                StaffGUI.StaffingInterface(selectedFacility);
-                GUI.enabled = true;
-            }
-
-            GUILayout.FlexibleSpace();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(3);
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
+
     }
 }
