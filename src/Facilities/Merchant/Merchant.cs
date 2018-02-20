@@ -10,7 +10,10 @@ namespace KerbalKonstructs.Modules
     internal class TradedResource 
     {
         internal PartResourceDefinition resource;
-        internal float resourceCostMultiplier = 1f;
+        internal float multiplierBuy = 1f;
+        internal float multiplierSell = 0.9f;
+        internal bool canBeBought = true;
+        internal bool canBeSold = true;
     }
 
 
@@ -44,7 +47,10 @@ namespace KerbalKonstructs.Modules
                     tradedResource = new TradedResource()
                     {
                         resource = foundResource,
-                        resourceCostMultiplier = float.Parse(resourceNode.GetValue("ResourceCostMultiplier"))
+                        multiplierBuy = float.Parse(resourceNode.GetValue("MultiplierBuy")),
+                        multiplierSell = float.Parse(resourceNode.GetValue("MultiplierSell")),
+                        canBeBought = bool.Parse(resourceNode.GetValue("CanBeBought")),
+                        canBeSold = bool.Parse(resourceNode.GetValue("CanBeSold"))
                     };
                     tradedResources.Add(tradedResource);
                 }
@@ -62,7 +68,10 @@ namespace KerbalKonstructs.Modules
             {
                 resourceNode = new ConfigNode("TradedResource");
                 resourceNode.SetValue("ResourceName", resource.resource.name,true);
-                resourceNode.SetValue("ResourceCostMultiplier", resource.resourceCostMultiplier, true);
+                resourceNode.SetValue("MultiplierBuy", resource.multiplierBuy, true);
+                resourceNode.SetValue("MultiplierSell", resource.multiplierSell, true);
+                resourceNode.SetValue("CanBeBought", resource.canBeBought, true);
+                resourceNode.SetValue("CanBeSold", resource.canBeSold, true);
                 cfgNode.AddNode(resourceNode);
             }
 

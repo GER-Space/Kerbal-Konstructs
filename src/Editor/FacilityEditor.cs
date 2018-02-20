@@ -303,17 +303,36 @@ namespace KerbalKonstructs.UI
                         foreach (TradedResource tradedResource in facMerchant.tradedResources)
                         {
                             GUILayout.BeginHorizontal();
-                            GUILayout.Label("Name: ", LabelGreen);
-                            GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Width(120));
-                            GUILayout.FlexibleSpace();
-                            GUILayout.Label("Price mult: ", LabelGreen);
-                            tradedResource.resourceCostMultiplier = float.Parse(GUILayout.TextField(tradedResource.resourceCostMultiplier.ToString(), 15, GUILayout.Width(70), GUILayout.Height(18)));
-                            GUILayout.FlexibleSpace();
-                            if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
                             {
-                                facMerchant.tradedResources.Remove(tradedResource);
+                                if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
+                                {
+                                    facMerchant.tradedResources.Remove(tradedResource);
+                                }
+                                GUILayout.Label("Name: ", GUILayout.Height(18));
+                                GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Height(18), GUILayout.Width(120));
+                                GUILayout.Space(20);
+
                             }
                             GUILayout.EndHorizontal();
+                            GUILayout.BeginHorizontal();
+                            {
+                                GUILayout.Label("Buying mult: ", GUILayout.Width(100), GUILayout.Height(18));
+                                tradedResource.multiplierBuy = float.Parse(GUILayout.TextField(tradedResource.multiplierBuy.ToString(), 6, GUILayout.Width(40), GUILayout.Height(18)));
+                                GUILayout.FlexibleSpace();
+                                GUILayout.Label("can be bought: ", GUILayout.Width(110), GUILayout.Height(18));
+                                tradedResource.canBeBought = GUILayout.Toggle(tradedResource.canBeBought, "buyable", GUILayout.Height(18));
+                            }
+                            GUILayout.EndHorizontal();
+                            GUILayout.BeginHorizontal();
+                            {
+                                GUILayout.Label("Selling mult: ", GUILayout.Width(100), GUILayout.Height(18));
+                                tradedResource.multiplierSell = float.Parse(GUILayout.TextField(tradedResource.multiplierSell.ToString(), 6, GUILayout.Width(40), GUILayout.Height(18)));
+                                GUILayout.FlexibleSpace();
+                                GUILayout.Label("can be sold: ", GUILayout.Width(110), GUILayout.Height(18));
+                                tradedResource.canBeSold = GUILayout.Toggle(tradedResource.canBeSold, "sellable", GUILayout.Height(18));
+                            }
+                            GUILayout.EndHorizontal();
+                            GUILayout.Space(12);
                         }
                     }
                     GUILayout.EndScrollView();

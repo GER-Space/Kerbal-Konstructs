@@ -45,18 +45,19 @@ namespace KerbalKonstructs.UI
                 {
                     continue;
                 }
-                GUILayout.Label(myResource.resource.name + ",  Price: "  + (myResource.resource.unitCost * myResource.resourceCostMultiplier), LabelInfo, GUILayout.Height(23));
+                GUILayout.Label(myResource.resource.name + ",  Buy for: "  + (myResource.resource.unitCost * myResource.multiplierBuy), GUILayout.Height(23));
 
                 foreach (PartSet xFeedSet in currentVessel.crossfeedSets) {
                     xFeedSet.GetConnectedResourceTotals(myResource.resource.id,out double xfeedAmount, out double xfeedMax, true);
                     GUILayout.BeginHorizontal();
                     {
                         GUILayout.Label(xfeedAmount.ToString() + " of " + xfeedMax.ToString(), LabelInfo, GUILayout.Height(23));
-                        if (GUILayout.Button("Buy", GUILayout.Height(18))) {
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.RepeatButton("Buy", GUILayout.Height(18), GUILayout.Width(50))) {
                             double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -1, true);
                             // Geld abbuchen
                         }
-                        if (GUILayout.Button("Sell", GUILayout.Height(18))) {
+                        if (GUILayout.RepeatButton("Sell", GUILayout.Height(18), GUILayout.Width(50))) {
                             double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
                             // Geld abbuchen
                         }
@@ -66,12 +67,12 @@ namespace KerbalKonstructs.UI
                 }
             }
             GUILayout.Space(2);
-
+            GUILayout.FlexibleSpace();
 
 
             GUILayout.BeginHorizontal();
 
-            GUILayout.Label("Nothing here: ", LabelInfo, GUILayout.Height(23));
+            GUILayout.Label("Nothing here: ", GUILayout.Height(23));
 
             GUILayout.EndHorizontal();
             GUILayout.Space(5);

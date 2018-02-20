@@ -38,7 +38,8 @@ namespace KerbalKonstructs.Modules
         public float CloseValue = 0f;
         [CFGSetting]
         internal string FacilityType;
-
+        [CFGSetting]
+        internal string FacilityName = "";
 
         [CareerSetting]
         public  bool isOpen
@@ -263,30 +264,30 @@ namespace KerbalKonstructs.Modules
         }
 
         #region Unity mouse extension
-        void OnMouseDown()
-        {
-            Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                Log.Normal("Open Facility Window");
-            }
-        }
+        //void OnMouseDown()
+        //{
+        //    Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
+        //    if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+        //    {
+        //        Log.Normal("Open Facility Window");
+        //    }
+        //}
 
-        void OnMouseEnter()
-        {
+        //void OnMouseEnter()
+        //{
 
-            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
+        //    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+        //    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
 
-        }
+        //}
 
-        void OnMouseExit()
-        {
+        //void OnMouseExit()
+        //{
 
-            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
+        //    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+        //    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
 
-        }
+        //}
         #endregion
     }
 }
