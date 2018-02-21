@@ -73,7 +73,7 @@ namespace KerbalKonstructs.UI
                     {
                         GUILayout.Label(xfeedAmount.ToString() + " of " + xfeedMax.ToString(), LabelInfo, GUILayout.Height(18));
                         GUILayout.FlexibleSpace();
-                        if (myResource.canBeBought)
+                        if (myResource.canBeSold)
                         {
                             if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
                             {
@@ -87,8 +87,10 @@ namespace KerbalKonstructs.UI
                             GUILayout.Space(64);
                         }
                         GUILayout.FlexibleSpace();
-                        if (myResource.canBeSold)
+                        if (myResource.canBeBought)
                         {
+                            // check if we have enough money to buy the resources
+                            GUI.enabled = (Funding.Instance.Funds > (myResource.resource.unitCost * myResource.multiplierBuy));
                             if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
                             {
                                 double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -1, true);
@@ -96,6 +98,7 @@ namespace KerbalKonstructs.UI
                                 Funding.Instance.AddFunds(transferred * myResource.resource.unitCost * myResource.multiplierBuy, TransactionReasons.Vessels);
                                 Log.Normal("Transaction for: " + (transferred * myResource.resource.unitCost * myResource.multiplierBuy).ToString());
                             }
+                            GUI.enabled = true;
                         }
                         else
                         {
