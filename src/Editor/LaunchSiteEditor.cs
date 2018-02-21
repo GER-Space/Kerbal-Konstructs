@@ -63,47 +63,10 @@ namespace KerbalKonstructs.UI
         // Holders
 
         public static StaticInstance selectedObject = null;
-        public StaticInstance selectedObjectPrevious = null;
 
-        internal static String facType = "None";
-        internal static String sGroup = "Ungrouped";
-        internal String increment = "0.1";
         internal String siteName, siteTrans, siteDesc, siteAuthor, siteCategory, siteHidden, ILSActive;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
-
-
-        Vector3 vbsnapangle1 = new Vector3(0, 0, 0);
-        Vector3 vbsnapangle2 = new Vector3(0, 0, 0);
-
-        Vector3 snapSourceWorldPos = new Vector3(0, 0, 0);
-        Vector3 snapTargetWorldPos = new Vector3(0, 0, 0);
-
-
-        internal StaticInstance snapTargetInstance = null;
-
-
-        private Vector3 snpspos = new Vector3(0, 0, 0);
-        private Vector3 snptpos = new Vector3(0, 0, 0);
-        private Vector3 vDrift = new Vector3(0, 0, 0);
-        private Vector3 vCurrpos = new Vector3(0, 0, 0);
-
-        private VectorRenderer upVR = new VectorRenderer();
-        private VectorRenderer fwdVR = new VectorRenderer();
-        private VectorRenderer rightVR = new VectorRenderer();
-
-        private VectorRenderer northVR = new VectorRenderer();
-        private VectorRenderer eastVR = new VectorRenderer();
-
-
-
-
-        private static Vector3d position = Vector3d.zero;
-        private Vector3d referenceVector = Vector3d.zero;
-        private Vector3 orientation = Vector3.zero;
-
-
-        private static float vis = 0;
 
 
         private bool guiInitialized = false;
@@ -134,29 +97,6 @@ namespace KerbalKonstructs.UI
             selectedObject = KerbalKonstructs.instance.selectedObject;
             ReadSettings();
             base.Open();
-        }
-
-
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public LaunchSiteEditor()
-        {
-            listStyle.normal.textColor = Color.white;
-            listStyle.onHover.background =
-            listStyle.hover.background = new Texture2D(2, 2);
-            listStyle.padding.left =
-            listStyle.padding.right =
-            listStyle.padding.top =
-            listStyle.padding.bottom = 4;
-
-            navStyle.padding.left = 0;
-            navStyle.padding.right = 0;
-            navStyle.padding.top = 1;
-            navStyle.padding.bottom = 3;
-
-            // siteTypeMenu = new ComboBox(siteTypeOptions[0], siteTypeOptions, "button", "box", null, listStyle);
         }
 
         #region draw Methods
@@ -216,6 +156,19 @@ namespace KerbalKonstructs.UI
             DeadButtonRed.focused.textColor = Color.red;
             DeadButtonRed.fontSize = 12;
             DeadButtonRed.fontStyle = FontStyle.Bold;
+
+            listStyle.normal.textColor = Color.white;
+            listStyle.onHover.background =
+            listStyle.hover.background = new Texture2D(2, 2);
+            listStyle.padding.left =
+            listStyle.padding.right =
+            listStyle.padding.top =
+            listStyle.padding.bottom = 4;
+
+            navStyle.padding.left = 0;
+            navStyle.padding.right = 0;
+            navStyle.padding.top = 1;
+            navStyle.padding.bottom = 3;
         }
 
 
@@ -512,32 +465,6 @@ namespace KerbalKonstructs.UI
 
         #region Utility Functions
  
-
-        /// <summary>
-        /// Updates the Window Strings to the new settings
-        /// </summary>
-        /// <param name="instance"></param>
-        public static void updateSelection(StaticInstance instance)
-        {
-            selectedObject = instance;
-
-
-            vis = instance.VisibilityRange;
-            facType = instance.FacilityType;
-
-            if (facType == null || facType == "")
-            {
-                string DefaultFacType = instance.model.DefaultFacilityType;
-
-                if (DefaultFacType == null || DefaultFacType == "None" || DefaultFacType == "")
-                    facType = "None";
-                else
-                    facType = DefaultFacType;
-            }
-
-            sGroup = instance.Group;
-            selectedObject.update();
-        }
 
         internal void ReadSettings()
         {

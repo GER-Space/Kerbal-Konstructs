@@ -55,9 +55,9 @@ namespace KerbalKonstructs.UI
 
         public VectorRenderer()
         {
-            Vector = new Vector3d(0, 0, 0);
+            Vector = Vector3d.zero;
             Color = new Color(1, 1, 1);
-            Start = new Vector3d(0, 0, 0);
+            Start = Vector3d.zero;
             Scale = 1.0;
             Width = 0;
         }
