@@ -55,6 +55,8 @@ namespace KerbalKonstructs.UI
         private string infLqFMax = "";
         private string infOxFMax = "";
         private string infMoFMax = "";
+        private bool isDefaultOpen = false;
+
 
         private string defaultOpenState;
 
@@ -151,7 +153,9 @@ namespace KerbalKonstructs.UI
                 facilityscroll = GUILayout.BeginScrollView(facilityscroll);
                 {
                     if (GUILayout.Button("Cancel - No change", GUILayout.Height(23)))
+                    {
                         bChangeFacilityType = false;
+                    }
 
                     foreach (string facility in Enum.GetNames(typeof(KKFacilityType)))
                     {
@@ -441,8 +445,20 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Default State: ", LabelGreen);
                 GUILayout.FlexibleSpace();
-                defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
-                GUILayout.Label("Open|Closed", LabelWhite);
+                GUILayout.Label(selectedObject.myFacilities.First().OpenCloseState, LabelWhite);
+
+                if (GUILayout.Toggle(isDefaultOpen, "", GUILayout.Height(18)))
+                {
+                    isDefaultOpen = true;
+                    defaultOpenState = "Open";
+                }
+                else
+                {
+                    isDefaultOpen = true;
+                    defaultOpenState = "Closed";
+                }
+                //defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
+                //GUILayout.Label("Open|Closed", LabelWhite);
             }
             GUILayout.EndHorizontal();
         }
@@ -684,8 +700,11 @@ namespace KerbalKonstructs.UI
                 case "None":
                     break;
                 case "FuelTanks":
-                    if (needNewFacility) 
+                    if (needNewFacility)
+                    {
                         selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>());
+                    }
+
                     selectedObject.hasFacilities = true;
                     if (infLqFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).LqFMax = float.Parse(infLqFMax);
                     if (infOxFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).OxFMax = float.Parse(infOxFMax);
@@ -766,6 +785,15 @@ namespace KerbalKonstructs.UI
                 if (facType == null || facType == "None" || facType == "")
                     facType = "None";
             }
+
+            if (selectedObject.myFacilities[0].defaultState == "Open")
+            {
+                isDefaultOpen = true;
+            } else
+            {
+                isDefaultOpen = false;
+            }
+
 
             switch (facType)
             {

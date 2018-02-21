@@ -66,7 +66,7 @@ namespace KerbalKonstructs.UI
 
             if (!KKmain.bStylesSet)
             {
-                UIMain.setStyles();
+                UIMain.SetStyles();
                 KKmain.bStylesSet = true;
             }
             

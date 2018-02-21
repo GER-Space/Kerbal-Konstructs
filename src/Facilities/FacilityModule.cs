@@ -165,7 +165,10 @@ namespace KerbalKonstructs.Modules
                 if (Attribute.IsDefined(field.Value, typeof(CFGSetting)))
                 {
                     if (field.Value.GetValue(this) == null)
+                    {
                         continue;
+                    }
+
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
                 }
             }
@@ -197,13 +200,17 @@ namespace KerbalKonstructs.Modules
             foreach (var field in myFields)
             {
                 if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                {
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                }
             }
 
             foreach (var field in myProperties)
             {
                 if (Attribute.IsDefined(field.Value, typeof(CareerSetting)))
+                {
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
+                }
             }
         }
 

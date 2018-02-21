@@ -196,7 +196,7 @@ namespace KerbalKonstructs
             Log.UserInfo("Version is " + sKKVersion + " .");
 
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
-            UIMain.setTextures();
+            UIMain.SetTextures();
             Log.PerfStop("Awake Function");
             //Log.PerfStart("Model Test");
             //SDTest.GetModelStats();

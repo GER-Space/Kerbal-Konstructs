@@ -33,7 +33,7 @@ namespace KerbalKonstructs.UI
 		public static Texture tHideOn;
 		public static Texture tHideOff;
 
-		public static Texture tHorizontalSep;
+		public static Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
 		public static Texture tIconClosed;
 		public static Texture tIconOpen;
@@ -53,7 +53,7 @@ namespace KerbalKonstructs.UI
 
 		public static GUIStyle navStyle;
 
-		public static void setStyles()
+		public static void SetStyles()
 		{
 			navStyle = new GUIStyle();
 			navStyle.padding.left = 0;
@@ -62,7 +62,8 @@ namespace KerbalKonstructs.UI
 			navStyle.padding.bottom = 3;
 			navStyle.normal.background = null;
 
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
+
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
 			DeadButtonRed.normal.background = null;
 			DeadButtonRed.hover.background = null;
 			DeadButtonRed.active.background = null;
@@ -106,7 +107,7 @@ namespace KerbalKonstructs.UI
 			KKToolTip.fontStyle = FontStyle.Normal;
 		}
 
-		public static void setTextures()
+		public static void SetTextures()
 		{
 			VABIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
             heliPadIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscHelipadIcon", false);
@@ -136,8 +137,6 @@ namespace KerbalKonstructs.UI
 			tHideOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapHideOff", false);
             tWaterOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapWaterOn", false);
             tWaterOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapWaterOff", false);
-
-            tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
 			tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
 			tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
