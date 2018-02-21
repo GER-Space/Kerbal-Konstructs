@@ -50,8 +50,9 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle ButtonRed;
 		public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
+        public static GUIStyle LabelWhite;
 
-		public static GUIStyle navStyle;
+        public static GUIStyle navStyle;
 
 		public static void SetStyles()
 		{
@@ -105,7 +106,14 @@ namespace KerbalKonstructs.UI
 			KKToolTip.normal.textColor = Color.white;
 			KKToolTip.fontSize = 11;
 			KKToolTip.fontStyle = FontStyle.Normal;
-		}
+
+            LabelWhite = new GUIStyle(GUI.skin.label);
+            LabelWhite.normal.textColor = Color.white;
+            LabelWhite.fontSize = 13;
+            LabelWhite.fontStyle = FontStyle.Normal;
+            LabelWhite.padding.bottom = 1;
+            LabelWhite.padding.top = 1;
+        }
 
 		public static void SetTextures()
 		{

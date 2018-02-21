@@ -27,7 +27,7 @@ namespace KerbalKonstructs.UI
         }
 
         private bool guiInitialized = false;
-        private Rect facilityEditorRect = new Rect(400, 45, 360, 370);
+        private Rect facilityEditorRect = new Rect(400, 45, 360, 400);
 
         private GUIStyle LabelGreen;
         private GUIStyle LabelWhite;
@@ -57,8 +57,6 @@ namespace KerbalKonstructs.UI
         private string infMoFMax = "";
         private bool isDefaultOpen = false;
 
-
-        private string defaultOpenState;
 
         // put herer the facilities that should not be selected
         private HashSet<string> hiddenFacilities = new HashSet<string> { "TrackingStation" };
@@ -239,7 +237,7 @@ namespace KerbalKonstructs.UI
                     MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
                     updateSettings();
                     updateSelection();
-                    EditorGUI.instance.saveSettings();
+                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
                     this.Close();
                 }
                 GUILayout.FlexibleSpace();
@@ -321,7 +319,7 @@ namespace KerbalKonstructs.UI
                             GUILayout.BeginHorizontal();
                             {
                                 GUILayout.Label("Buying mult: ", GUILayout.Width(100), GUILayout.Height(18));
-                                tradedResource.multiplierBuy = float.Parse(GUILayout.TextField(tradedResource.multiplierBuy.ToString(), 6, GUILayout.Width(40), GUILayout.Height(18)));
+                                tradedResource.multiplierBuy = float.Parse(GUILayout.TextField(tradedResource.multiplierBuy.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)));
                                 GUILayout.FlexibleSpace();
                                 GUILayout.Label("can be bought: ", GUILayout.Width(110), GUILayout.Height(18));
                                 tradedResource.canBeBought = GUILayout.Toggle(tradedResource.canBeBought, "buyable", GUILayout.Height(18));
@@ -330,7 +328,7 @@ namespace KerbalKonstructs.UI
                             GUILayout.BeginHorizontal();
                             {
                                 GUILayout.Label("Selling mult: ", GUILayout.Width(100), GUILayout.Height(18));
-                                tradedResource.multiplierSell = float.Parse(GUILayout.TextField(tradedResource.multiplierSell.ToString(), 6, GUILayout.Width(40), GUILayout.Height(18)));
+                                tradedResource.multiplierSell = float.Parse(GUILayout.TextField(tradedResource.multiplierSell.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)));
                                 GUILayout.FlexibleSpace();
                                 GUILayout.Label("can be sold: ", GUILayout.Width(110), GUILayout.Height(18));
                                 tradedResource.canBeSold = GUILayout.Toggle(tradedResource.canBeSold, "sellable", GUILayout.Height(18));
@@ -435,7 +433,7 @@ namespace KerbalKonstructs.UI
         {
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Open Cost: ", LabelGreen);
+                GUILayout.Label("Open Cost: ");
                 GUILayout.FlexibleSpace();
                 infOpenCost = GUILayout.TextField(infOpenCost, 6, GUILayout.Width(130), GUILayout.Height(18));
                 GUILayout.Label("\\F", LabelWhite);
@@ -443,31 +441,41 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Default State: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                GUILayout.Label(selectedObject.myFacilities.First().OpenCloseState, LabelWhite);
+                GUILayout.Label("Default State: ");
+                GUILayout.Label(selectedObject.myFacilities.First().defaultState, LabelWhite , GUILayout.Height(23), GUILayout.Width(50));
 
-                if (GUILayout.Toggle(isDefaultOpen, "", GUILayout.Height(18)))
+                isDefaultOpen = GUILayout.Toggle(isDefaultOpen, "", GUILayout.Height(18));
+                if (isDefaultOpen)
                 {
-                    isDefaultOpen = true;
-                    defaultOpenState = "Open";
+                    selectedObject.myFacilities.First().defaultState = "Open";
                 }
                 else
                 {
-                    isDefaultOpen = true;
-                    defaultOpenState = "Closed";
+                    selectedObject.myFacilities.First().defaultState = "Closed";
                 }
+                GUILayout.FlexibleSpace();
                 //defaultOpenState = GUILayout.TextField(defaultOpenState, 6, GUILayout.Width(130), GUILayout.Height(18));
                 //GUILayout.Label("Open|Closed", LabelWhite);
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("FacilityName: ");
+                GUILayout.FlexibleSpace();
+                selectedObject.myFacilities[0].FacilityName = GUILayout.TextField(selectedObject.myFacilities[0].FacilityName, 30, GUILayout.Width(250), GUILayout.Height(18));
+            }
+
+            GUILayout.EndHorizontal();
         }
+
+
 
         /// <summary>
         /// Business SubWindow
         /// </summary>
         private void BusinessFields()
         {
+        
             MaxStaffFields();
             ProductionRateFields();
 
@@ -686,7 +694,6 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public void updateSettings()
         {
-            bool needNewFacility = false;
             if (facType != selectedObject.FacilityType)
             {
                 ChangeFacility();
@@ -700,46 +707,31 @@ namespace KerbalKonstructs.UI
                 case "None":
                     break;
                 case "FuelTanks":
-                    if (needNewFacility)
-                    {
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>());
-                    }
-
                     selectedObject.hasFacilities = true;
                     if (infLqFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).LqFMax = float.Parse(infLqFMax);
                     if (infOxFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).OxFMax = float.Parse(infOxFMax);
                     if (infMoFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).MoFMax = float.Parse(infMoFMax);
                     break;
                 case "GroundStation":
-                    if (needNewFacility)
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<GroundStation>());
                     selectedObject.hasFacilities = true;                    
                     ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
                     break;
                 case "Hangar":
-                    if (needNewFacility)
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Hangar>());
                     selectedObject.hasFacilities = true;
                     if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity =  float.Parse(infFacMassCap);
                     if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity =  int.Parse(infFacCraftCap);
                     break;
                 case "Barracks":
-                    if (needNewFacility)
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Barracks>());
                     selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     break;
                 case "Research":
-                    if (needNewFacility)
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Research>());
                     selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     if (infProdRateMax != "") ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
                     if (infScienceMax != "") ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
                     break;
                 case "Business":
-                    if (needNewFacility)
-                        selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Business>());
                     selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     if (infProdRateMax != "") ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
@@ -754,7 +746,6 @@ namespace KerbalKonstructs.UI
             {
                 selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
                 selectedObject.myFacilities[0].CloseValue = (float)Math.Round((selectedObject.myFacilities[0].OpenCost / 4), 0);
-                selectedObject.myFacilities[0].defaultState = defaultOpenState;
             }
 
             foreach (var facility in selectedObject.myFacilities)
@@ -786,7 +777,8 @@ namespace KerbalKonstructs.UI
                     facType = "None";
             }
 
-            if (selectedObject.myFacilities[0].defaultState == "Open")
+
+            if (facType != "None" && selectedObject.myFacilities[0].defaultState == "Open")
             {
                 isDefaultOpen = true;
             } else
@@ -851,10 +843,17 @@ namespace KerbalKonstructs.UI
             }
             if (selectedObject.hasFacilities)
             {
-                defaultOpenState = selectedObject.myFacilities[0].defaultState;
+                if (String.IsNullOrEmpty(selectedObject.myFacilities[0].FacilityName))
+                {
+                    selectedObject.myFacilities[0].FacilityName = selectedObject.myFacilities[0].FacilityType + "@" + selectedObject.model.name;
+                }
+
                 infOpenCost = selectedObject.myFacilities[0].OpenCost.ToString();
+
                 if (infOpenCost == "0" || infOpenCost == "")
+                {
                     infOpenCost = selectedObject.model.cost.ToString();
+                }
             } else
             {
                 infOpenCost = "0";

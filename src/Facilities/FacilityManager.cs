@@ -255,38 +255,34 @@ namespace KerbalKonstructs.UI
                 GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                 GUILayout.Space(3);
 
-                GUI.enabled = selectedFacility.myFacilities[0].isOpen;
-
-                switch (selectedFacility.facilityType)
+                if (selectedFacility.myFacilities[0].isOpen)
                 {
-                    case KKFacilityType.GroundStation:
-                        TrackingStationGUI.TrackingInterface(selectedFacility);
-                        break;
-                    case KKFacilityType.Hangar:
-                        HangarGUI.HangarInterface(selectedFacility);
-                        break;
-                    case KKFacilityType.Research:
-                    case KKFacilityType.Business:
-                        ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
-                        break;
-                    case KKFacilityType.FuelTanks:
-                        FuelTanksGUI.FuelTanksInterface(selectedFacility);
-                        break;
-                    case KKFacilityType.Merchant:
-                        MerchantGUI.MerchantInterface(selectedFacility);
-                        break;
+
+
+                    switch (selectedFacility.facilityType)
+                    {
+                        case KKFacilityType.GroundStation:
+                            TrackingStationGUI.TrackingInterface(selectedFacility);
+                            break;
+                        case KKFacilityType.Hangar:
+                            HangarGUI.HangarInterface(selectedFacility);
+                            break;
+                        case KKFacilityType.Research:
+                        case KKFacilityType.Business:
+                            ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
+                            break;
+                        case KKFacilityType.FuelTanks:
+                            FuelTanksGUI.FuelTanksInterface(selectedFacility);
+                            break;
+                        case KKFacilityType.Merchant:
+                            MerchantGUI.MerchantInterface(selectedFacility);
+                            break;
+                    }
+                    GUILayout.Space(2);
+                    GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                    GUILayout.Space(2);
+                    StaffGUI.StaffingInterface(selectedFacility);             
                 }
-
-
-                GUI.enabled = true;
-
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(2);
-
-                GUI.enabled = selectedFacility.myFacilities[0].isOpen;
-                StaffGUI.StaffingInterface(selectedFacility);
-                GUI.enabled = true;
             }
 
             GUILayout.FlexibleSpace();

@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Modules
         [CFGSetting]
         internal string FacilityType;
         [CFGSetting]
-        internal string FacilityName = "";
+        public string FacilityName = "";
 
         [CareerSetting]
         public  bool isOpen
