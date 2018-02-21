@@ -38,7 +38,7 @@ namespace KerbalKonstructs
             foreach (var transform in allTransforms)
             {
                 Renderer flagRenderer = transform.GetComponent<Renderer>();
-                flagRenderer.material.mainTexture = GameDatabase.Instance.GetTexture(HighLogic.CurrentGame.flagURL, false);
+                flagRenderer.material.mainTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/Textures/BW_grass_1", false);
                 flagRenderer.material.SetColor("_Color", underGroundColor);
             }
         }
