@@ -154,7 +154,7 @@ namespace KerbalKonstructs.Core
 			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
 
-			setLayerRecursively(gameObject, 15);
+			InstanceUtil.SetLayerRecursively(this, 15);
 
 			if (bPreview) this.ToggleAllColliders(false);
 
@@ -266,23 +266,6 @@ namespace KerbalKonstructs.Core
 
         }
 
-
-        /// <summary>
-        /// Sets tje Layer of the Colliders
-        /// </summary>
-        /// <param name="sGameObject"></param>
-        /// <param name="newLayerNumber"></param>
-        internal void setLayerRecursively(GameObject sGameObject, int newLayerNumber)
-		{
-
-            var transforms = gameObject.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < transforms.Length; i++)
-            {
-                if (transforms[i].gameObject.GetComponent<Collider>() == null) transforms[i].gameObject.layer = newLayerNumber;
-                else
-                if (!transforms[i].gameObject.GetComponent<Collider>().isTrigger) transforms[i].gameObject.layer = newLayerNumber;
-            }
-		}
 
         /// <summary>
         /// resets the object highlightColor to 0 and resets the editing flag.

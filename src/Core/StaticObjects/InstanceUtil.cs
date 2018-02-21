@@ -97,6 +97,26 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        /// <summary>
+        /// Sets tje Layer of the Colliders
+        /// </summary>
+        /// <param name="sGameObject"></param>
+        /// <param name="newLayerNumber"></param>
+        internal static void SetLayerRecursively(StaticInstance instance, int newLayerNumber)
+        {
+
+            var transforms = instance.gameObject.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                // don't set trigger collider 
+                if ((transforms[i].gameObject.GetComponent<Collider>() != null) && (transforms[i].gameObject.GetComponent<Collider>().isTrigger))
+                {
+                    continue;
+                }
+                transforms[i].gameObject.layer = newLayerNumber;
+            }
+        }
+
 
         /// <summary>
         /// Should return the Color of the surface at a given position

@@ -269,10 +269,9 @@ namespace KerbalKonstructs.Modules
             }
             initialized = true;
         }
-
         #region Unity mouse extension
         //void OnMouseDown()
-        //{
+        //{        
         //    Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
         //    if (HighLogic.LoadedScene == GameScenes.FLIGHT)
         //    {

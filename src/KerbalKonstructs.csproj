@@ -94,6 +94,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\GrasColor\GrasColor.cs" />
     <Compile Include="Editor\DrawObject.cs" />
     <Compile Include="Editor\DrawTools.cs" />
     <Compile Include="Editor\MapDecalEditor.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />
+    <Compile Include="Utilities\GrasColorCam.cs" />
     <Compile Include="Utilities\KKShader.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Addons\NavUtils\ILSConfig.cs" />
