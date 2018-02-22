@@ -11,7 +11,8 @@ using UnityEngine;
 //
 namespace KerbalKonstructs.Core
 {
-    class GrasColorCam : MonoBehaviour
+    //[KSPAddon(KSPAddon.Startup.Instantly, true)]
+    public class GrasColorCam : MonoBehaviour
     {
         private static float frameWidth = 6f;
         private static float frameHeight = 6f;
@@ -24,31 +25,34 @@ namespace KerbalKonstructs.Core
         private Texture2D cameraTexture;
         private RenderTexture cameraRenderTexture;
 
+        private static GameObject myGameObject;
+
         private bool cameraInitialized = false;
 
-        public static GrasColorCam Instance
+        public static GrasColorCam instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new GrasColorCam();
+                    myGameObject = new GameObject();
+                    _instance = myGameObject.AddComponent<GrasColorCam>();
                 }
                 return _instance;
             }
         }
 
-        public void Awake()
-        {
-            DontDestroyOnLoad(this);
-            _instance = this;
-        }
+        //public void Awake()
+        //{
+        //    DontDestroyOnLoad(this);
+        //    _instance = this;
+        //}
 
-        public void Start()
-        {
-            DontDestroyOnLoad(this);
-            _instance = this;
-        }
+        //public void Start()
+        //{
+        //    DontDestroyOnLoad(this);
+        //    _instance = this;
+        //}
 
         public void OnDestroy()
         {
@@ -62,7 +66,12 @@ namespace KerbalKonstructs.Core
         private void initializeCamera()
         {
             cameraInitialized = true;
-            cameraObject = new GameObject("GrasColorCam");
+            cameraObject = new GameObject("GrasColorCamera");
+            Log.Normal("Cam created");
+            if (cameraObject == null)
+            {
+                Log.UserError("No CamObject was created");
+            }
             cameraObject.transform.parent = this.gameObject.transform;
             grasCamera = cameraObject.AddComponent<Camera>();
             grasCamera.targetTexture = cameraRenderTexture;

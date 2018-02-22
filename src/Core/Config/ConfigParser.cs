@@ -29,14 +29,19 @@ namespace KerbalKonstructs.Core
             foreach (var modelsetting in ConfigUtil.modelFields)
             {
                 if (modelsetting.Value.GetValue(model) == null)
+                {
                     continue;
+                }
 
-                ;
-                if (modelsetting.Key == "mesh") continue;
+                if (modelsetting.Key == "mesh")
+                {
+                    continue;
+                }
 
                 if (cfgNode.HasValue(modelsetting.Key))
+                {
                     cfgNode.RemoveValue(modelsetting.Key);
-
+                }
 
                 switch (modelsetting.Value.FieldType.ToString())
                 {
@@ -85,7 +90,9 @@ namespace KerbalKonstructs.Core
         internal static void ParseInstanceConfig(StaticInstance target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
+            {
                 ConfigUtil.InitTypes();
+            }
 
             foreach (var field in ConfigUtil.instanceFields.Values)
             {
@@ -142,6 +149,9 @@ namespace KerbalKonstructs.Core
                         break;
                     case "CelestialBody":
                         cfgNode.SetValue(instanceSetting.Key, ((CelestialBody)instanceSetting.Value.GetValue(instance)).name, true);
+                        break;
+                    case "UnityEngine.Color":
+                        cfgNode.SetValue(instanceSetting.Key, (Color)instanceSetting.Value.GetValue(instance), true);
                         break;
                 }
 

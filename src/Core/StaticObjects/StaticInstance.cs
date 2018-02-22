@@ -49,6 +49,9 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public bool useRadiusOffset = true;
 
+        // Special Effects
+        [CFGSetting]
+        public Color GrasColor = Color.clear;
 
 
         public GameObject gameObject;

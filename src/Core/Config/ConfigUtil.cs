@@ -67,7 +67,7 @@ namespace KerbalKonstructs.Core
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
                     instanceFields.Add(field.Name, field);
-                    //Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
+                    Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
                 }
             }
 
@@ -133,6 +133,9 @@ namespace KerbalKonstructs.Core
                     case "UnityEngine.Vector3d":
                         field.SetValue(target, ConfigNode.ParseVector3D(cfgNode.GetValue(field.Name)));
                         break;
+                    case "UnityEngine.Color":
+                        field.SetValue(target, ConfigNode.ParseColor(cfgNode.GetValue(field.Name)));
+                        break;
                     case "CelestialBody":
                         field.SetValue(target, ConfigUtil.GetCelestialBody(cfgNode.GetValue(field.Name)));
                         break;
@@ -193,6 +196,9 @@ namespace KerbalKonstructs.Core
                         break;
                     case "CelestialBody":
                         property.SetValue(target, ConfigUtil.GetCelestialBody(cfgNode.GetValue(property.Name)), null);
+                        break;
+                    case "UnityEngine.Color":
+                        property.SetValue(target, ConfigNode.ParseColor(cfgNode.GetValue(property.Name)), null);
                         break;
                     case "KerbalKonstructs.Core.SiteType":
                         SiteType value = SiteType.Any;
