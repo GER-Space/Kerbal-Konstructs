@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using System.Reflection;
 using KerbalKonstructs.Core;
+using UnityEngine.EventSystems;
 
 namespace KerbalKonstructs.Modules
 {
@@ -28,7 +29,7 @@ namespace KerbalKonstructs.Modules
 
 
 
-    public abstract class KKFacility : MonoBehaviour
+    public abstract class KKFacility : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         //use the attribute to select wich setting is read d
 
@@ -270,6 +271,27 @@ namespace KerbalKonstructs.Modules
             initialized = true;
         }
         #region Unity mouse extension
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Log.Normal("Facility: Open Facility Window");
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.white);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
+        }
+
+
+
+
         //void OnMouseDown()
         //{        
         //    Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
