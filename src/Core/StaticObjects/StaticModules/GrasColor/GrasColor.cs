@@ -14,8 +14,8 @@ namespace KerbalKonstructs
 
         public string GrasMeshName;
         public string GrasTextureImage;
-        public string UsePQSColor = "Yes";
-        public string UseNormalMap = "No";
+        public string UsePQSColor = "True";
+        public string UseNormalMap = "False";
         public string GrasTextureNormalMap = "";
 
 
@@ -30,6 +30,10 @@ namespace KerbalKonstructs
             if (!bool.TryParse(UsePQSColor, out usePQS))
             {
                 Log.UserWarning("GrasColor Module: could not parse UsePQSColor to bool: " + UsePQSColor);
+            }
+            if (!bool.TryParse(UseNormalMap, out useNormalMap))
+            {
+                Log.UserWarning("GrasColor Module: could not parse UseNormalMap to bool: " + UseNormalMap);
             }
         }
 
