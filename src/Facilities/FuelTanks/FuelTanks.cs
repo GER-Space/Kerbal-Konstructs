@@ -50,6 +50,7 @@ namespace KerbalKonstructs.Modules
 
             }
             fuelTankMerchant.FacilityType = "Merchant";
+            fuelTankMerchant.FacilityName = "Refueling Station";
             return fuelTankMerchant;
 
         }

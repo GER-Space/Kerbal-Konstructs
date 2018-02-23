@@ -655,6 +655,9 @@ namespace KerbalKonstructs.UI
                     break;
                 case KKFacilityType.FuelTanks:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
+                    selectedObject.facilityType = KKFacilityType.Merchant;
+                    selectedObject.FacilityType = "Merchant";
+                    facType = selectedObject.FacilityType;
                     break;
                 case KKFacilityType.Research:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<Research>().ParseConfig(cfgNode));

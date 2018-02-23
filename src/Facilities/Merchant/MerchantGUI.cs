@@ -154,8 +154,6 @@ namespace KerbalKonstructs.UI
 
         }
 
-
-
         internal static void InitializeLayout()
         {
             LabelInfo = new GUIStyle(GUI.skin.label);
