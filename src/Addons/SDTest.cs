@@ -246,44 +246,5 @@ namespace KerbalKonstructs.Addons
             return myTexture2D;
         }
 
-        public static Color GetSurfaceColor(CelestialBody body, Double lat, Double lon)
-        {
-            // Tell the PQS that our actions are not supposed to end up in the terrain
-            body.pqsController.isBuildingMaps = true;
-            body.pqsController.isFakeBuild = true;
-
-            // Create the vertex information
-            PQS.VertexBuildData data = new PQS.VertexBuildData
-            {
-                directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
-                vertHeight = body.pqsController.radius
-            };
-
-            // Fetch all enabled Mods
-            PQSMod[] mods = body.GetComponentsInChildren<PQSMod>().Where(m => m.modEnabled && m.sphere == body.pqsController).ToArray();
-
-            // Iterate over them and build the height at this point
-            // This is neccessary for mods that use the terrain height to 
-            // color the terrain (like HeightColorMap)
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuildHeight(data);
-            }
-
-            // Iterate over the mods again, this time build the color component 
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuild(data);
-            }
-
-            // Reset the PQS
-            body.pqsController.isBuildingMaps = false;
-            body.pqsController.isFakeBuild = false;
-
-            // The terrain color is now stored in data.vertColor. 
-            // For getting the height at this point you can use data.vertHeight
-            return data.vertColor;
-        }
-
     }
 }

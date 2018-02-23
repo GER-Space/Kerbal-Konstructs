@@ -130,12 +130,16 @@ namespace KerbalKonstructs.Core
                         break;
                     case "System.Single":
                         if ((float)instanceSetting.Value.GetValue(instance) == 0)
+                        {
                             continue;
+                        }
                         cfgNode.SetValue(instanceSetting.Key, (float)instanceSetting.Value.GetValue(instance), true);
                         break;
                     case "System.Double":
                         if ((double)instanceSetting.Value.GetValue(instance) == 0)
+                        {
                             continue;
+                        }
                         cfgNode.SetValue(instanceSetting.Key, (double)instanceSetting.Value.GetValue(instance), true);
                         break;
                     case "System.Boolean":
@@ -151,6 +155,10 @@ namespace KerbalKonstructs.Core
                         cfgNode.SetValue(instanceSetting.Key, ((CelestialBody)instanceSetting.Value.GetValue(instance)).name, true);
                         break;
                     case "UnityEngine.Color":
+                        if (instanceSetting.Key == "GrasColor" && (Color)instanceSetting.Value.GetValue(instance) == Color.clear)
+                        {
+                            continue;
+                        }
                         cfgNode.SetValue(instanceSetting.Key, (Color)instanceSetting.Value.GetValue(instance), true);
                         break;
                 }
