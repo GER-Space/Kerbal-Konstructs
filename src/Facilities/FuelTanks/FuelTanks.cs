@@ -28,5 +28,32 @@ namespace KerbalKonstructs.Modules
         public float OxFCurrent;
         [CareerSetting]
         public float MoFCurrent;
+
+        private string[] resourceTypes = new string[] { "LiquidFuel", "MonoPropellant" , "Oxidizer" };
+
+        internal override KKFacility ParseConfig(ConfigNode cfgNode)
+        {
+            base.ParseConfig(cfgNode);
+
+            Merchant fuelTankMerchant = new Merchant();
+            foreach (var resourceName in resourceTypes)
+            {
+
+                foreach (var partResource in PartResourceLibrary.Instance.resourceDefinitions)
+                {
+                    if (partResource.name == resourceName)
+                    {
+                        fuelTankMerchant.tradedResources.Add(new TradedResource { resource = partResource , multiplierSell = 1 , multiplierBuy = 1});
+                        break;
+                    }
+                }
+
+            }
+            fuelTankMerchant.FacilityType = "Merchant";
+            return fuelTankMerchant;
+
+        }
+
     }
+
 }
