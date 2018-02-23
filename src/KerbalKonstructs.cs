@@ -49,7 +49,6 @@ namespace KerbalKonstructs
         #region Switches
         private bool atMainMenu = false;
         internal bool VesselLaunched = false;
-        internal bool bStylesSet = false;
 
         internal bool bDisablePositionEditing = false;
         #endregion
@@ -196,7 +195,14 @@ namespace KerbalKonstructs
             Log.UserInfo("Version is " + sKKVersion + " .");
 
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
-            UIMain.SetTextures();
+            if (!UIMain.bStylesSet)
+            {
+                UIMain.SetTextures();
+                UIMain.SetStyles();
+                GUI.skin = HighLogic.Skin;
+                UIMain.bStylesSet = true;
+            }
+            
             Log.PerfStop("Awake Function");
             //Log.PerfStart("Model Test");
             //SDTest.GetModelStats();

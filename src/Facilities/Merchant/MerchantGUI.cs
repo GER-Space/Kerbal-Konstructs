@@ -11,12 +11,7 @@ namespace KerbalKonstructs.UI
     internal class MerchantGUI
     {
 
-
-        internal static bool layoutInitialized = false;
-        internal static GUIStyle LabelInfo;
-
         internal static Merchant selectedFacility = null;
-
         internal static StaticInstance lastInstance = null;
 
         internal static Vessel currentVessel = null;
@@ -24,12 +19,6 @@ namespace KerbalKonstructs.UI
 
         internal static void MerchantInterface(StaticInstance instance)
         {
-            if (!layoutInitialized)
-            {
-                InitializeLayout();
-                layoutInitialized = true;
-            }
-
             if (instance != lastInstance)
             {
                 Initialize(instance);
@@ -41,6 +30,7 @@ namespace KerbalKonstructs.UI
             }
 
             GUILayout.Space(2);
+
             GUILayout.Label("Buy or sell these resources: ", GUILayout.Height(30));
 
             foreach (TradedResource myResource in selectedFacility.tradedResources)
@@ -59,7 +49,7 @@ namespace KerbalKonstructs.UI
                     if (myResource.canBeSold)
                     {
                         GUILayout.Label("Sell for: ", GUILayout.Height(23));
-                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierSell).ToString(), LabelInfo, GUILayout.Height(23));
+                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierSell).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
                     }
                     else
                     {
@@ -69,7 +59,7 @@ namespace KerbalKonstructs.UI
                     if (myResource.canBeBought)
                     {
                         GUILayout.Label("Buy for: ", GUILayout.Height(23));
-                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierBuy).ToString(), LabelInfo, GUILayout.Height(23));
+                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierBuy).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
                         GUILayout.Space(10);
                     }
                     else
@@ -82,7 +72,7 @@ namespace KerbalKonstructs.UI
                     xFeedSet.GetConnectedResourceTotals(myResource.resource.id,out double xfeedAmount, out double xfeedMax, true);
                     GUILayout.BeginHorizontal();
                     {
-                        GUILayout.Label(Math.Round(xfeedAmount,1).ToString() + " of " + Math.Round(xfeedMax,1).ToString(), LabelInfo, GUILayout.Height(18));
+                        GUILayout.Label(Math.Round(xfeedAmount,1).ToString() + " of " + Math.Round(xfeedMax,1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
                         GUILayout.FlexibleSpace();
                         if (myResource.canBeSold)
                         {
@@ -153,18 +143,5 @@ namespace KerbalKonstructs.UI
             }
 
         }
-
-        internal static void InitializeLayout()
-        {
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-        }
-
     }
 }

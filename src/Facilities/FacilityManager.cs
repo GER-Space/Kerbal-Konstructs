@@ -29,25 +29,16 @@ namespace KerbalKonstructs.UI
 
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
-        //		public Vector2 descriptionScrollPosition;
-        //		public Vector2 scrollNearbyCraft;
-        //		public Vector2 scrollOreTransfer;
-        //		public Vector2 scrollOreTransfer2;
-
         public static LaunchSite selectedSite = null;
         public static StaticInstance selectedFacility = null;
 
 
         float fAlt = 0f;
 
-        public Boolean isOpen2 = false;
-        public Boolean bChangeTargetType = false;
 
         public Boolean bHalfwindow = false;
         public Boolean bHalvedWindow = false;
 
-        public Boolean bTransferOreToF = false;
-        public Boolean bTransferOreToC = false;
 
         string sFacilityName = "Unknown";
         string sFacilityType = "Unknown";
@@ -229,12 +220,6 @@ namespace KerbalKonstructs.UI
                             bHalfwindow = true;
                             break;
                         }
-                    case KKFacilityType.FuelTanks:
-                        {
-                            sPurpose = "This facility stores fuel for craft.";
-                            bHalfwindow = false;
-                            break;
-                        }
                     case KKFacilityType.Merchant:
                         {
                             sPurpose = "You can buy and sell Resources here";
@@ -270,9 +255,6 @@ namespace KerbalKonstructs.UI
                         case KKFacilityType.Research:
                         case KKFacilityType.Business:
                             ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
-                            break;
-                        case KKFacilityType.FuelTanks:
-                            FuelTanksGUI.FuelTanksInterface(selectedFacility);
                             break;
                         case KKFacilityType.Merchant:
                             MerchantGUI.MerchantInterface(selectedFacility);

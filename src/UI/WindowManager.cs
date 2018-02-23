@@ -35,6 +35,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
             instance = this;
+            DontDestroyOnLoad(instance);
             draw = delegate { };
             openWindows = new List<Action>();
         }
@@ -61,15 +62,7 @@ namespace KerbalKonstructs.UI
         /// Monobehaviour function for drawing. 
         /// </summary>
         public void OnGUI()
-        {
-            GUI.skin = HighLogic.Skin;
-
-            if (!KKmain.bStylesSet)
-            {
-                UIMain.SetStyles();
-                KKmain.bStylesSet = true;
-            }
-            
+        {            
             draw.Invoke();
         }
         #endregion

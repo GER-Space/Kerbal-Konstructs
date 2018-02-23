@@ -142,7 +142,6 @@
     <Compile Include="UI\BaseManager.cs" />
     <Compile Include="Editor\ModelInfo.cs" />
     <Compile Include="Editor\StaticsEditorGUI.cs" />
-    <Compile Include="Facilities\FuelTanks\FuelTanksGUI.cs" />
     <Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />
     <Compile Include="Facilities\StaffGUI.cs" />
     <Compile Include="Facilities\SharedInterfaces.cs" />

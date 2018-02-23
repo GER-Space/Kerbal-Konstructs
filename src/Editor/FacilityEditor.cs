@@ -709,12 +709,6 @@ namespace KerbalKonstructs.UI
             {
                 case "None":
                     break;
-                case "FuelTanks":
-                    selectedObject.hasFacilities = true;
-                    if (infLqFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).LqFMax = float.Parse(infLqFMax);
-                    if (infOxFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).OxFMax = float.Parse(infOxFMax);
-                    if (infMoFMax != "") ((FuelTanks)selectedObject.myFacilities[0]).MoFMax = float.Parse(infMoFMax);
-                    break;
                 case "GroundStation":
                     selectedObject.hasFacilities = true;                    
                     ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
@@ -803,17 +797,6 @@ namespace KerbalKonstructs.UI
                     infFacCraftCap = ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity.ToString();
                     if (infFacCraftCap == "0" || infFacCraftCap == "")
                         infFacCraftCap = selectedObject.model.DefaultFacilityCraftCapacity.ToString();
-                    break;
-                case "FuelTanks":
-                    infLqFMax = ((FuelTanks)selectedObject.myFacilities[0]).LqFMax.ToString();
-                    if (infLqFMax == "0" || infLqFMax == "")
-                        infLqFMax = selectedObject.model.LqFMax.ToString();
-                    infOxFMax = ((FuelTanks)selectedObject.myFacilities[0]).OxFMax.ToString();
-                    if (infOxFMax == "0" || infOxFMax == "")
-                        infOxFMax = selectedObject.model.OxFMax.ToString();
-                    infMoFMax = ((FuelTanks)selectedObject.myFacilities[0]).MoFMax.ToString();
-                    if (infMoFMax == "0" || infMoFMax == "")
-                        infMoFMax = selectedObject.model.MoFMax.ToString();
                     break;
                 case "Barracks":
                     infStaffMax = ((Barracks)selectedObject.myFacilities[0]).StaffMax.ToString();

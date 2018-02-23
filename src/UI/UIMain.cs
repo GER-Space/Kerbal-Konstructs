@@ -4,7 +4,10 @@ namespace KerbalKonstructs.UI
 {
 	public static class UIMain
 	{
-		public static Texture VABIcon;
+        internal static bool bStylesSet = false;
+
+
+        public static Texture VABIcon;
 		public static Texture ANYIcon;
 		public static Texture TrackingStationIcon;
         public static Texture heliPadIcon;
@@ -51,6 +54,9 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
+
+        public static GUIStyle LabelInfo;
+
 
         public static GUIStyle navStyle;
 
@@ -113,6 +119,16 @@ namespace KerbalKonstructs.UI
             LabelWhite.fontStyle = FontStyle.Normal;
             LabelWhite.padding.bottom = 1;
             LabelWhite.padding.top = 1;
+
+            LabelInfo = new GUIStyle(GUI.skin.label);
+            LabelInfo.normal.background = null;
+            LabelInfo.normal.textColor = Color.white;
+            LabelInfo.fontSize = 13;
+            LabelInfo.fontStyle = FontStyle.Bold;
+            LabelInfo.padding.left = 3;
+            LabelInfo.padding.top = 0;
+            LabelInfo.padding.bottom = 0;
+
         }
 
 		public static void SetTextures()

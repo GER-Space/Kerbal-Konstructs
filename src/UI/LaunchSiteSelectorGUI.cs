@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
+using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -141,8 +142,6 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
                 {
-                    InputLockManager.RemoveControlLock("KKEditorLock");
-                    InputLockManager.RemoveControlLock("KKEditorLock2");
                     this.Close();
                     return;
                 }
@@ -550,6 +549,8 @@ namespace KerbalKonstructs.UI
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
+
+
 
         public void setEditorType(SiteType type)
         {
