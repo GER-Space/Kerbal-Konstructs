@@ -87,7 +87,7 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
-                string hovermessage = "Selected launchsite is " + EditorLogic.fetch.launchSiteName;
+                string hovermessage = "Selected launchsite is " + LaunchSites.LaunchSiteManager.getCurrentLaunchSite();
                 MiscUtils.HUDMessage(hovermessage, 10, 0);
             }
         }

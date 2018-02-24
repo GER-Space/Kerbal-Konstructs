@@ -39,6 +39,16 @@ namespace KerbalKonstructs.Modules
         private static List<StaticInstance> groundStations;
         private static LaunchSite[] lauchSites;
 
+        private LaunchSite launchSite;
+        private CelestialBody body;
+        private StaticInstance groundStation;
+        private bool display2 = false;
+        private bool isOpen = false;
+
+        Vector3 launchSitePosition;
+        Vector3 lsPosition;
+        Rect screenRect;
+
         public override void Draw()
         {
             if ((!KerbalKonstructs.instance.toggleIconsWithBB) || (KerbalKonstructs.instance.toggleIconsWithBB && this.IsOpen()))
@@ -88,7 +98,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         private void CacheLaunchSites()
         {
-            lauchSites = LaunchSiteManager.getLaunchSites().ToArray();
+            lauchSites = LaunchSiteManager.allLaunchSites;
         }
 
 
@@ -107,10 +117,7 @@ namespace KerbalKonstructs.Modules
             if (!KerbalKonstructs.instance.mapShowOpenT)
                 return;
 
-            bool display2 = false;
-            bool isOpen = false;
-            CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
-            StaticInstance groundStation;
+            body = PlanetariumCamera.fetch.target.GetReferenceBody();
 
             displayingTooltip2 = false;
 
@@ -179,9 +186,8 @@ namespace KerbalKonstructs.Modules
         public void DrawLaunchsites()
         {
             displayingTooltip = false;
-            LaunchSite launchSite;
-            CelestialBody body = PlanetariumCamera.fetch.target.GetReferenceBody();
-            string category;
+            body = PlanetariumCamera.fetch.target.GetReferenceBody();
+
             bool isOpen = false;
 
             // Then do launchsites
@@ -190,17 +196,16 @@ namespace KerbalKonstructs.Modules
                 launchSite = lauchSites[index];
                 // check if we should display the site or not this is the fastst check, so it shoud be first
                 isOpen = launchSite.isOpen;
-                category = launchSite.Category;
 
-                if (!KerbalKonstructs.instance.mapShowHelipads && category == "Helipad")
+                if (!KerbalKonstructs.instance.mapShowHelipads && launchSite.Category == LaunchSiteCategory.Helipad)
                     continue;
-                if (!KerbalKonstructs.instance.mapShowOther && (category == "Other"))
+                if (!KerbalKonstructs.instance.mapShowOther && (launchSite.Category == LaunchSiteCategory.Other))
                     continue;
-                if (!KerbalKonstructs.instance.mapShowWaterLaunch && (category == "Waterlaunch"))
+                if (!KerbalKonstructs.instance.mapShowWaterLaunch && (launchSite.Category == LaunchSiteCategory.Waterlaunch))
                     continue;
-                if (!KerbalKonstructs.instance.mapShowRocketbases && category == "RocketPad")
+                if (!KerbalKonstructs.instance.mapShowRocketbases && launchSite.Category == LaunchSiteCategory.RocketPad)
                     continue;
-                if (!KerbalKonstructs.instance.mapShowRunways && category == "Runway")
+                if (!KerbalKonstructs.instance.mapShowRunways && launchSite.Category == LaunchSiteCategory.Runway)
                     continue;
 
                 if (MiscUtils.isCareerGame())
@@ -214,19 +219,18 @@ namespace KerbalKonstructs.Modules
                         continue;
                 }
 
-                Vector3 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
                 {
                     continue;
                 }
 
-                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(launchSitePosition));
-
-                Rect screenRect = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
+                lsPosition = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(launchSitePosition));
+                screenRect = new Rect((lsPosition.x - 8), (Screen.height - lsPosition.y) - 8, 16, 16);
 
                 // Distance between camera and spawnpoint sort of
-                float fPosZ = pos.z;
+                float fPosZ = lsPosition.z;
 
                 float fRadarRadius = 12800 / fPosZ;
                 float fRadarOffset = fRadarRadius / 2;
@@ -241,18 +245,18 @@ namespace KerbalKonstructs.Modules
                 {
                     if (fRadarRadius > 15)
                     {
-                        switch (category)
+                        switch (launchSite.Category)
                         {
-                            case "RocketPad":
+                            case LaunchSiteCategory.RocketPad:
                                 GUI.DrawTexture(screenRect, UIMain.VABIcon, ScaleMode.ScaleToFit, true);
                                 break;
-                            case "Runway":
+                            case LaunchSiteCategory.Runway:
                                 GUI.DrawTexture(screenRect, UIMain.runWayIcon, ScaleMode.ScaleToFit, true);
                                 break;
-                            case "Helipad":
+                            case LaunchSiteCategory.Helipad:
                                 GUI.DrawTexture(screenRect, UIMain.heliPadIcon, ScaleMode.ScaleToFit, true);
                                 break;
-                            case "Waterlaunch":
+                            case LaunchSiteCategory.Waterlaunch:
                                 GUI.DrawTexture(screenRect, UIMain.waterLaunchIcon, ScaleMode.ScaleToFit, true);
                                 break;
                             default:
@@ -263,14 +267,14 @@ namespace KerbalKonstructs.Modules
                 }
 
                 // Tooltip
-                if (screenRect.Contains(Event.current.mousePosition) && !displayingTooltip)
+                if (!displayingTooltip && screenRect.Contains(Event.current.mousePosition))
                 {
                     //Only display one tooltip at a time
                     string sToolTip = "";
                     sToolTip = launchSite.LaunchSiteName;
                     if (launchSite.LaunchSiteName == "Runway") sToolTip = "KSC Runway";
                     if (launchSite.LaunchSiteName == "LaunchPad") sToolTip = "KSC LaunchPad";
-                    DisplayMapIconToolTip(sToolTip, pos);
+                    DisplayMapIconToolTip(sToolTip, lsPosition);
 
                     // Select a base by clicking on the icon
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)

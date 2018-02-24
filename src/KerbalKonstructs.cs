@@ -41,13 +41,11 @@ namespace KerbalKonstructs
 
         internal double recoveryExraRefund = 0;
 
-        internal string defaultVABlaunchsite = "LaunchPad";
-        internal string defaultSPHlaunchsite = "Runway";
 
         #endregion
 
         #region Switches
-        private bool atMainMenu = false;
+        //private bool atMainMenu = false;
         internal bool VesselLaunched = false;
 
         internal bool bDisablePositionEditing = false;
@@ -135,7 +133,10 @@ namespace KerbalKonstructs
         public Boolean mapShowWaterLaunch = true;
         [KSPField]
         public Boolean mapShowOther = false;
-
+        [KSPField]
+        public  string defaultVABlaunchsite = "LaunchPad";
+        [KSPField]
+        public string defaultSPHlaunchsite = "Runway";
 
         #endregion
 
@@ -254,8 +255,7 @@ namespace KerbalKonstructs
                 var cm = CurrencyModifierQuery.RunQuery(TransactionReasons.VesselRollout, total, 0f, 0f);
                 total += cm.GetEffectDelta(Currency.Funds);
                 double launchcost = total;
-                float fRefund = 0f;
-                LaunchSiteManager.getSiteLaunchRefund(sitename, out fRefund);
+                float fRefund = LaunchSiteManager.GetSiteLaunchRefund(sitename);
                 Log.Normal("Launch Refund: " + fRefund);
                 if (fRefund < 1) return;
 
@@ -334,7 +334,7 @@ namespace KerbalKonstructs
             {
                 CareerState.ResetFacilitiesOpenState();
 
-                atMainMenu = true;
+                //atMainMenu = true;
                 bTreatBodyAsNullForStatics = false;
                 // reset this for the next Newgame
                 if (InitialisedFacilities)
@@ -348,32 +348,20 @@ namespace KerbalKonstructs
                 // Prevent abuse if selector left open when switching to from VAB and SPH
                 LaunchSiteSelectorGUI.instance.Close();
 
-                // Default selected launchsite when switching between save games
-                switch (EditorDriver.editorFacility)
+                LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+
+                // Check if the selected LaunchSite is valid
+                if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
                 {
-                    case EditorFacility.SPH:
-                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.SPH);
-                        if (atMainMenu)
-                        {
-                            LaunchSiteManager.setLaunchSite(LaunchSiteManager.runway);
-                            atMainMenu = false;
-                        }
-                        break;
-                    case EditorFacility.VAB:
-                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.VAB);
-                        if (atMainMenu)
-                        {
-                            LaunchSiteManager.setLaunchSite(LaunchSiteManager.launchpad);
-                            atMainMenu = false;
-                        }
-                        break;
-                    default:
-                        LaunchSiteSelectorGUI.instance.setEditorType(SiteType.Any);
-                        break;
+                    currentSite = LaunchSiteManager.GetDefaultSite();
                 }
+                LaunchSiteManager.setLaunchSite(currentSite);
             }
 
-            if (bTreatBodyAsNullForStatics) StaticDatabase.OnBodyChanged(null);
+            if (bTreatBodyAsNullForStatics)
+            {
+                StaticDatabase.OnBodyChanged(null);
+            }
         }
 
 
@@ -932,6 +920,10 @@ namespace KerbalKonstructs
 
                     model.isSquad = true;
 
+                    if (model.name.Equals("SQUAD_KSC2_launchpad", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        model.DefaultLaunchPadTransform = "PlatformPlane";
+                    }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = child.gameObject;

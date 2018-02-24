@@ -11,7 +11,7 @@ namespace KerbalKonstructs.Core
 {
     public class LaunchSiteManager
     {
-        private static List<LaunchSite> launchSites = new List<LaunchSite>();
+        private static Dictionary<string,LaunchSite> launchSites = new Dictionary<string, LaunchSite>();
         private static string currentLaunchSite = "Runway";
         private static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
         public static float rangeNearestOpenBase = 0f;
@@ -25,7 +25,7 @@ namespace KerbalKonstructs.Core
 
 
         // Handy get of all launchSites
-        public static List<LaunchSite> AllLaunchSites { get { return launchSites; } }
+        public static LaunchSite[] allLaunchSites = null;
 
         private static float getKSCLon
         {
@@ -78,7 +78,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteName = "Runway";
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
-            runway.Category = "Runway";
+            runway.Category = LaunchSiteCategory.Runway;
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.OpenCloseState = "Open";
@@ -95,7 +95,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteName = "LaunchPad";
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
-            launchpad.Category = "RocketPad";
+            launchpad.Category = LaunchSiteCategory.RocketPad;
             launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.OpenCloseState = "Open";
@@ -110,10 +110,13 @@ namespace KerbalKonstructs.Core
             launchpad.lsGameObject = SpaceCenter.Instance.gameObject;
 
 
-            launchSites.Add(runway);
-            launchSites.Add(launchpad);
+            AddLaunchSite(runway);
+            AddLaunchSite(launchpad);
         }
 
+        /// <summary>
+        /// contructor
+        /// </summary>
         static LaunchSiteManager()
         {
             AddKSC();
@@ -191,7 +194,7 @@ namespace KerbalKonstructs.Core
 
                     site.facility = newFacility;
 
-                    launchSites.Add(site);
+                    AddLaunchSite(site);
                 }
                 else
                 {
@@ -217,278 +220,237 @@ namespace KerbalKonstructs.Core
 
         internal static void DeleteLaunchSite (LaunchSite site2delete)
         {
-            if (launchSites.Contains(site2delete))
+            if (launchSites.ContainsKey(site2delete.LaunchSiteName))
             {
-                launchSites.Remove(site2delete);
+                launchSites.Remove(site2delete.LaunchSiteName);
 
                 CustomSpaceCenter csc = SpaceCenterManager.GetCSC(site2delete.LaunchSiteName);
                 if (csc != null)
                 {
                     SpaceCenterManager.spaceCenters.Remove(csc);
                 }
+
+                allLaunchSites = launchSites.Values.ToArray();
             } 
         }
 
 
+        internal static void AddLaunchSite(LaunchSite site2add)
+        {
+            launchSites.Add(site2add.LaunchSiteName, site2add);
+            List<LaunchSite> tmpList = launchSites.Values.ToList();
+            tmpList.Sort(delegate (LaunchSite a, LaunchSite b)
+            {
+                return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
+            });
+            allLaunchSites = tmpList.ToArray();
+        }
+
         internal static LaunchSite GetCurrentLaunchSite()
         {
-            return launchSites.Where(site => site.LaunchSiteName == currentLaunchSite).FirstOrDefault();
+            return launchSites[currentLaunchSite];
         }
 
         // Legacy Functions used by other mods
 
-        // Returns a list of launchsites. Supports category filtering.
-        public static List<LaunchSite> getLaunchSites(String usedFilter = "ALL")
+        //// Returns a list of launchsites. Supports category filtering.
+        //public static List<LaunchSite> getLaunchSites(String usedFilter = "ALL")
+        //{
+        //    List<LaunchSite> sites = new List<LaunchSite>();
+        //    foreach (LaunchSite site in launchSites)
+        //    {
+        //        if (usedFilter.Equals("ALL"))
+        //        {
+        //            sites.Add(site);
+        //        }
+        //        else
+        //        {
+        //            if (site.Category.Equals(usedFilter))
+        //            {
+        //                sites.Add(site);
+        //            }
+        //        }
+        //    }
+        //    return sites;
+        //}
+
+        //// Returns a list of launchsites. Supports sitetype and category filtering.
+        //public static List<LaunchSite> getLaunchSites(SiteType type, Boolean allowAny = true, String appliedFilter = "ALL")
+        //{
+        //    List<LaunchSite> sites = new List<LaunchSite>();
+        //    foreach (LaunchSite site in launchSites)
+        //    {
+        //        if (site.LaunchSiteType.Equals(type) || (site.LaunchSiteType.Equals(SiteType.Any) && allowAny))
+        //        {
+        //            if (appliedFilter.Equals("ALL"))
+        //            {
+        //                sites.Add(site);
+        //            }
+        //            else
+        //            {
+        //                if (site.Category.Equals(appliedFilter))
+        //                {
+        //                    sites.Add(site);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return sites;
+        //}
+
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <param name="sState"></param>
+        public static void setSiteOpenCloseState(string siteName, string state)
         {
-            List<LaunchSite> sites = new List<LaunchSite>();
-            foreach (LaunchSite site in launchSites)
+            if (launchSites.ContainsKey(siteName))
             {
-                if (usedFilter.Equals("ALL"))
+                launchSites[siteName].OpenCloseState = state;
+            }
+        }
+
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        public static void setSiteLocked(string siteName)
+        {
+            if (launchSites.ContainsKey(siteName))
+            {
+                LaunchSite site = launchSites[siteName];
+                launchSites[siteName].OpenCloseState = launchSites[siteName].OpenCloseState + "Locked";                
+            }
+        }
+
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        public static void setSiteUnlocked(string siteName)
+        {
+            if (launchSites.ContainsKey(siteName))
+            {
+                LaunchSite site = launchSites[siteName];
+                if (site.OpenCloseState == "OpenLocked")
                 {
-                    sites.Add(site);
+                    site.OpenCloseState = "Open";
                 }
                 else
                 {
-                    if (site.Category.Equals(usedFilter))
-                    {
-                        sites.Add(site);
-                    }
-                }
-            }
-            return sites;
-        }
-
-        // Returns a list of launchsites. Supports sitetype and category filtering.
-        public static List<LaunchSite> getLaunchSites(SiteType type, Boolean allowAny = true, String appliedFilter = "ALL")
-        {
-            List<LaunchSite> sites = new List<LaunchSite>();
-            foreach (LaunchSite site in launchSites)
-            {
-                if (site.LaunchSiteType.Equals(type) || (site.LaunchSiteType.Equals(SiteType.Any) && allowAny))
-                {
-                    if (appliedFilter.Equals("ALL"))
-                    {
-                        sites.Add(site);
-                    }
-                    else
-                    {
-                        if (site.Category.Equals(appliedFilter))
-                        {
-                            sites.Add(site);
-                        }
-                    }
-                }
-            }
-            return sites;
-        }
-
-        // Open or close a launchsite
-        public static void setSiteOpenCloseState(string sSiteName, string sState)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    site.OpenCloseState = sState;
-                    return;
+                    site.OpenCloseState = "Closed";
                 }
             }
         }
 
-        // Lock a launchsite so it cannot be opened or closed or launched from
-        public static void setSiteLocked(string sSiteName)
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <param name="sOpenCloseState"></param>
+        /// <param name="fOpenCost"></param>
+        public static void getSiteOpenCloseState(string siteName, out string sOpenCloseState, out float fOpenCost)
         {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
+            if (launchSites.ContainsKey(siteName))
             {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    site.OpenCloseState = site.OpenCloseState + "Locked";
-                    return;
-                }
-            }
-        }
-
-        // Unlock a launchsite so it can be opened or closed or launched from
-        public static void setSiteUnlocked(string sSiteName)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    if (site.OpenCloseState == "OpenLocked")
-                        site.OpenCloseState = "Open";
-                    else
-                        site.OpenCloseState = "Closed";
-                    return;
-                }
-            }
-        }
-
-        // Returns whether a site is open or closed and how much it costs to open
-        public static void getSiteOpenCloseState(string sSiteName, out string sOpenCloseState, out float fOpenCost)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    sOpenCloseState = site.OpenCloseState;
-                    fOpenCost = site.OpenCost;
-                    return;
-                }
+                LaunchSite site = launchSites[siteName];
+                sOpenCloseState = site.OpenCloseState;
+                fOpenCost = site.OpenCost;
             }
 
             sOpenCloseState = "Open";
             fOpenCost = 0;
         }
 
-        // Returns whether a site is locked
-        public static bool getIsSiteLocked(string sSiteName)
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <returns></returns>
+        public static bool getIsSiteLocked(string siteName)
         {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
+            if (launchSites.ContainsKey(siteName))
             {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    if (site.OpenCloseState == "OpenLocked" || site.OpenCloseState == "ClosedLocked")
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        // Returns whether a site is open
-        public static bool getIsSiteOpen(string sSiteName)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                        return site.isOpen;
-                }
-            }
-            return false;
-        }
-
-        // Returns whether a site is closed
-        public static bool getIsSiteClosed(string sSiteName)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                        return (!site.isOpen);
-                }
-            }
-            return false;
-        }
-
-        // Returns the launch refund percentage of a site
-        public static void getSiteLaunchRefund(string sSiteName, out float fRefund)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    fRefund = site.LaunchRefund;
-                    return;
-                }
-            }
-
-            fRefund = 0;
-        }
-
-        // Returns the GameObject of a site
-        public static GameObject getSiteGameObject(string sSiteName)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    return site.lsGameObject;
-                }
-            }
-
-            return null;
-        }
-
-        // Returns the StaticObject of a site. Can provide a sitename or a GameObject
-        public static StaticInstance getSiteStaticObject(string siteName, GameObject go = null)
-        {
-            StaticInstance soSite = null;
-            if (go != null)
-            {
-                soSite = InstanceUtil.GetStaticInstanceForGameObject(go);
-
-                if (soSite == null) return null;
-                return soSite;
-            }
-
-            string sName = "";
-            object oName = null;
-            foreach (StaticInstance instance in StaticDatabase.allStaticInstances.Where(inst => inst.hasLauchSites == true))
-            {
-
-                oName = instance.launchSite.LaunchSiteName;
-                if (oName == null) continue;
-
-                oName = null;
-
-                sName = instance.launchSite.LaunchSiteName;
-                if (sName == siteName) return instance;
-            }
-
-            return null;
-        }
-
-        public static string sBaseMem = "";
-        public static LaunchSite launchsitemem = null;
-
-        // Returns if a launchsite exists. Hook used by KerKonConConExt
-        public static bool checkLaunchSiteExists(string sSiteName)
-        {
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site.LaunchSiteName == sSiteName)
+                LaunchSite site = launchSites[siteName];
+                if (site.OpenCloseState == "OpenLocked" || site.OpenCloseState == "ClosedLocked")
                 {
                     return true;
                 }
             }
-
             return false;
         }
 
-        // Returns a specific Launchsite, keyed by site.name
-        public static LaunchSite getLaunchSiteByName(string sSiteName, bool bRemember = false)
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <returns></returns>
+        public static bool getIsSiteOpen(string siteName)
         {
-            if (bRemember)
+            if (launchSites.ContainsKey(siteName))
             {
-                if (sBaseMem == sSiteName) return launchsitemem;
-            }
-
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
+                return launchSites[siteName].isOpen;             
+            } else
             {
-                if (site.LaunchSiteName == sSiteName)
-                {
-                    if (bRemember)
-                    {
-                        sBaseMem = sSiteName;
-                        launchsitemem = site;
-                    }
-                    return site;
-                }
+                return false;
             }
+        }
 
-            return null;
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <returns></returns>
+        public static bool getIsSiteClosed(string siteName)
+        {
+            if (launchSites.ContainsKey(siteName))
+            {
+                return (!launchSites[siteName].isOpen);
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // Returns the launch refund percentage of a site
+        public static float GetSiteLaunchRefund(string siteName)
+        {
+            if (launchSites.ContainsKey(siteName))
+            {
+                return launchSites[siteName].LaunchRefund;                
+            }
+            else
+            {
+                return 0f;
+            }
+        }
+
+        /// <summary>
+        /// Contract configurator API call
+        /// </summary>
+        /// <param name="siteName"></param>
+        /// <returns></returns>
+        public static bool checkLaunchSiteExists(string siteName)
+        {
+            return launchSites.ContainsKey(siteName);
+        }
+
+
+        // Returns a specific Launchsite, keyed by site.name
+        public static LaunchSite getLaunchSiteByName(string siteName)
+        {
+
+            if (checkLaunchSiteExists(siteName))
+            {
+                return launchSites[siteName];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         //// Closes all launchsites. Necessary when leaving a career game and going to the main menu
@@ -501,23 +463,11 @@ namespace KerbalKonstructs.Core
         //    }
         //}
 
+
         // Returns the distance in m from a position to a specified Launchsite
-        public static float getDistanceToBase(Vector3 position, LaunchSite lTarget)
+        public static float getDistanceToBase(Vector3 position, LaunchSite site)
         {
-            float flRange = 0f;
-
-            List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-            foreach (LaunchSite site in sites)
-            {
-                if (site == lTarget)
-                {
-                    var radialposition = site.lsGameObject.transform.position;
-                    var dist = Vector3.Distance(position, radialposition);
-                    flRange = dist;
-                }
-            }
-
-            return flRange;
+            return Vector3.Distance(position, site.lsGameObject.transform.position);
         }
 
         // Returns the nearest open Launchsite to a position and range to the Launchsite in m
@@ -530,9 +480,7 @@ namespace KerbalKonstructs.Core
             LaunchSite lNearestBase = null;
             LaunchSite lKSC = null;
 
-            List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
-
-            foreach (LaunchSite site in basesites)
+            foreach (LaunchSite site in allLaunchSites)
             {
 
                 if (site.isOpen)
@@ -614,9 +562,8 @@ namespace KerbalKonstructs.Core
             LaunchSite lKSC = null;
             string sLastNearest = "";
 
-            List<LaunchSite> basesites = LaunchSiteManager.getLaunchSites();
 
-            foreach (LaunchSite site in basesites)
+            foreach (LaunchSite site in allLaunchSites)
             {
                 if (site.lsGameObject == null) continue;
 
@@ -676,7 +623,7 @@ namespace KerbalKonstructs.Core
         {
             if (site.facility != null)
             {
-                if (EditorDriver.editorFacility.Equals(EditorFacility.SPH))
+                if (EditorDriver.editorFacility == EditorFacility.SPH)
                 {
                     site.facility.name = "Runway";
                 }
@@ -695,5 +642,51 @@ namespace KerbalKonstructs.Core
             return currentLaunchSite;
 
         }
+
+        internal static bool CheckLaunchSiteIsValid(LaunchSite site)
+        {
+            if (!KerbalKonstructs.instance.launchFromAnySite && (EditorDriver.editorFacility == EditorFacility.VAB) && (site.LaunchSiteType == SiteType.SPH))
+            {
+                return false;
+            }
+            if (!KerbalKonstructs.instance.launchFromAnySite && (EditorDriver.editorFacility == EditorFacility.SPH) && (site.LaunchSiteType == SiteType.VAB))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the currently available default LaunchSite in a editor
+        /// </summary>
+        /// <returns></returns>
+        internal static LaunchSite GetDefaultSite()
+        {
+            LaunchSite defaultSite = null;
+            if (EditorDriver.editorFacility == EditorFacility.VAB)
+            {
+                defaultSite = getLaunchSiteByName(KerbalKonstructs.instance.defaultVABlaunchsite);
+                if (defaultSite == null || !defaultSite.isOpen)
+                {
+                    defaultSite = getLaunchSiteByName("LaunchPad");
+                    KerbalKonstructs.instance.defaultVABlaunchsite = "LaunchPad";
+                }
+            }
+
+            if (EditorDriver.editorFacility == EditorFacility.SPH)
+            {
+                defaultSite = getLaunchSiteByName(KerbalKonstructs.instance.defaultSPHlaunchsite);
+                if (defaultSite == null || !defaultSite.isOpen)
+                {
+                    defaultSite = getLaunchSiteByName("Runway");
+                    KerbalKonstructs.instance.defaultSPHlaunchsite = "Runway";
+                }
+            }
+
+            return defaultSite;
+        }
+
+
     }
 }

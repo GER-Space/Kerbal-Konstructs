@@ -72,6 +72,8 @@ namespace KerbalKonstructs.UI
 		public Boolean isLocked = false;
 		public Boolean isLaunch = false;
 
+        private bool layoutIsInitialized = false;
+
 
         public override void Draw()
         {
@@ -80,7 +82,8 @@ namespace KerbalKonstructs.UI
 
         public void drawBaseManager()
 		{
-			KKWindow = new GUIStyle(GUI.skin.window);
+
+            KKWindow = new GUIStyle(GUI.skin.window);
 			KKWindow.padding = new RectOffset(3,3,5,5);
 
 			if (foldedIn)
@@ -113,80 +116,12 @@ namespace KerbalKonstructs.UI
 
 		public void drawBaseManagerWindow(int windowID)
 		{
-			DeadButton = new GUIStyle(GUI.skin.button);
-			DeadButton.normal.background = null;
-			DeadButton.hover.background = null;
-			DeadButton.active.background = null;
-			DeadButton.focused.background = null;
-			DeadButton.normal.textColor = Color.white;
-			DeadButton.hover.textColor = Color.white;
-			DeadButton.active.textColor = Color.white;
-			DeadButton.focused.textColor = Color.white;
-			DeadButton.fontSize = 14;
-			DeadButton.fontStyle = FontStyle.Bold;
 
-			DeadButtonRed = new GUIStyle(GUI.skin.button);
-			DeadButtonRed.normal.background = null;
-			DeadButtonRed.hover.background = null;
-			DeadButtonRed.active.background = null;
-			DeadButtonRed.focused.background = null;
-			DeadButtonRed.normal.textColor = Color.red;
-			DeadButtonRed.hover.textColor = Color.yellow;
-			DeadButtonRed.active.textColor = Color.red;
-			DeadButtonRed.focused.textColor = Color.red;
-			DeadButtonRed.fontSize = 12;
-			DeadButtonRed.fontStyle = FontStyle.Bold;
-
-			Yellowtext = new GUIStyle(GUI.skin.box);
-			Yellowtext.normal.textColor = Color.yellow;
-			Yellowtext.normal.background = null;
-
-			TextAreaNoBorder = new GUIStyle(GUI.skin.textArea);
-			TextAreaNoBorder.normal.background = null;
-			TextAreaNoBorder.normal.textColor = Color.white;
-			TextAreaNoBorder.fontSize = 12;
-			TextAreaNoBorder.padding.left = 1;
-			TextAreaNoBorder.padding.right = 1;
-			TextAreaNoBorder.padding.top = 4;
-
-			BoxNoBorder = new GUIStyle(GUI.skin.box);
-			BoxNoBorder.normal.background = null;
-			BoxNoBorder.normal.textColor = Color.white;
-
-			LabelWhite = new GUIStyle(GUI.skin.label);
-			LabelWhite.normal.background = null;
-			LabelWhite.normal.textColor = Color.white;
-			LabelWhite.fontSize = 12;
-			LabelWhite.padding.left = 1;
-			LabelWhite.padding.right = 1;
-			LabelWhite.padding.top = 4;
-
-			LabelInfo = new GUIStyle(GUI.skin.label);
-			LabelInfo.normal.background = null;
-			LabelInfo.normal.textColor = Color.white;
-			LabelInfo.fontSize = 13;
-			LabelInfo.fontStyle = FontStyle.Bold;
-			LabelInfo.padding.left = 3;
-			LabelInfo.padding.top = 0;
-			LabelInfo.padding.bottom = 0;
-
-			KKWindowTitle = new GUIStyle(GUI.skin.box);
-			KKWindowTitle.normal.background = null;
-			KKWindowTitle.normal.textColor = Color.white;
-			KKWindowTitle.fontSize = 14;
-			KKWindowTitle.fontStyle = FontStyle.Bold;
-
-			SmallButton = new GUIStyle(GUI.skin.button);
-			SmallButton.normal.textColor = Color.red;
-			SmallButton.hover.textColor = Color.white;
-			SmallButton.padding.top = 1;
-			SmallButton.padding.left = 1;
-			SmallButton.padding.right = 1;
-			SmallButton.padding.bottom = 4;
-			SmallButton.normal.background = null;
-			SmallButton.hover.background = null;
-			SmallButton.fontSize = 12;
-
+            if (!layoutIsInitialized)
+            {
+                InitializeLayout();
+                layoutIsInitialized = true;
+            }
 
 			string sButtonName = "";
 			sButtonName = selectedSite.LaunchSiteName;
@@ -381,7 +316,6 @@ namespace KerbalKonstructs.UI
 				isLocked = (selectedSite.OpenCloseState == "OpenLocked" || selectedSite.OpenCloseState == "ClosedLocked");
 				isLaunch = (selectedSite.OpenCloseState == "OpenLocked" || selectedSite.OpenCloseState == "Open");
 				GUI.enabled = !isOpen && !isLocked;
-				List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
 				if (!isAlwaysOpen)
 				{
 					if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
@@ -450,6 +384,87 @@ namespace KerbalKonstructs.UI
 
 			GUI.DragWindow(new Rect(0, 0, 10000, 10000));
 		}
+
+
+
+
+        private void InitializeLayout()
+        {
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.white;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.white;
+            DeadButton.focused.textColor = Color.white;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Bold;
+
+            DeadButtonRed = new GUIStyle(GUI.skin.button);
+            DeadButtonRed.normal.background = null;
+            DeadButtonRed.hover.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.focused.background = null;
+            DeadButtonRed.normal.textColor = Color.red;
+            DeadButtonRed.hover.textColor = Color.yellow;
+            DeadButtonRed.active.textColor = Color.red;
+            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.fontSize = 12;
+            DeadButtonRed.fontStyle = FontStyle.Bold;
+
+            Yellowtext = new GUIStyle(GUI.skin.box);
+            Yellowtext.normal.textColor = Color.yellow;
+            Yellowtext.normal.background = null;
+
+            TextAreaNoBorder = new GUIStyle(GUI.skin.textArea);
+            TextAreaNoBorder.normal.background = null;
+            TextAreaNoBorder.normal.textColor = Color.white;
+            TextAreaNoBorder.fontSize = 12;
+            TextAreaNoBorder.padding.left = 1;
+            TextAreaNoBorder.padding.right = 1;
+            TextAreaNoBorder.padding.top = 4;
+
+            BoxNoBorder = new GUIStyle(GUI.skin.box);
+            BoxNoBorder.normal.background = null;
+            BoxNoBorder.normal.textColor = Color.white;
+
+            LabelWhite = new GUIStyle(GUI.skin.label);
+            LabelWhite.normal.background = null;
+            LabelWhite.normal.textColor = Color.white;
+            LabelWhite.fontSize = 12;
+            LabelWhite.padding.left = 1;
+            LabelWhite.padding.right = 1;
+            LabelWhite.padding.top = 4;
+
+            LabelInfo = new GUIStyle(GUI.skin.label);
+            LabelInfo.normal.background = null;
+            LabelInfo.normal.textColor = Color.white;
+            LabelInfo.fontSize = 13;
+            LabelInfo.fontStyle = FontStyle.Bold;
+            LabelInfo.padding.left = 3;
+            LabelInfo.padding.top = 0;
+            LabelInfo.padding.bottom = 0;
+
+            KKWindowTitle = new GUIStyle(GUI.skin.box);
+            KKWindowTitle.normal.background = null;
+            KKWindowTitle.normal.textColor = Color.white;
+            KKWindowTitle.fontSize = 14;
+            KKWindowTitle.fontStyle = FontStyle.Bold;
+
+            SmallButton = new GUIStyle(GUI.skin.button);
+            SmallButton.normal.textColor = Color.red;
+            SmallButton.hover.textColor = Color.white;
+            SmallButton.padding.top = 1;
+            SmallButton.padding.left = 1;
+            SmallButton.padding.right = 1;
+            SmallButton.padding.bottom = 4;
+            SmallButton.normal.background = null;
+            SmallButton.hover.background = null;
+            SmallButton.fontSize = 12;
+        }
+
 
 		public static LaunchSite getSelectedSite()
 		{

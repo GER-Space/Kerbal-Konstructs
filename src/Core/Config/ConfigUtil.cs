@@ -151,6 +151,19 @@ namespace KerbalKonstructs.Core
                         }
                         field.SetValue(target, value);
                         break;
+                    case "KerbalKonstructs.Core.LaunchSiteCategory":
+                        LaunchSiteCategory category = LaunchSiteCategory.Other;
+                        try
+                        {
+                            category = (LaunchSiteCategory)Enum.Parse(typeof(LaunchSiteCategory), cfgNode.GetValue(field.Name));
+
+                        }
+                        catch
+                        {
+                            category = LaunchSiteCategory.Other;
+                        }
+                        field.SetValue(target, category);
+                        break;
                 }
 
             }
@@ -213,6 +226,19 @@ namespace KerbalKonstructs.Core
                         }
                         property.SetValue(target, value, null);
                         break;
+                    case "KerbalKonstructs.Core.LaunchSiteCategory":
+                        LaunchSiteCategory category = LaunchSiteCategory.Other;
+                        try
+                        {
+                            category = (LaunchSiteCategory)Enum.Parse(typeof(LaunchSiteCategory), cfgNode.GetValue(property.Name));
+
+                        }
+                        catch
+                        {
+                            category = LaunchSiteCategory.Other;
+                        }
+                        property.SetValue(target, category, null);
+                        break;
                 }
 
             }
@@ -256,6 +282,9 @@ namespace KerbalKonstructs.Core
                     break;
                 case "KerbalKonstructs.Core.SiteType":
                     cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString() , true);
+                    break;
+                case "KerbalKonstructs.Core.LaunchSiteCategory":
+                    cfgNode.SetValue(field.Name, ((LaunchSiteCategory)field.GetValue(source)).ToString(), true);
                     break;
             }
         }

@@ -26,7 +26,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string LaunchSiteDescription;
         [CFGSetting]
-        public string Category;
+        public LaunchSiteCategory Category = LaunchSiteCategory.Other;
         [CFGSetting]
         public float LaunchSiteLength;
         [CFGSetting]
@@ -107,6 +107,14 @@ namespace KerbalKonstructs.Core
 
     }
 
+    public enum LaunchSiteCategory
+    {
+        Runway,
+        RocketPad,
+        Helipad,
+        Waterlaunch,
+        Other
+    }
 
     public enum SiteType
     {

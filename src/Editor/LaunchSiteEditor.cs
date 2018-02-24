@@ -64,10 +64,10 @@ namespace KerbalKonstructs.UI
 
         public static StaticInstance selectedObject = null;
 
-        internal String siteName, siteTrans, siteDesc, siteAuthor, siteCategory, siteHidden, ILSActive;
+        internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
         float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
 
-
+        internal LaunchSiteCategory category = LaunchSiteCategory.Other;
 
         private bool guiInitialized = false;
 
@@ -244,35 +244,30 @@ namespace KerbalKonstructs.UI
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Site Category: ", GUILayout.Width(115));
-            GUILayout.Label(siteCategory, GUILayout.Width(85));
+            GUILayout.Label(category.ToString(), GUILayout.Width(85));
             GUILayout.FlexibleSpace();
-            GUI.enabled = !(siteCategory == "RocketPad");
+            GUI.enabled = (category != LaunchSiteCategory.RocketPad );
             if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "RocketPad";
-            GUI.enabled = !(siteCategory == "Runway");
+                category = LaunchSiteCategory.RocketPad;
+            GUI.enabled = (category != LaunchSiteCategory.Runway);
             if (GUILayout.Button("RW", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Runway";
-            GUI.enabled = !(siteCategory == "Helipad");
+                category = LaunchSiteCategory.Runway;
+            GUI.enabled = (category != LaunchSiteCategory.Helipad);
             if (GUILayout.Button("HP", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Helipad";
-            GUI.enabled = !(siteCategory == "Waterlaunch");
+                category = LaunchSiteCategory.Helipad;
+            GUI.enabled = (category != LaunchSiteCategory.Waterlaunch);
             if (GUILayout.Button("WA", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Waterlaunch";
-            GUI.enabled = !(siteCategory == "Other");
+                category = LaunchSiteCategory.Waterlaunch;
+            GUI.enabled = (category != LaunchSiteCategory.Other);
             if (GUILayout.Button("OT", GUILayout.Width(25), GUILayout.Height(23)))
-                siteCategory = "Other";
+                category = LaunchSiteCategory.Other;
             GUILayout.EndHorizontal();
 
             GUI.enabled = true;
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Site Type: ", GUILayout.Width(120));
-            if (siteType == SiteType.VAB)
-                GUILayout.Label("VAB", GUILayout.Width(40));
-            if (siteType == SiteType.SPH)
-                GUILayout.Label("SPH", GUILayout.Width(40));
-            if (siteType == SiteType.Any)
-                GUILayout.Label("Any", GUILayout.Width(40));
+            GUILayout.Label(siteType.ToString(), GUILayout.Width(40));
             GUILayout.FlexibleSpace();
             GUI.enabled = !(siteType == (SiteType)0);
             if (GUILayout.Button("VAB", GUILayout.Height(23)))
@@ -364,82 +359,7 @@ namespace KerbalKonstructs.UI
             GUI.enabled = siteName.Length > 0;
             if (GUILayout.Button("Save", GUILayout.Width(115), GUILayout.Height(23)))
             {
-                bool addToDB = false;
-                if (!selectedObject.hasLauchSites)
-                {
-                    Log.Normal("Creating LaunchSite");
-                    LaunchSite lsite = new LaunchSite();
-                    selectedObject.launchSite = lsite;
-                    Log.Normal ("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
-                    selectedObject.hasLauchSites = true;
-                    lsite.staticInstance = selectedObject;
-                    lsite.parentInstance = selectedObject;
-                    selectedObject.launchSite.body = selectedObject.CelestialBody;
-                    addToDB = true;
-                }
-
-                string oldName = selectedObject.launchSite.LaunchSiteName;
-                string oldCategory = selectedObject.launchSite.Category;
-                bool oldState = selectedObject.launchSite.ILSIsActive;
-
-                selectedObject.launchSite.LaunchSiteName = siteName;
-                selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
-                selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
-                selectedObject.launchSite.LaunchSiteType = siteType;
-                selectedObject.launchSite.LaunchPadTransform = siteTrans;
-                selectedObject.launchSite.LaunchSiteDescription = siteDesc;
-                selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
-                selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
-                selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
-                selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
-                selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
-                selectedObject.launchSite.OpenCloseState = "Open";
-                selectedObject.launchSite.Category = siteCategory;
-                selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
-                selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
-                selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
-                selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
-                selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
-                selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
-
-                if (ILSConfig.DetectNavUtils ()) {
-                    Log.Normal ("NavUtils detected");
-                    Log.Debug ("object: " + selectedObject);
-                    Log.Debug ("launchsite: " + selectedObject.launchSite);
-                    Log.Debug("body: " + selectedObject.launchSite.body);
-
-					bool regenerateILSConfig = false;
-                    Log.Debug ("old name: " + oldName);
-                    Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
-					if (oldName != null && !oldName.Equals (siteName)) {
-						ILSConfig.RenameSite (selectedObject.launchSite.LaunchSiteName, siteName);
-						regenerateILSConfig = true;
-					}
-
-                    Log.Debug ("old category: " + oldCategory);
-                    if (oldCategory != null && !oldCategory.Equals (siteCategory)) {
-                        ILSConfig.HandleCategoryChange (selectedObject.launchSite.Category,
-                            siteCategory, selectedObject);
-                        regenerateILSConfig = true;
-                    }
-
-                    bool state = bool.Parse (ILSActive);
-                    Log.Normal ("new state: " + state + "; old state: " + oldState);
-                    if (oldState != state || regenerateILSConfig) {
-                        if (state)
-                            ILSConfig.GenerateFullILSConfig (selectedObject);
-                        else
-                            ILSConfig.DropILSConfig (selectedObject.launchSite.name, true);
-                    }
-                }
-
-
-                if (addToDB)
-                {
-                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
-                    LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
-                }
-                KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+                SaveSettings();
                 this.Close();
             }
             GUI.enabled = true;
@@ -464,7 +384,93 @@ namespace KerbalKonstructs.UI
         #endregion
 
         #region Utility Functions
- 
+
+
+
+        internal void SaveSettings()
+        {
+            bool addToDB = false;
+            if (!selectedObject.hasLauchSites)
+            {
+                Log.Normal("Creating LaunchSite");
+                LaunchSite lsite = new LaunchSite();
+                selectedObject.launchSite = lsite;
+                Log.Normal("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
+                selectedObject.hasLauchSites = true;
+                lsite.staticInstance = selectedObject;
+                lsite.parentInstance = selectedObject;
+                selectedObject.launchSite.body = selectedObject.CelestialBody;
+                addToDB = true;
+            }
+
+            string oldName = selectedObject.launchSite.LaunchSiteName;
+            LaunchSiteCategory oldCategory = category;
+            bool oldState = selectedObject.launchSite.ILSIsActive;
+
+            selectedObject.launchSite.LaunchSiteName = siteName;
+            selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
+            selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
+            selectedObject.launchSite.LaunchSiteType = siteType;
+            selectedObject.launchSite.LaunchPadTransform = siteTrans;
+            selectedObject.launchSite.LaunchSiteDescription = siteDesc;
+            selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
+            selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
+            selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
+            selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
+            selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
+            selectedObject.launchSite.OpenCloseState = "Open";
+            selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
+            selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
+            selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
+            selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
+            selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
+            selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
+            selectedObject.launchSite.Category = category;
+
+            if (ILSConfig.DetectNavUtils())
+            {
+                Log.Normal("NavUtils detected");
+                Log.Debug("object: " + selectedObject);
+                Log.Debug("launchsite: " + selectedObject.launchSite);
+                Log.Debug("body: " + selectedObject.launchSite.body);
+
+                bool regenerateILSConfig = false;
+                Log.Debug("old name: " + oldName);
+                Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
+                if (oldName != null && !oldName.Equals(siteName))
+                {
+                    ILSConfig.RenameSite(selectedObject.launchSite.LaunchSiteName, siteName);
+                    regenerateILSConfig = true;
+                }
+
+                Log.Debug("old category: " + oldCategory);
+                if ((oldCategory != category))
+                {
+                    ILSConfig.HandleCategoryChange(selectedObject);
+                    regenerateILSConfig = true;
+                }
+
+                bool state = bool.Parse(ILSActive);
+                Log.Normal("new state: " + state + "; old state: " + oldState);
+                if (oldState != state || regenerateILSConfig)
+                {
+                    if (state)
+                        ILSConfig.GenerateFullILSConfig(selectedObject);
+                    else
+                        ILSConfig.DropILSConfig(selectedObject.launchSite.name, true);
+                }
+            }
+
+
+            if (addToDB)
+            {
+                KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+                LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
+            }
+            KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+
+        }
+
 
         internal void ReadSettings()
         {
@@ -485,7 +491,6 @@ namespace KerbalKonstructs.UI
                     siteDesc = sModelDesc;
 
 
-                siteCategory = selectedObject.launchSite.Category;
                 siteHidden = selectedObject.launchSite.LaunchSiteIsHidden.ToString();
                 ILSActive = selectedObject.launchSite.ILSIsActive.ToString();
                 siteType = selectedObject.launchSite.LaunchSiteType;
@@ -494,6 +499,7 @@ namespace KerbalKonstructs.UI
                 stOpenCost = string.Format("{0}", flOpenCost);
                 stCloseValue = string.Format("{0}", flCloseValue);
 
+                category = selectedObject.launchSite.Category;
 
 
                 flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
@@ -520,7 +526,6 @@ namespace KerbalKonstructs.UI
                 siteTrans = selectedObject.model.DefaultLaunchPadTransform;
                 siteDesc = selectedObject.model.description;
 
-                siteCategory = "Other";
                 siteHidden = "false";
                 ILSActive = "false";
                 siteType = SiteType.Any;
@@ -528,6 +533,8 @@ namespace KerbalKonstructs.UI
                 flCloseValue = 0f;
                 stOpenCost = string.Format("{0}", flOpenCost);
                 stCloseValue = string.Format("{0}", flCloseValue);
+
+                category = LaunchSiteCategory.Other;
 
                 flRecoveryFactor = 0f;
                 flRecoveryRange = 0f;

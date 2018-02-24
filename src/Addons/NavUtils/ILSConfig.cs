@@ -19,19 +19,18 @@ namespace KerbalKonstructs
 		private static String cfgNodeName = "NavUtilRunway";
 
 
-		public static void GenerateFullILSConfig(StaticInstance inst) 
+		public static void GenerateFullILSConfig(StaticInstance instance) 
 		{
 			if (!(bool)detected)
 				return;
 
 			try {
-				string siteName = inst.launchSite.LaunchSiteName;
+				string siteName = instance.launchSite.LaunchSiteName;
 				Log.Normal ("ILS: site name = " + siteName);
-				string category = inst.launchSite.Category;
-				bool isRunway = category != null && category.Equals ("Runway");
+				bool isRunway = (instance.launchSite.Category == LaunchSiteCategory.Runway);
 
-				Transform launchpad = inst.launchSite.lsGameObject.transform.Find(
-					inst.launchSite.LaunchPadTransform);
+				Transform launchpad = instance.launchSite.lsGameObject.transform.Find(
+					instance.launchSite.LaunchPadTransform);
 				Log.Normal(String.Format("ILS: launchpad transform: {0}, position: {1}",
 					launchpad, launchpad.position));
 				
@@ -53,7 +52,7 @@ namespace KerbalKonstructs
 
 				if (isRunway) {
 					// If it is runway, generate config for opposite direction
-					Bounds bnd = ILSConfig.GetBounds (inst.gameObject);
+					Bounds bnd = ILSConfig.GetBounds (instance.gameObject);
 					float rwyLength = Math.Max(Math.Max(bnd.size.x, bnd.size.y), bnd.size.z);
 					Log.Normal(String.Format("ILS: runway length based on colliders: {0}", rwyLength));
 					Vector3 farEnd = launchpad.position + launchpad.forward.normalized * rwyLength;
@@ -133,7 +132,7 @@ namespace KerbalKonstructs
 				ReloadNavUtilsConfig ();
 		}
 
-		public static void HandleCategoryChange(string oldCategory, string newCategory, StaticInstance inst)
+		public static void HandleCategoryChange(StaticInstance inst)
 		{
 			// Just drop old config without reloading
 			DropILSConfig(inst.launchSite.LaunchSiteName, false);

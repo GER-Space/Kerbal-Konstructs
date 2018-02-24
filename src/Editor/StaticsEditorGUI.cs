@@ -86,6 +86,9 @@ namespace KerbalKonstructs.UI
         public Boolean bSortTitle = false;
         private string smessage = "";
 
+
+        LaunchSiteCategory launchsiteCategory ;
+
         // models change only once
         private static List<StaticModel> allStaticModels;
         //static need only be loaded once per three seconnds
@@ -93,6 +96,7 @@ namespace KerbalKonstructs.UI
         internal static StaticInstance [] allStaticInstances;
 
         private static bool isInitialized = false;
+
 
 
         public void ToggleEditor()
@@ -520,7 +524,6 @@ namespace KerbalKonstructs.UI
                             }
                         }
 
-                        string sLaunchType = "";
 
                         if (isLocal)
                         {
@@ -530,23 +533,23 @@ namespace KerbalKonstructs.UI
                                 GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
                                 if (allStaticInstances[ix].hasLauchSites)
                                 {
-                                    sLaunchType = allStaticInstances[ix].launchSite.Category;
+                                    launchsiteCategory = allStaticInstances[ix].launchSite.Category;
                                 }
-                                switch (sLaunchType)
+                                switch (launchsiteCategory)
                                 {
-                                    case "Runway":
+                                    case LaunchSiteCategory.Runway:
                                         GUILayout.Button(UIMain.runWayIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                                         break;
-                                    case "Helipad":
+                                    case LaunchSiteCategory.Helipad:
                                         GUILayout.Button(UIMain.heliPadIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                                         break;
-                                    case "RocketPad":
+                                    case LaunchSiteCategory.RocketPad:
                                         GUILayout.Button(UIMain.VABIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                                         break;
-                                    case "Waterlaunch":
+                                    case LaunchSiteCategory.Waterlaunch:
                                         GUILayout.Button(UIMain.waterLaunchIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                                         break;
-                                    case "Other":
+                                    case LaunchSiteCategory.Other:
                                         GUILayout.Button(UIMain.ANYIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                                         break;
                                     default:

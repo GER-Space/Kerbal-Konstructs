@@ -7,6 +7,9 @@ using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
+
+
+
     class LaunchSiteSelectorGUI : KKWindow
     {
         private static LaunchSiteSelectorGUI _instance = null;
@@ -23,58 +26,64 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        public Texture tFavesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOn", false);
-        public Texture tFavesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOff", false);
+        internal LaunchSite selectedSite;
 
-        public Texture tHolder = null;
+        private LaunchSiteCategory category;
 
-        GUIStyle DeadButton;
-        GUIStyle DeadButtonRed;
-        GUIStyle KKWindow;
-        GUIStyle BoxNoBorder;
-        GUIStyle ButtonKK;
-        GUIStyle KKToolTip;
 
-        private LaunchSite selectedSite;
-        public List<LaunchSite> sites;
-        private SiteType editorType = SiteType.Any;
+        private bool showAllcategorys = true;
+        private bool isSelected = false;
 
         public float rangekm = 0;
         public string sCurrentSite = "";
 
         public Vector2 sitesScrollPosition;
 
-        public bool bOpenOn = true;
-        public bool bClosedOn = true;
-        public bool bRocketpadsOn = true;
-        public bool bRunwaysOn = true;
-        public bool bHelipadsOn = true;
-        public bool bOtherOn = true;
-        internal bool waterLaunchOn = true;
-        public bool bFavesOnly = false;
+        public bool showOpen = true;
+        public bool showClosed = true;
+        public bool showFavOnly = false;
+
+        private LaunchSite defaultSite = null;
+
+
+        private string launchButtonName = "";
 
         Rect windowRect = new Rect(((Screen.width - Camera.main.rect.x) / 2) + Camera.main.rect.x - 125, (Screen.height / 2 - 250), 400, 460);
 
         public override void Draw()
         {
-            drawSelector();
+            DrawSelector();
         }
 
         public override void Close()
         {
-            sites = null;
             InputLockManager.RemoveControlLock("KKEditorLock");
             InputLockManager.RemoveControlLock("KKEditorLock2");
             BaseManager.instance.Close();
             base.Close();
         }
 
-        public void drawSelector()
-        {
-            KKWindow = new GUIStyle(GUI.skin.window);
-            KKWindow.padding = new RectOffset(3, 3, 5, 5);
 
-            windowRect = GUI.Window(0xB00B1E6, windowRect, drawSelectorWindow, "", KKWindow);
+        public override void Open()
+        {
+            if (selectedSite == null || (LaunchSiteManager.CheckLaunchSiteIsValid(selectedSite) == false ))
+            {
+                selectedSite = LaunchSiteManager.GetDefaultSite();
+                defaultSite = selectedSite;
+            }
+
+            BaseManager.selectedSite = selectedSite;
+            BaseManager.instance.Open();
+            LaunchSiteManager.setLaunchSite(selectedSite);
+
+            base.Open();
+        }
+
+
+        public void DrawSelector()
+        {
+
+            windowRect = GUI.Window(0xB00B1E6, windowRect, DrawSelectorWindow, "", UIMain.KKWindow);
 
             if (windowRect.Contains(Event.current.mousePosition))
             {
@@ -86,61 +95,23 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        public void drawSelectorWindow(int id)
+        public void DrawSelectorWindow(int id)
         {
-            ButtonKK = new GUIStyle(GUI.skin.button);
-            ButtonKK.padding.left = 0;
-            ButtonKK.padding.right = 0;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            KKToolTip = new GUIStyle(GUI.skin.box);
-            KKToolTip.normal.textColor = Color.white;
-            KKToolTip.fontSize = 11;
-            KKToolTip.fontStyle = FontStyle.Normal;
-
-            string smessage = "";
 
             GUILayout.BeginHorizontal();
             {
                 GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("-KK-", UIMain.DeadButton, GUILayout.Height(21));
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Button("Launchsite Selector", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Launchsite Selector", UIMain.DeadButton, GUILayout.Height(21));
 
                 GUILayout.FlexibleSpace();
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+                if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
                     this.Close();
                     return;
@@ -149,7 +120,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
@@ -159,159 +130,112 @@ namespace KerbalKonstructs.UI
 
                 if (MiscUtils.isCareerGame())
                 {
-                    if (bOpenOn) tHolder = UIMain.tOpenBasesOn;
-                    else tHolder = UIMain.tOpenBasesOff;
-
-                    if (GUILayout.Button(new GUIContent(tHolder, "Open"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                    if (GUILayout.Button(new GUIContent(showOpen ? UIMain.tOpenBasesOn : UIMain.tOpenBasesOff, "Open"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                     {
-                        if (bOpenOn)
+                        if (showOpen)
                         {
-                            bOpenOn = false;
-                            bClosedOn = true;
+                            showOpen = false;
+                            showClosed = true;
                         }
-                        else bOpenOn = true;
+                        else
+                        {
+                            showOpen = true;
+                        }
                     }
 
-                    if (bClosedOn) tHolder = UIMain.tClosedBasesOn;
-                    else tHolder = UIMain.tClosedBasesOff;
-
-                    if (GUILayout.Button(new GUIContent(tHolder, "Closed"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                    if (GUILayout.Button(new GUIContent(showClosed ? UIMain.tClosedBasesOn : UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                     {
-                        if (bClosedOn)
+                        if (showClosed)
                         {
-                            bClosedOn = false;
-                            bOpenOn = true;
+                            showClosed = false;
+                            showOpen = true;
                         }
-                        else bClosedOn = true;
+                        else
+                        {
+                            showClosed = true;
+                        }
                     }
 
                     GUILayout.FlexibleSpace();
                 }
 
-                if (bFavesOnly) tHolder = tFavesOn;
-                else tHolder = tFavesOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "Only Favourites"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (GUILayout.Button(new GUIContent(showFavOnly ? UIMain.tFavesOn : UIMain.tFavesOff, "Only Favourites"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
-                    if (bFavesOnly)
-                    {
-                        bFavesOnly = false;
-                    }
-                    else bFavesOnly = true;
+                    showFavOnly = !showFavOnly;
                 }
 
                 GUILayout.FlexibleSpace();
 
-                if (editorType == SiteType.SPH)
-                    GUI.enabled = false;
-
-                if (bRocketpadsOn) tHolder = UIMain.tLaunchpadsOn;
-                else tHolder = UIMain.tLaunchpadsOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "Rocketpads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (EditorDriver.editorFacility == EditorFacility.SPH)
                 {
-                    bRocketpadsOn = true;
-                    bHelipadsOn = false;
-                    bRunwaysOn = false;
-                    bOtherOn = false;
-                    waterLaunchOn = false;
+                    GUI.enabled = false;
+                }
 
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "RocketPad");
+                isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
+                if (GUILayout.Button(new GUIContent(isSelected? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                {
+                    category = LaunchSiteCategory.RocketPad;
+                    showAllcategorys = false;
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
 
-                if (editorType == SiteType.VAB)
-                    GUI.enabled = false;
-
-                if (bRunwaysOn) tHolder = UIMain.tRunwaysOn;
-                else tHolder = UIMain.tRunwaysOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "Runways"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (EditorDriver.editorFacility == EditorFacility.VAB)
                 {
-                    bRunwaysOn = true;
-                    bHelipadsOn = false;
-                    bRocketpadsOn = false;
-                    bOtherOn = false;
-                    waterLaunchOn = false;
-
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "Runway");
+                    GUI.enabled = false;
+                }
+                isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tRunwaysOn : UIMain.tRunwaysOff, "Runways"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                {
+                    category = LaunchSiteCategory.Runway;
+                    showAllcategorys = false;
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
 
-                if (editorType == SiteType.VAB)
-                    GUI.enabled = false;
-
-                if (bHelipadsOn) tHolder = UIMain.tHelipadsOn;
-                else tHolder = UIMain.tHelipadsOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "Helipads"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (EditorDriver.editorFacility == EditorFacility.VAB)
                 {
-                    bRocketpadsOn = false;
-                    bHelipadsOn = true;
-                    bRunwaysOn = false;
-                    bOtherOn = false;
-                    waterLaunchOn = false;
-
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "Helipad");
+                    GUI.enabled = false;
+                }
+                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Helipad));
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn: UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                {
+                    category = LaunchSiteCategory.Helipad;
+                    showAllcategorys = false;
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
 
-                if (editorType == SiteType.VAB)
-                    GUI.enabled = false;
-
-                if (waterLaunchOn) tHolder = UIMain.tWaterOn;
-                else tHolder = UIMain.tWaterOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "WalterLaunch"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (EditorDriver.editorFacility == EditorFacility.VAB)
                 {
-                    bRocketpadsOn = false;
-                    bHelipadsOn = false;
-                    bRunwaysOn = false;
-                    bOtherOn = false;
-                    waterLaunchOn = true;
+                    GUI.enabled = false;
+                }
 
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "Waterlaunch");
+                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Waterlaunch));
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tWaterOn : UIMain.tWaterOff, "WalterLaunch"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                {
+                    category = LaunchSiteCategory.Waterlaunch;
+                    showAllcategorys = false;
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
 
-                if (bOtherOn) tHolder = UIMain.tOtherOn;
-                else tHolder = UIMain.tOtherOff;
-
-                if (GUILayout.Button(new GUIContent(tHolder, "Other"), ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Other));
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tOtherOn : UIMain.tOtherOff, "Other"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
-                    bRocketpadsOn = false;
-                    bHelipadsOn = false;
-                    bRunwaysOn = false;
-                    bOtherOn = true;
-                    waterLaunchOn = false;
-
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "Other");
+                    category = LaunchSiteCategory.Other;
+                    showAllcategorys = false;
                 }
 
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("ALL", GUILayout.Width(32), GUILayout.Height(32)))
                 {
-                    bRocketpadsOn = true;
-                    bHelipadsOn = true;
-                    bRunwaysOn = true;
-                    bOtherOn = true;
-                    waterLaunchOn = true;
-                    sites = (editorType == SiteType.Any) ? LaunchSiteManager.getLaunchSites() :
-                        LaunchSiteManager.getLaunchSites(editorType, true, "ALL");
+                    showAllcategorys = true;
                 }
             }
             GUILayout.EndHorizontal();
@@ -320,80 +244,85 @@ namespace KerbalKonstructs.UI
 
             sitesScrollPosition = GUILayout.BeginScrollView(sitesScrollPosition);
             {
-                if (sites == null) sites = (editorType == SiteType.Any) ?
-                    LaunchSiteManager.getLaunchSites() : LaunchSiteManager.getLaunchSites(editorType, true, "ALL");
-
-                sites.Sort(delegate (LaunchSite a, LaunchSite b)
+                foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
                 {
-                    return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
-                });
-
-                foreach (LaunchSite site in sites)
-                {
-                    if (bFavesOnly)
+                    if (showFavOnly && (site.favouriteSite != "Yes"))
                     {
-                        if (site.favouriteSite != "Yes")
-                            continue;
+                        continue;
                     }
 
-                    if (MiscUtils.isCareerGame())
+                    if (category != site.Category && !showAllcategorys)
                     {
-                        if (!bOpenOn)
+                        continue;
+                    }
+
+                    if (LaunchSiteManager.CheckLaunchSiteIsValid(site) == false)
+                    {
+                        continue;
+                    }
+
+                    GUILayout.BeginHorizontal();
+                    {
+                        if (MiscUtils.isCareerGame())
+                        {
+                            if ((!showOpen && site.isOpen) || (!showClosed && !site.isOpen))
+                            {
+                                continue;
+                            }
+                            // Don't show hidden closed Bases
+                            if (site.LaunchSiteIsHidden && (!site.isOpen))
+                            {
+                                continue;
+                            }
+                            if (site.isOpen)
+                            {
+                                GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
+                            }
+                            else
+                            {
+                                GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
+                            }
+                        }
+
+                        launchButtonName = site.LaunchSiteName;
+                        if (site.LaunchSiteName == "Runway")
+                        {
+                            launchButtonName = "KSC Runway";
+                        }
+
+                        if (site.LaunchSiteName == "LaunchPad")
+                        {
+                            launchButtonName = "KSC LaunchPad";
+                        }
+
+                        GUI.enabled = (selectedSite != site);
+                        if (GUILayout.Button(launchButtonName, GUILayout.Height(30)))
+                        {
+                            selectedSite = site;
+                            BaseManager.selectedSite = selectedSite;
+
+                            //if (!MiscUtils.isCareerGame())
+                            //{
+                            //    LaunchSiteManager.setLaunchSite(site);
+                            //    smessage = "Launchsite set to " + launchButtonName;
+                            //    MiscUtils.HUDMessage(smessage, 10, 2);
+                            //}
+                        }
+                        GUI.enabled = true;
+
+                        if (MiscUtils.isCareerGame())
                         {
                             if (site.isOpen)
-                                continue;
-                        }
-
-                        if (!bClosedOn)
-                        {
-                            if (!site.isOpen)
-                                continue;
-                        }
-
-                        // Don't show hidden closed Bases
-                        if (site.LaunchSiteIsHidden && (!site.isOpen))
-                            continue;
-
-                        GUILayout.BeginHorizontal();
-                        if (site.isOpen)
-                        {
-                            GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
-                        }
-                        else
-                            GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
-                    }
-
-                    GUI.enabled = !(selectedSite == site);
-
-                    string sButtonName = "";
-                    sButtonName = site.LaunchSiteName;
-                    if (site.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
-                    if (site.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
-
-                    if (GUILayout.Button(sButtonName, GUILayout.Height(30)))
-                    {
-                        selectedSite = site;
-
-                        if (!MiscUtils.isCareerGame())
-                        {
-                            LaunchSiteManager.setLaunchSite(site);
-                            smessage = "Launchsite set to " + sButtonName;
-                            MiscUtils.HUDMessage(smessage, 10, 2);
+                            {
+                                GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
+                            }
+                            else
+                            {
+                                GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
+                            }
                         }
                     }
-                    GUI.enabled = true;
-
-                    if (MiscUtils.isCareerGame())
-                    {
-                        if (site.isOpen)
-                        {
-                            GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
-                        }
-                        else
-                            GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
-
-                        GUILayout.EndHorizontal();
-                    }
+                    GUILayout.EndHorizontal();
                 }
             }
             GUILayout.EndScrollView();
@@ -402,169 +331,81 @@ namespace KerbalKonstructs.UI
 
             sCurrentSite = LaunchSiteManager.getCurrentLaunchSite();
 
-            if (sCurrentSite != null)
+            switch (sCurrentSite)
             {
-                if (sCurrentSite == "Runway")
+                case "Runway":
                     GUILayout.Box("Current Launchsite: KSC Runway");
-                else
-                    if (sCurrentSite == "LaunchPad")
+                    break;
+                case "LaunchPad":
                     GUILayout.Box("Current Launchsite: KSC LaunchPad");
-                else
+                    break;
+                default:
                     GUILayout.Box("Current Launchsite: " + sCurrentSite);
+                    break;
             }
-
-            GUI.enabled = (selectedSite != null && !(selectedSite.LaunchSiteName == sCurrentSite) && LaunchSiteManager.getIsSiteOpen(selectedSite.LaunchSiteName));
-            GUILayout.BeginHorizontal();
-
+            
+            GUI.enabled = (selectedSite != null && selectedSite.isOpen && !(selectedSite.LaunchSiteName == sCurrentSite));
             if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
             {
                 LaunchSiteManager.setLaunchSite(selectedSite);
                 MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the launchsite", 10, 0);
             }
-
-            GUILayout.EndHorizontal();
             GUI.enabled = true;
 
             GUILayout.BeginHorizontal();
             {
-                if (editorType == SiteType.SPH)
-                    GUI.enabled = (KerbalKonstructs.instance.defaultSPHlaunchsite != sCurrentSite);
+                GUI.enabled = false;
+                if ((EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != sCurrentSite))
+                {
+                    GUI.enabled = true;
+                }
 
-                if (editorType == SiteType.VAB)
-                    GUI.enabled = (KerbalKonstructs.instance.defaultVABlaunchsite != sCurrentSite);
+                if ((EditorDriver.editorFacility == EditorFacility.VAB) && (KerbalKonstructs.instance.defaultVABlaunchsite != sCurrentSite))
+                {
+                    GUI.enabled = true;
+                }
 
                 if (GUILayout.Button("Set as Default", GUILayout.Height(23)))
                 {
                     if (sCurrentSite != null)
                     {
-                        if (editorType == SiteType.SPH)
+                        if (EditorDriver.editorFacility == EditorFacility.SPH)
+                        {
                             KerbalKonstructs.instance.defaultSPHlaunchsite = sCurrentSite;
+                        }
 
-                        if (editorType == SiteType.VAB)
+                        if (EditorDriver.editorFacility == EditorFacility.VAB)
+                        {
                             KerbalKonstructs.instance.defaultVABlaunchsite = sCurrentSite;
+                        }
                     }
                 }
                 GUI.enabled = true;
 
-                LaunchSite DefaultSite = null;
-
                 if (GUILayout.Button("Use Default", GUILayout.Height(23)))
                 {
-                    if (editorType == SiteType.SPH)
-                    {
-                        foreach (LaunchSite site in sites)
-                        {
-                            if (site.LaunchSiteName == KerbalKonstructs.instance.defaultSPHlaunchsite)
-                                DefaultSite = site;
-                        }
-
-                        if (DefaultSite != null)
-                        {
-                            if (MiscUtils.isCareerGame())
-                            {
-                                if (!DefaultSite.isOpen)
-                                {
-                                    smessage = "Default site is closed.";
-                                    MiscUtils.HUDMessage(smessage, 10, 0);
-                                }
-                                else
-                                    LaunchSiteManager.setLaunchSite(DefaultSite);
-                            }
-                            else
-                                LaunchSiteManager.setLaunchSite(DefaultSite);
-                        }
-                    }
-
-                    if (editorType == SiteType.VAB)
-                    {
-                        foreach (LaunchSite site in sites)
-                        {
-                            if (site.LaunchSiteName == KerbalKonstructs.instance.defaultVABlaunchsite)
-                                DefaultSite = site;
-                        }
-
-                        if (DefaultSite != null)
-                        {
-                            if (MiscUtils.isCareerGame())
-                            {
-                                if (!DefaultSite.isOpen)
-                                {
-                                    smessage = "Default site is closed.";
-                                    MiscUtils.HUDMessage(smessage, 10, 0);
-                                }
-                                else
-                                    LaunchSiteManager.setLaunchSite(DefaultSite);
-                            }
-                            else
-                                LaunchSiteManager.setLaunchSite(DefaultSite);
-                        }
-                    }
-
-                    if (DefaultSite != null)
-                    {
-                        smessage = DefaultSite.LaunchSiteName + " has been set as the launchsite";
-                        MiscUtils.HUDMessage(smessage, 10, 0);
-                    }
-                    else
-                    {
-                        smessage = "KK could not determine the default launchsite.";
-                        MiscUtils.HUDMessage(smessage, 10, 0);
-                    }
+                    selectedSite = defaultSite;
+                    LaunchSiteManager.setLaunchSite(selectedSite);
+                    MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the launchsite", 10, 0);
+                    BaseManager.selectedSite = selectedSite;
                 }
             }
             GUILayout.EndHorizontal();
 
             GUILayout.FlexibleSpace();
-            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
             GUI.enabled = true;
 
-            if (selectedSite != null)
-            {
-                BaseManager.setSelectedSite(selectedSite);
-                BaseManager.instance.Open();
-            }
-            else
-            {
-                if (LaunchSiteManager.getLaunchSites().Count > 0)
-                {
-                    selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
-                    LaunchSiteManager.setLaunchSite(selectedSite);
-                    BaseManager.setSelectedSite(selectedSite);
-                    BaseManager.instance.Open();
-                }
-                else
-                {
-                    Log.UserError("ERROR Launch Selector cannot find KSC Runway or Launch Pad! PANIC! Runaway! Hide!");
-                }
-            }
-
             if (GUI.tooltip != "")
             {
                 var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-                GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, KKToolTip);
+                GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, UIMain.KKToolTip);
             }
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-
-
-
-        public void setEditorType(SiteType type)
-        {
-            editorType = (KerbalKonstructs.instance.launchFromAnySite) ? SiteType.Any : type;
-            if (selectedSite != null)
-            {
-                if (selectedSite.LaunchSiteType != editorType && selectedSite.LaunchSiteType != SiteType.Any)
-                {
-                    selectedSite = LaunchSiteManager.getLaunchSites(editorType)[0];
-                }
-
-                // if (!isCareerGame())
-                LaunchSiteManager.setLaunchSite(selectedSite);
-            }
         }
 
     }

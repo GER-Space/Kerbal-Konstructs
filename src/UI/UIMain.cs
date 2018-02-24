@@ -38,7 +38,10 @@ namespace KerbalKonstructs.UI
 
 		public static Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
 
-		public static Texture tIconClosed;
+        public static Texture tFavesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOn", false);
+        public static Texture tFavesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOff", false);
+
+        public static Texture tIconClosed;
 		public static Texture tIconOpen;
 		public static Texture tLeftOn;
 		public static Texture tLeftOff;
@@ -54,10 +57,10 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
-
+        public static GUIStyle DeadButton;
         public static GUIStyle LabelInfo;
 
-
+        public static GUIStyle KKWindow;
 
         public static GUIStyle navStyle;
 
@@ -130,6 +133,20 @@ namespace KerbalKonstructs.UI
             LabelInfo.padding.top = 0;
             LabelInfo.padding.bottom = 0;
 
+            DeadButton = new GUIStyle(GUI.skin.button);
+            DeadButton.normal.background = null;
+            DeadButton.hover.background = null;
+            DeadButton.active.background = null;
+            DeadButton.focused.background = null;
+            DeadButton.normal.textColor = Color.white;
+            DeadButton.hover.textColor = Color.white;
+            DeadButton.active.textColor = Color.white;
+            DeadButton.focused.textColor = Color.white;
+            DeadButton.fontSize = 14;
+            DeadButton.fontStyle = FontStyle.Bold;
+
+            KKWindow = new GUIStyle(GUI.skin.window);
+            KKWindow.padding = new RectOffset(8, 8, 3, 3);
         }
 
 		public static void SetTextures()

@@ -35,7 +35,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
             instance = this;
-            DontDestroyOnLoad(instance);
+            //DontDestroyOnLoad(instance);
             draw = delegate { };
             openWindows = new List<Action>();
         }
@@ -63,14 +63,13 @@ namespace KerbalKonstructs.UI
         /// </summary>
         public void OnGUI()
         {
-
+            GUI.skin = HighLogic.Skin;
             if (!UIMain.layoutIsInitialized)
             {
                 UIMain.SetTextures();
                 UIMain.SetStyles();
                 UIMain.layoutIsInitialized = true;
             }
-            GUI.skin = HighLogic.Skin;
             draw.Invoke();
         }
         #endregion
