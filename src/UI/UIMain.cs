@@ -4,7 +4,7 @@ namespace KerbalKonstructs.UI
 {
 	public static class UIMain
 	{
-        internal static bool bStylesSet = false;
+        internal static bool layoutIsInitialized = false;
 
 
         public static Texture VABIcon;
@@ -56,6 +56,7 @@ namespace KerbalKonstructs.UI
         public static GUIStyle LabelWhite;
 
         public static GUIStyle LabelInfo;
+
 
 
         public static GUIStyle navStyle;

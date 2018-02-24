@@ -62,7 +62,15 @@ namespace KerbalKonstructs.UI
         /// Monobehaviour function for drawing. 
         /// </summary>
         public void OnGUI()
-        {            
+        {
+
+            if (!UIMain.layoutIsInitialized)
+            {
+                UIMain.SetTextures();
+                UIMain.SetStyles();
+                UIMain.layoutIsInitialized = true;
+            }
+            GUI.skin = HighLogic.Skin;
             draw.Invoke();
         }
         #endregion
