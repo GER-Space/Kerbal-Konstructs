@@ -132,6 +132,15 @@ namespace KerbalKonstructs.UI
             allStaticModels = StaticDatabase.allStaticModels;
             base.Open();
             EditorGUI.instance.Open();
+
+            // Notify the modules the editor is open
+            foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
+                if (staticInstance.isActive) {
+                    foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
+                        module.StaticObjectEditorOpen ();
+                    }
+                }
+            }
         }
 
         public override void Close()
@@ -140,6 +149,15 @@ namespace KerbalKonstructs.UI
             KerbalKonstructs.instance.DeletePreviewObject();
             MapDecalEditor.Instance.Close();
             base.Close();
+
+            // Notify the modules the editor is close
+            foreach (StaticInstance staticInstance in StaticDatabase.allStaticInstances) {
+                if (staticInstance.isActive) {
+                    foreach (StaticModule module in staticInstance.gameObject.GetComponents<StaticModule> ()) {
+                        module.StaticObjectEditorClose ();
+                    }
+                }
+            }
         }
 
         public void drawEditor()

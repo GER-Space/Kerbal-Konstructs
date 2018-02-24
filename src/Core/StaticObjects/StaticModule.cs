@@ -14,5 +14,9 @@ namespace KerbalKonstructs.Core
         public StaticInstance staticInstance = null;
 		
 		public virtual void StaticObjectUpdate() {}
+
+		public virtual void StaticObjectEditorOpen () {}
+
+		public virtual void StaticObjectEditorClose () {}
 	}
 }
