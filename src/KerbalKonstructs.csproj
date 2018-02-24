@@ -114,7 +114,6 @@
     <Compile Include="Facilities\ProductionGUI.cs" />
     <Compile Include="Facilities\Hangar\HangarGUI.cs" />
     <Compile Include="Core\LaunchSites\LaunchSite.cs" />
-    <Compile Include="Facilities\RadarStation\RadarStation.cs" />
     <Compile Include="Facilities\Research\Research.cs" />
     <Compile Include="Modules\Career\CareerScenario.cs" />
     <Compile Include="Modules\Career\CareerState.cs" />

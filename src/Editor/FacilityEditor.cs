@@ -680,9 +680,6 @@ namespace KerbalKonstructs.UI
                 case KKFacilityType.TouchdownGuideR:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
                     break;
-                case KKFacilityType.RadarStation:
-                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
-                    break;
             }
             Log.Normal("FacEditor: Change Finished");
             foreach (var facility in selectedObject.myFacilities)

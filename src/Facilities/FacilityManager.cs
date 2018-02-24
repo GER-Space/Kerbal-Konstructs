@@ -195,13 +195,6 @@ namespace KerbalKonstructs.UI
                             bHalfwindow = true;
                             break;
                         }
-                    case KKFacilityType.RadarStation:
-                        {
-                            sPurpose = "This facility tracks craft in the planet's atmosphere at a limited range. It provides bonuses for recovery operations by the nearest open base.";
-                            bHalfwindow = true;
-                            break;
-                        }
-
                     case KKFacilityType.Research:
                         {
                             sPurpose = "This facility carries out research and generates Science.";

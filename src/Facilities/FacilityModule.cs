@@ -19,7 +19,6 @@ namespace KerbalKonstructs.Modules
         FuelTanks,
         Hangar,
         Barracks,
-        RadarStation,
         Research,
         Business,
         LandingGuide,

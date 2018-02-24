@@ -1190,9 +1190,6 @@ namespace KerbalKonstructs
                 case KKFacilityType.TouchdownGuideR:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
                     break;
-                case KKFacilityType.RadarStation:
-                    instance.myFacilities.Add(instance.gameObject.AddComponent<RadarStation>().ParseConfig(cfgNode));
-                    break;
             }
 
             
