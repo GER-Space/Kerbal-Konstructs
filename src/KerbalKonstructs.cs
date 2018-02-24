@@ -36,8 +36,8 @@ namespace KerbalKonstructs
         internal static bool InitialisedFacilities = false;
 
 
-        internal double VesselCost = 0;
-        internal double RefundAmount = 0;
+        //internal double VesselCost = 0;
+        //internal double RefundAmount = 0;
 
         internal double recoveryExraRefund = 0;
 
@@ -45,8 +45,6 @@ namespace KerbalKonstructs
         #endregion
 
         #region Switches
-        //private bool atMainMenu = false;
-        internal bool VesselLaunched = false;
 
         internal bool bDisablePositionEditing = false;
         #endregion
@@ -154,9 +152,9 @@ namespace KerbalKonstructs
 
             #region Game Event Hooks
             GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
-            GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
+            GameEvents.onLevelWasLoaded.Add(OnLevelWasLoaded);
             GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
-            GameEvents.onVesselRecovered.Add(OnVesselRecovered);
+            //GameEvents.onVesselRecovered.Add(OnVesselRecovered);
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecoveryProcessing);
             GameEvents.OnVesselRollout.Add(OnVesselLaunched);
             // draw map icons when needed
@@ -214,7 +212,7 @@ namespace KerbalKonstructs
         void OnVesselLaunched(ShipConstruct vVessel)
         {
             Log.Normal("OnVesselLaunched");
-            if (!MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
+            if (!CareerUtils.isCareerGame)
             {
                 return;
             }
@@ -227,7 +225,7 @@ namespace KerbalKonstructs
                 if (sitename == "KSC") return;
                 if (sitename == "") return;
 
-                LaunchSite lsSite = LaunchSiteManager.getLaunchSiteByName(sitename);
+                LaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
                 float fMissionCount = lsSite.MissionCount;
                 lsSite.MissionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
@@ -246,29 +244,29 @@ namespace KerbalKonstructs
                 string sLogEntry = lsSite.MissionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
                 lsSite.MissionLog = sLogEntry;
 
-                VesselLaunched = true;
+                //VesselLaunched = true;
 
-                float dryCost = 0f;
-                float fuelCost = 0f;
-                float total = vVessel.GetShipCosts(out dryCost, out fuelCost);
+                //float dryCost = 0f;
+                //float fuelCost = 0f;
+                //float total = vVessel.GetShipCosts(out dryCost, out fuelCost);
 
-                var cm = CurrencyModifierQuery.RunQuery(TransactionReasons.VesselRollout, total, 0f, 0f);
-                total += cm.GetEffectDelta(Currency.Funds);
-                double launchcost = total;
-                float fRefund = LaunchSiteManager.GetSiteLaunchRefund(sitename);
-                Log.Normal("Launch Refund: " + fRefund);
-                if (fRefund < 1) return;
+                //var cm = CurrencyModifierQuery.RunQuery(TransactionReasons.VesselRollout, total, 0f, 0f);
+                //total += cm.GetEffectDelta(Currency.Funds);
+                //double launchcost = total;
+                //float fRefund = LaunchSiteManager.GetSiteLaunchRefund(sitename);
+                //Log.Normal("Launch Refund: " + fRefund);
+                //if (fRefund < 1) return;
 
-                RefundAmount = (launchcost / 100) * fRefund;
-                VesselCost = launchcost - (RefundAmount);
-                if (fRefund > 0)
-                {
-                    string sMessage = "This launch normally costs " + launchcost.ToString("#0") +
-                        " but " + sitename + " provides a " + fRefund + "% refund. \n\nSo " + RefundAmount.ToString("#0") + " funds has been credited to you. \n\nEnjoy and thanks for using " +
-                        sitename + ". Have a safe flight.";
-                    MiscUtils.PostMessage("Launch Refund", sMessage, MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.ALERT);
-                    Funding.Instance.AddFunds(RefundAmount, TransactionReasons.VesselRollout);
-                }
+                //RefundAmount = (launchcost / 100) * fRefund;
+                //VesselCost = launchcost - (RefundAmount);
+                //if (fRefund > 0)
+                //{
+                //    string sMessage = "This launch normally costs " + launchcost.ToString("#0") +
+                //        " but " + sitename + " provides a " + fRefund + "% refund. \n\nSo " + RefundAmount.ToString("#0") + " funds has been credited to you. \n\nEnjoy and thanks for using " +
+                //        sitename + ". Have a safe flight.";
+                //    MiscUtils.PostMessage("Launch Refund", sMessage, MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.ALERT);
+                //    Funding.Instance.AddFunds(RefundAmount, TransactionReasons.VesselRollout);
+                //}
             }
         }
 
@@ -276,7 +274,7 @@ namespace KerbalKonstructs
         /// GameEvent function for toggeling the visiblility of Statics
         /// </summary>
         /// <param name="data"></param>
-        void onLevelWasLoaded(GameScenes data)
+        void OnLevelWasLoaded(GameScenes data)
         {
             bool bTreatBodyAsNullForStatics = true;
             DeletePreviewObject();
@@ -347,7 +345,6 @@ namespace KerbalKonstructs
             {
                 // Prevent abuse if selector left open when switching to from VAB and SPH
                 LaunchSiteSelectorGUI.instance.Close();
-
                 LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
                 // Check if the selected LaunchSite is valid
@@ -383,85 +380,74 @@ namespace KerbalKonstructs
         /// <param name="recovery"></param>
         void OnProcessRecoveryProcessing(ProtoVessel vessel, MissionRecoveryDialog dialog, float recovery)
         {
-            if (!disableRemoteRecovery)
+            if (!disableRemoteRecovery && CareerUtils.isCareerGame && (vessel != null))
             {
-                if (CareerUtils.isCareerGame)
+
+                Log.Normal("OnProcessRecovery");
+
+                SpaceCenter closestSpaceCenter = SpaceCenter.Instance;
+                CustomSpaceCenter customSC = null;
+
+                double smallestDist = SpaceCenterManager.KSC.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+                Log.Normal("Distance to KSC is " + smallestDist);
+
+                foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
                 {
-                    Log.Normal("OnProcessRecovery");
-
-
-                    if (vessel != null)
+                    if (csc.staticInstance.launchSite.isOpen == false )
                     {
-                        Log.Normal("Vessel ");
-
-                        SpaceCenter closestSpaceCenter = SpaceCenter.Instance;
-                        CustomSpaceCenter customSC = null;
-
-                        double smallestDist = SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
-                        Log.Normal("Distance to KSC is " + smallestDist);
-
-                        foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
-                        {
-                            StaticInstance myBase = csc.staticInstance;
-                            if (csc.staticInstance.launchSite.RecoveryFactor == 0) continue;
-                            closestSpaceCenter = csc.getSpaceCenter();
-                            double dist = closestSpaceCenter.GreatCircleDistance(csc.staticInstance.CelestialBody.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
-
-                            if (dist < smallestDist)
-                            {
-                                if (csc.staticInstance.launchSite.isOpen)
-                                {
-                                    customSC = csc;
-                                    smallestDist = dist;
-                                    Log.Normal("closest updated to " + csc.SpaceCenterName + ", distance " + smallestDist);
-                                }
-                            }
-                        }
-                       
-                        if (customSC != null)
-                        {
-                            Log.Normal("Distance to closest SpaceCenter is: " + customSC.SpaceCenterName + ", distance " + smallestDist);
-                            recoveryExraRefund = ((dialog.fundsEarned / recovery) * (customSC.staticInstance.launchSite.RecoveryFactor / 100)) - dialog.fundsEarned;
-                            dialog.recoveryLocation = Math.Round(smallestDist,1).ToString() + "m from "+ customSC.SpaceCenterName;
-                            dialog.recoveryFactor = customSC.staticInstance.launchSite.RecoveryFactor.ToString() + "%";
-                            dialog.fundsEarned = (dialog.fundsEarned / recovery) * (customSC.staticInstance.launchSite.RecoveryFactor / 100);
-                            dialog.totalFunds = (dialog.totalFunds + recoveryExraRefund);
-                            recovery = customSC.staticInstance.launchSite.RecoveryFactor/100;
-                        }
+                        continue;
                     }
+
+                    closestSpaceCenter = csc.getSpaceCenter();
+                    double dist = closestSpaceCenter.GreatCircleDistance(csc.staticInstance.CelestialBody.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+
+                    if (dist < smallestDist)
+                    {
+                        customSC = csc;
+                        smallestDist = dist;
+                        Log.Normal("closest updated to " + csc.SpaceCenterName + ", distance " + smallestDist);
+                    }
+                }
+
+                if (customSC != null)
+                {
+                    float oldRecovery = recovery;
+                    double shipvalue = dialog.fundsEarned / oldRecovery;
+                    double missingvalue = shipvalue - dialog.fundsEarned;
+                    if (smallestDist < 2500d)
+                    {
+                        recovery = 1;
+                        dialog.fundsEarned = shipvalue;
+                        dialog.recoveryFactor = "100%";
+                        dialog.recoveryLocation = "Landed at " + customSC.SpaceCenterName;
+                    }
+                    else
+                    {
+                        recovery = (float)Math.Max(0, (0.98 - ((smallestDist / 1000) / 2150)));
+                        dialog.fundsEarned = shipvalue * recovery;
+                        dialog.recoveryFactor =  Math.Round(recovery,1).ToString() + "%";
+                        dialog.recoveryLocation = Math.Round(smallestDist/1000, 1) + "km from " + customSC.SpaceCenterName;
+                    }
+
+                    foreach (var part in dialog.GetComponentsInChildren<KSP.UI.Screens.SpaceCenter.MissionSummaryDialog.PartWidget>(true))
+                    {
+                        Log.Normal("Part: " + part.partValue);
+                        part.partValue = part.partValue / oldRecovery * recovery;
+                        part.totalValue = part.totalValue / oldRecovery * recovery;
+                    }
+
+                    foreach (var resource in dialog.GetComponentsInChildren<KSP.UI.Screens.SpaceCenter.MissionSummaryDialog.ResourceWidget>(true))
+                    {
+                        Log.Normal("Part: " + resource.unitValue);
+                        resource.unitValue = resource.unitValue / oldRecovery * recovery;
+                        resource.totalValue = resource.totalValue / oldRecovery * recovery;
+                    }
+
+                    Funding.Instance.AddFunds(missingvalue,TransactionReasons.VesselRecovery);
                 }
             }
         }
 
-
-        /// <summary>
-        /// Gameevent handle. This is called after OnProcessRecoveryProcessing and used to add some missing funds
-        /// </summary>
-        /// <param name="vessel"></param>
-        /// <param name="quick"></param>
-		public void OnVesselRecovered(ProtoVessel vessel, Boolean quick)
-        {
-            Log.Normal("onVesselRecovered called");
-            if (!disableRemoteRecovery)
-            {
-                if (vessel == null)
-                {
-                    Log.Warning("onVesselRecovered vessel was null");
-                    return;
-                }
-                if (CareerUtils.isCareerGame)
-                {
-                    Log.Normal("Recovery: Paying extra refund: " + recoveryExraRefund);
-
-                    if (recoveryExraRefund > 0)
-                    {
-                        Funding.Instance.AddFunds(recoveryExraRefund, TransactionReasons.VesselRecovery);
-                        MiscUtils.PostMessage("Recovery Payout", "You got " + Math.Round(recoveryExraRefund, 0) + " credits for the recovery of your vessel near a cutom base", MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.MESSAGE);
-                    }
-                    recoveryExraRefund = 0;
-                }
-            }
-        }
 
         /// <summary>
         /// Unity Late Update. Used for KeyCodes and fixing facility levels on new games...
@@ -1665,4 +1651,5 @@ namespace KerbalKonstructs
         #endregion
 
     }
+
 }

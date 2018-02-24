@@ -324,28 +324,27 @@ namespace KerbalKonstructs.UI
                     GUILayout.Label("Bases can only be opened or closed at the base when within 2km of the base.", LabelInfo);
                 }
 
-                if (Range > 100000)
-                {
-                    if (bLanded)
-                    {
-                        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                        GUILayout.Space(2);
-                        GUILayout.Label("This feature is WIP.", LabelInfo);
-                        GUI.enabled = false;
-                        if (GUILayout.Button("Found a New Base", GUILayout.Height(23)))
-                        {
-                            foundingBase = true;
-                        }
-                        GUI.enabled = true;
-                        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                        GUILayout.Space(2);
-                    }
-                }
-                else
-                {
-                    GUILayout.Label("This feature is WIP.", LabelInfo);
-                    GUILayout.Label("New bases cannot be built within 100 km of an existing base.", LabelInfo);
-                }
+                //if (Range > 100000)
+                //{
+                //    if (bLanded)
+                //    {
+                //        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                //        GUILayout.Space(2);
+                //        GUILayout.Label("This feature is WIP.", LabelInfo);
+                //        GUI.enabled = false;
+                //        if (GUILayout.Button("Found a New Base", GUILayout.Height(23)))
+                //        {
+                //            foundingBase = true;
+                //        }
+                //        GUI.enabled = true;
+                //        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                //        GUILayout.Space(2);
+                //    }
+                //}
+                //else
+                //{
+                //    GUILayout.Label("This feature is WIP.", LabelInfo);
+                //}
             }
 
             GUILayout.Space(2);

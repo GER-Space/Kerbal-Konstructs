@@ -65,7 +65,7 @@ namespace KerbalKonstructs.UI
         public static StaticInstance selectedObject = null;
 
         internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
-        float flOpenCost, flCloseValue, flRecoveryFactor, flRecoveryRange, flLaunchRefund, flLength, flWidth;
+        float flOpenCost, flCloseValue, flLength, flWidth;
 
         internal LaunchSiteCategory category = LaunchSiteCategory.Other;
 
@@ -179,9 +179,6 @@ namespace KerbalKonstructs.UI
         // Launchsite Editor handlers
         string stOpenCost;
         string stCloseValue;
-        string stRecoveryFactor;
-        string stRecoveryRange;
-        string stLaunchRefund;
         string stLength;
         string stWidth;
 
@@ -302,26 +299,6 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Recovery Factor: ", GUILayout.Width(120));
-            stRecoveryFactor = GUILayout.TextField(stRecoveryFactor, GUILayout.Height(19));
-            GUILayout.Label(" %");
-            GUILayout.EndHorizontal();
-
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Effective Range: ", GUILayout.Width(120));
-            stRecoveryRange = GUILayout.TextField(stRecoveryRange, GUILayout.Height(19));
-            GUILayout.Label(" m");
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Launch Refund: ", GUILayout.Width(120));
-            stLaunchRefund = GUILayout.TextField(stLaunchRefund, GUILayout.Height(19));
-            GUILayout.Label(" %");
-            GUILayout.EndHorizontal();
-
-
-            GUILayout.BeginHorizontal();
             GUILayout.Label("Site is hidden: ", GUILayout.Width(115));
             GUILayout.Label(siteHidden, GUILayout.Width(85));
             GUILayout.FlexibleSpace();
@@ -415,9 +392,6 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.LaunchSiteDescription = siteDesc;
             selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
             selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
-            selectedObject.launchSite.RecoveryFactor = float.Parse(stRecoveryFactor);
-            selectedObject.launchSite.RecoveryRange = float.Parse(stRecoveryRange);
-            selectedObject.launchSite.LaunchRefund = float.Parse(stLaunchRefund);
             selectedObject.launchSite.OpenCloseState = "Open";
             selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
             selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
@@ -502,10 +476,6 @@ namespace KerbalKonstructs.UI
                 category = selectedObject.launchSite.Category;
 
 
-                flRecoveryFactor = selectedObject.launchSite.RecoveryFactor;
-                flRecoveryRange = selectedObject.launchSite.RecoveryRange;
-                flLaunchRefund = selectedObject.launchSite.LaunchRefund;
-
                 flLength = selectedObject.launchSite.LaunchSiteLength;
 
                 if (flLength < 1)
@@ -536,17 +506,9 @@ namespace KerbalKonstructs.UI
 
                 category = LaunchSiteCategory.Other;
 
-                flRecoveryFactor = 0f;
-                flRecoveryRange = 0f;
-                flLaunchRefund = 0f;
-
                 flLength = selectedObject.model.DefaultLaunchSiteLength;
                 flWidth = selectedObject.model.DefaultLaunchSiteWidth;
             }
-
-            stRecoveryFactor = string.Format("{0}", flRecoveryFactor);
-            stRecoveryRange = string.Format("{0}", flRecoveryRange);
-            stLaunchRefund = string.Format("{0}", flLaunchRefund);
 
             stLength = string.Format("{0}", flLength);
             stWidth = string.Format("{0}", flWidth);

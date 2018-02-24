@@ -50,8 +50,6 @@ namespace KerbalKonstructs.Core
 
                 _spaceCenter.SpaceCenterTransform = staticInstance.gameObject.transform;
 
-                Log.Normal("SpaceCenter Position: " + _spaceCenter.SpaceCenterTransform); 
-
 
                 FieldInfo Latitude = _spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);
                 Latitude.SetValue(_spaceCenter, staticInstance.RefLatitude);
@@ -64,11 +62,7 @@ namespace KerbalKonstructs.Core
 
                 FieldInfo altitudeField = _spaceCenter.GetType().GetField("altitude", BindingFlags.NonPublic | BindingFlags.Instance);
                 altitudeField.SetValue(_spaceCenter, staticInstance.RadiusOffset);
-            }
-            else
-            {
-                // Debug.Log("KK: getSpaceCenter was not null.");
-            }
+            }           
 
             return _spaceCenter;
         }

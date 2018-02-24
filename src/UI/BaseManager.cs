@@ -269,33 +269,6 @@ namespace KerbalKonstructs.UI
 
 			if (MiscUtils.isCareerGame())
 			{
-				if (displayStats)
-				{
-					if (!KerbalKonstructs.instance.disableRemoteRecovery)
-					{
-						if (selectedSite.RecoveryFactor > 0)
-						{
-							GUILayout.Label("Recovery Factor: " + selectedSite.RecoveryFactor.ToString() + "%", LabelInfo);
-							if (selectedSite.LaunchSiteName != "Runway" && selectedSite.LaunchSiteName != "LaunchPad")
-							{
-								if (selectedSite.RecoveryRange > 0)
-									rangekm = selectedSite.RecoveryRange / 1000;
-								else
-									rangekm = 0;
-
-								GUILayout.Label("Effective Range: " + rangekm.ToString() + " km", LabelInfo);
-							}
-							else
-								GUILayout.Label("Effective Range: Unlimited", LabelInfo);
-						}
-						else
-							GUILayout.Label("No Recovery Capability", LabelInfo);
-					}
-
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("Launch Refund: " + selectedSite.LaunchRefund.ToString() + "%", LabelInfo);
-				}
-
 				if (displayLog)
 				{
 					logScrollPosition = GUILayout.BeginScrollView(logScrollPosition, GUILayout.Height(120));

@@ -82,14 +82,13 @@ namespace KerbalKonstructs.Core
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.OpenCloseState = "Open";
+            runway.isOpen = true;
             runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
             runway.refLat = getKSCLat;
             runway.refLon = getKSCLon;
             runway.refAlt = 69f;
             runway.LaunchSiteLength = 2500f;
             runway.LaunchSiteWidth = 75f;
-            runway.RecoveryFactor = 100f;
-            runway.RecoveryRange = 0f;
             runway.lsGameObject = SpaceCenter.Instance.gameObject;
 
             launchpad.LaunchSiteName = "LaunchPad";
@@ -99,14 +98,13 @@ namespace KerbalKonstructs.Core
             launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.OpenCloseState = "Open";
+            launchpad.isOpen = true;
             launchpad.body = ConfigUtil.GetCelestialBody("HomeWorld");
             launchpad.refLat = getKSCLat;
             launchpad.refLon = getKSCLon;
             launchpad.refAlt = 72;
             launchpad.LaunchSiteLength = 20f;
             launchpad.LaunchSiteWidth = 20f;
-            launchpad.RecoveryFactor = 100f;
-            launchpad.RecoveryRange = 0f;
             launchpad.lsGameObject = SpaceCenter.Instance.gameObject;
 
 
@@ -415,18 +413,6 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        // Returns the launch refund percentage of a site
-        public static float GetSiteLaunchRefund(string siteName)
-        {
-            if (launchSites.ContainsKey(siteName))
-            {
-                return launchSites[siteName].LaunchRefund;                
-            }
-            else
-            {
-                return 0f;
-            }
-        }
 
         /// <summary>
         /// Contract configurator API call
@@ -440,7 +426,7 @@ namespace KerbalKonstructs.Core
 
 
         // Returns a specific Launchsite, keyed by site.name
-        public static LaunchSite getLaunchSiteByName(string siteName)
+        public static LaunchSite GetLaunchSiteByName(string siteName)
         {
 
             if (checkLaunchSiteExists(siteName))
@@ -452,16 +438,6 @@ namespace KerbalKonstructs.Core
                 return null;
             }
         }
-
-        //// Closes all launchsites. Necessary when leaving a career game and going to the main menu
-        //public static void setAllLaunchsitesClosed()
-        //{
-        //    List<LaunchSite> sites = LaunchSiteManager.getLaunchSites();
-        //    foreach (LaunchSite site in sites)
-        //    {
-        //        site.OpenCloseState = "Closed";
-        //    }
-        //}
 
 
         // Returns the distance in m from a position to a specified Launchsite
@@ -666,20 +642,20 @@ namespace KerbalKonstructs.Core
             LaunchSite defaultSite = null;
             if (EditorDriver.editorFacility == EditorFacility.VAB)
             {
-                defaultSite = getLaunchSiteByName(KerbalKonstructs.instance.defaultVABlaunchsite);
+                defaultSite = GetLaunchSiteByName(KerbalKonstructs.instance.defaultVABlaunchsite);
                 if (defaultSite == null || !defaultSite.isOpen)
                 {
-                    defaultSite = getLaunchSiteByName("LaunchPad");
+                    defaultSite = GetLaunchSiteByName("LaunchPad");
                     KerbalKonstructs.instance.defaultVABlaunchsite = "LaunchPad";
                 }
             }
 
             if (EditorDriver.editorFacility == EditorFacility.SPH)
             {
-                defaultSite = getLaunchSiteByName(KerbalKonstructs.instance.defaultSPHlaunchsite);
+                defaultSite = GetLaunchSiteByName(KerbalKonstructs.instance.defaultSPHlaunchsite);
                 if (defaultSite == null || !defaultSite.isOpen)
                 {
-                    defaultSite = getLaunchSiteByName("Runway");
+                    defaultSite = GetLaunchSiteByName("Runway");
                     KerbalKonstructs.instance.defaultSPHlaunchsite = "Runway";
                 }
             }

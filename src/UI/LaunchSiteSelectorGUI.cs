@@ -344,7 +344,7 @@ namespace KerbalKonstructs.UI
                     break;
             }
             
-            GUI.enabled = (selectedSite != null && selectedSite.isOpen && !(selectedSite.LaunchSiteName == sCurrentSite));
+            GUI.enabled = (selectedSite.isOpen && (selectedSite.LaunchSiteName != sCurrentSite));
             if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
             {
                 LaunchSiteManager.setLaunchSite(selectedSite);

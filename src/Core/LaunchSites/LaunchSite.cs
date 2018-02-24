@@ -32,12 +32,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float LaunchSiteWidth;
         [CFGSetting]
-        public float LaunchRefund = 0f;
-        [CFGSetting]
-        public float RecoveryFactor = 0f;
-        [CFGSetting]
-        public float RecoveryRange = 0f;
-        [CFGSetting]
         public bool LaunchSiteIsHidden = false;
         [CFGSetting]
         public bool ILSIsActive = false;
