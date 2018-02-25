@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
     <Compile Include="Addons\SDTest.cs" />
+    <Compile Include="Addons\SigmaDimensions\SDRescale.cs" />
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="Core\Config\ConfigParser.cs" />
     <Compile Include="Core\Config\ConfigUtil.cs" />

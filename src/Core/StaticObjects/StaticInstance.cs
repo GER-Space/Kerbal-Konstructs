@@ -10,6 +10,14 @@ using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
+    public enum HeightReference
+    {
+        Unset = 0,
+        Sphere = 1 ,
+        TerrainHeight = 2
+    }
+
+
 	public class StaticInstance
 	{
 
@@ -47,7 +55,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string GroupCenter = "false";
         [CFGSetting]
-        public bool useRadiusOffset = true;
+        public int  IsRelativeToTerrain = (int)HeightReference.Unset;
 
         // Special Effects
         [CFGSetting]
@@ -191,12 +199,49 @@ namespace KerbalKonstructs.Core
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
-            pqsCity.repositionToSphereSurface = false; //Snap to surface?
 
 
+            switch (IsRelativeToTerrain)
+            {
+                case (int)HeightReference.Sphere:
+                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
+                    break;
+                case (int)HeightReference.TerrainHeight:
+                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                    break;
+                default:
+
+                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
+                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
+
+                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 10) && heightAboveTerrain > 5)) // most likely at ocean surface 
+                    {
+                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
+                        IsRelativeToTerrain = (int)HeightReference.Sphere;
+                    }
+                    else
+                    {
+                        if (false) 
+                        {
 
 
-            CelestialBody.pqsController.GetSurfaceHeight(RadialPosition);
+                        } else
+                        {
+                            RadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
+
+                            IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
+                        }
+                    }
+
+
+                    break;
+            }
+
+
+            //pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            //CelestialBody.pqsController.GetSurfaceHeight(RadialPosition);
 
             pqsCity.OnSetup();
             pqsCity.Orientate();

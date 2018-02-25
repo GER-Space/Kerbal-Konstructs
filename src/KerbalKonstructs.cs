@@ -170,6 +170,9 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
+            // for Terrain Rescaling
+            SDRescale.SetTerrainRescales();
+
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();

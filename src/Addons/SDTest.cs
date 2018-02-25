@@ -6,6 +6,7 @@ using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using UnityEngine;
 using System.IO;
+using KerbalKonstructs.Modules;
 
 /// <summary>
 /// Test implementation for Simga88
@@ -73,6 +74,9 @@ namespace KerbalKonstructs.Addons
             }
             initialized = true;
         }
+
+
+
 
         /// <summary>
         /// Returns Vector3.zero if no group is found, else the Groups Center

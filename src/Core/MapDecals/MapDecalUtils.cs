@@ -29,8 +29,8 @@ namespace KerbalKonstructs.Core
 
             foreach (var mapDecal in allMapDecals) 
             {
-                Log.Normal("");
-                Log.Normal("Stats for: " + mapDecal.name);
+                //Log.Normal("");
+            //    Log.Normal("Stats for: " + mapDecal.name);
                 if (mapDecal.heightMap != null)
                 {
                     MapDecalsMap heightMap = new MapDecalsMap();
@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Core
                     heightMap.Name = "height_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(heightMap);
 
-                    Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
+                   // Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
 
                 }
 
@@ -50,26 +50,26 @@ namespace KerbalKonstructs.Core
                     colorMap.map = mapDecal.colorMap;
                     colorMap.Name = "color_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(colorMap);
-                    Log.Normal("MapDecal: colormap: " + mapDecal.colorMap.name);
+              //      Log.Normal("MapDecal: colormap: " + mapDecal.colorMap.name);
                 }
 
                 
-                Log.Normal("MapDecal: Radius: " + mapDecal.radius.ToString());
-                Log.Normal("MapDecal: Vector: " + mapDecal.position.ToString());
-                Log.Normal("MapDecal: Offset: " + mapDecal.absoluteOffset);
-                Log.Normal("MapDecal: UseABS: " + mapDecal.absolute.ToString());
+                //Log.Normal("MapDecal: Radius: " + mapDecal.radius.ToString());
+                //Log.Normal("MapDecal: Vector: " + mapDecal.position.ToString());
+                //Log.Normal("MapDecal: Offset: " + mapDecal.absoluteOffset);
+                //Log.Normal("MapDecal: UseABS: " + mapDecal.absolute.ToString());
 
-                Log.Normal("MapDecal: Heightmapdeformity: " + mapDecal.heightMapDeformity.ToString());
+                //Log.Normal("MapDecal: Heightmapdeformity: " + mapDecal.heightMapDeformity.ToString());
 
-                Log.Normal("MapDecal: modisenabled " + mapDecal.modEnabled.ToString());
-                Log.Normal("MapDecal: order: " + mapDecal.order.ToString());
-                Log.Normal("MapDecal: requirement: " + mapDecal.requirements.ToString());
-                Log.Normal("MapDecal: smoothcolor: " + mapDecal.smoothColor.ToString());
-                Log.Normal("MapDecal: smoothhheight: " + mapDecal.smoothHeight.ToString());
-                if (mapDecal.sphere != null )
-                    Log.Normal("MapDecal: sphere: " + mapDecal.sphere.name.ToString());
-                Log.Normal("MapDecal: Alphaheight: " + mapDecal.useAlphaHeightSmoothing.ToString());
-                Log.Normal("MapDecal: Cullblack: " + mapDecal.cullBlack.ToString());
+                //Log.Normal("MapDecal: modisenabled " + mapDecal.modEnabled.ToString());
+                //Log.Normal("MapDecal: order: " + mapDecal.order.ToString());
+                //Log.Normal("MapDecal: requirement: " + mapDecal.requirements.ToString());
+                //Log.Normal("MapDecal: smoothcolor: " + mapDecal.smoothColor.ToString());
+                //Log.Normal("MapDecal: smoothhheight: " + mapDecal.smoothHeight.ToString());
+                //if (mapDecal.sphere != null )
+                //    Log.Normal("MapDecal: sphere: " + mapDecal.sphere.name.ToString());
+                //Log.Normal("MapDecal: Alphaheight: " + mapDecal.useAlphaHeightSmoothing.ToString());
+                //Log.Normal("MapDecal: Cullblack: " + mapDecal.cullBlack.ToString());
 
 
             }
@@ -78,8 +78,8 @@ namespace KerbalKonstructs.Core
 
             foreach (var mapDecal in allMapDecalTangents)
             {
-                Log.Normal("");
-                Log.Normal("Stats for: " + mapDecal.name);
+                //Log.Normal("");
+                //Log.Normal("Stats for: " + mapDecal.name);
 
                 if (mapDecal.heightMap != null)
                 {
@@ -88,7 +88,7 @@ namespace KerbalKonstructs.Core
                     heightMap.map = mapDecal.heightMap;
                     heightMap.Name = "height_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(heightMap);
-                    Log.Normal("MapDecalTGT: heightmap: " + mapDecal.heightMap.name);
+                    //Log.Normal("MapDecalTGT: heightmap: " + mapDecal.heightMap.name);
                 }
 
                 if (mapDecal.colorMap != null)
@@ -98,25 +98,25 @@ namespace KerbalKonstructs.Core
                     colorMap.map = mapDecal.colorMap;
                     colorMap.Name = "color_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(colorMap);
-                    Log.Normal("MapDecalTGT: colormap: " + mapDecal.colorMap.name);
+                    //Log.Normal("MapDecalTGT: colormap: " + mapDecal.colorMap.name);
                 }
 
-                Log.Normal("MapDecalTGT: Radius: " + mapDecal.radius.ToString());
-                Log.Normal("MapDecalTGT: Vector:  " + mapDecal.position.ToString());
-                Log.Normal("MapDecalTGT: Offset: " + mapDecal.absoluteOffset);
-                Log.Normal("MapDecalTGT: UseABS: " + mapDecal.absolute.ToString());
+                //Log.Normal("MapDecalTGT: Radius: " + mapDecal.radius.ToString());
+                //Log.Normal("MapDecalTGT: Vector:  " + mapDecal.position.ToString());
+                //Log.Normal("MapDecalTGT: Offset: " + mapDecal.absoluteOffset);
+                //Log.Normal("MapDecalTGT: UseABS: " + mapDecal.absolute.ToString());
 
-                Log.Normal("MapDecalTGT: Heightmapdeformity: " + mapDecal.heightMapDeformity.ToString());
+                //Log.Normal("MapDecalTGT: Heightmapdeformity: " + mapDecal.heightMapDeformity.ToString());
 
-                Log.Normal("MapDecalTGT: modisenabled: " + mapDecal.modEnabled.ToString());
-                Log.Normal("MapDecalTGT: order: " + mapDecal.order.ToString());
-                Log.Normal("MapDecalTGT: requirement: " + mapDecal.requirements.ToString());
-                Log.Normal("MapDecalTGT: smoothcolor: " + mapDecal.smoothColor.ToString());
-                Log.Normal("MapDecalTGT: smoothhheight: " + mapDecal.smoothHeight.ToString());
-                if (mapDecal.sphere != null)
-                    Log.Normal("MapDecalTGT: sphere: " + mapDecal.sphere.name.ToString());
-                Log.Normal("MapDecalTGT: Alphaheight: " + mapDecal.useAlphaHeightSmoothing.ToString());
-                Log.Normal("MapDecalTGT: Cullblack: " + mapDecal.cullBlack.ToString());
+                //Log.Normal("MapDecalTGT: modisenabled: " + mapDecal.modEnabled.ToString());
+                //Log.Normal("MapDecalTGT: order: " + mapDecal.order.ToString());
+                //Log.Normal("MapDecalTGT: requirement: " + mapDecal.requirements.ToString());
+                //Log.Normal("MapDecalTGT: smoothcolor: " + mapDecal.smoothColor.ToString());
+                //Log.Normal("MapDecalTGT: smoothhheight: " + mapDecal.smoothHeight.ToString());
+                //if (mapDecal.sphere != null)
+                //    Log.Normal("MapDecalTGT: sphere: " + mapDecal.sphere.name.ToString());
+                //Log.Normal("MapDecalTGT: Alphaheight: " + mapDecal.useAlphaHeightSmoothing.ToString());
+                //Log.Normal("MapDecalTGT: Cullblack: " + mapDecal.cullBlack.ToString());
 
 
             }
