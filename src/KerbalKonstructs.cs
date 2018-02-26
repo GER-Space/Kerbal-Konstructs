@@ -739,9 +739,20 @@ namespace KerbalKonstructs
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
+                    //foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+                    //{
+                    //    Log.Normal("found material in " + model.name);
+                    //    Log.Normal(renderer.material.name);
+                    //    Log.Normal(renderer.material.shader.name);
+
+                    //}
+
+
                     // Register new GasColor Module
-                    if (model.prefab.GetComponentsInChildren<Material>(true).Where(m => m.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()).Count() > 0)
+                    if (model.prefab.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()).Count() > 0)
                     {
+
+                        Log.Normal("Adding GrasColor to: " + model.name);
                         StaticModule module = new StaticModule();
 
                         module.moduleNamespace = "KerbalKonstructs";

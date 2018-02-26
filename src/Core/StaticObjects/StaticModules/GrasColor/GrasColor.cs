@@ -14,7 +14,7 @@ namespace KerbalKonstructs
 
         public string GrasMeshName;
         public string GrasTextureImage = "BUILTIN:/ksc_exterior_terrain_ground";
-        public string UsePQSColor = "True";
+        public string UsePQSColor = "False";
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = "";
 
@@ -101,6 +101,7 @@ namespace KerbalKonstructs
                 underGroundColor = staticInstance.GrasColor;
             }
             //Log.Normal("underGroundColor: " + underGroundColor.ToString());
+            underGroundColor.a = underGroundColor.b - underGroundColor.g;
             return underGroundColor;
         }
 
@@ -161,22 +162,26 @@ namespace KerbalKonstructs
                 grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
                 if (useNormalMap)
                 {
-                    grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
+                    //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
+                    grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
                     grasRenderer.material.SetTexture("", GameDatabase.Instance.GetTexture(GrasTextureNormalMap, true));
                 }
                 else
                 {
-                    grasRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
+                    // "KSP/Scenery/Diffuse Multiply (Fixed UV)"
+                    //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
+                    //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply (Fixed UV)");
                 }
             }
         }
 
         public void findSquadGrasMaterial()
         {
-            foreach (Material material in gameObject.GetComponentsInChildren<Material>(true).Where(m => m.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
             {
-                material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
-                grasMaterials.Add(material);
+                renderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                //renderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
+                grasMaterials.Add(renderer.material);
             }
         }
 

@@ -208,47 +208,47 @@ namespace KerbalKonstructs.Core
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
+ 
 
+            //switch (IsRelativeToTerrain)
+            //{
+            //    case (int)HeightReference.Sphere:
+            //        pqsCity.repositionToSphereSurface = false; //Snap to surface?
 
-            switch (IsRelativeToTerrain)
-            {
-                case (int)HeightReference.Sphere:
-                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            //        break;
+            //    case (int)HeightReference.TerrainHeight:
 
-                    break;
-                case (int)HeightReference.TerrainHeight:
+            //        pqsCity.repositionToSphereSurface = true; //Snap to surface?
+            //        pqsCity.repositionToSphereSurfaceAddHeight = true;
+            //        pqsCity.repositionToSphere = false;
+            //        break;
+            //    default:
+            //        // we try to descide which one is the best to take
+            //        string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
+            //        float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
 
-                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                    pqsCity.repositionToSphereSurfaceAddHeight = true;
-                    pqsCity.repositionToSphere = false;
-                    break;
-                default:
-                    // we try to descide which one is the best to take
-                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
-                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
+            //        if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
+            //        {
+            //            Log.Normal("Found a swimming object: " + this.gameObject.name);
+            //            pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            //            IsRelativeToTerrain = (int)HeightReference.Sphere;
 
-                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
-                    {
-                        Log.Normal("Found a swimming object: " + this.gameObject.name);
-                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-                        IsRelativeToTerrain = (int)HeightReference.Sphere;
+            //        }
+            //        else
+            //        {
+            //            {
+            //            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
+            //                RadiusOffset = heightAboveTerrain;
+            //                pqsCity.repositionToSphereSurface = true; //Snap to surface?#
+            //                pqsCity.repositionToSphereSurfaceAddHeight = true;
+            //                pqsCity.repositionRadiusOffset = heightAboveTerrain;
+            //                pqsCity.repositionToSphere = false;
 
-                    }
-                    else
-                    {
-                        {
-                            Log.Normal("found new Radiusffset: " + heightAboveTerrain);
-                            RadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
-                            pqsCity.repositionToSphereSurfaceAddHeight = true;
-                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphere = false;
-
-                            IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
-                        }
-                    }
-                    break;
-            }
+            //                IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
+            //            }
+            //        }
+            //        break;
+            //}
 
 
             //pqsCity.repositionToSphereSurface = false; //Snap to surface?

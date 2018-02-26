@@ -80,18 +80,20 @@ namespace KerbalKonstructs
             if (textureName.StartsWith("BUILTIN:"))
             {
                 string textureNameShort = Regex.Replace(textureName, "BUILTIN:/", "");
-                foundTexture = Resources.FindObjectsOfTypeAll<Texture>().FirstOrDefault(tex => tex.name == textureName) as Texture2D;
+                foundTexture = Resources.FindObjectsOfTypeAll<Texture>().FirstOrDefault(tex => tex.name == textureNameShort) as Texture2D;
                 if (foundTexture == null)
                 {
-                    Log.UserError("Could not find built-in texture " + textureName);
+                    Log.UserError("Could not find built-in texture " + textureNameShort);
                 }
             }
-
-            // Otherwise search the game database for one loaded from GameData/
-            if (GameDatabase.Instance.ExistsTexture(textureName))
+            else
             {
-                // Get the texture URL
-                foundTexture = GameDatabase.Instance.GetTexture(textureName, false);
+                // Otherwise search the game database for one loaded from GameData/
+                if (GameDatabase.Instance.ExistsTexture(textureName))
+                {
+                    // Get the texture URL
+                    foundTexture = GameDatabase.Instance.GetTexture(textureName, false);
+                }
             }
             return foundTexture;
         }
