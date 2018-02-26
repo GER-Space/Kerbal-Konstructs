@@ -154,7 +154,6 @@ namespace KerbalKonstructs
             GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
             GameEvents.onLevelWasLoaded.Add(OnLevelWasLoaded);
             GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
-            //GameEvents.onVesselRecovered.Add(OnVesselRecovered);
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecoveryProcessing);
             GameEvents.OnVesselRollout.Add(OnVesselLaunched);
             // draw map icons when needed
@@ -740,6 +739,18 @@ namespace KerbalKonstructs
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
+                    // Register new GasColor Module
+                    if (model.prefab.GetComponentsInChildren<Material>(true).Where(m => m.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()).Count() > 0)
+                    {
+                        StaticModule module = new StaticModule();
+
+                        module.moduleNamespace = "KerbalKonstructs";
+                        module.moduleClassname = "GrasColor";
+                        module.moduleFields.Add("GrasTextureImage", "BUILTIN:/ksc_exterior_terrain_ground");
+
+                        model.modules = new List<StaticModule>();
+                        model.modules.Add(module);
+                    }
 
                     StaticDatabase.RegisterModel(model, modelName);
 
@@ -1064,7 +1075,9 @@ namespace KerbalKonstructs
                         }
                     }
                     if (model.modules == null)
+                    {
                         model.modules = new List<StaticModule>();
+                    }
 
                     model.modules.Add(module);
                 }
@@ -1159,49 +1172,38 @@ namespace KerbalKonstructs
             {
                 case KKFacilityType.Merchant:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Merchant>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.GroundStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TrackingStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     instance.facilityType = KKFacilityType.GroundStation;
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.FuelTanks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
                     instance.facilityType = KKFacilityType.Merchant;
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Research:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Business:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Business>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Hangar:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Barracks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Barracks>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.LandingGuide:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<LandingGuide>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TouchdownGuideL:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideL>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TouchdownGuideR:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
-                    instance.hasFacilities = true;
                     break;
             }
 
@@ -1213,8 +1215,6 @@ namespace KerbalKonstructs
             }
 
         }
-
-
 
 
         /// <summary>
@@ -1245,47 +1245,6 @@ namespace KerbalKonstructs
 
         }
 
-
-        /// <summary>
-        /// this saves the pointer references to thier configfiles.
-        /// </summary>
-        /// <param name="pathname"></param>
-        internal void SaveInstanceByCfg(string pathname)
-        {
-            Log.Normal("Saving File: " + pathname);
-            StaticInstance [] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();          
-            StaticInstance firstInstance = allInstances.First();
-            ConfigNode instanceConfig = null;
-
-            ConfigNode staticNode = new ConfigNode("STATIC");
-
-            if (firstInstance.configUrl == null) //this are newly spawned instances
-            {
-                instanceConfig = new ConfigNode("STATIC");
-                instanceConfig.AddValue("pointername", firstInstance.model.name);
-            }
-            else
-            {
-                //instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);
-                //instanceConfig.RemoveNodes("Instances");
-                //instanceConfig.RemoveValues();
-                instanceConfig = new ConfigNode("STATIC");
-                instanceConfig.AddValue("pointername", firstInstance.model.name);
-
-            }
-
-            staticNode.AddNode(instanceConfig);
-            foreach (StaticInstance instance in allInstances)
-            {
-                ConfigNode inst = new ConfigNode("Instances");
-                ConfigParser.WriteInstanceConfig(instance, inst);
-                instanceConfig.nodes.Add(inst);
-            }
-            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + firstInstance.configPath, "Generated by Kerbal Konstructs");
-        }
-
-
-
         /// <summary>
         /// This saves all satic objects to thier instance files.. 
         /// </summary>
@@ -1307,7 +1266,7 @@ namespace KerbalKonstructs
                 else
                 {
                     // find all instances with the same configPath. 
-                    SaveInstanceByCfg(instance.configPath);
+                    instance.SaveInstance();
                 }
 
                 processedInstances.Add(instance.configPath);
@@ -1333,81 +1292,6 @@ namespace KerbalKonstructs
 
             }
         }
-
-
-
-
-        //public void exportCustomInstances(string sPackName = "MyStaticPack", string sBaseName = "All", string sGroup = "", Boolean bLocal = false)
-        //{
-        //    bool HasCustom = false;
-        //    string sBase = "";
-
-        //    if (sGroup != "") sBase = sGroup;
-        //    else
-        //        sBase = sBaseName;
-
-        //    foreach (StaticModel model in StaticDatabase.allStaticModels)
-        //    {
-        //        HasCustom = false;
-        //        ConfigNode staticNode = new ConfigNode("STATIC");
-        //        ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
-
-        //        modelConfig.RemoveNodes("Instances");
-
-        //        foreach (StaticObject instance in StaticDatabase.GetInstancesFromModel(model))
-        //        {
-                    
-        //            string sInstGroup = (string)instance.getSetting("Group");
-
-        //            if (sGroup != "")
-        //            {
-        //                if (sInstGroup != sGroup)
-        //                {
-        //                    sInstGroup = "";
-        //                    continue;
-        //                }
-        //            }
-
-        //            if (DevMode)
-        //            {
-        //                sCustom = "True";
-        //                //obj.setSetting("CustomInstance", "True");
-        //            }
-
-        //            if (sCustom == "True")
-        //            {
-        //                HasCustom = true;
-        //                ConfigNode inst = new ConfigNode("Instances");
-        //                foreach (KeyValuePair<string, object> setting in instance.settings)
-        //                {
-        //                    inst.AddValue(setting.Key, KKAPI.getInstanceSettings()[setting.Key].convertValueToConfig(setting.Value));
-        //                }
-        //                modelConfig.nodes.Add(inst);
-        //            }
-        //        }
-
-        //        if (HasCustom)
-        //        {
-        //            string sModelName = modelConfig.GetValue("name");
-        //            modelConfig.AddValue("pointername", sModelName);
-
-        //            modelConfig.RemoveValue("name");
-        //            modelConfig.AddValue("name", sPackName + "_" + sBase + "_" + sModelName);
-
-        //            staticNode.AddNode(modelConfig);
-        //            if (DevMode)
-        //            {
-        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase);
-        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sBase + "/" + sModelName + ".cfg", "Exported custom instances by Kerbal Konstructs");
-        //            }
-        //            else
-        //            {
-        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.path);
-        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + sBase + "/" + model.configPath, "Exported custom instances by Kerbal Konstructs");
-        //            }
-        //        }
-        //    }
-        //}
 
         public void exportMasters()
         {

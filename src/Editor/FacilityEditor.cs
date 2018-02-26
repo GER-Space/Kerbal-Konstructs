@@ -237,7 +237,7 @@ namespace KerbalKonstructs.UI
                     MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
                     updateSettings();
                     updateSelection();
-                    KerbalKonstructs.instance.SaveInstanceByCfg(selectedObject.configPath);
+                    selectedObject.SaveInstance();
                     this.Close();
                 }
                 GUILayout.FlexibleSpace();
@@ -605,7 +605,6 @@ namespace KerbalKonstructs.UI
             {
 
                 Log.Normal("FacEditor: Remove called");
-                selectedObject.hasFacilities = false;
                 GameObject.Destroy(selectedObject.myFacilities[0]);
                 selectedObject.myFacilities = new List<KKFacility>();
                 Log.Normal("FacEditor: Remove Finished");
@@ -637,10 +636,6 @@ namespace KerbalKonstructs.UI
             if (newType == KKFacilityType.None)
             {
                 return;
-            }
-            else
-            {
-                selectedObject.hasFacilities = true;
             }
             // use a face cfgnode for initialization
             ConfigNode cfgNode = new ConfigNode();
@@ -706,27 +701,22 @@ namespace KerbalKonstructs.UI
             {
                 case "None":
                     break;
-                case "GroundStation":
-                    selectedObject.hasFacilities = true;                    
+                case "GroundStation":                   
                     ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
                     break;
                 case "Hangar":
-                    selectedObject.hasFacilities = true;
                     if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity =  float.Parse(infFacMassCap);
                     if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity =  int.Parse(infFacCraftCap);
                     break;
                 case "Barracks":
-                    selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     break;
                 case "Research":
-                    selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     if (infProdRateMax != "") ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
                     if (infScienceMax != "") ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
                     break;
                 case "Business":
-                    selectedObject.hasFacilities = true;
                     if (infStaffMax != "") ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     if (infProdRateMax != "") ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
                     if (infFundsMax != "") ((Business)selectedObject.myFacilities[0]).FundsOMax = float.Parse(infFundsMax);

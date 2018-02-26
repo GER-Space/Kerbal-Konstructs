@@ -60,9 +60,6 @@ namespace KerbalKonstructs.UI
         String infFacMassCap = "";
         String infFacCraftCap = "";
         String infStaffMax = "";
-        String infLqFMax = "";
-        String infOxFMax = "";
-        String infMoFMax = "";
         //		String infECMax = "";
         //		String infOreMax = "";
         //		String infPrOreMax = "";
@@ -380,27 +377,6 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
             }
 
-            if (infFacType == "FuelTanks")
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max LiquidFuel: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infLqFMax = GUILayout.TextField(infLqFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Oxidizer: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infOxFMax = GUILayout.TextField(infOxFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Max Monoprop: ", LabelGreen);
-                GUILayout.FlexibleSpace();
-                infMoFMax = GUILayout.TextField(infMoFMax, 6, GUILayout.Width(150), GUILayout.Height(18));
-                GUILayout.EndHorizontal();
-            }
-
             if (infFacType == "Hangar")
             {
                 GUILayout.BeginHorizontal();
@@ -526,9 +502,6 @@ namespace KerbalKonstructs.UI
             if (infFacMassCap != "") mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
             if (infFacCraftCap != "") mModel.DefaultFacilityCraftCapacity = int.Parse(infFacCraftCap);
             if (infStaffMax != "") mModel.DefaultStaffMax = int.Parse(infStaffMax);
-            if (infLqFMax != "") mModel.LqFMax = float.Parse(infLqFMax);
-            if (infOxFMax != "") mModel.OxFMax = float.Parse(infOxFMax);
-            if (infMoFMax != "") mModel.MoFMax = float.Parse(infMoFMax);
             //	if (infECMax != "") mModel.setSetting("ECMax", float.Parse(infECMax));
             //	if (infOreMax != "") mModel.setSetting("OreMax", float.Parse(infOreMax));
             //	if (infPrOreMax != "") mModel.setSetting("PrOreMax", float.Parse(infPrOreMax));
@@ -554,9 +527,6 @@ namespace KerbalKonstructs.UI
             infFacMassCap = obj.DefaultFacilityMassCapacity.ToString();
             infFacCraftCap = obj.DefaultFacilityCraftCapacity.ToString();
             infStaffMax = obj.DefaultStaffMax.ToString();
-            infLqFMax = obj.LqFMax.ToString();
-            infOxFMax = obj.OxFMax.ToString();
-            infMoFMax = obj.MoFMax.ToString();
             //	infECMax = obj.getSetting("ECMax").ToString();
             //	infOreMax = obj.getSetting("OreMax").ToString();
             //	infPrOreMax = obj.getSetting("PrOreMax").ToString();

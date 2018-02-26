@@ -158,7 +158,7 @@
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />
     <Compile Include="Utilities\GrasColorCam.cs" />
-    <Compile Include="Utilities\KKShader.cs" />
+    <Compile Include="Utilities\KKGraphics.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Addons\NavUtils\ILSConfig.cs" />
   </ItemGroup>

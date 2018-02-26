@@ -9,11 +9,11 @@ using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs
 {
-    public class GrasColor: StaticModule
+    public class GrasColor : StaticModule
     {
 
         public string GrasMeshName;
-        public string GrasTextureImage;
+        public string GrasTextureImage = "BUILTIN:/ksc_exterior_terrain_ground";
         public string UsePQSColor = "True";
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = "";
@@ -22,6 +22,12 @@ namespace KerbalKonstructs
 
         private bool usePQS = true;
         private bool useNormalMap = true;
+
+        private bool isInitialized = false;
+        private List<Material> grasMaterials = new List<Material>();
+
+ 
+
 
         public void Awake()
         {
@@ -42,18 +48,49 @@ namespace KerbalKonstructs
             setTexture();
         }
 
+
+        /// <summary>
+        /// Sets the texture in all transforms of the right name
+        /// </summary>
+        internal void setTexture()
+        {
+            //Log.Normal("FlagDeclal: setTexture called");
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+
+            foreach (Material material in grasMaterials)
+            {
+                material.SetColor("_Color", GetColor());
+            }
+        }
+
+
+        internal void Initialize()
+        {
+            if (staticInstance.model.isSquad)
+            {
+                findSquadGrasMaterial();
+            } else
+            {
+                findModelGrasMaterials();
+            }
+
+
+            isInitialized = true;
+        }
+
         internal Color GetColor()
         {
-
-            
             Color underGroundColor = Color.clear;
             if (staticInstance.GrasColor == Color.clear || StaticsEditorGUI.instance.IsOpen())
             {
                 if (usePQS)
                 {
-
-                    underGroundColor = GetSurfaceColor(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
-                } else
+                    underGroundColor = GetSurfaceColorPQS(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
+                }
+                else
                 {
                     underGroundColor = GrasColorCam.instance.getCameraColor(staticInstance);
                 }
@@ -63,43 +100,9 @@ namespace KerbalKonstructs
             {
                 underGroundColor = staticInstance.GrasColor;
             }
-
             //Log.Normal("underGroundColor: " + underGroundColor.ToString());
-
             return underGroundColor;
-
         }
-
-
-        /// <summary>
-        /// Sets the texture in all transforms of the right name
-        /// </summary>
-        internal void setTexture()
-        {
-            //Log.Normal("FlagDeclal: setTexture called");
-
-            Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrasMeshName).ToArray();
-
-
-            foreach (var transform in allTransforms)
-            {
-                Renderer flagRenderer = transform.GetComponent<Renderer>();
-                if (useNormalMap)
-                {
-                    flagRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
-                    flagRenderer.material.SetTexture("", GameDatabase.Instance.GetTexture(GrasTextureNormalMap, true));
-                }
-                else
-                {
-                    flagRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
-                }
-                flagRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
-                flagRenderer.material.mainTexture = GameDatabase.Instance.GetTexture(GrasTextureImage, false);
-
-                flagRenderer.material.SetColor("_Color", GetColor());
-            }
-        }
-
 
         /// <summary>
         /// Uses the PQS System to query the color of the undergound
@@ -108,7 +111,7 @@ namespace KerbalKonstructs
         /// <param name="lat"></param>
         /// <param name="lon"></param>
         /// <returns></returns>
-        public static Color GetSurfaceColor(CelestialBody body, Double lat, Double lon)
+        public static Color GetSurfaceColorPQS(CelestialBody body, Double lat, Double lon)
         {
             // Tell the PQS that our actions are not supposed to end up in the terrain
             body.pqsController.isBuildingMaps = true;
@@ -146,8 +149,38 @@ namespace KerbalKonstructs
             // For getting the height at this point you can use data.vertHeight
             return data.vertColor;
         }
+
+
+        public void findModelGrasMaterials()
+        {
+            Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrasMeshName).ToArray();
+            foreach (var transform in allTransforms)
+            {
+                Renderer grasRenderer = transform.GetComponent<Renderer>();
+                grasMaterials.Add(grasRenderer.material);
+                grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                if (useNormalMap)
+                {
+                    grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
+                    grasRenderer.material.SetTexture("", GameDatabase.Instance.GetTexture(GrasTextureNormalMap, true));
+                }
+                else
+                {
+                    grasRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
+                }
+            }
+        }
+
+        public void findSquadGrasMaterial()
+        {
+            foreach (Material material in gameObject.GetComponentsInChildren<Material>(true).Where(m => m.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+            {
+                material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                grasMaterials.Add(material);
+            }
+        }
+
+
     }
-
-
 
 }

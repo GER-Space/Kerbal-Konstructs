@@ -52,12 +52,12 @@ namespace KerbalKonstructs
 
         private void ReplaceShader(MeshRenderer renderer, string newShaderName)
         {
-            if (string.IsNullOrEmpty(newShaderName) || !KKShader.HasShader(newShaderName))
+            if (string.IsNullOrEmpty(newShaderName) || !KKGraphics.HasShader(newShaderName))
             {
                 return;
             }
 
-            Shader newShader = KKShader.GetShader(newShaderName);
+            Shader newShader = KKGraphics.GetShader(newShaderName);
             renderer.material.shader = newShader;
         }
 

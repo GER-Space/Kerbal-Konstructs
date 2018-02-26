@@ -7,6 +7,7 @@ using KerbalKonstructs.Core;
 using UnityEngine;
 using System.IO;
 using KerbalKonstructs.Modules;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// Test implementation for Simga88
@@ -250,5 +251,16 @@ namespace KerbalKonstructs.Addons
             return myTexture2D;
         }
 
+
+        internal static void DumpBuildInTextures()
+        {
+            foreach (var texture in Resources.FindObjectsOfTypeAll<Texture>())
+            {
+                Log.Normal("Texture: " + texture.name);
+            }
+        }
+
+
+      
     }
 }

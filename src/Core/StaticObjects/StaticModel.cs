@@ -58,12 +58,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal int DefaultStaffMax;
         [CFGSetting]
-        internal float LqFMax;
-        [CFGSetting]
-        internal float OxFMax;
-        [CFGSetting]
-        internal float MoFMax;
-        [CFGSetting]
         internal float DefaultProductionRateMax;
         [CFGSetting]
         internal float DefaultScienceOMax;

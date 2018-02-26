@@ -47,22 +47,30 @@ namespace KerbalKonstructs.Core
                 {
                     case "System.String":
                         if (string.IsNullOrEmpty((string)modelsetting.Value.GetValue(model)))
+                        {
                             continue;
+                        }
                         cfgNode.AddValue(modelsetting.Key, (string)modelsetting.Value.GetValue(model));
                         break;
                     case "System.Int32":
                         if ((int)modelsetting.Value.GetValue(model) == 0)
+                        {
                             continue;
+                        }
                         cfgNode.AddValue(modelsetting.Key, (int)modelsetting.Value.GetValue(model));
                         break;
                     case "System.Single":
                         if ((float)modelsetting.Value.GetValue(model) == 0)
+                        {
                             continue;
+                        }
                         cfgNode.AddValue(modelsetting.Key, (float)modelsetting.Value.GetValue(model));
                         break;
                     case "System.Double":
                         if ((double)modelsetting.Value.GetValue(model) == 0)
+                        {
                             continue;
+                        }
                         cfgNode.AddValue(modelsetting.Key, (double)modelsetting.Value.GetValue(model));
                         break;
                     case "System.Boolean":
@@ -111,57 +119,19 @@ namespace KerbalKonstructs.Core
             foreach (var instanceSetting in ConfigUtil.instanceFields)
             {
                 if (instanceSetting.Value.GetValue(instance) == null)
-                    continue;
-
-                if (instanceSetting.Key == "FacilityType")
-                    continue;
-
-                switch (instanceSetting.Value.FieldType.ToString())
                 {
-                    case "System.String":
-                        if (string.IsNullOrEmpty((string)instanceSetting.Value.GetValue(instance)))
-                            continue;
-                        cfgNode.SetValue(instanceSetting.Key, (string)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "System.Int32":
-                        if ((int)instanceSetting.Value.GetValue(instance) == 0)
-                            continue;
-                        cfgNode.SetValue(instanceSetting.Key, (int)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "System.Single":
-                        if ((float)instanceSetting.Value.GetValue(instance) == 0)
-                        {
-                            continue;
-                        }
-                        cfgNode.SetValue(instanceSetting.Key, (float)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "System.Double":
-                        if ((double)instanceSetting.Value.GetValue(instance) == 0)
-                        {
-                            continue;
-                        }
-                        cfgNode.SetValue(instanceSetting.Key, (double)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "System.Boolean":
-                        cfgNode.SetValue(instanceSetting.Key, (bool)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "UnityEngine.Vector3":
-                        cfgNode.SetValue(instanceSetting.Key, (Vector3)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "UnityEngine.Vector3d":
-                        cfgNode.SetValue(instanceSetting.Key, (Vector3d)instanceSetting.Value.GetValue(instance), true);
-                        break;
-                    case "CelestialBody":
-                        cfgNode.SetValue(instanceSetting.Key, ((CelestialBody)instanceSetting.Value.GetValue(instance)).name, true);
-                        break;
-                    case "UnityEngine.Color":
-                        if (instanceSetting.Key == "GrasColor" && (Color)instanceSetting.Value.GetValue(instance) == Color.clear)
-                        {
-                            continue;
-                        }
-                        cfgNode.SetValue(instanceSetting.Key, (Color)instanceSetting.Value.GetValue(instance), true);
-                        break;
+                    continue;
                 }
+                if (instanceSetting.Key == "FacilityType")
+                {
+                    continue;
+                }
+                if (instanceSetting.Key == "GrasColor" && (Color)instanceSetting.Value.GetValue(instance) == Color.clear)
+                {
+                    continue;
+                }
+
+                ConfigUtil.Write2CfgNode(instance, instanceSetting.Value, cfgNode);
 
             }
 
@@ -348,5 +318,47 @@ namespace KerbalKonstructs.Core
                 DecalsDatabase.RegisterMap(newMapDecalInstance);
             }
         }
+
+
+        /// <summary>
+        /// this saves the pointer references to thier configfiles.
+        /// </summary>
+        /// <param name="pathname"></param>
+        internal static void SaveInstanceByCfg(string pathname)
+        {
+            Log.Normal("Saving File: " + pathname);
+            StaticInstance[] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();
+            StaticInstance firstInstance = allInstances.First();
+            ConfigNode instanceConfig = null;
+
+            ConfigNode staticNode = new ConfigNode("STATIC");
+
+            if (firstInstance.configUrl == null) //this are newly spawned instances
+            {
+                instanceConfig = new ConfigNode("STATIC");
+                instanceConfig.AddValue("pointername", firstInstance.model.name);
+            }
+            else
+            {
+                //instanceConfig = GameDatabase.Instance.GetConfigNode(firstInstance.configUrl.url);
+                //instanceConfig.RemoveNodes("Instances");
+                //instanceConfig.RemoveValues();
+                instanceConfig = new ConfigNode("STATIC");
+                instanceConfig.AddValue("pointername", firstInstance.model.name);
+
+            }
+
+            staticNode.AddNode(instanceConfig);
+            foreach (StaticInstance instance in allInstances)
+            {
+                ConfigNode inst = new ConfigNode("Instances");
+                ConfigParser.WriteInstanceConfig(instance, inst);
+                instanceConfig.nodes.Add(inst);
+            }
+            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + firstInstance.configPath, "Generated by Kerbal Konstructs");
+        }
+
+
+
     }
 }

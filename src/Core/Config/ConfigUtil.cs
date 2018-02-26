@@ -277,6 +277,9 @@ namespace KerbalKonstructs.Core
                 case "UnityEngine.Vector3d":
                     cfgNode.SetValue(field.Name, (Vector3d)field.GetValue(source), true);
                     break;
+                case "UnityEngine.Color":
+                    cfgNode.SetValue(field.Name, (Color)field.GetValue(source), true);
+                    break;
                 case "CelestialBody":
                     cfgNode.SetValue(field.Name, ((CelestialBody)field.GetValue(source)).name, true);
                     break;
@@ -320,6 +323,9 @@ namespace KerbalKonstructs.Core
                     break;
                 case "UnityEngine.Vector3d":
                     cfgNode.SetValue(property.Name, (Vector3d)property.GetValue(source, null), true);
+                    break;
+                case "UnityEngine.Color":
+                    cfgNode.SetValue(property.Name, (Color)property.GetValue(source, null), true);                    
                     break;
                 case "CelestialBody":
                     cfgNode.SetValue(property.Name, ((CelestialBody)property.GetValue(source, null)).name, true);

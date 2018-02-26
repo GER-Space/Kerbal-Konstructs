@@ -18,8 +18,8 @@ namespace KerbalKonstructs.Core
     }
 
 
-	public class StaticInstance
-	{
+    public class StaticInstance
+    {
 
         // Position
         [CFGSetting]
@@ -51,11 +51,11 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float VisibilityRange = 25000f;
         [CFGSetting]
-        public string Group  = "Ungrouped";
+        public string Group = "Ungrouped";
         [CFGSetting]
         public string GroupCenter = "false";
         [CFGSetting]
-        public int  IsRelativeToTerrain = (int)HeightReference.Unset;
+        public int IsRelativeToTerrain = (int)HeightReference.Unset;
 
         // Special Effects
         [CFGSetting]
@@ -76,9 +76,6 @@ namespace KerbalKonstructs.Core
             {
                 return (myFacilities.Count > 0);
             }
-            set
-            {
-            }
         }
 
 
@@ -86,7 +83,7 @@ namespace KerbalKonstructs.Core
         public bool hasLauchSites = false;
         public LaunchSite launchSite;
 
-        public KKFacilityType facilityType = KKFacilityType.None; 
+        public KKFacilityType facilityType = KKFacilityType.None;
         public List<KKFacility> myFacilities = new List<KKFacility>();
 
 
@@ -94,24 +91,24 @@ namespace KerbalKonstructs.Core
         public string legacyfacilityID;
 
 
-		internal Boolean editing;
+        internal Boolean editing;
         internal Boolean preview;
 
         private Vector3 origScale;
-        internal bool isActive ;
+        internal bool isActive;
 
         internal int indexInGroup = 0;
 
-		private List<Renderer> _rendererComponents; 
+        private List<Renderer> _rendererComponents;
 
 
         /// <summary>
         /// Updates the static instance with new settings
         /// </summary>
-		public void update()
-		{
-			if (pqsCity != null)
-			{
+        public void update()
+        {
+            if (pqsCity != null)
+            {
                 pqsCity.repositionRadial = RadialPosition;
                 pqsCity.repositionRadiusOffset = RadiusOffset;
                 pqsCity.reorientInitialUp = Orientation;
@@ -124,38 +121,38 @@ namespace KerbalKonstructs.Core
             {
                 module.StaticObjectUpdate();
             }
-		}
+        }
 
         internal void HighlightObject(Color highlightColor)
-		{
-			Renderer[] rendererList = gameObject.GetComponentsInChildren<Renderer>();
-			_rendererComponents = new List<Renderer>(rendererList);
+        {
+            Renderer[] rendererList = gameObject.GetComponentsInChildren<Renderer>();
+            _rendererComponents = new List<Renderer>(rendererList);
 
-			foreach (Renderer renderer in _rendererComponents)
-			{
-				renderer.material.SetFloat("_RimFalloff", 1.8f);
-				renderer.material.SetColor("_RimColor", highlightColor);
-			}
-		}
+            foreach (Renderer renderer in _rendererComponents)
+            {
+                renderer.material.SetFloat("_RimFalloff", 1.8f);
+                renderer.material.SetColor("_RimColor", highlightColor);
+            }
+        }
 
         internal void ToggleAllColliders(bool enable)
-		{
-			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
-			
-			List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
+        {
+            Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 
-			foreach (GameObject gocollider in colliderList)
-			{
-				gocollider.GetComponent<Collider>().enabled = enable;
-			}
-		}
+            List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
+
+            foreach (GameObject gocollider in colliderList)
+            {
+                gocollider.GetComponent<Collider>().enabled = enable;
+            }
+        }
 
         internal float GetDistanceToObject(Vector3 vPosition)
-		{
-			float fDistance = 0f;
-			fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
-			return fDistance;
-		}
+        {
+            float fDistance = 0f;
+            fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
+            return fDistance;
+        }
 
 
         /// <summary>
@@ -164,7 +161,7 @@ namespace KerbalKonstructs.Core
         /// <param name="editing"></param>
         /// <param name="bPreview"></param>
         internal void spawnObject(Boolean editing, Boolean bPreview)
-		{
+        {
             // mangle Squads statics
             if (model.isSquad)
             {
@@ -172,22 +169,22 @@ namespace KerbalKonstructs.Core
             }
 
             // Objects spawned at runtime should be active, ones spawned at loading not
-            InstanceUtil.SetActiveRecursively(this,editing);
-			
-			Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
-			List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
+            InstanceUtil.SetActiveRecursively(this, editing);
 
-			InstanceUtil.SetLayerRecursively(this, 15);
+            Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
+            List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
 
-			if (bPreview) this.ToggleAllColliders(false);
+            InstanceUtil.SetLayerRecursively(this, 15);
 
-			this.preview = bPreview;
+            if (bPreview) this.ToggleAllColliders(false);
 
-			if (editing) KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+            this.preview = bPreview;
 
-			float objvisibleRange = VisibilityRange;
-			
-			if (objvisibleRange < 1) objvisibleRange = 25000f;
+            if (editing) KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+
+            float objvisibleRange = VisibilityRange;
+
+            if (objvisibleRange < 1) objvisibleRange = 25000f;
 
             PQSCity.LODRange range = new PQSCity.LODRange
             {
@@ -226,12 +223,13 @@ namespace KerbalKonstructs.Core
                     pqsCity.repositionToSphere = false;
                     break;
                 default:
-
+                    // we try to descide which one is the best to take
                     string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
                     float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
 
-                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 10) && heightAboveTerrain > 5)) // most likely at ocean surface 
+                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
                     {
+                        Log.Normal("Found a swimming object: " + this.gameObject.name);
                         pqsCity.repositionToSphereSurface = false; //Snap to surface?
                         IsRelativeToTerrain = (int)HeightReference.Sphere;
 
@@ -249,8 +247,6 @@ namespace KerbalKonstructs.Core
                             IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
                         }
                     }
-
-
                     break;
             }
 
@@ -283,36 +279,36 @@ namespace KerbalKonstructs.Core
 
 
             foreach (StaticModule module in model.modules)
-			{
-				Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+            {
+                Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
-				if (mod != null)
-				{
+                if (mod != null)
+                {
                     mod.staticInstance = this;
-					foreach (string fieldName in module.moduleFields.Keys)
-					{
-						FieldInfo field = mod.GetType().GetField(fieldName);
-						if (field != null)
-						{
-							field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
-						}
-						else
-						{
-							Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
-						}
-					}
-				}
-				else
-				{
+                    foreach (string fieldName in module.moduleFields.Keys)
+                    {
+                        FieldInfo field = mod.GetType().GetField(fieldName);
+                        if (field != null)
+                        {
+                            field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
+                        }
+                        else
+                        {
+                            Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
+                        }
+                    }
+                }
+                else
+                {
                     Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
-				}
-			}
+                }
+            }
 
-			foreach (GameObject gorenderer in rendererList)
-			{
-				gorenderer.GetComponent<Renderer>().enabled = true;
-			}
+            foreach (GameObject gorenderer in rendererList)
+            {
+                gorenderer.GetComponent<Renderer>().enabled = true;
+            }
 
             StaticDatabase.AddStatic(this);
 
@@ -335,12 +331,18 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="enableColliders"></param>
         internal void deselectObject(Boolean enableColliders)
-		{
-			this.editing = false;
-			if (enableColliders) this.ToggleAllColliders(true);
+        {
+            this.editing = false;
+            if (enableColliders) this.ToggleAllColliders(true);
 
-			Color highlightColor = new Color(0, 0, 0, 0);
-			this.HighlightObject(highlightColor);
-		}
+            Color highlightColor = new Color(0, 0, 0, 0);
+            this.HighlightObject(highlightColor);
+        }
+
+        internal void SaveInstance()
+        {
+            ConfigParser.SaveInstanceByCfg(configPath);
+        }
+
 	}
 }

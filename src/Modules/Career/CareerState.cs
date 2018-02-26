@@ -18,8 +18,10 @@ namespace KerbalKonstructs.Modules
 
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
-                if (!instance.hasFacilities || instance.myFacilities.Count == 0)
+                if (!instance.hasFacilities)
+                {
                     continue;
+                }
 
                 if (!facilityNodes.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
                 {
