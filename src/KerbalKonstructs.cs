@@ -1152,7 +1152,6 @@ namespace KerbalKonstructs
                 
             }
             // Stuff for recursive Facilities
-            instance.hasFacilities = true;
             instance.facilityType = facType;
             instance.FacilityType = cfgNode.GetValue("FacilityType");
 
@@ -1160,38 +1159,49 @@ namespace KerbalKonstructs
             {
                 case KKFacilityType.Merchant:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Merchant>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.GroundStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TrackingStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     instance.facilityType = KKFacilityType.GroundStation;
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.FuelTanks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<FuelTanks>().ParseConfig(cfgNode));
                     instance.facilityType = KKFacilityType.Merchant;
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Research:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Research>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Business:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Business>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Hangar:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Hangar>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.Barracks:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Barracks>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.LandingGuide:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<LandingGuide>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TouchdownGuideL:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideL>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
                 case KKFacilityType.TouchdownGuideR:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
+                    instance.hasFacilities = true;
                     break;
             }
 

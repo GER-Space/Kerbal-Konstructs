@@ -70,7 +70,19 @@ namespace KerbalKonstructs.Core
         public UrlDir.UrlConfig configUrl;
         public String configPath;
 
-        public bool hasFacilities = false;
+        public bool hasFacilities
+        {
+            get
+            {
+                return (myFacilities.Count > 0);
+            }
+            set
+            {
+            }
+        }
+
+
+
         public bool hasLauchSites = false;
         public LaunchSite launchSite;
 
@@ -205,9 +217,13 @@ namespace KerbalKonstructs.Core
             {
                 case (int)HeightReference.Sphere:
                     pqsCity.repositionToSphereSurface = false; //Snap to surface?
+
                     break;
                 case (int)HeightReference.TerrainHeight:
+
                     pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                    pqsCity.repositionToSphereSurfaceAddHeight = true;
+                    pqsCity.repositionToSphere = false;
                     break;
                 default:
 
@@ -218,18 +234,17 @@ namespace KerbalKonstructs.Core
                     {
                         pqsCity.repositionToSphereSurface = false; //Snap to surface?
                         IsRelativeToTerrain = (int)HeightReference.Sphere;
+
                     }
                     else
                     {
-                        if (false) 
                         {
-
-
-                        } else
-                        {
+                            Log.Normal("found new Radiusffset: " + heightAboveTerrain);
                             RadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
+                            pqsCity.repositionToSphereSurfaceAddHeight = true;
                             pqsCity.repositionRadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphere = false;
 
                             IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
                         }

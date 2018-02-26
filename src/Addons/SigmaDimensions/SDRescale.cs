@@ -55,8 +55,9 @@ namespace KerbalKonstructs.Core
             if (!rescalesSet)
             {
                 SetTerrainRescales();
+                rescalesSet = true;
             }
-            double currentTerrainHeight = instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition);
+            double currentTerrainHeight = (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.pqsController.radius);
             double origTerrainHeight = currentTerrainHeight / globalTerrainRescale;
 
             return (float)(instance.RadiusOffset - origTerrainHeight);
