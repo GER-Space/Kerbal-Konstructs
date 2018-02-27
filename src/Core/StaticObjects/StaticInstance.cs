@@ -14,7 +14,7 @@ namespace KerbalKonstructs.Core
     {
         Unset = 0,
         Sphere = 1 ,
-        TerrainHeight = 2
+        Terrain = 2
     }
 
 
@@ -78,6 +78,17 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal HeightReference heighReference
+        {
+            get
+            {
+                return (HeightReference)IsRelativeToTerrain;
+            }
+            set
+            {
+                IsRelativeToTerrain = (int)value;
+            }
+        }
 
 
         public bool hasLauchSites = false;
@@ -114,6 +125,21 @@ namespace KerbalKonstructs.Core
                 pqsCity.reorientInitialUp = Orientation;
                 pqsCity.reorientFinalAngle = RotationAngle;
                 pqsCity.transform.localScale = origScale * ModelScale;
+
+                switch (heighReference)
+                {
+                    case HeightReference.Sphere:
+                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
+                        pqsCity.repositionToSphereSurfaceAddHeight = false;
+                        pqsCity.repositionToSphere = true;
+                        break;
+                    case HeightReference.Terrain:
+                        pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                        pqsCity.repositionToSphereSurfaceAddHeight = true;
+                        pqsCity.repositionToSphere = false;
+                        break;
+                }
+
                 pqsCity.Orientate();
             }
             // Notify modules about update
@@ -154,7 +180,6 @@ namespace KerbalKonstructs.Core
             return fDistance;
         }
 
-
         /// <summary>
         /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
         /// </summary>
@@ -176,15 +201,18 @@ namespace KerbalKonstructs.Core
 
             InstanceUtil.SetLayerRecursively(this, 15);
 
-            if (bPreview) this.ToggleAllColliders(false);
+            if (bPreview)
+                this.ToggleAllColliders(false);
 
             this.preview = bPreview;
 
-            if (editing) KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+            if (editing)
+                KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
 
             float objvisibleRange = VisibilityRange;
 
-            if (objvisibleRange < 1) objvisibleRange = 25000f;
+            if (objvisibleRange < 1)
+                objvisibleRange = 25000f;
 
             PQSCity.LODRange range = new PQSCity.LODRange
             {
@@ -208,56 +236,50 @@ namespace KerbalKonstructs.Core
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
- 
-
-            //switch (IsRelativeToTerrain)
-            //{
-            //    case (int)HeightReference.Sphere:
-            //        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-
-            //        break;
-            //    case (int)HeightReference.TerrainHeight:
-
-            //        pqsCity.repositionToSphereSurface = true; //Snap to surface?
-            //        pqsCity.repositionToSphereSurfaceAddHeight = true;
-            //        pqsCity.repositionToSphere = false;
-            //        break;
-            //    default:
-            //        // we try to descide which one is the best to take
-            //        string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
-            //        float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
-
-            //        if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
-            //        {
-            //            Log.Normal("Found a swimming object: " + this.gameObject.name);
-            //            pqsCity.repositionToSphereSurface = false; //Snap to surface?
-            //            IsRelativeToTerrain = (int)HeightReference.Sphere;
-
-            //        }
-            //        else
-            //        {
-            //            {
-            //            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
-            //                RadiusOffset = heightAboveTerrain;
-            //                pqsCity.repositionToSphereSurface = true; //Snap to surface?#
-            //                pqsCity.repositionToSphereSurfaceAddHeight = true;
-            //                pqsCity.repositionRadiusOffset = heightAboveTerrain;
-            //                pqsCity.repositionToSphere = false;
-
-            //                IsRelativeToTerrain = (int)HeightReference.TerrainHeight;
-            //            }
-            //        }
-            //        break;
-            //}
 
 
-            //pqsCity.repositionToSphereSurface = false; //Snap to surface?
-            //CelestialBody.pqsController.GetSurfaceHeight(RadialPosition);
+            switch (heighReference)
+            {
+                case HeightReference.Sphere:
+                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
+
+                    break;
+                case HeightReference.Terrain:
+
+                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                    pqsCity.repositionToSphereSurfaceAddHeight = true;
+                    pqsCity.repositionToSphere = false;
+                    break;
+                default:
+                    // we try to descide which one is the best to take
+                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
+                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
+
+                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
+                    {
+                        Log.Normal("Found a swimming object: " + this.gameObject.name);
+                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
+                        heighReference = HeightReference.Sphere;
+                    }
+                    else
+                    {
+                        {
+                            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
+                            RadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
+                            pqsCity.repositionToSphereSurfaceAddHeight = true;
+                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphere = false;
+
+                            heighReference = HeightReference.Terrain;
+                        }
+                    }
+                    break;
+            }
+
 
             pqsCity.OnSetup();
             pqsCity.Orientate();
-
-
 
 
             //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();

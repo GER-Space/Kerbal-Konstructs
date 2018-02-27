@@ -44,11 +44,6 @@ namespace KerbalKonstructs
 
         #endregion
 
-        #region Switches
-
-        internal bool bDisablePositionEditing = false;
-        #endregion
-
 
         #region Configurable Variables    
         internal bool enableRT

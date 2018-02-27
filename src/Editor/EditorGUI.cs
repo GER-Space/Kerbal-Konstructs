@@ -40,8 +40,7 @@ namespace KerbalKonstructs.UI
         internal Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
         internal Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
         internal Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        internal Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        internal Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
+
 
         #endregion
 
@@ -61,27 +60,10 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 330, 695);
+        internal Rect toolRect = new Rect(300, 35, 330, 718);
 
         #endregion
 
-        #region GUI elements
-        // GUI elements
-        internal GUIStyle listStyle = new GUIStyle();
-        internal GUIStyle navStyle = new GUIStyle();
-
-        internal GUIStyle DeadButton;
-        internal GUIStyle DeadButtonRed;
-        internal GUIStyle KKWindows;
-        internal GUIStyle BoxNoBorder;
-
-        internal GUIContent[] siteTypeOptions = {
-                                            new GUIContent("VAB"),
-                                            new GUIContent("SPH"),
-                                            new GUIContent("ANY")
-                                        };
-        // ComboBox siteTypeMenu;
-        #endregion
 
         #region Holders
         // Holders
@@ -111,9 +93,6 @@ namespace KerbalKonstructs.UI
 
         private static Vector3d position = Vector3d.zero;
         private Vector3d savedReferenceVector = Vector3d.zero;
-
-
-        private bool guiInitialized = false;
 
         #endregion
 
@@ -147,27 +126,6 @@ namespace KerbalKonstructs.UI
             base.Close();
         }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public EditorGUI()
-        {
-            listStyle.normal.textColor = Color.white;
-            listStyle.onHover.background =
-            listStyle.hover.background = new Texture2D(2, 2);
-            listStyle.padding.left =
-            listStyle.padding.right =
-            listStyle.padding.top =
-            listStyle.padding.bottom = 4;
-
-            navStyle.padding.left = 0;
-            navStyle.padding.right = 0;
-            navStyle.padding.top = 1;
-            navStyle.padding.bottom = 3;
-
-            // siteTypeMenu = new ComboBox(siteTypeOptions[0], siteTypeOptions, "button", "box", null, listStyle);
-        }
-
         #region draw Methods
 
         /// <summary>
@@ -176,11 +134,6 @@ namespace KerbalKonstructs.UI
         /// <param name="obj"></param>
         public void drawEditor(StaticInstance obj)
         {
-            if (!guiInitialized)
-            {
-                InitializeLayout();
-                guiInitialized = true;
-            }
             if (obj == null)
             {
                 return;
@@ -209,51 +162,11 @@ namespace KerbalKonstructs.UI
                 doneFold = false;
             }
 
-            toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", KKWindows);
-
-            //if (editingLaunchSite)
-            //{
-            //    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
-            //}
+            toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
 
         }
 
         #endregion
-
-        private void InitializeLayout()
-        {
-            KKWindows = new GUIStyle(GUI.skin.window);
-            KKWindows.padding = new RectOffset(8, 8, 3, 3);
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-        }
-
 
         #region Editors
 
@@ -271,17 +184,17 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("-KK-", UIMain.DeadButton, GUILayout.Height(21));
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Button("Instance Editor", DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Instance Editor", UIMain.DeadButton, GUILayout.Height(21));
 
                 GUILayout.FlexibleSpace();
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
+                if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
                     //KerbalKonstructs.instance.saveObjects();
                     KerbalKonstructs.instance.deselectObject(true, true);
@@ -290,7 +203,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
@@ -301,16 +214,12 @@ namespace KerbalKonstructs.UI
 
             if (GUILayout.Button(tFolded, GUILayout.Height(23), GUILayout.Width(23)))
             {
-                if (foldedIn) foldedIn = false;
-                else
-                    foldedIn = true;
+                    foldedIn = !foldedIn;
             }
 
             GUILayout.Button(selectedObject.model.title + " ("+ selectedObject.indexInGroup.ToString() + ")", GUILayout.Height(23));
 
             GUILayout.EndHorizontal();
-
-            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
             GUILayout.BeginHorizontal();
             {
@@ -422,14 +331,14 @@ namespace KerbalKonstructs.UI
             GUILayout.FlexibleSpace();
             GUI.enabled = (referenceSystem == Space.World);
 
-            if (GUILayout.Button(new GUIContent(textureCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
+            if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
             {
                 referenceSystem = Space.Self;
                 UpdateVectors();
             }
 
             GUI.enabled = (referenceSystem == Space.Self);
-            if (GUILayout.Button(new GUIContent(textureWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
+            if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
             {
                 referenceSystem = Space.World;
                 UpdateVectors();
@@ -534,7 +443,35 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
             }
 
-            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
+
+            //
+            // Set reference butons
+            //
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Altitude Reference: ");
+            GUILayout.Label(selectedObject.heighReference.ToString(), UIMain.LabelWhite);
+            GUILayout.FlexibleSpace();
+            GUI.enabled = (selectedObject.heighReference != HeightReference.Terrain );
+
+            if (GUILayout.Button(new GUIContent(UIMain.iconTerrain, "Terrain"), GUILayout.Height(23), GUILayout.Width(23)))
+            {
+                selectedObject.heighReference = HeightReference.Terrain;
+                selectedObject.RadiusOffset = (float)(selectedObject.RadiusOffset - (selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition) - selectedObject.CelestialBody.pqsController.radius));
+
+                ApplySettings();
+            }
+
+            GUI.enabled = (selectedObject.heighReference != HeightReference.Sphere);
+            if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "Sphere"), GUILayout.Height(23), GUILayout.Width(23)))
+            {
+                selectedObject.heighReference = HeightReference.Sphere;
+                selectedObject.RadiusOffset = (float)selectedObject.CelestialBody.GetAltitude(selectedObject.gameObject.transform.position);
+
+                ApplySettings();
+            }
+            GUI.enabled = true;
+
+            GUILayout.EndHorizontal();
 
             // 
             // Altitude editing
@@ -571,7 +508,6 @@ namespace KerbalKonstructs.UI
             if (!foldedIn)
                 GUILayout.Space(5);
 
-            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
             fTempWidth = 80f;
 
@@ -609,15 +545,13 @@ namespace KerbalKonstructs.UI
                 GUILayout.Space(5);
             }
 
-            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
-
             if (!foldedIn)
             {
                 //
                 // Orientation quick preset
                 //
                 GUILayout.Space(1);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
                 GUILayout.Space(2);
                 GUILayout.BeginHorizontal();
                 {
@@ -723,7 +657,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.EndHorizontal();
 
                 GUILayout.Space(1);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+                GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
                 GUILayout.Space(2);
                 //
                 // Scale
@@ -786,7 +720,6 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
 
-            GUI.enabled = !KerbalKonstructs.instance.bDisablePositionEditing;
 
             if (!foldedIn)
             {
@@ -911,7 +844,7 @@ namespace KerbalKonstructs.UI
 
 
             GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
@@ -1271,6 +1204,12 @@ namespace KerbalKonstructs.UI
         /// <param name="direction"></param>
         internal void SetTransform(Vector3 direction)
         {
+            float oldTerrainHeight = 0f;
+            float newTerrainHeight = 0f;
+            if (selectedObject.heighReference == HeightReference.Terrain)
+            {
+                oldTerrainHeight = (float)(selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition));
+            }
             // adjust transform for scaled models
             direction = direction / selectedObject.ModelScale;
             direction = selectedObject.gameObject.transform.TransformVector(direction);
@@ -1278,8 +1217,14 @@ namespace KerbalKonstructs.UI
             double eastInc = Vector3d.Dot(eastVector, direction);
             double upInc = Vector3d.Dot(upVector, direction);
 
-            selectedObject.RadiusOffset += (float)upInc;
             Setlatlng(northInc, eastInc);
+
+            if (selectedObject.heighReference == HeightReference.Terrain)
+            {
+                newTerrainHeight = (float)(selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition));
+            }
+
+            selectedObject.RadiusOffset += (float)upInc + (oldTerrainHeight - newTerrainHeight);
         }
 
 

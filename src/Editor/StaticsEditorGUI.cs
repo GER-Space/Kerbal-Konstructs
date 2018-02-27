@@ -470,7 +470,6 @@ namespace KerbalKonstructs.UI
                             {
                                 EditorGUI.CloseEditors();
                                 KerbalKonstructs.instance.DeletePreviewObject();
-                                KerbalKonstructs.instance.bDisablePositionEditing = false;
                                 SpawnInstance(allStaticModels[idx]);
                                 smessage = "Spawned " + allStaticModels[idx].title;
                                 MiscUtils.HUDMessage(smessage, 10, 2);
@@ -561,7 +560,6 @@ namespace KerbalKonstructs.UI
                             //GUI.enabled = (obj != selectedObject);
                             if (GUILayout.Button(new GUIContent("" + allStaticInstances[ix].model.title + " ( " + allStaticInstances[ix].indexInGroup.ToString() + " )", "Edit this instance."), GUILayout.Height(23)))
                             {
-                                KerbalKonstructs.instance.bDisablePositionEditing = false;
                                 enableColliders = true;
                                 EditorGUI.CloseEditors();
 
