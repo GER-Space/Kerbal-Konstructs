@@ -313,6 +313,20 @@ namespace KerbalKonstructs
 
             if (data.Equals(GameScenes.SPACECENTER))
             {
+
+
+                foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>().Where(x => x.gameObject.name == "KSC"))
+                {
+                    Log.Normal("Cam   : " + pqs.gameObject.GetComponentsInChildren<Camera>(true).Count());
+                    foreach (var cam in pqs.gameObject.GetComponentsInChildren<Camera>(true))
+                    {
+                        Log.Normal("Cam: " + cam.name);
+                    }
+
+                    Log.Normal("SCCam : " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera>(true).Count());
+                    Log.Normal("SCCam2: " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera2>(true).Count());
+                }
+
                 InputLockManager.RemoveControlLock("KKEditorLock");
 
                 // Tighter control over what statics are active
