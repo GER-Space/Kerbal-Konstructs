@@ -9,7 +9,7 @@ namespace KerbalKonstructs.Core
 {
     class StaticGroup
     {
-        public String groupName;
+        public String name;
         public String bodyName;
 
         private List<StaticInstance> _groupInstances = new List<StaticInstance>();
@@ -23,7 +23,7 @@ namespace KerbalKonstructs.Core
 
 		public StaticGroup(String name, String body)
 		{
-			groupName = name;
+			this.name = name;
 			bodyName = body;
 			centerPoint = Vector3.zero;
 			visibilityRange = 0f; 
@@ -96,7 +96,7 @@ namespace KerbalKonstructs.Core
         /// <param name="playerPos"></param>
 		public void CheckUngrouped(Vector3 playerPos)
 		{
-
+            //Log.Normal("Check ungrouped assets");
             foreach (StaticInstance instance in groupInstances)
 			{
                 float dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
@@ -169,10 +169,16 @@ namespace KerbalKonstructs.Core
         /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating) and through StaticDatabase.UpdateCache
         /// </summary>
         /// <param name="playerPos"></param>
-        public void ActivateGroupMembers(Vector3 playerPos)
+        public void ActivateGroupMembers()
         {
+            if (isActive)
+            {
+                return;
+            }
+
             isActive = true;
-            float dist = Vector3.Distance(groupCenter.gameObject.transform.position, playerPos);
+
+            Log.Normal("Activate calles for group: " + name);
 
             foreach (StaticInstance instance in groupInstances)
             {
@@ -198,15 +204,6 @@ namespace KerbalKonstructs.Core
                     LandingGuideUI.instance.drawTouchDownGuideR(instance);
                 }
 
-                if (sFacType == "CityLights")
-                {
-                    if (dist < 65000f)
-                    {
-                        InstanceUtil.SetActiveRecursively(instance, false);
-                        return;
-                    }
-                }
-
                 InstanceUtil.SetActiveRecursively(instance, true);
             }
         }
@@ -216,6 +213,13 @@ namespace KerbalKonstructs.Core
         /// </summary>
         public void DeactivateGroupMembers()
         {
+            if (!isActive)
+            {
+                return;
+            }
+
+            Log.Normal("Deactivate calles for group: " + name);
+
             isActive = false;
             foreach (StaticInstance instance in groupInstances)
             {

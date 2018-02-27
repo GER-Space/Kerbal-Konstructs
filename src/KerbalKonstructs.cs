@@ -292,7 +292,7 @@ namespace KerbalKonstructs
 
                 if (FlightGlobals.ActiveVessel != null)
                 {
-                    StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
+                    //StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
                     currentBody = FlightGlobals.ActiveVessel.mainBody;
                     StaticDatabase.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
                     updateCache();
@@ -352,9 +352,8 @@ namespace KerbalKonstructs
 
         void onDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
         {
-            StaticDatabase.ToggleActiveStaticsOnPlanet(data.to, true, true);
-            currentBody = data.to;
             StaticDatabase.OnBodyChanged(data.to);
+            currentBody = data.to;
             updateCache();
         }
 
@@ -1325,7 +1324,7 @@ namespace KerbalKonstructs
 
                 foreach (StaticGroup group in groupList[activeBodyName].Values)
                 {
-                    sBase = group.groupName;
+                    sBase = group.name;
                     Debug.Log("sBase is " + sBase);
 
                     foreach (StaticModel model in StaticDatabase.allStaticModels)

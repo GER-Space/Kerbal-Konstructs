@@ -10,6 +10,7 @@ namespace KerbalKonstructs.Core
 	{
 		//Groups are stored by name within the body name
 		private static Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
+
         private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
 
         internal static List<StaticModel> allStaticModels = new List<StaticModel>();
@@ -135,15 +136,25 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// toggles the visiblility for all Instances at once
         /// </summary>
-        /// <param name="bActive"></param>
-        internal static void ToggleActiveAllStatics(bool bActive = true)
+        /// <param name="active"></param>
+        internal static void ToggleActiveAllStatics(bool activate)
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-			foreach (StaticInstance obj in allStaticInstances)
-			{
-				InstanceUtil.SetActiveRecursively(obj, bActive);
-			}
+            foreach (var groupList in groupList.Values)
+            {
+                foreach (StaticGroup group in groupList.Values)
+                {
+                    if (activate)
+                    {
+                        group.ActivateGroupMembers();
+                    }
+                    else
+                    {
+                        group.DeactivateGroupMembers();
+                    }
+                }
+            }
 		}
 
         /// <summary>
@@ -192,7 +203,10 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-        internal static void CacheAll()
+        /// <summary>
+        /// Disables all Statics on the current active planet
+        /// </summary>
+        internal static void DeactivateAllOnPlanet()
 		{
 			if (activeBodyName == "")
 			{
@@ -203,11 +217,9 @@ namespace KerbalKonstructs.Core
 
 			if (groupList.ContainsKey(activeBodyName))
 			{
-                Log.Debug("StaticDatabase.cacheAll(): groupList containsKey " + activeBodyName);
-
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-                    Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
+                    Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.name);
 
                     if (group.isActive)
                     {
@@ -215,23 +227,20 @@ namespace KerbalKonstructs.Core
                     }
 				}
 			}
-			else
-			{
-                Log.Debug("StaticDatabase.cacheAll(): groupList DOES NOT containsKey " + activeBodyName);
-			}
 		}
 
-        internal static void LoadObjectsForBody(String bodyName)
-		{
-			activeBodyName = bodyName;
-		}
 
+
+        /// <summary>
+        /// Handles on what to do when a body changes
+        /// </summary>
+        /// <param name="body"></param>
         internal static void OnBodyChanged(CelestialBody body)
 		{
-			if (body != null)
+            DeactivateAllOnPlanet();
+            if (body != null)
 			{
-
-				if (body.bodyName != activeBodyName)
+                if (body.bodyName != activeBodyName)
 				{
 					activeBodyName = body.bodyName;
 				}
@@ -239,7 +248,6 @@ namespace KerbalKonstructs.Core
 			else
 			{
                 Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
-				CacheAll();
 				activeBodyName = "";
 			}
 		}
@@ -272,22 +280,23 @@ namespace KerbalKonstructs.Core
 			{
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-                    if (group.groupName == "Ungrouped")
+                    if (group.name == "Ungrouped")
                     {
                         group.CheckUngrouped(vPlayerPos);
                     }
                     else
                     {
+                        //Log.Normal("Checking Group: " + group.name  ); 
                         var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
-                        bool groupIsClose = dist < group.visibilityRange;
-                        Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.groupName);
+                        bool isClose = (dist < group.visibilityRange);
+                        Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
 
-                        if (group.isActive == false || groupIsClose == true)
+                        if (group.isActive == false && isClose == true)
                         {
-                            group.ActivateGroupMembers(vPlayerPos);
+                            group.ActivateGroupMembers();
                         }
 
-                        if (group.isActive == true || groupIsClose == false)
+                        if (group.isActive == true && isClose == false)
                         {
                             group.DeactivateGroupMembers();
                         }
