@@ -7,17 +7,19 @@ using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
-	class StaticGroup
-	{
-		public String groupName;
-		public String bodyName;
+    class StaticGroup
+    {
+        public String groupName;
+        public String bodyName;
 
-		public List<StaticInstance> groupInstances = new List<StaticInstance>();
-		public Vector3 centerPoint = Vector3.zero;
+        private List<StaticInstance> _groupInstances = new List<StaticInstance>();
+        public StaticInstance[]  groupInstances = new StaticInstance[]{};
+
+        internal StaticInstance groupCenter = null;
+
+        public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
-		public Boolean alwaysActive = false;
-		public Boolean active = false;
-		public Boolean bLiveUpdate = false;
+        public bool isActive = false;
 
 		public StaticGroup(String name, String body)
 		{
@@ -29,15 +31,18 @@ namespace KerbalKonstructs.Core
 
 		public void AddStatic(StaticInstance obj)
 		{
-			groupInstances.Add(obj);
-			UpdateCacheSettings();
+			_groupInstances.Add(obj);
+            groupInstances = _groupInstances.ToArray();
+            UpdateCacheSettings();
 		}
 
 		public void RemoveStatic(StaticInstance obj)
 		{
-			groupInstances.Remove(obj);
-			UpdateCacheSettings();
+			_groupInstances.Remove(obj);
+            groupInstances = _groupInstances.ToArray();
+            UpdateCacheSettings();
 		}
+
 
         public void UpdateCacheSettings()
         {
@@ -50,14 +55,13 @@ namespace KerbalKonstructs.Core
 
 
             // FIRST ONE IS THE CENTER
+            groupCenter = groupInstances[0];
             centerPoint = groupInstances[0].gameObject.transform.position;
             vRadPos = (Vector3)groupInstances[0].RadialPosition;
             groupInstances[0].GroupCenter = "true";
             soCenter = groupInstances[0];
 
-
-
-            for (int i = 0; i < groupInstances.Count; i++)
+            for (int i = 0; i < groupInstances.Length; i++)
             {
 
                 if (groupInstances[i] != soCenter) groupInstances[i].GroupCenter = "false";
@@ -68,72 +72,77 @@ namespace KerbalKonstructs.Core
                 float dist = Vector3.Distance(centerPoint, groupInstances[i].gameObject.transform.position);
 
                 if (dist > furthestDist)
+                {
                     furthestDist = dist;
+                }
             }
 
-            visibilityRange = highestVisibility + (furthestDist * 2);
+            VesselRanges.Situation unloadRange = PhysicsGlobals.Instance.VesselRangesDefault.flying;
+            visibilityRange = Math.Max(unloadRange.unload,highestVisibility) + (furthestDist * 2);
         }
 
-		public static void SetActiveRecursively(GameObject rootObject, bool active)
-		{
-            rootObject.SetActive(active);
-            var transforms = rootObject.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < transforms.Length; i++)
-            {
-                transforms[i].gameObject.SetActive(active);
-            }
-        }
 
-		public void CacheAll()
+		public void Deactivate()
 		{
-            for (int i = 0; i < groupInstances.Count; i++)
+            for (int i = 0; i < groupInstances.Length; i++)
             {
                 InstanceUtil.SetActiveRecursively(groupInstances[i], false);
 			}
 		}
 
         /// <summary>
-        /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating)
+        /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating) and through StaticDatabase.UpdateCache
         /// </summary>
         /// <param name="playerPos"></param>
-		public void UpdateCache(Vector3 playerPos)
+		public void CheckUngrouped(Vector3 playerPos)
 		{
-            float dist = 0f;
-            bool visible = false;
-
 
             foreach (StaticInstance instance in groupInstances)
 			{
-				dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
-				visible = (dist < instance.VisibilityRange);
-
-				string sFacType = instance.FacilityType;
+                float dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
+                bool visible = (dist < visibilityRange);
+                string sFacType = instance.FacilityType;
 
 				if (sFacType == "Hangar")
 				{
-					if (visible) HangarGUI.CacheHangaredCraft(instance);
-				}
+                        HangarGUI.CacheHangaredCraft(instance);
+                }
 
 				if (sFacType == "LandingGuide")
 				{
-					if (visible) LandingGuideUI.instance.drawLandingGuide(instance);
-					else
+					if (visible)
+                    {
+                        LandingGuideUI.instance.drawLandingGuide(instance);
+                    }
+                    else
+                    {
                         LandingGuideUI.instance.drawLandingGuide(null);
-				}
+                    }
+                }
 
 				if (sFacType == "TouchdownGuideL")
 				{
-					if (visible) LandingGuideUI.instance.drawTouchDownGuideL(instance);
-					else
+					if (visible)
+                    {
+                        LandingGuideUI.instance.drawTouchDownGuideL(instance);
+                    }
+                    else
+                    {
                         LandingGuideUI.instance.drawTouchDownGuideL(null);
-				}
+                    }
+                }
 
 				if (sFacType == "TouchdownGuideR")
 				{
-					if (visible) LandingGuideUI.instance.drawTouchDownGuideR(instance);
-					else
+					if (visible)
+                    {
+                        LandingGuideUI.instance.drawTouchDownGuideR(instance);
+                    }
+                    else
+                    {
                         LandingGuideUI.instance.drawTouchDownGuideR(null);
-				}
+                    }
+                }
 
 				if (sFacType == "CityLights")
 				{
@@ -145,34 +154,106 @@ namespace KerbalKonstructs.Core
 				}
 			
 				if (visible)
+                {
                     InstanceUtil.SetActiveRecursively(instance, true);
-				else
+                }
+                else
+                {
                     InstanceUtil.SetActiveRecursively(instance, false);
-			}
+                }
+            }
 		}
 
 
-		public Vector3 getCenter()
-		{
-			return centerPoint;
-		}
+        /// <summary>
+        /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating) and through StaticDatabase.UpdateCache
+        /// </summary>
+        /// <param name="playerPos"></param>
+        public void ActivateGroupMembers(Vector3 playerPos)
+        {
+            isActive = true;
+            float dist = Vector3.Distance(groupCenter.gameObject.transform.position, playerPos);
 
-		public float getVisibilityRange()
-		{
-			return visibilityRange;
-		}
+            foreach (StaticInstance instance in groupInstances)
+            {
+                string sFacType = instance.FacilityType;
 
-		public String getGroupName()
-		{
-			return groupName;
-		}
+                if (sFacType == "Hangar")
+                {
+                    HangarGUI.CacheHangaredCraft(instance);
+                }
 
-		internal void DeleteObject(StaticInstance obj)
+                if (sFacType == "LandingGuide")
+                {
+                    LandingGuideUI.instance.drawLandingGuide(instance);
+                }
+
+                if (sFacType == "TouchdownGuideL")
+                {
+                    LandingGuideUI.instance.drawTouchDownGuideL(instance);
+                }
+
+                if (sFacType == "TouchdownGuideR")
+                {
+                    LandingGuideUI.instance.drawTouchDownGuideR(instance);
+                }
+
+                if (sFacType == "CityLights")
+                {
+                    if (dist < 65000f)
+                    {
+                        InstanceUtil.SetActiveRecursively(instance, false);
+                        return;
+                    }
+                }
+
+                InstanceUtil.SetActiveRecursively(instance, true);
+            }
+        }
+
+        /// <summary>
+        /// Deactivates the Statics of an Group
+        /// </summary>
+        public void DeactivateGroupMembers()
+        {
+            isActive = false;
+            foreach (StaticInstance instance in groupInstances)
+            {
+                string sFacType = instance.FacilityType;
+
+                if (sFacType == "Hangar")
+                {
+                    HangarGUI.CacheHangaredCraft(instance);
+                }
+
+                if (sFacType == "LandingGuide")
+                {
+                    LandingGuideUI.instance.drawLandingGuide(null);
+                }
+
+                if (sFacType == "TouchdownGuideL")
+                {
+                    LandingGuideUI.instance.drawTouchDownGuideL(null);
+                }
+
+                if (sFacType == "TouchdownGuideR")
+                {
+                    LandingGuideUI.instance.drawTouchDownGuideR(null);
+                }
+
+                InstanceUtil.SetActiveRecursively(instance, false);
+            }
+        }
+
+
+        internal void DeleteObject(StaticInstance obj)
 		{
-			if (groupInstances.Contains(obj))
+			if (_groupInstances.Contains(obj))
 			{
-				groupInstances.Remove(obj);
-				MonoBehaviour.Destroy(obj.gameObject);
+				_groupInstances.Remove(obj);
+                groupInstances = _groupInstances.ToArray();
+
+                MonoBehaviour.Destroy(obj.gameObject);
 			}
 			else
 			{
@@ -180,9 +261,9 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public List<StaticInstance> GetStatics()
+		public StaticInstance [] GetStatics()
 		{
-			return groupInstances;
+			 return groupInstances;
 		}
 	}
 }

@@ -74,7 +74,7 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="textureName"></param>
         /// <returns></returns>
-        internal static Texture2D GetTexture(string textureName)
+        internal static Texture2D GetTexture(string textureName, bool asNormal = false)
         {
             Texture2D foundTexture = null;
             if (textureName.StartsWith("BUILTIN:"))
@@ -92,7 +92,7 @@ namespace KerbalKonstructs
                 if (GameDatabase.Instance.ExistsTexture(textureName))
                 {
                     // Get the texture URL
-                    foundTexture = GameDatabase.Instance.GetTexture(textureName, false);
+                    foundTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
                 }
             }
             return foundTexture;

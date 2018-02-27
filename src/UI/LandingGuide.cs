@@ -69,66 +69,57 @@ namespace KerbalKonstructs.UI
 
         public void drawTouchDownGuideL(StaticInstance obj)
         {
-            if (!IsOpen()) { return; }
             if (obj == null)
             {
                 vTDL = Vector3.zero;
+                soTDL = null;
                 return;
             }
-
-            vesCraft = FlightGlobals.ActiveVessel;
-            if (vesCraft == null) return;
-
-            vTDL = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
             soTDL = obj;
         }
 
         public void drawTouchDownGuideR(StaticInstance obj)
         {
-            if (!IsOpen()) { return; }
             if (obj == null)
             {
                 vTDR = Vector3.zero;
+                soTDR = null;
                 return;
             }
-
-            vesCraft = FlightGlobals.ActiveVessel;
-            if (vesCraft == null) return;
-
-            vTDR = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
-            soTDR = obj;
+            soTDR = obj;            
         }
 
-        public void drawLandingGuide(StaticInstance obj)
+        public void drawLandingGuide(StaticInstance instance)
         {
-            if (!IsOpen()) { return; }
-            if (obj == null)
+            if (instance == null)
             {
                 vLineStart = Vector3.zero;
                 vLineEnd = Vector3.zero;
+                soLandingGuide = null;
                 return;
             }
-
-            vesCraft = FlightGlobals.ActiveVessel;
-            if (vesCraft == null) return;
-
-            Log.Debug("KK: drawLandingGuide");
-
-            vLineStart = Camera.main.WorldToScreenPoint(obj.gameObject.transform.position);
-            vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
-            soLandingGuide = obj;
+            soLandingGuide = instance;
         }
 
 
         void drawLandingGuides()
         {
-            Vessel vesCraft = FlightGlobals.ActiveVessel;
-            if (vesCraft == null) return;
-            if (soLandingGuide == null) return;
+            if (soLandingGuide == null || FlightGlobals.ActiveVessel == null || soTDL == null || soTDR == null)
+            {
+                return;
+            }
+
+
+            vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
+            vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
+
+            vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
+            vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
 
             Vector3 vlgPos = soLandingGuide.gameObject.transform.position;
-            Vector3 vcrPos = vesCraft.transform.position;
+            Vector3 vcrPos = FlightGlobals.ActiveVessel.transform.position;
             float fDist = Vector3.Distance(vlgPos, vcrPos);
+
 
             if (fDist > 15000) return;
             if (fDist < 3) return;

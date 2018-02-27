@@ -41,13 +41,7 @@ namespace KerbalKonstructs.Core
 
 			if (!groupList[bodyName].ContainsKey(groupName))
 			{
-				StaticGroup group = new StaticGroup(groupName, bodyName);
-				if (groupName == "Ungrouped")
-				{
-					group.alwaysActive = true;
-
-				}				
-				group.active = true;				
+				StaticGroup group = new StaticGroup(groupName, bodyName);			
 				groupList[bodyName].Add(groupName, group);
 			}
 			groupList[bodyName][groupName].AddStatic(instance);
@@ -108,12 +102,6 @@ namespace KerbalKonstructs.Core
             if (!groupList[bodyName].ContainsKey(newGroup))
             {
                 StaticGroup group = new StaticGroup(newGroup, bodyName);
-                if (newGroup == "Ungrouped")
-                {
-                    group.alwaysActive = true;
-
-                }
-                group.active = true;
                 groupList[bodyName].Add(newGroup, group);
             }
             groupList[bodyName][newGroup].AddStatic(instance);
@@ -170,12 +158,18 @@ namespace KerbalKonstructs.Core
 
 			foreach (StaticInstance instance in allStaticInstances)
 			{
-				if (instance.CelestialBody == cBody)
-					InstanceUtil.SetActiveRecursively(instance, bActive);
-				else
-					if (bOpposite)
-						InstanceUtil.SetActiveRecursively(instance, !bActive);
-			}
+                if (instance.CelestialBody == cBody)
+                {
+                    InstanceUtil.SetActiveRecursively(instance, bActive);
+                }
+                else
+                {
+                    if (bOpposite)
+                    {
+                        InstanceUtil.SetActiveRecursively(instance, !bActive);
+                    }
+                }
+            }
 		}
 
         /// <summary>
@@ -202,7 +196,7 @@ namespace KerbalKonstructs.Core
 		{
 			if (activeBodyName == "")
 			{
-                Log.Debug("StaticDatabase.cacheAll() skipped. No activeBodyName.");
+                Log.UserWarning("StaticDatabase.cacheAll() skipped. No activeBodyName.");
 				
 				return;
 			}
@@ -214,15 +208,11 @@ namespace KerbalKonstructs.Core
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
                     Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.groupName);
-					
-					if (group.active)
-						group.CacheAll();
 
-					if (!group.alwaysActive)
-					{
-						group.active = false;
-                        Log.Debug("StaticDatabase.cacheAll(): group is not always active. group.active is set false for " + group.groupName);
-					}
+                    if (group.isActive)
+                    {
+                        group.Deactivate();
+                    }
 				}
 			}
 			else
@@ -234,29 +224,15 @@ namespace KerbalKonstructs.Core
         internal static void LoadObjectsForBody(String bodyName)
 		{
 			activeBodyName = bodyName;
-
-			if (groupList.ContainsKey(bodyName))
-			{
-				foreach (KeyValuePair<String, StaticGroup> bodyGroups in groupList[bodyName])
-				{
-					bodyGroups.Value.active = true;
-				}
-			}
 		}
 
         internal static void OnBodyChanged(CelestialBody body)
 		{
 			if (body != null)
 			{
-                Log.Debug("StaticDatabase.onBodyChanged(): body is not null.");
 
 				if (body.bodyName != activeBodyName)
 				{
-                    Log.Debug("StaticDatabase.onBodyChanged(): bodyName is not activeBodyName. cacheAll(). Load objects for body. Set activeBodyName to body.");
-                    Log.Debug("bodyName " + body.bodyName + " activeBodyName " + activeBodyName);
-
-					CacheAll();
-					LoadObjectsForBody(body.bodyName);
 					activeBodyName = body.bodyName;
 				}
 			}
@@ -267,6 +243,8 @@ namespace KerbalKonstructs.Core
 				activeBodyName = "";
 			}
 		}
+
+
 
         internal static void UpdateCache(Vector3 playerPos)
 		{
@@ -280,74 +258,41 @@ namespace KerbalKonstructs.Core
                 //Log.Normal("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
 			}
 			else
-				vPlayerPos = playerPos;
+            {
+                vPlayerPos = playerPos;
+            }
 
-			if (vPlayerPos == Vector3.zero)
+            if (vPlayerPos == Vector3.zero)
 			{
-                    //Log.Warning("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+                    Log.UserError("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+                    return;
 			}
 			
 			if (groupList.ContainsKey(activeBodyName))
 			{
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-					if (!group.bLiveUpdate)
-					{
-                        //Log.Normal("StaticDatabase.updateCache(): live update (updateCacheSettings) of group " + group.groupName);
-						
-						group.UpdateCacheSettings();
-						group.bLiveUpdate = true;
-					}
-
-					if (!group.alwaysActive)
-					{
-						var center = group.centerPoint;
-						var dist = Vector3.Distance(center, vPlayerPos);
-
-						List<StaticInstance> groupchildObjects = group.groupInstances;
-
-						foreach (StaticInstance obj in groupchildObjects)
-						{
-							dist = Vector3.Distance(vPlayerPos, obj.gameObject.transform.position);
-                            Log.Debug("StaticDatabase.updateCache(): distance to first group object is " + dist.ToString() + " for " + group.groupName);
-
-							break;
-						}
-
-						if (center == Vector3.zero)
-						{
-                            Log.Debug("StaticDatabase.updateCache(): center of group is still v3.zero " + group.groupName);
-						}
-						
-						//if (KerbalKonstructs.instance.DebugMode)
-						//	Debug.Log("KK: StaticDatabase.updateCache(): dist is " + dist.ToString() + " to " + group.groupName);
-						
-						Boolean bGroupIsClose = dist < group.visibilityRange;
+                    if (group.groupName == "Ungrouped")
+                    {
+                        group.CheckUngrouped(vPlayerPos);
+                    }
+                    else
+                    {
+                        var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
+                        bool groupIsClose = dist < group.visibilityRange;
                         Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.groupName);
-						
-						if (!bGroupIsClose)
-						{
-                            Log.Debug("StaticDatabase.updateCache(): Group is not close. cacheAll()  " + group.groupName);
-							group.CacheAll();
-						}
-						
-						group.active = bGroupIsClose;
-					}
-					else
-					{
-						Log.Debug("StaticDatabase.updateCache(): Group is always active. Check if updateCache goes off. " + group.groupName);
-						group.active = true;
-					}
 
-					if (group.active)
-					{
-                        Log.Debug("StaticDatabase.updateCache(): Group is active. group.updateCache() " + group.groupName);
-						group.UpdateCache(vPlayerPos);
-					}
-					else
-					{
-                        Log.Debug("StaticDatabase.updateCache(): Group is not active " + group.groupName);
-					}
+                        if (group.isActive == false || groupIsClose == true)
+                        {
+                            group.ActivateGroupMembers(vPlayerPos);
+                        }
+
+                        if (group.isActive == true || groupIsClose == false)
+                        {
+                            group.DeactivateGroupMembers();
+                        }
+
+                    }
 				}
 			}
 

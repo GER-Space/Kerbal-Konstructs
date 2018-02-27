@@ -42,7 +42,8 @@ namespace KerbalKonstructs
                 {
                     if (texturemap.Name.Contains("_") && (texturemap.GetValue(this) != null))
                     {
-                        Texture2D newTexture = GameDatabase.Instance.GetTexture(((string)texturemap.GetValue(this)), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)));
+
+                        Texture2D newTexture = KKGraphics.GetTexture((string)texturemap.GetValue(this), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)));
                         renderer.material.SetTexture(texturemap.Name, newTexture);
                     }
                 }

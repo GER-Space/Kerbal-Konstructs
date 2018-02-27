@@ -273,7 +273,6 @@ namespace KerbalKonstructs
         /// <param name="data"></param>
         void OnLevelWasLoaded(GameScenes data)
         {
-            bool bTreatBodyAsNullForStatics = true;
             DeletePreviewObject();
 
             StaticDatabase.ToggleActiveAllStatics(false);
@@ -286,7 +285,6 @@ namespace KerbalKonstructs
 
             if (data.Equals(GameScenes.FLIGHT))
             {
-                bTreatBodyAsNullForStatics = false;
 
                 InputLockManager.RemoveControlLock("KKEditorLock");
                 InputLockManager.RemoveControlLock("KKEditorLock2");
@@ -297,6 +295,7 @@ namespace KerbalKonstructs
                     StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
                     currentBody = FlightGlobals.ActiveVessel.mainBody;
                     StaticDatabase.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+                    updateCache();
                     Hangar.DoHangaredCraftCheck();
                 }
                 else
@@ -317,12 +316,10 @@ namespace KerbalKonstructs
                 InputLockManager.RemoveControlLock("KKEditorLock");
 
                 // Tighter control over what statics are active
-                bTreatBodyAsNullForStatics = false;
                 currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                 Log.Normal("Homeworld is " + currentBody.name);
+                StaticDatabase.OnBodyChanged(currentBody);
                 updateCache();
-                // *********
-
             }
 
             if (data.Equals(GameScenes.MAINMENU))
@@ -330,7 +327,6 @@ namespace KerbalKonstructs
                 CareerState.ResetFacilitiesOpenState();
 
                 //atMainMenu = true;
-                bTreatBodyAsNullForStatics = false;
                 // reset this for the next Newgame
                 if (InitialisedFacilities)
                 {
@@ -350,11 +346,6 @@ namespace KerbalKonstructs
                     currentSite = LaunchSiteManager.GetDefaultSite();
                 }
                 LaunchSiteManager.setLaunchSite(currentSite);
-            }
-
-            if (bTreatBodyAsNullForStatics)
-            {
-                StaticDatabase.OnBodyChanged(null);
             }
         }
 
