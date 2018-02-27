@@ -105,7 +105,7 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Updates the static instance with new settings
         /// </summary>
-        public void update()
+        public void Update()
         {
             if (pqsCity != null)
             {
@@ -339,7 +339,7 @@ namespace KerbalKonstructs.Core
             this.HighlightObject(highlightColor);
         }
 
-        internal void SaveInstance()
+        internal void SaveConfig()
         {
             ConfigParser.SaveInstanceByCfg(configPath);
         }

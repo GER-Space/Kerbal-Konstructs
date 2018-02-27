@@ -172,8 +172,7 @@ namespace KerbalKonstructs.UI
                 }
                 GUILayout.EndScrollView();
             }
-            // Update Instacne editor window button
-            EditorGUI.facType = facType;
+
             if (selectedObject.FacilityType != facType)
             {
                 ChangeFacility();
@@ -237,7 +236,7 @@ namespace KerbalKonstructs.UI
                     MiscUtils.HUDMessage("Applied changes to object.", 10, 2);
                     updateSettings();
                     updateSelection();
-                    selectedObject.SaveInstance();
+                    selectedObject.SaveConfig();
                     this.Close();
                 }
                 GUILayout.FlexibleSpace();

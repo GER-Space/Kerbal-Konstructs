@@ -438,10 +438,10 @@ namespace KerbalKonstructs.UI
 
             if (addToDB)
             {
-                selectedObject.SaveInstance();
+                selectedObject.SaveConfig();
                 LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
             }
-            selectedObject.SaveInstance();
+            selectedObject.SaveConfig();
 
         }
 

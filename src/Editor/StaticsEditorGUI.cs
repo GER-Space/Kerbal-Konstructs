@@ -875,7 +875,7 @@ namespace KerbalKonstructs.UI
         /// <param name="model"></param>
 		internal void SpawnInstance(StaticModel model)
         {
-            EditorGUI.instance.spawnInstance(model,
+            EditorGUI.instance.SpawnInstance(model,
                 (float)FlightGlobals.ActiveVessel.altitude,
                 KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
                 0f);

@@ -585,7 +585,7 @@ namespace KerbalKonstructs.UI
             float fRot = ((soObject.RotationAngle + 0.1f) % 360);
 
             soObject.RotationAngle = fRot;
-            soObject.update();
+            soObject.Update();
         }
     }
 }

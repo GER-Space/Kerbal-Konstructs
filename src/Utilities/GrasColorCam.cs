@@ -91,9 +91,11 @@ namespace KerbalKonstructs.Core
             {
                 initializeCamera();
             }
-            cameraObject.transform.position = instance.gameObject.transform.position;
+            //cameraObject.transform.position = instance.gameObject.transform.position;
+            // set the position 3 meters above the ground
+            cameraObject.transform.position = instance.CelestialBody.GetWorldSurfacePosition(instance.RefLatitude, instance.RefLongitude, (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.pqsController.radius  + 3d));
             cameraObject.transform.LookAt(instance.CelestialBody.transform.position);
-            cameraObject.transform.Translate(0, 0, -10f);//translate negative z, as it is pointed at the ground this will leave it 10m above the ground at the vessels position, with the ground fully in the camera view box
+           // cameraObject.transform.Translate(0, 0, -10f);//translate negative z, as it is pointed at the ground this will leave it 10m above the ground at the vessels position, with the ground fully in the camera view box
         }
 
         /// <summary>

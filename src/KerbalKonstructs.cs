@@ -1277,7 +1277,7 @@ namespace KerbalKonstructs
                 else
                 {
                     // find all instances with the same configPath. 
-                    instance.SaveInstance();
+                    instance.SaveConfig();
                 }
 
                 processedInstances.Add(instance.configPath);
