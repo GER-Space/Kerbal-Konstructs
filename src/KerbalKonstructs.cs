@@ -321,10 +321,23 @@ namespace KerbalKonstructs
                     foreach (var cam in pqs.gameObject.GetComponentsInChildren<Camera>(true))
                     {
                         Log.Normal("Cam: " + cam.name);
+                        Log.Normal("Cam: " + cam.transform.parent.name);
+                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.name);
+                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.name);
+                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.name);
+                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.name);
+                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.name);
                     }
 
                     Log.Normal("SCCam : " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera>(true).Count());
                     Log.Normal("SCCam2: " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera2>(true).Count());
+                    foreach (var cam in pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera2>(true))
+                    {
+                        Log.Normal("Cam2: " + cam.name);
+                        Log.Normal("Cam2: " + cam.transform.parent.name);
+                        Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name);
+                        Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name);
+                    }
                 }
 
                 InputLockManager.RemoveControlLock("KKEditorLock");
@@ -529,7 +542,7 @@ namespace KerbalKonstructs
                     //{
                     //    playerPos = spaceCenterCam.transform.position;
                     //    //Log.Normal("updateCache using SpaceCenter Camera 2 as playerPos");
-                        
+
                     //} else
                     {
                         // we can always use the SpaceCenter position as our position
