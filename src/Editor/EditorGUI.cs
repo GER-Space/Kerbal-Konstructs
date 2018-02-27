@@ -1217,14 +1217,17 @@ namespace KerbalKonstructs.UI
             double eastInc = Vector3d.Dot(eastVector, direction);
             double upInc = Vector3d.Dot(upVector, direction);
 
-            Setlatlng(northInc, eastInc);
-
             if (selectedObject.heighReference == HeightReference.Terrain)
             {
                 newTerrainHeight = (float)(selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition));
             }
 
             selectedObject.RadiusOffset += (float)upInc + (oldTerrainHeight - newTerrainHeight);
+
+
+
+            Setlatlng(northInc, eastInc);
+
         }
 
 

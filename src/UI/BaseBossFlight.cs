@@ -140,14 +140,8 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Space(2);
-                GUILayout.Label("ATC ", LabelInfo);
-
-                if (LandingGuideUI.instance.IsOpen())
-                    tToggle = tIconOpen;
-                else
-                    tToggle = tIconClosed;
-
-                if (GUILayout.Button(tToggle, GUILayout.Height(18), GUILayout.Width(18)))
+                GUILayout.Label("Landing Guide ", LabelInfo);
+                if (GUILayout.Button(LandingGuideUI.instance.IsOpen()? tIconOpen : tIconClosed, GUILayout.Height(18), GUILayout.Width(56)))
                 {
                     KerbalKonstructs.instance.updateCache();
                     LandingGuideUI.instance.Toggle();

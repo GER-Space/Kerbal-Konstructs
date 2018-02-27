@@ -41,7 +41,7 @@ namespace KerbalKonstructs.UI
         private Texture tTGL = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownL", false);
         private Texture tTGR = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownR", false);
 
-        private Vessel vesCraft = null;
+ 
 
         private Rect Marker1;
         private Rect Marker2;
@@ -109,12 +109,11 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-
             vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
             vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
 
             vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
-            vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
+            vLineEnd = Camera.main.WorldToScreenPoint(FlightGlobals.ActiveVessel.transform.position);
 
             Vector3 vlgPos = soLandingGuide.gameObject.transform.position;
             Vector3 vcrPos = FlightGlobals.ActiveVessel.transform.position;
@@ -167,7 +166,7 @@ namespace KerbalKonstructs.UI
 
             if (vLineEnd != Vector3.zero && vLineStart != Vector3.zero)
             {
-                vLineEnd = Camera.main.WorldToScreenPoint(vesCraft.transform.position);
+                vLineEnd = Camera.main.WorldToScreenPoint(FlightGlobals.ActiveVessel.transform.position);
                 vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
 
                 // ToDo: Not implemented

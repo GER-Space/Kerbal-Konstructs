@@ -68,7 +68,7 @@ namespace KerbalKonstructs.Career
 
         public void Start()
         {
-            Log.Normal("Carrer Module Start Called");
+            Log.Normal("Career Module Start Called");
 
             if (!initialized)
             {
