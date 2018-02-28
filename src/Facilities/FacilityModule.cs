@@ -148,6 +148,8 @@ namespace KerbalKonstructs.Modules
             }
 
             FacilityType = this.GetType().Name;
+
+            AttachSelector();
             return this;
         }
 
@@ -273,11 +275,25 @@ namespace KerbalKonstructs.Modules
             }
             initialized = true;
         }
+
+        internal void AttachSelector()
+        {
+            foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
+            {
+                var selector = colloder.gameObject.AddComponent<KKFacilitySelector>();
+                selector.staticInstance = InstanceUtil.GetStaticInstanceForGameObject(gameObject);
+            }
+        }
+
+    }
+
+    internal class KKFacilitySelector : MonoBehaviour
+    {
+
+        internal StaticInstance staticInstance = null; 
+        
+        
         #region Unity mouse extension
-
-
-
-
 
         void OnMouseDown()
         {
@@ -290,19 +306,29 @@ namespace KerbalKonstructs.Modules
 
         void OnMouseEnter()
         {
-
-            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
+            {
+                foreach (Material material in renderer.materials)
+                {
+                    material.SetFloat("_RimFalloff", 2.5f);
+                    material.SetColor("_RimColor", Color.green);
+                }
+            }
 
         }
 
         void OnMouseExit()
         {
-
-            gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
-
+            foreach(Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
+            {
+                foreach (Material material in renderer.materials)
+                {
+                    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+                    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
+                }
+            }
         }
         #endregion
     }
+
 }

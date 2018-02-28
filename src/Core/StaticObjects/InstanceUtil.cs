@@ -22,8 +22,9 @@ namespace KerbalKonstructs.Core
             if (objList.Count >= 1)
             {
                 if (objList.Count > 1)
+                {
                     Log.UserError("More than one StaticObject references to GameObject " + gameObject.name);
-
+                }
                 return objList[0];
             }
 
