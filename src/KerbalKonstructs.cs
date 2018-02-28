@@ -130,6 +130,8 @@ namespace KerbalKonstructs
         public  string defaultVABlaunchsite = "LaunchPad";
         [KSPField]
         public string defaultSPHlaunchsite = "Runway";
+        [KSPField]
+        public string lastLaunchSiteUsed = "LaunchPad";
 
         #endregion
 
@@ -328,6 +330,8 @@ namespace KerbalKonstructs
                 }
 
                 InputLockManager.RemoveControlLock("KKEditorLock");
+                // set the LaunchSite to the last use, also update the SpaceCenterCamera with this
+                LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
 
                 // Tighter control over what statics are active
                 //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");

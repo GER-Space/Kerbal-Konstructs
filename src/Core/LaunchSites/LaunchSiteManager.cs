@@ -612,6 +612,8 @@ namespace KerbalKonstructs.Core
             currentLaunchSite = site.LaunchSiteName;
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
 
+            KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
+
             SetSpaceCenterCam(site);
         }
 
