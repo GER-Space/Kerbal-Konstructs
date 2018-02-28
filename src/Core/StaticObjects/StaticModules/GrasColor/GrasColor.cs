@@ -16,12 +16,12 @@ namespace KerbalKonstructs
         public string GrasTextureImage = "BUILTIN:/ksc_exterior_terrain_ground";
         public string UsePQSColor = "False";
         public string UseNormalMap = "False";
-        public string GrasTextureNormalMap = "";
+        public string GrasTextureNormalMap = null;
 
 
 
         private bool usePQS = true;
-        private bool useNormalMap = true;
+        private bool useNormalMap = false;
 
         private bool isInitialized = false;
         private List<Material> grasMaterials = new List<Material>();
@@ -160,17 +160,14 @@ namespace KerbalKonstructs
                 Renderer grasRenderer = transform.GetComponent<Renderer>();
                 grasMaterials.Add(grasRenderer.material);
                 grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
                 if (useNormalMap)
                 {
                     //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
-                    grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
-                    grasRenderer.material.SetTexture("", GameDatabase.Instance.GetTexture(GrasTextureNormalMap, true));
-                }
-                else
-                {
-                    // "KSP/Scenery/Diffuse Multiply (Fixed UV)"
-                    //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
-                    //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply (Fixed UV)");
+                    //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
+                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false) && grasRenderer.material.HasProperty("_BumpMap")){
+                        grasRenderer.material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true));
+                    }
                 }
             }
         }
