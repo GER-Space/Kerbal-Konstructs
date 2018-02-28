@@ -608,9 +608,23 @@ namespace KerbalKonstructs.Core
                     site.facility.name = "LaunchPad";
                 }
             }
+            
             currentLaunchSite = site.LaunchSiteName;
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
+
+            SetSpaceCenterCam(site);
         }
+
+        internal static void SetSpaceCenterCam(LaunchSite site)
+        {
+            SpaceCenterCamera2 scCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
+            if (scCam != null)
+            {
+                scCam.transform.parent.transform.parent = site.lsGameObject.transform;
+                scCam.transform.parent.transform.position = site.lsGameObject.transform.position;
+            }
+        }
+
 
         // Returns the internal launchSite that KSP has been told is the launchsite
         public static string getCurrentLaunchSite()

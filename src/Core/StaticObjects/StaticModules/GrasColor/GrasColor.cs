@@ -31,8 +31,6 @@ namespace KerbalKonstructs
 
         public void Awake()
         {
-            //Log.Normal("FlagDeclal: Awake called");
-            //setTexture();
             if (!bool.TryParse(UsePQSColor, out usePQS))
             {
                 Log.UserWarning("GrasColor Module: could not parse UsePQSColor to bool: " + UsePQSColor);

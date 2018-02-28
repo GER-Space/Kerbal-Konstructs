@@ -330,8 +330,9 @@ namespace KerbalKonstructs
                 InputLockManager.RemoveControlLock("KKEditorLock");
 
                 // Tighter control over what statics are active
-                currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                Log.Normal("Homeworld is " + currentBody.name);
+                //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+                currentBody = LaunchSiteManager.GetCurrentLaunchSite().body;
+                Log.Normal("SC Body is: " + currentBody.name);
                 StaticDatabase.OnBodyChanged(currentBody);
                 updateCache();
             }
@@ -524,18 +525,17 @@ namespace KerbalKonstructs
                 }
                 else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
-                    //var spaceCenterCam = (Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)) as SpaceCenterCamera2 []).FirstOrDefault();
-                    //if (spaceCenterCam != null)
-                    //{
-                    //    playerPos = spaceCenterCam.transform.position;
-                    //    //Log.Normal("updateCache using SpaceCenter Camera 2 as playerPos");
-
-                    //} else
+                    SpaceCenterCamera2 spaceCenterCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
+                    if (spaceCenterCam.gameObject.transform.parent.transform.parent != null)
                     {
-                        // we can always use the SpaceCenter position as our position
-                        playerPos = SpaceCenter.Instance.gameObject.transform.position;
+                        playerPos = spaceCenterCam.gameObject.transform.parent.transform.parent.position;
                     }
-                    StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
+                    else
+                    {
+                        // we can try the current LaunchSite as fallback
+                        playerPos = LaunchSiteManager.GetCurrentLaunchSite().gameObject.transform.position;
+                    }
+                    //StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
                 }
                 else if (Camera.main != null)
                 {

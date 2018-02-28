@@ -99,8 +99,6 @@ namespace KerbalKonstructs.Modules
         private string openString = "Closed";
         internal string defaultState = "Closed";
 
-        internal StaticInstance staticInstance = null;
-
         private bool initialized = false;
 
         private static Dictionary<string, FieldInfo> myFields;
@@ -111,7 +109,30 @@ namespace KerbalKonstructs.Modules
 
         private static HashSet<string> initializedModules = new HashSet<string>();
 
+        private KKFacilitySelector facSelector = null;
 
+        private StaticInstance _instance = null;
+
+
+        internal StaticInstance staticInstance
+        {
+            get
+            {
+                return _instance;
+            }
+            set
+            {
+                _instance = value;
+                facSelector.staticInstance = value;
+            }
+        }
+
+        // clean up the facSelector
+        public void OnDestroy()
+        {
+            Destroy(facSelector);
+            //Destroy(this);
+        }
 
 
         internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
@@ -280,8 +301,7 @@ namespace KerbalKonstructs.Modules
         {
             foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
-                var selector = colloder.gameObject.AddComponent<KKFacilitySelector>();
-                selector.staticInstance = InstanceUtil.GetStaticInstanceForGameObject(gameObject);
+                facSelector = colloder.gameObject.AddComponent<KKFacilitySelector>();
             }
         }
 
@@ -289,7 +309,7 @@ namespace KerbalKonstructs.Modules
 
     internal class KKFacilitySelector : MonoBehaviour
     {
-
+        // we get this passed through the facility module
         internal StaticInstance staticInstance = null; 
         
         
@@ -329,6 +349,13 @@ namespace KerbalKonstructs.Modules
             }
         }
         #endregion
+
+        // clean up the facSelector
+        public void OnDestroy()
+        {
+            Log.Normal("Facility Selector Destroyed");
+        }
+
     }
 
 }
