@@ -754,6 +754,7 @@ namespace KerbalKonstructs
                         foreach (Material material in renderer.materials.Where(mat => mat.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
                         {
                             hasGrasMaterial = true;
+                            Log.Normal("found Material: " + material.name);
                             break;
                         }
                     }
