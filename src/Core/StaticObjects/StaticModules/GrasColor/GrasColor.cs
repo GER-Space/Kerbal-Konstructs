@@ -177,11 +177,13 @@ namespace KerbalKonstructs
 
         public void findSquadGrasMaterial()
         {
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
-                renderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
-                //renderer.material.shader = Shader.Find("Legacy Shaders/Diffuse");
-                grasMaterials.Add(renderer.material);
+                foreach (Material material in renderer.materials.Where(mat => mat.color.ToString()  == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+                {
+                    renderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                    grasMaterials.Add(renderer.material);
+                }
             }
         }
 

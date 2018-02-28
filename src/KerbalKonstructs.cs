@@ -748,16 +748,22 @@ namespace KerbalKonstructs
 
 
                     // Register new GasColor Module
-                    if (model.prefab.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()).Count() > 0)
+                    bool hasGrasMaterial = false;
+                    foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-
+                        foreach (Material material in renderer.materials.Where(mat => mat.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+                        {
+                            hasGrasMaterial = true;
+                            break;
+                        }
+                    }
+                    if (hasGrasMaterial)
+                    {
                         Log.Normal("Adding GrasColor to: " + model.name);
                         StaticModule module = new StaticModule();
-
                         module.moduleNamespace = "KerbalKonstructs";
                         module.moduleClassname = "GrasColor";
                         module.moduleFields.Add("GrasTextureImage", "BUILTIN:/ksc_exterior_terrain_ground");
-
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);
                     }
