@@ -315,29 +315,16 @@ namespace KerbalKonstructs
             {
 
 
-                foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>().Where(x => x.gameObject.name == "KSC"))
+                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    Log.Normal("Cam   : " + pqs.gameObject.GetComponentsInChildren<Camera>(true).Count());
-                    foreach (var cam in pqs.gameObject.GetComponentsInChildren<Camera>(true))
-                    {
-                        Log.Normal("Cam: " + cam.name);
-                        Log.Normal("Cam: " + cam.transform.parent.name);
-                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.name);
-                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.name);
-                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.name);
-                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.name);
-                        Log.Normal("Cam: " + cam.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.name);
-                    }
 
-                    Log.Normal("SCCam : " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera>(true).Count());
-                    Log.Normal("SCCam2: " + pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera2>(true).Count());
-                    foreach (var cam in pqs.gameObject.GetComponentsInChildren<SpaceCenterCamera2>(true))
-                    {
-                        Log.Normal("Cam2: " + cam.name);
-                        Log.Normal("Cam2: " + cam.transform.parent.name);
-                        Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name);
-                        Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name);
-                    }
+                    
+                    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
+                    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
+                    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
+                    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
+                    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
+                    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
                 }
 
                 InputLockManager.RemoveControlLock("KKEditorLock");

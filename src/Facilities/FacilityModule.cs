@@ -24,11 +24,11 @@ namespace KerbalKonstructs.Modules
         LandingGuide,
         TouchdownGuideL,
         TouchdownGuideR,
-    } 
+    }
 
 
 
-    public abstract class KKFacility : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+    public abstract class KKFacility : MonoBehaviour
     {
         //use the attribute to select wich setting is read d
 
@@ -42,7 +42,7 @@ namespace KerbalKonstructs.Modules
         public string FacilityName = "";
 
         [CareerSetting]
-        public  bool isOpen
+        public bool isOpen
         {
             get
             {
@@ -113,12 +113,16 @@ namespace KerbalKonstructs.Modules
 
 
 
+
         internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
         {
             if(!initialized)
             {
                 InitTypes();
             }
+
+
+
 
             myFields = allFields[this.GetType().Name];
 
@@ -271,50 +275,34 @@ namespace KerbalKonstructs.Modules
         }
         #region Unity mouse extension
 
-        public void OnPointerDown(PointerEventData eventData)
+
+
+
+
+        void OnMouseDown()
         {
-            Log.Normal("Facility: Open Facility Window");
+            Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+                Log.Normal("Open Facility Window");
+            }
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        void OnMouseEnter()
         {
+
             gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.white);
+            gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
+
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        void OnMouseExit()
         {
+
             gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
             gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
+
         }
-
-
-
-
-        //void OnMouseDown()
-        //{        
-        //    Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
-        //    if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-        //    {
-        //        Log.Normal("Open Facility Window");
-        //    }
-        //}
-
-        //void OnMouseEnter()
-        //{
-
-        //    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-        //    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
-
-        //}
-
-        //void OnMouseExit()
-        //{
-
-        //    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-        //    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
-
-        //}
         #endregion
     }
 }
