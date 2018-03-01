@@ -126,17 +126,17 @@ namespace KerbalKonstructs.Core
                 if (rend == null || rend.materials.Length == 0 || rend.material.mainTexture == null)
                 {
                     Log.Normal("No Raycast material found");
-                    return Color.clear;
                 }
+                else
+                {
+                    Texture2D tex = rend.material.mainTexture as Texture2D;
+                    Vector2 pixelUV = castHit.textureCoord;
+                    pixelUV.x *= tex.width;
+                    pixelUV.y *= tex.height;
 
-                Texture2D tex = rend.material.mainTexture as Texture2D;
-                Vector2 pixelUV = castHit.textureCoord;
-                pixelUV.x *= tex.width;
-                pixelUV.y *= tex.height;
-
-                Color myColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                Log.Normal("FoundRaycastColor: " + myColor.ToString());
-
+                    Color myColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                    Log.Normal("FoundRaycastColor: " + myColor.ToString());
+                }
             }
             // bring it back to the normal scenery
             InstanceUtil.SetLayerRecursively(instance, 15);
