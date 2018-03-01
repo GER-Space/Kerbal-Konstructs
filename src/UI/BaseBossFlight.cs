@@ -382,7 +382,7 @@ namespace KerbalKonstructs.UI
                             {
                                 selectedObject = allFacilities[i];
                                 KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
-                                FacilityManager.selectedFacility = allFacilities[i];
+                                FacilityManager.selectedInstance = allFacilities[i];
                                 FacilityManager.instance.Open();
                             }
 

@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using System.Reflection;
 using KerbalKonstructs.Core;
-using UnityEngine.EventSystems;
+using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Modules
 {
@@ -341,21 +341,38 @@ namespace KerbalKonstructs.Modules
 
         void OnMouseDown()
         {
-            Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                Log.Normal("Open Facility Window");
+                //Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
+                //Log.Normal("Open Facility Window");
+                FacilityManager.selectedInstance = staticInstance;
+                FacilityManager.instance.Open();
+
             }
         }
 
         void OnMouseEnter()
         {
-            staticInstance.HighlightObject(Color.green);
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+                if (staticInstance.myFacilities[0].isOpen)
+                {
+                    staticInstance.HighlightObject(new Color(0.85f, 1f , 0.85f));
+                }
+                else
+                {
+                    staticInstance.HighlightObject(new Color(1f, 0.9f, 0.9f));
+                }
+                    
+            }
         }
 
         void OnMouseExit()
         {
-            staticInstance.HighlightObject(Color.clear);
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+                staticInstance.HighlightObject(Color.clear);
+            }
         }
         #endregion
 

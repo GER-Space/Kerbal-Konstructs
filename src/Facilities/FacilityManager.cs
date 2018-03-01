@@ -29,8 +29,7 @@ namespace KerbalKonstructs.UI
 
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 
-        public static LaunchSite selectedSite = null;
-        public static StaticInstance selectedFacility = null;
+        public static StaticInstance selectedInstance = null;
 
 
         float fAlt = 0f;
@@ -129,7 +128,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
                 {
-                    selectedFacility = null;
+                    selectedInstance = null;
                     this.Close();
                     return;
 
@@ -142,9 +141,9 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Space(2);
 
-            if (selectedFacility != null)
+            if (selectedInstance != null)
             {
-                sFacilityType = selectedFacility.FacilityType;
+                sFacilityType = selectedInstance.FacilityType;
 
                 if (sFacilityType == "GroundStation")
                 {
@@ -152,14 +151,14 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                    sFacilityName = selectedFacility.model.title;
+                    sFacilityName = selectedInstance.model.title;
 
                 GUILayout.Box("" + sFacilityName, Yellowtext);
                 GUILayout.Space(5);
 
-                fAlt = selectedFacility.RadiusOffset;
+                fAlt = selectedInstance.RadiusOffset;
 
-                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedFacility.gameObject.transform.position);
+                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedInstance.gameObject.transform.position);
                 disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
                 disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
 
@@ -181,7 +180,7 @@ namespace KerbalKonstructs.UI
 
                 sPurpose = "";
 
-                switch (selectedFacility.facilityType)
+                switch (selectedInstance.facilityType)
                 {
                     case KKFacilityType.Hangar:
                         {
@@ -227,36 +226,36 @@ namespace KerbalKonstructs.UI
                 GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                 GUILayout.Space(3);
 
-                SharedInterfaces.OpenCloseFacility(selectedFacility);
+                SharedInterfaces.OpenCloseFacility(selectedInstance);
 
                 GUILayout.Space(2);
                 GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                 GUILayout.Space(3);
 
-                if (selectedFacility.myFacilities[0].isOpen)
+                if (selectedInstance.myFacilities[0].isOpen)
                 {
 
 
-                    switch (selectedFacility.facilityType)
+                    switch (selectedInstance.facilityType)
                     {
                         case KKFacilityType.GroundStation:
-                            TrackingStationGUI.TrackingInterface(selectedFacility);
+                            TrackingStationGUI.TrackingInterface(selectedInstance);
                             break;
                         case KKFacilityType.Hangar:
-                            HangarGUI.HangarInterface(selectedFacility);
+                            HangarGUI.HangarInterface(selectedInstance);
                             break;
                         case KKFacilityType.Research:
                         case KKFacilityType.Business:
-                            ProductionGUI.ProductionInterface(selectedFacility, sFacilityType);
+                            ProductionGUI.ProductionInterface(selectedInstance, sFacilityType);
                             break;
                         case KKFacilityType.Merchant:
-                            MerchantGUI.MerchantInterface(selectedFacility);
+                            MerchantGUI.MerchantInterface(selectedInstance);
                             break;
                     }
                     GUILayout.Space(2);
                     GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                     GUILayout.Space(2);
-                    StaffGUI.StaffingInterface(selectedFacility);             
+                    StaffGUI.StaffingInterface(selectedInstance);             
                 }
             }
 

@@ -175,7 +175,7 @@ namespace KerbalKonstructs.Modules
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {                    
                         selectedFacility = groundStation;
-                        FacilityManager.selectedFacility = groundStation;
+                        FacilityManager.selectedInstance = groundStation;
                         FacilityManager.instance.Open();
                     }
                 }
