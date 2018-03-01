@@ -13,9 +13,8 @@ namespace KerbalKonstructs.Modules
 
         internal override KKFacility ParseConfig(ConfigNode cfgNode)
         {
-
-            KKFacility fac = this as KKFacility;
-            Merchant fuelTankMerchant = fac as Merchant; 
+            base.ParseConfig(cfgNode);
+            Merchant fuelTankMerchant = gameObject.AddComponent<Merchant>(); 
             fuelTankMerchant.ParseConfig(cfgNode);
             foreach (var resourceName in resourceTypes)
             {
@@ -36,6 +35,12 @@ namespace KerbalKonstructs.Modules
 
         }
 
-    }
+        new public void Awake()
+        {
+            Log.Normal("Destroying old FuelTank");
+            Destroy(this);
+        }
 
+
+    }
 }

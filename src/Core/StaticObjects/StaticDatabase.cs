@@ -242,7 +242,7 @@ namespace KerbalKonstructs.Core
 			{
                 if (body.bodyName != activeBodyName)
 				{
-					activeBodyName = body.bodyName;
+					activeBodyName = body.name;
 				}
 			}
 			else

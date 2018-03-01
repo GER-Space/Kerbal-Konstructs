@@ -67,6 +67,7 @@ namespace KerbalKonstructs.Core
             launchSite.lsGameObject = launchSite.gameObject;
             // this is might be slow
             launchSite.parentInstance = InstanceUtil.GetStaticInstanceForGameObject(lsGameObject);
+            launchSite.staticInstance = launchSite.parentInstance;
             launchSite.body = parentInstance.CelestialBody;
 
             if ( ! string.IsNullOrEmpty(LaunchSiteLogo) )

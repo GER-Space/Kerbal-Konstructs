@@ -317,21 +317,21 @@ namespace KerbalKonstructs
             {
 
 
-                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                {
+                //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                //{
 
                     
-                    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
-                    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
-                    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
-                    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
-                    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
-                    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
-                }
+                //    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
+                //    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
+                //    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
+                //    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
+                //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
+                //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
+                //}
 
                 InputLockManager.RemoveControlLock("KKEditorLock");
                 // set the LaunchSite to the last use, also update the SpaceCenterCamera with this
-                LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
+                //LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
 
                 // Tighter control over what statics are active
                 //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -532,14 +532,19 @@ namespace KerbalKonstructs
                     SpaceCenterCamera2 spaceCenterCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
                     if (spaceCenterCam.gameObject.transform.parent.transform.parent != null)
                     {
-                        playerPos = spaceCenterCam.gameObject.transform.parent.transform.parent.position;
+                        Log.Normal("using SpaceCenterCam2 as position");
+                        Log.Normal(spaceCenterCam.gameObject.transform.parent.name);
+                        playerPos = spaceCenterCam.gameObject.transform.parent.position;
                     }
                     else
                     {
+                        Log.Normal("No SpaceCenterCam Found in SpaceCenter Scene");
                         // we can try the current LaunchSite as fallback
-                        playerPos = LaunchSiteManager.GetCurrentLaunchSite().gameObject.transform.position;
+                        playerPos = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.position;
+                        //playerPos = SpaceCenter.Instance.transform.position;
                     }
                     //StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
+                   // playerPos = SpaceCenter.Instance.transform.position;
                 }
                 else if (Camera.main != null)
                 {
@@ -755,12 +760,13 @@ namespace KerbalKonstructs
                     bool hasGrasMaterial = false;
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-                        foreach (var material in renderer.materials)
+                        //foreach (var material in renderer.materials)
+                        //{
+                        //    Log.Normal("found Material: " + material.name+ " : " + material.color.ToString());
+                        //}
+                        foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
                         {
-                            Log.Normal("found Material: " + material.name);
-                        }
-                        foreach (Material material in renderer.materials.Where(mat => mat.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
-                        {
+                            //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
                             hasGrasMaterial = true;
                             break;
                         }

@@ -917,6 +917,8 @@ namespace KerbalKonstructs.UI
             instance.RotationAngle = fAngle;
             instance.Orientation = Vector3.up;
             instance.VisibilityRange = 25000f;
+            instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
+            instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
 
             instance.model = model;
             Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath );

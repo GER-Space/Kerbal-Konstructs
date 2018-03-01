@@ -109,7 +109,7 @@ namespace KerbalKonstructs.Modules
 
         private static HashSet<string> initializedModules = new HashSet<string>();
 
-        private KKFacilitySelector facSelector = null;
+        private List<KKFacilitySelector> facSelector = new List<KKFacilitySelector>();
 
         private StaticInstance _instance = null;
 
@@ -123,17 +123,30 @@ namespace KerbalKonstructs.Modules
             set
             {
                 _instance = value;
-                facSelector.staticInstance = value;
+                foreach (var fac in facSelector)
+                {
+                    fac.staticInstance = value;
+                }
+
+                
             }
         }
 
         // clean up the facSelector
         public void OnDestroy()
         {
-            Destroy(facSelector);
+            foreach (var fac in facSelector)
+            {
+                Destroy(fac);
+            }
             //Destroy(this);
         }
 
+
+        public void Awake()
+        {
+            DontDestroyOnLoad(this);
+        }
 
         internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
         {
@@ -299,9 +312,15 @@ namespace KerbalKonstructs.Modules
 
         internal void AttachSelector()
         {
+            if (this.GetType() == typeof(LaunchSite))
+            {
+                Log.Normal("Skipping selector for LaunchSites");
+                return;
+            }
+
             foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
-                facSelector = colloder.gameObject.AddComponent<KKFacilitySelector>();
+                facSelector.Add(colloder.gameObject.AddComponent<KKFacilitySelector>());
             }
         }
 
@@ -310,9 +329,14 @@ namespace KerbalKonstructs.Modules
     internal class KKFacilitySelector : MonoBehaviour
     {
         // we get this passed through the facility module
-        internal StaticInstance staticInstance = null; 
-        
-        
+        internal StaticInstance staticInstance = null;
+
+        public void Awake()
+        {
+                DontDestroyOnLoad(this);
+        }
+
+
         #region Unity mouse extension
 
         void OnMouseDown()
@@ -326,35 +350,20 @@ namespace KerbalKonstructs.Modules
 
         void OnMouseEnter()
         {
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
-            {
-                foreach (Material material in renderer.materials)
-                {
-                    material.SetFloat("_RimFalloff", 2.5f);
-                    material.SetColor("_RimColor", Color.green);
-                }
-            }
-
+            staticInstance.HighlightObject(Color.green);
         }
 
         void OnMouseExit()
         {
-            foreach(Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
-            {
-                foreach (Material material in renderer.materials)
-                {
-                    gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-                    gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
-                }
-            }
+            staticInstance.HighlightObject(Color.clear);
         }
         #endregion
 
         // clean up the facSelector
-        public void OnDestroy()
-        {
-            Log.Normal("Facility Selector Destroyed");
-        }
+        //public void OnDestroy()
+        //{
+        //    Log.Normal("Facility Selector Destroyed");
+        //}
 
     }
 

@@ -622,8 +622,8 @@ namespace KerbalKonstructs.Core
             SpaceCenterCamera2 scCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
             if (scCam != null)
             {
-                scCam.transform.parent.transform.parent = site.lsGameObject.transform;
-                scCam.transform.parent.transform.position = site.lsGameObject.transform.position;
+                scCam.transform.parent.parent = site.lsGameObject.transform;
+                scCam.transform.parent.position = site.lsGameObject.transform.position;
             }
         }
 

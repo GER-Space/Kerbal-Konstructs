@@ -174,10 +174,11 @@ namespace KerbalKonstructs
         {
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
-                foreach (Material material in renderer.materials.Where(mat => mat.color.ToString()  == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
+                foreach (Material material in renderer.materials.Where(mat => mat.name.StartsWith("ksc_exterior_terrain_grass_02")))
                 {
-                    renderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
-                    grasMaterials.Add(renderer.material);
+                    //Log.Normal("Added material:" + material.name + " : " + material.mainTexture.name);
+                    material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                    grasMaterials.Add(material);
                 }
             }
         }
