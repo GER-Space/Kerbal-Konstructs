@@ -34,7 +34,7 @@ namespace KerbalKonstructs.Core
         public double Longitude = 361f;
 
         [CFGSetting]
-        public double Radius;
+        public double Radius = 125;
 
         [CFGSetting]
         public string HeightMapName = "None";
@@ -59,6 +59,8 @@ namespace KerbalKonstructs.Core
         public float SmoothHeight = 0.125f;
         [CFGSetting]
         public float Angle = 0f;
+        [CFGSetting]
+        public int Order = 100000;
 
 
         internal MapDecalsMap heighMap = null;
@@ -95,7 +97,7 @@ namespace KerbalKonstructs.Core
 
             mapDecal.modEnabled = true;
             mapDecal.requirements = PQS.ModiferRequirements.MeshColorChannel | PQS.ModiferRequirements.MeshCustomNormals;
-            mapDecal.order = 100000;
+            mapDecal.order = Order;
             mapDecal.sphere = CelestialBody.pqsController;
             mapDecal.transform.parent = CelestialBody.pqsController.transform;
 

@@ -13,7 +13,7 @@ namespace KerbalKonstructs
     {
 
         public string GrasMeshName;
-        public string GrasTextureImage = "BUILTIN:/ksc_exterior_terrain_ground";
+        public string GrasTextureImage = "BUILTIN:/terrain_grass00_new";
         public string UsePQSColor = "False";
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = null;

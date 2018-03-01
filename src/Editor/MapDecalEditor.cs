@@ -44,7 +44,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 380, 780);
+        internal Rect toolRect = new Rect(300, 35, 380, 810);
 
         #endregion
 
@@ -461,7 +461,36 @@ namespace KerbalKonstructs.UI
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
             //
-            // Rotation
+            // Order
+            //
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Placement order:");
+                GUILayout.FlexibleSpace();
+                GUILayout.TextField(selectedDecal.Order.ToString(), 9, GUILayout.Width(80));
+
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
+                {
+                    selectedDecal.Order = Math.Max(100000,selectedDecal.Order - 1);
+                }
+                if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
+                {
+                    selectedDecal.Order = Math.Max(100000, selectedDecal.Order - 1);
+                }
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
+                {
+                    selectedDecal.Order += 1;
+                }
+                if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
+                {
+                    selectedDecal.Order += 1;
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+            //
+            // Radius
             //
             GUILayout.BeginHorizontal();
             {
@@ -472,12 +501,12 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(0, selectedDecal.Radius);
+                    selectedDecal.Radius = Math.Max(125, selectedDecal.Radius);
                 }
                 if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(0, selectedDecal.Radius);
+                    selectedDecal.Radius = Math.Max(125, selectedDecal.Radius);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
                 {

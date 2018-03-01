@@ -357,11 +357,11 @@ namespace KerbalKonstructs.Modules
             {
                 if (staticInstance.myFacilities[0].isOpen)
                 {
-                    staticInstance.HighlightObject(new Color(0.85f, 1f , 0.85f));
+                    staticInstance.HighlightObject(new Color(0.4f, 0.9f , 0.4f, 0.5f));
                 }
                 else
                 {
-                    staticInstance.HighlightObject(new Color(1f, 0.9f, 0.9f));
+                    staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
                 }
                     
             }
