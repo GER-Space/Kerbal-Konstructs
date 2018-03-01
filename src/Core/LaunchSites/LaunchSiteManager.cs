@@ -614,7 +614,7 @@ namespace KerbalKonstructs.Core
 
             KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
 
-            SetSpaceCenterCam(site);
+            //SetSpaceCenterCam(site);
         }
 
         internal static void SetSpaceCenterCam(LaunchSite site)
