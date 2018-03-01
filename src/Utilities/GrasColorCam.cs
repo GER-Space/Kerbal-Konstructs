@@ -63,7 +63,7 @@ namespace KerbalKonstructs.Core
             _instance = null;
         }
 
-        private void initializeCamera()
+        private void InitializeCamera()
         {
             cameraInitialized = true;
             cameraObject = new GameObject("GrasColorCamera");
@@ -85,11 +85,11 @@ namespace KerbalKonstructs.Core
         /// places the camera above the terrain of the staticObject
         /// </summary>
         /// <param name="instance"></param>
-        private void setupCameraForVessel(StaticInstance instance)
+        private void SetupCameraForVessel(StaticInstance instance)
         {
             if (!cameraInitialized)
             {
-                initializeCamera();
+                InitializeCamera();
             }
             //cameraObject.transform.position = instance.gameObject.transform.position;
             // set the position 3 meters above the ground
@@ -103,14 +103,41 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public Color getCameraColor(StaticInstance instance)
+        public Color GetCameraColor(StaticInstance instance)
         {
-            setupCameraForVessel(instance);
+            SetupCameraForVessel(instance);
             // Move the current object out of the cams view
             InstanceUtil.SetLayerRecursively(instance, 0);
             grasCamera.targetTexture = cameraRenderTexture;
             grasCamera.enabled = true;
             grasCamera.Render();
+
+            Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
+            RaycastHit castHit = new RaycastHit();
+            if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
+            {
+                Log.Normal("NO raycast hit");
+            }
+            else
+            {
+
+                Renderer rend = castHit.transform.GetComponent<Renderer>();
+
+                if (rend == null || rend.materials.Length == 0 || rend.material.mainTexture == null)
+                {
+                    Log.Normal("No Raycast material found");
+                    return Color.clear;
+                }
+
+                Texture2D tex = rend.material.mainTexture as Texture2D;
+                Vector2 pixelUV = castHit.textureCoord;
+                pixelUV.x *= tex.width;
+                pixelUV.y *= tex.height;
+
+                Color myColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                Log.Normal("FoundRaycastColor: " + myColor.ToString());
+
+            }
             // bring it back to the normal scenery
             InstanceUtil.SetLayerRecursively(instance, 15);
 

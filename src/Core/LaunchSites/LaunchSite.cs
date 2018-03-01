@@ -59,8 +59,6 @@ namespace KerbalKonstructs.Core
         internal GameObject lsGameObject;
         internal PSystemSetup.SpaceCenterFacility facility = null;
 
-
-
         internal override KKFacility ParseConfig(ConfigNode node)
         {
             LaunchSite launchSite = base.ParseConfig(node) as LaunchSite;

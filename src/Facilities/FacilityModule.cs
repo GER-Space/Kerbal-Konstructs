@@ -113,7 +113,6 @@ namespace KerbalKonstructs.Modules
 
         private StaticInstance _instance = null;
 
-
         internal StaticInstance staticInstance
         {
             get
@@ -312,9 +311,10 @@ namespace KerbalKonstructs.Modules
 
         internal void AttachSelector()
         {
-            if (this.GetType() == typeof(LaunchSite))
+            Type myType = this.GetType();
+            if (myType.Name == "LaunchSite"  || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR"  )
             {
-                Log.Normal("Skipping selector for LaunchSites");
+                Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
             }
 

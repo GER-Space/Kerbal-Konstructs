@@ -90,7 +90,7 @@ namespace KerbalKonstructs
                 }
                 else
                 {
-                    underGroundColor = GrasColorCam.instance.getCameraColor(staticInstance);
+                    underGroundColor = GrasColorCam.instance.GetCameraColor(staticInstance);
                 }
                 staticInstance.GrasColor = underGroundColor;
             }
@@ -100,6 +100,7 @@ namespace KerbalKonstructs
             }
             //Log.Normal("underGroundColor: " + underGroundColor.ToString());
             underGroundColor.a = underGroundColor.b - underGroundColor.g;
+            staticInstance.GrasColor = underGroundColor;
             return underGroundColor;
         }
 
@@ -177,7 +178,7 @@ namespace KerbalKonstructs
                 foreach (Material material in renderer.materials.Where(mat => mat.name.StartsWith("ksc_exterior_terrain_grass_02")))
                 {
                     //Log.Normal("Added material:" + material.name + " : " + material.mainTexture.name);
-                    material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
+                    //material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
                     grasMaterials.Add(material);
                 }
             }

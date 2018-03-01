@@ -755,15 +755,15 @@ namespace KerbalKonstructs
 
                     //}
 
-
+                    Log.Normal("Stats for: " + model.name);
                     // Register new GasColor Module
                     bool hasGrasMaterial = false;
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-                        //foreach (var material in renderer.materials)
-                        //{
-                        //    Log.Normal("found Material: " + material.name+ " : " + material.color.ToString());
-                        //}
+                        foreach (var material in renderer.materials)
+                        {
+                            Log.Normal("Material: " + material.name + " , " + material.shader.name + " , " + material.mainTexture.name  + " , " + material.color.ToString());
+                        }
                         foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
                         {
                             //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
@@ -773,7 +773,7 @@ namespace KerbalKonstructs
                     }
                     if (hasGrasMaterial)
                     {
-                        Log.Normal("Adding GrasColor to: " + model.name);
+                        //Log.Normal("Adding GrasColor to: " + model.name);
                         StaticModule module = new StaticModule();
                         module.moduleNamespace = "KerbalKonstructs";
                         module.moduleClassname = "GrasColor";
