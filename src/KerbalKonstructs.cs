@@ -760,13 +760,13 @@ namespace KerbalKonstructs
                     bool hasGrasMaterial = false;
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-                        //foreach (var material in renderer.materials)
-                        //{
-                        //    if (material.mainTexture != null && material.shader != null)
-                        //    {
-                        //        Log.Normal("Material: " + material.name + " , " + material.shader.name + " , " + material.mainTexture.name + " , " + material.color.ToString());
-                        //    }
-                        //}
+                        foreach (var material in renderer.sharedMaterials)
+                        {
+                            if (material.mainTexture != null && material.shader != null)
+                            {
+                                Log.Normal("Material: " + material.name + " , " + material.shader.name + " , " + material.mainTexture.name + " , " + material.color.ToString());
+                            }
+                        }
                         foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
                         {
                             //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
