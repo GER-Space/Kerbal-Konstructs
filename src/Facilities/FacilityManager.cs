@@ -218,6 +218,12 @@ namespace KerbalKonstructs.UI
                             bHalfwindow = false;
                             break;
                         }
+                    case KKFacilityType.Storage:
+                        {
+                            sPurpose = "You can store Resources here";
+                            bHalfwindow = false;
+                            break;
+                        }
 
                 }
 
@@ -250,6 +256,9 @@ namespace KerbalKonstructs.UI
                             break;
                         case KKFacilityType.Merchant:
                             MerchantGUI.MerchantInterface(selectedInstance);
+                            break;
+                        case KKFacilityType.Storage:
+                            StorageGUI.StorageInerface(selectedInstance);
                             break;
                     }
                     GUILayout.Space(2);

@@ -14,6 +14,7 @@ namespace KerbalKonstructs.Modules
     {
         None,
         Merchant,
+        Storage,
         TrackingStation,
         GroundStation,
         FuelTanks,

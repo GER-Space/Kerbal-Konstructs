@@ -1206,6 +1206,9 @@ namespace KerbalKonstructs
                 case KKFacilityType.Merchant:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<Merchant>().ParseConfig(cfgNode));
                     break;
+                case KKFacilityType.Storage:
+                    instance.myFacilities.Add(instance.gameObject.AddComponent<Storage>().ParseConfig(cfgNode));
+                    break;
                 case KKFacilityType.GroundStation:
                     instance.myFacilities.Add(instance.gameObject.AddComponent<GroundStation>().ParseConfig(cfgNode));
                     break;

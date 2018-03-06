@@ -14,7 +14,7 @@ namespace KerbalKonstructs.Modules
     }
 
 
-    public class WareHouse : KKFacility
+    public class Storage : KKFacility
     {
 
         [CFGSetting]

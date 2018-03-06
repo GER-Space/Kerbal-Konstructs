@@ -110,8 +110,8 @@
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
     <Compile Include="Facilities\Hangar\Hangar.cs" />
     <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
-    <Compile Include="Facilities\WareHouse\WareHouse.cs" />
-    <Compile Include="Facilities\WareHouse\WareHouseGUI.cs" />
+    <Compile Include="Facilities\Storage\Storage.cs" />
+    <Compile Include="Facilities\Storage\StorageGUI.cs" />
     <Compile Include="Facilities\Merchant\Merchant.cs" />
     <Compile Include="Facilities\Merchant\MerchantGUI.cs" />
     <Compile Include="Facilities\ProductionGUI.cs" />
