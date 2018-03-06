@@ -61,6 +61,8 @@ namespace KerbalKonstructs.Core
         public float Angle = 0f;
         [CFGSetting]
         public int Order = 100000;
+        [CFGSetting]
+        public Vector3 Scale = new Vector3(1,1,1);
 
 
         internal MapDecalsMap heighMap = null;
@@ -121,6 +123,7 @@ namespace KerbalKonstructs.Core
             mapDecal.cullBlack = CullBlack;
 
             mapDecal.smoothColor = SmoothColor;
+            mapDecal.transform.localScale = Scale;
 
             Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
             Log.Normal("MapDecal: Radius: "  + Radius.ToString());

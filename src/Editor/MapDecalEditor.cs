@@ -218,7 +218,7 @@ namespace KerbalKonstructs.UI
 
         #region Editor
 
-        #region Instance Editor
+        #region Decal Editor
 
         /// <summary>
         /// Instance Editor window
@@ -438,7 +438,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Heading:");
                 GUILayout.FlexibleSpace();
-                GUILayout.TextField(Heading.ToString(), 9, GUILayout.Width(80));
+                GUILayout.TextField(selectedDecal.Angle.ToString(), 9, GUILayout.Width(80));
 
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -660,19 +660,13 @@ namespace KerbalKonstructs.UI
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Angle: ");
+                GUILayout.Label("Scale: x, y ,z: ");
                 GUILayout.FlexibleSpace();
-                selectedDecal.Angle = float.Parse(GUILayout.TextField(selectedDecal.Angle.ToString(), 25, GUILayout.Width(75)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.Angle -= increment;
-                    selectedDecal.Angle = Math.Max(0, selectedDecal.Angle);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.Angle += increment;
-                    selectedDecal.Angle = Math.Min(89.9f, selectedDecal.Angle);
-                }
+                selectedDecal.Scale.x = float.Parse(GUILayout.TextField(selectedDecal.Scale.x.ToString(), 4, GUILayout.Width(50)));
+                GUILayout.Space(5);
+                selectedDecal.Scale.y = float.Parse(GUILayout.TextField(selectedDecal.Scale.y.ToString(), 4, GUILayout.Width(50)));
+                GUILayout.Space(5);
+                selectedDecal.Scale.z = float.Parse(GUILayout.TextField(selectedDecal.Scale.z.ToString(), 4, GUILayout.Width(50)));
             }
             GUILayout.EndHorizontal();
 
@@ -1024,7 +1018,9 @@ namespace KerbalKonstructs.UI
         /// <param name="increment"></param>
         internal void SetRotation(double increment)
         {
-            selectedDecal.mapDecal.transform.Rotate(Vector3.up, (float)increment);
+            //selectedDecal.mapDecal.transform.Rotate(Vector3.up, (float)increment);
+            selectedDecal.Angle += (float)increment;
+            selectedDecal.Angle = (selectedDecal.Angle + 360) % 360;
         }
 
 
