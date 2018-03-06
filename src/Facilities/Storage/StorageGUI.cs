@@ -26,6 +26,13 @@ namespace KerbalKonstructs.UI
         private static float maxSpaceLeft = 0f;
         private static double storableUnits = 0f;
 
+
+        private static Vector2 facilityscroll;
+
+        /// <summary>
+        /// Subwindows called by FacilityManager
+        /// </summary>
+        /// <param name="instance"></param>
         internal static void StorageInerface(StaticInstance instance)
         {
             if (instance != lastInstance)
@@ -51,8 +58,11 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
 
-            ShowRetrieveGUI();
-            
+            facilityscroll = GUILayout.BeginScrollView(facilityscroll);
+            {
+                ShowRetrieveGUI();
+            }
+            GUILayout.EndScrollView();
 
 
             GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
@@ -69,21 +79,13 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal static void ShowStoreGUI()
-        {
-
-        }
-
+        /// <summary>
+        /// SubSub windows components. The actual scroll view
+        /// </summary>
         internal static void ShowRetrieveGUI()
         {
             foreach (PartResourceDefinition resource in allResources)
             {
-                //currentVessel.resourcePartSet.GetConnectedResourceTotals(myResource.id, out double amount, out double maxAmount, false);
-                // check if we can store this resource
-                //if (maxAmount == 0 )
-                //{
-                //    continue;
-                //}
                 if (blackListedResources.Contains(resource.name))
                 {
                     continue;
@@ -190,7 +192,11 @@ namespace KerbalKonstructs.UI
 
         }
 
-
+        /// <summary>
+        /// Stores or retrieves a resource to the facility. Deletes the resource if nothing is left
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="amount"></param>
         internal static void StoreResource(PartResourceDefinition resource, double amount)
         {
             StoredResource myStoredResource = selectedFacility.storedResources.Where(r => r.resource == resource).FirstOrDefault();
@@ -207,10 +213,12 @@ namespace KerbalKonstructs.UI
             {
                 selectedFacility.storedResources.Remove(myStoredResource);
             }
-
-
         }
 
+        /// <summary>
+        /// init of needed vaiabled on facility change
+        /// </summary>
+        /// <param name="instance"></param>
         internal static void Initialize(StaticInstance instance)
         {
             selectedFacility = instance.myFacilities[0] as Storage;

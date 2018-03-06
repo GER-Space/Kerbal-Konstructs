@@ -16,6 +16,7 @@ namespace KerbalKonstructs.UI
 
         internal static Vessel currentVessel = null;
 
+        private static Vector2 facilityscroll;
 
         internal static void MerchantInterface(StaticInstance instance)
         {
@@ -33,86 +34,90 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Label("Buy or sell these resources: ", GUILayout.Height(30));
 
-            foreach (TradedResource myResource in selectedFacility.tradedResources)
+            facilityscroll = GUILayout.BeginScrollView(facilityscroll);
             {
-                currentVessel.resourcePartSet.GetConnectedResourceTotals(myResource.resource.id, out double amount, out double maxAmount, false);
-                // check if we can store this resource
-                //if (maxAmount == 0 )
-                //{
-                //    continue;
-                //}
-                GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
-                GUILayout.BeginHorizontal();
+                foreach (TradedResource myResource in selectedFacility.tradedResources)
                 {
-                    GUILayout.Label(myResource.resource.name, GUILayout.Height(23));
-                    GUILayout.FlexibleSpace();
-                    if (myResource.canBeSold)
-                    {
-                        GUILayout.Label("Sell for: ", GUILayout.Height(23));
-                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierSell).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                    }
-                    else
-                    {
-                        GUILayout.Space(100);
-                    }
-                    GUILayout.FlexibleSpace();
-                    if (myResource.canBeBought)
-                    {
-                        GUILayout.Label("Buy for: ", GUILayout.Height(23));
-                        GUILayout.Label((myResource.resource.unitCost * myResource.multiplierBuy).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                        GUILayout.Space(10);
-                    }
-                    else
-                    {
-                        GUILayout.Space(100);
-                    }
-                }
-                GUILayout.EndHorizontal();
-                foreach (PartSet xFeedSet in currentVessel.crossfeedSets) {
-                    xFeedSet.GetConnectedResourceTotals(myResource.resource.id,out double xfeedAmount, out double xfeedMax, true);
+                    currentVessel.resourcePartSet.GetConnectedResourceTotals(myResource.resource.id, out double amount, out double maxAmount, false);
+                    // check if we can store this resource
+                    //if (maxAmount == 0 )
+                    //{
+                    //    continue;
+                    //}
+                    GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
                     GUILayout.BeginHorizontal();
                     {
-                        GUILayout.Label(Math.Round(xfeedAmount,1).ToString() + " of " + Math.Round(xfeedMax,1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
+                        GUILayout.Label(myResource.resource.name, GUILayout.Height(23));
                         GUILayout.FlexibleSpace();
                         if (myResource.canBeSold)
                         {
-                            if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
-                            {
-                                double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
-                                BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
-                            }
-                            if ( GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
-                            {
-                                double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
-                                BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
-                            }
+                            GUILayout.Label("Sell for: ", GUILayout.Height(23));
+                            GUILayout.Label((myResource.resource.unitCost * myResource.multiplierSell).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
                         }
                         else
                         {
-                            GUILayout.Space(64);
+                            GUILayout.Space(100);
                         }
                         GUILayout.FlexibleSpace();
                         if (myResource.canBeBought)
                         {
-                            // check if we have enough money to buy the resources
-                            GUI.enabled = ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (Funding.Instance.Funds > (myResource.resource.unitCost * myResource.multiplierBuy)));
-                            if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
-                            {
-                                double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -1, true);
-                                BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierBuy);
-                            }
-                            GUI.enabled = true;
+                            GUILayout.Label("Buy for: ", GUILayout.Height(23));
+                            GUILayout.Label((myResource.resource.unitCost * myResource.multiplierBuy).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
+                            GUILayout.Space(10);
                         }
                         else
                         {
-                            GUILayout.Space(64);
+                            GUILayout.Space(100);
                         }
                     }
                     GUILayout.EndHorizontal();
+                    foreach (PartSet xFeedSet in currentVessel.crossfeedSets)
+                    {
+                        xFeedSet.GetConnectedResourceTotals(myResource.resource.id, out double xfeedAmount, out double xfeedMax, true);
+                        GUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
+                            GUILayout.FlexibleSpace();
+                            if (myResource.canBeSold)
+                            {
+                                if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
+                                {
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
+                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
+                                }
+                                if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
+                                {
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
+                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
+                                }
+                            }
+                            else
+                            {
+                                GUILayout.Space(64);
+                            }
+                            GUILayout.FlexibleSpace();
+                            if (myResource.canBeBought)
+                            {
+                                // check if we have enough money to buy the resources
+                                GUI.enabled = ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (Funding.Instance.Funds > (myResource.resource.unitCost * myResource.multiplierBuy)));
+                                if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
+                                {
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -1, true);
+                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierBuy);
+                                }
+                                GUI.enabled = true;
+                            }
+                            else
+                            {
+                                GUILayout.Space(64);
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+                    }
+                    //GUILayout.Space(4);
                 }
-                //GUILayout.Space(4);
             }
-
+            GUILayout.EndScrollView();
             GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
             if (!String.IsNullOrEmpty(selectedFacility.FacilityName))
             {
