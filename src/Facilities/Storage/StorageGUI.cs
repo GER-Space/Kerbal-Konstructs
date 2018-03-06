@@ -112,7 +112,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.FlexibleSpace();
                     GUILayout.Label("Volume: ", GUILayout.Height(23));
                     GUILayout.Label((resource.volume * storedAmount).ToString() + "/" + selectedFacility.maxVolume.ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                    GUILayout.Space(10);
+                    //GUILayout.Space(10);
                 }
                 GUILayout.EndHorizontal();
                 foreach (PartSet xFeedSet in currentVessel.crossfeedSets)
@@ -125,30 +125,35 @@ namespace KerbalKonstructs.UI
 
                         maxSpaceLeft = selectedFacility.maxVolume - selectedFacility.currentVolume;
                         storableUnits = Math.Min(1, maxSpaceLeft / resource.volume);
-
-                        if (GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
-                        {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
-                            StoreResource(resource, transferred);
-                        }
+                        GUI.enabled = (storableUnits > 0f);
                         if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)))
                         {
                             double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
                             StoreResource(resource, transferred);
                         }
-
+                        if (GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
+                        {
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
+                            StoreResource(resource, transferred);
+                        }
+                        GUI.enabled = true;
                         GUILayout.FlexibleSpace();
 
                         // check if we have enough space to retrieve the resource and if there is anything to retrieve
-                        GUI.enabled = ((storedAmount > 0f) && (xfeedMax > 0));
-                        if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
+                        GUI.enabled = ((xfeedMax > 0) && (storedAmount > 0f));
+                        if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
                         {
-                            if (storedAmount > 0f)
-                            {
-                                double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1,storedAmount), true);
-                                StoreResource(resource, transferred);
-                            }
+
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1, storedAmount), true);
+                            StoreResource(resource, transferred);
+
                         }
+                        if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
+                        {
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1, storedAmount), true);
+                            StoreResource(resource, transferred);
+                        }
+                        GUILayout.Space(10);
                         GUI.enabled = true;
 
 
@@ -202,8 +207,9 @@ namespace KerbalKonstructs.UI
             StoredResource myStoredResource = selectedFacility.storedResources.Where(r => r.resource == resource).FirstOrDefault();
             if (myStoredResource == null)
             {
-                selectedFacility.storedResources.Add(new StoredResource { resource = resource, amount = (float)amount });
-            }
+                myStoredResource = new StoredResource { resource = resource, amount = (float)amount };
+                selectedFacility.storedResources.Add(myStoredResource);
+                            }
             else
             {
                 myStoredResource.amount += (float)amount;

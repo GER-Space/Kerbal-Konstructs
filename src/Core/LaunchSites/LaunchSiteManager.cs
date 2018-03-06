@@ -614,7 +614,7 @@ namespace KerbalKonstructs.Core
 
             KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
 
-            //SetSpaceCenterCam(site);
+           // SetSpaceCenterCam(site);
         }
 
         internal static void SetSpaceCenterCam(LaunchSite site)
@@ -622,8 +622,10 @@ namespace KerbalKonstructs.Core
             SpaceCenterCamera2 scCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
             if (scCam != null)
             {
-                scCam.transform.parent.parent = site.lsGameObject.transform;
-                scCam.transform.parent.position = site.lsGameObject.transform.position;
+                scCam.initialPositionTransformName = site.lsGameObject.transform.name;
+                scCam.transform.parent = site.lsGameObject.transform;
+                scCam.transform.position = site.lsGameObject.transform.position;
+               // scCam.ResetCamera();
             }
         }
 

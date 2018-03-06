@@ -24,8 +24,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        Rect targetSelectorRect = new Rect(640, 120, 220, 420);
-        public static Rect facilityManagerRect = new Rect(150, 75, 320, 670);
+        private static Rect facilityManagerRect = new Rect(150, 75, 400, 670);
 
         public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
 

@@ -112,34 +112,39 @@ namespace KerbalKonstructs.Core
             grasCamera.enabled = true;
             grasCamera.Render();
 
-            Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
-            RaycastHit castHit = new RaycastHit();
-            if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
-            {
-                Log.Normal("NO raycast hit");
-            }
-            else
-            {
+            //Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
+            //RaycastHit castHit = new RaycastHit();
+            //if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
+            //{
+            //    Log.Normal("NO raycast hit");
+            //}
+            //else
+            //{
 
-                Renderer rend = castHit.transform.GetComponent<Renderer>();
+            //    Renderer rend = castHit.transform.GetComponentsInChildren<Renderer>(true).FirstOrDefault();
 
-                if (rend == null || rend.materials.Length == 0 || rend.material.mainTexture == null)
-                {
-                    Log.Normal("No Raycast material found");
-                }
-                else
-                {
-                    Texture2D tex = rend.material.mainTexture as Texture2D;
-                    Vector2 pixelUV = castHit.textureCoord;
-                    pixelUV.x *= tex.width;
-                    pixelUV.y *= tex.height;
+            //    if (rend == null)
+            //    {
+            //        Log.Normal("No renderer found");
+            //    }
+            //    if (rend.materials.Length == 0)
+            //    {
+            //        Log.Normal("No Raycast material found");
+            //    }
+            //    if (rend.material.shader == null)
+            //    {
+            //        Log.Normal("No shader found");
+            //    }
+            //    else
+            //    {
+            //        RenderTexture myTexture = new RenderTexture(20, 20, 24);
+            //        Graphics.Blit(null, myTexture, rend.material);
+            //        myTexture.
+            //    }
+            //}
 
-                    Color myColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                    Log.Normal("FoundRaycastColor: " + myColor.ToString());
-                }
-            }
-            // bring it back to the normal scenery
-            InstanceUtil.SetLayerRecursively(instance, 15);
+                // bring it back to the normal scenery
+                InstanceUtil.SetLayerRecursively(instance, 15);
 
             RenderTexture.active = cameraRenderTexture;
             cameraTexture.ReadPixels(new Rect(0, 0, frameWidth, frameHeight), 0, 0);

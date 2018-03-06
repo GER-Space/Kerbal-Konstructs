@@ -658,19 +658,6 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Scale: x, y ,z: ");
-                GUILayout.FlexibleSpace();
-                selectedDecal.Scale.x = float.Parse(GUILayout.TextField(selectedDecal.Scale.x.ToString(), 4, GUILayout.Width(50)));
-                GUILayout.Space(5);
-                selectedDecal.Scale.y = float.Parse(GUILayout.TextField(selectedDecal.Scale.y.ToString(), 4, GUILayout.Width(50)));
-                GUILayout.Space(5);
-                selectedDecal.Scale.z = float.Parse(GUILayout.TextField(selectedDecal.Scale.z.ToString(), 4, GUILayout.Width(50)));
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 
 
             selectedDecal.RemoveScatter = GUILayout.Toggle(selectedDecal.RemoveScatter, "Remove the Scatter Objects (trees/rocks)", GUILayout.Width(250), GUILayout.Height(23));

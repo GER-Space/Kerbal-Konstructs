@@ -219,6 +219,11 @@ namespace KerbalKonstructs.UI
                         MerchantFields();
                     }
                     break;
+                case KKFacilityType.Storage:
+                    {
+                        StorageFields();
+                    }
+                    break;
                 default:
                     break;
 
