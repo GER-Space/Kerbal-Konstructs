@@ -347,6 +347,31 @@ namespace KerbalKonstructs.UI
 
 
         /// <summary>
+        /// Storage Subwindow
+        /// </summary>
+        private void StorageFields()
+        {
+            GUI.enabled = true;
+            Storage facStorage = selectedObject.myFacilities[0] as Storage;
+            if (facStorage.maxVolume == 0f)
+            {
+                foreach (var renderer in selectedObject.gameObject.GetComponentsInChildren<Renderer>(true))
+                {
+                    Vector3 size = renderer.bounds.size;
+                    facStorage.maxVolume += (size.x * size.y * size.z);
+                }
+            }
+            // round this to some straight numbers
+            facStorage.maxVolume = (float)Math.Round(facStorage.maxVolume / 100, 0) * 100;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("MaxVolume: ", LabelGreen);
+            GUILayout.FlexibleSpace();
+            facStorage.maxVolume = Math.Max(0,float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
+            GUILayout.Label(" m^3", LabelWhite);
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary>
         /// GroundStation Subwindow
         /// </summary>
         private void GroundStationFields()

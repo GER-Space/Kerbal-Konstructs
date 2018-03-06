@@ -23,6 +23,9 @@ namespace KerbalKonstructs.UI
 
         private static HashSet<string> blackListedResources = new HashSet<string> { "ElectricCharge", "IntakeAir"};
 
+        private static float maxSpaceLeft = 0f;
+        private static double storableUnits = 0f;
+
         internal static void StorageInerface(StaticInstance instance)
         {
             if (instance != lastInstance)
@@ -39,6 +42,14 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Label("Store or retrieve these resources: ", GUILayout.Height(30));
 
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Volume used: ", GUILayout.Height(23));
+                GUILayout.Label(selectedFacility.currentVolume.ToString() + "/" + selectedFacility.maxVolume.ToString(), UIMain.LabelInfo, GUILayout.Height(23));
+                GUILayout.Space(10);
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
 
             ShowRetrieveGUI();
             
@@ -98,7 +109,7 @@ namespace KerbalKonstructs.UI
 
                     GUILayout.FlexibleSpace();
                     GUILayout.Label("Volume: ", GUILayout.Height(23));
-                    GUILayout.Label((resource.volume * storedAmount).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
+                    GUILayout.Label((resource.volume * storedAmount).ToString() + "/" + selectedFacility.maxVolume.ToString(), UIMain.LabelInfo, GUILayout.Height(23));
                     GUILayout.Space(10);
                 }
                 GUILayout.EndHorizontal();
@@ -110,30 +121,31 @@ namespace KerbalKonstructs.UI
                         GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
                         GUILayout.FlexibleSpace();
 
+                        maxSpaceLeft = selectedFacility.maxVolume - selectedFacility.currentVolume;
+                        storableUnits = Math.Min(1, maxSpaceLeft / resource.volume);
+
                         if (GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
                         {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, 1, true);
-                            ResourceStore(resource, transferred);
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
+                            StoreResource(resource, transferred);
                         }
                         if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)))
                         {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, 1, true);
-                            ResourceStore(resource, transferred);
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
+                            StoreResource(resource, transferred);
                         }
 
                         GUILayout.FlexibleSpace();
 
-                        // check if we have enough space to store the resources and if we have enough stored
-                        GUI.enabled = (storedAmount > 0f);
+                        // check if we have enough space to retrieve the resource and if there is anything to retrieve
+                        GUI.enabled = ((storedAmount > 0f) && (xfeedMax > 0));
                         if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
                         {
                             if (storedAmount > 0f)
                             {
                                 double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1,storedAmount), true);
-                                ResourceStore(resource, transferred);
+                                StoreResource(resource, transferred);
                             }
-
-
                         }
                         GUI.enabled = true;
 
@@ -179,7 +191,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal static void ResourceStore(PartResourceDefinition resource, double amount)
+        internal static void StoreResource(PartResourceDefinition resource, double amount)
         {
             StoredResource myStoredResource = selectedFacility.storedResources.Where(r => r.resource == resource).FirstOrDefault();
             if (myStoredResource == null)

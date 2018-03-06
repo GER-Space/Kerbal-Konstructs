@@ -18,10 +18,24 @@ namespace KerbalKonstructs.Modules
     {
 
         [CFGSetting]
-        public float MaxAmount = 0f;
+        public float maxVolume = 0f;
 
 
         internal HashSet<StoredResource> storedResources = new HashSet<StoredResource>();
+
+        private float retval;
+        internal float currentVolume
+        {
+            get
+            {
+                retval = 0;
+                foreach (StoredResource resource in storedResources)
+                {
+                    retval += (resource.amount * resource.resource.volume);
+                }
+                return retval;
+            }
+        }
 
         /// <summary>
         /// Override to the normal config parser, so we can load the resources
