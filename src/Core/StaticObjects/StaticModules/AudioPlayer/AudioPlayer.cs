@@ -16,7 +16,8 @@ namespace KerbalKonstructs
         public float maxDistance = 500;
         public bool loop = true;
         public float volume = 1;
-        AudioSource audioPlayer = null;
+
+        internal AudioSource audioPlayer = null;
 
         public void Start()
         {

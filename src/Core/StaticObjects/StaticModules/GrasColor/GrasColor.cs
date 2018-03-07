@@ -164,7 +164,9 @@ namespace KerbalKonstructs
                 {
                     //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
                     //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
-                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false) && grasRenderer.material.HasProperty("_BumpMap")){
+                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false) && grasRenderer.material.HasProperty("_BumpMap"))
+                    {
+                        grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
                         grasRenderer.material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true));
                     }
                 }

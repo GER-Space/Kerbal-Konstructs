@@ -38,11 +38,11 @@ namespace KerbalKonstructs.Career
 
             KerbalKonstructs.instance.LoadKKConfig(node);
 
-            if (CareerUtils.isCareerGame)
-            {
+            //if (CareerUtils.isCareerGame)
+            //{
                 Log.Normal("KKScenario loading facility states");
                 CareerState.Load(node);
-            }
+            //}
 
             RemoteNet.LoadGroundStations();
 
@@ -59,11 +59,11 @@ namespace KerbalKonstructs.Career
 
             KerbalKonstructs.instance.SaveKKConfig(node);
 
-            if (CareerUtils.isCareerGame)
-            {
+            //if (CareerUtils.isCareerGame)
+            //{
                 Log.Normal("KKScenario saving career state");
                 CareerState.Save(node);
-            }
+            //}
         }
 
         public void Start()
