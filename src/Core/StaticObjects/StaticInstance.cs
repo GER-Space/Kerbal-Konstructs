@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
 
 
         public bool hasLauchSites = false;
-        public LaunchSite launchSite;
+        public KKLaunchSite launchSite;
 
         public KKFacilityType facilityType = KKFacilityType.None;
         public List<KKFacility> myFacilities = new List<KKFacility>();

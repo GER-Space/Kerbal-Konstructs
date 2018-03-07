@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Core
         internal StaticInstance staticInstance;
         internal GameObject gameObject;
 
-        public static void CreateFromLaunchsite(LaunchSite site)
+        public static void CreateFromLaunchsite(KKLaunchSite site)
         {
             StaticInstance parentinstance = site.parentInstance;
             if (parentinstance != null)

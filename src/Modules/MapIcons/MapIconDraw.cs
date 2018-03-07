@@ -31,15 +31,15 @@ namespace KerbalKonstructs.Modules
         private Boolean displayingTooltip = false;
         private Boolean displayingTooltip2 = false;
 
-        static LaunchSite selectedSite = null;
+        static KKLaunchSite selectedSite = null;
         static StaticInstance selectedFacility = null;
 
         internal static bool mapHideIconsBehindBody = true;
 
         private static List<StaticInstance> groundStations;
-        private static LaunchSite[] lauchSites;
+        private static KKLaunchSite[] lauchSites;
 
-        private LaunchSite launchSite;
+        private KKLaunchSite launchSite;
         private CelestialBody body;
         private StaticInstance groundStation;
         private bool display2 = false;
@@ -300,9 +300,9 @@ namespace KerbalKonstructs.Modules
             return true;
         }
 
-        public static LaunchSite getSelectedSite()
+        public static KKLaunchSite getSelectedSite()
         {
-            LaunchSite thisSite = selectedSite;
+            KKLaunchSite thisSite = selectedSite;
             return thisSite;
         }
 

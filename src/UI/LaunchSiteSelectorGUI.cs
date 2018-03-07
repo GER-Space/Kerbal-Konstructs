@@ -26,7 +26,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        internal LaunchSite selectedSite;
+        internal KKLaunchSite selectedSite;
 
         private LaunchSiteCategory category;
 
@@ -43,7 +43,7 @@ namespace KerbalKonstructs.UI
         public bool showClosed = true;
         public bool showFavOnly = false;
 
-        private LaunchSite defaultSite = null;
+        private KKLaunchSite defaultSite = null;
 
 
         private string launchButtonName = "";
@@ -244,7 +244,7 @@ namespace KerbalKonstructs.UI
 
             sitesScrollPosition = GUILayout.BeginScrollView(sitesScrollPosition);
             {
-                foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
+                foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
                 {
                     if (showFavOnly && (site.favouriteSite != "Yes"))
                     {
