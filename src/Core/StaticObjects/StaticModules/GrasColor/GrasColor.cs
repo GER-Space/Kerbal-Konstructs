@@ -82,7 +82,7 @@ namespace KerbalKonstructs
         internal Color GetColor()
         {
             Color underGroundColor = Color.clear;
-            if (staticInstance.GrasColor == Color.clear || StaticsEditorGUI.instance.IsOpen())
+            if (staticInstance.GrasColor == Color.clear || (StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)  )
             {
                 if (usePQS)
                 {

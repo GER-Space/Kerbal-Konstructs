@@ -31,6 +31,8 @@ namespace KerbalKonstructs.UI
         internal Boolean foldedIn = false;
         internal Boolean doneFold = false;
 
+
+
         #region Texture Definitions
         // Texture definitions
         internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);        
@@ -54,7 +56,7 @@ namespace KerbalKonstructs.UI
         //   public static Boolean editingFacility = false;
 
         internal Boolean SnapRotateMode = false;
-
+        internal bool grasColorModeIsAuto = true;
 
         #endregion
 
@@ -707,6 +709,33 @@ namespace KerbalKonstructs.UI
                     }
                 }
             }
+
+            if (!foldedIn)
+            {
+                if (selectedObject.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+                {
+                    GUILayout.BeginHorizontal();
+                    {
+
+                        grasColorModeIsAuto = GUILayout.Toggle(grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
+                        if (!grasColorModeIsAuto)
+                        {
+                            selectedObject.GrasColor.r = float.Parse(GUILayout.TextField(selectedObject.GrasColor.r.ToString(), 5, GUILayout.Width(48)));
+                            selectedObject.GrasColor.g = float.Parse(GUILayout.TextField(selectedObject.GrasColor.g.ToString(), 5, GUILayout.Width(48)));
+                            selectedObject.GrasColor.b = float.Parse(GUILayout.TextField(selectedObject.GrasColor.b.ToString(), 5, GUILayout.Width(48)));
+                            selectedObject.GrasColor.a = float.Parse(GUILayout.TextField(selectedObject.GrasColor.a.ToString(), 5, GUILayout.Width(48)));
+                        }
+                    }
+                    GUILayout.EndHorizontal();
+                    if (GUILayout.Button("Apply: " + selectedObject.facilityType.ToString(), GUILayout.Height(15)))
+                    {
+                        ApplySettings();
+                    }
+                }
+            }
+
+
+
 
             GUILayout.BeginHorizontal();
             {
