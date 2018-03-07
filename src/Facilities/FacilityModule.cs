@@ -155,9 +155,6 @@ namespace KerbalKonstructs.Modules
                 InitTypes();
             }
 
-
-
-
             myFields = allFields[this.GetType().Name];
 
             foreach (var field in myFields.Values)
@@ -313,7 +310,7 @@ namespace KerbalKonstructs.Modules
         internal void AttachSelector()
         {
             Type myType = this.GetType();
-            if (myType.Name == "LaunchSite"  || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR"  )
+            if (myType.Name == "KKLaunchSite"  || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR"  )
             {
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
@@ -352,6 +349,15 @@ namespace KerbalKonstructs.Modules
 
         void OnMouseEnter()
         {
+            if (staticInstance == null)
+            {
+                staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
+            }
+            if (staticInstance == null)
+            {
+                Log.UserInfo("Cound not determin instance for mouse selector");
+                Destroy(this);
+            }
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
                 if (staticInstance.myFacilities[0].isOpen)

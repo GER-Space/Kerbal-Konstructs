@@ -62,7 +62,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 330, 756);
+        internal Rect toolRect = new Rect(300, 35, 330, 760);
 
         #endregion
 
@@ -714,22 +714,29 @@ namespace KerbalKonstructs.UI
             {
                 if (selectedObject.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
                 {
-                    GUILayout.BeginHorizontal();
-                    {
 
-                        grasColorModeIsAuto = GUILayout.Toggle(grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
-                        if (!grasColorModeIsAuto)
-                        {
-                            selectedObject.GrasColor.r = float.Parse(GUILayout.TextField(selectedObject.GrasColor.r.ToString(), 5, GUILayout.Width(48)));
-                            selectedObject.GrasColor.g = float.Parse(GUILayout.TextField(selectedObject.GrasColor.g.ToString(), 5, GUILayout.Width(48)));
-                            selectedObject.GrasColor.b = float.Parse(GUILayout.TextField(selectedObject.GrasColor.b.ToString(), 5, GUILayout.Width(48)));
-                            selectedObject.GrasColor.a = float.Parse(GUILayout.TextField(selectedObject.GrasColor.a.ToString(), 5, GUILayout.Width(48)));
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                    if (GUILayout.Button("Apply: " + selectedObject.facilityType.ToString(), GUILayout.Height(15)))
+
+                    grasColorModeIsAuto = GUILayout.Toggle(grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
+                    if (!grasColorModeIsAuto)
                     {
-                        ApplySettings();
+                        GUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Label("R", GUILayout.Height(18));
+                            selectedObject.GrasColor.r = float.Parse(GUILayout.TextField(selectedObject.GrasColor.r.ToString(), 5, GUILayout.Width(48), GUILayout.Height(18)));
+                            GUILayout.Label("G", GUILayout.Height(18));
+                            selectedObject.GrasColor.g = float.Parse(GUILayout.TextField(selectedObject.GrasColor.g.ToString(), 5, GUILayout.Width(48), GUILayout.Height(18)));
+                            GUILayout.Label("B", GUILayout.Height(18));
+                            selectedObject.GrasColor.b = float.Parse(GUILayout.TextField(selectedObject.GrasColor.b.ToString(), 5, GUILayout.Width(48), GUILayout.Height(18)));
+                            GUILayout.Label("A", GUILayout.Height(18));
+                            selectedObject.GrasColor.a = float.Parse(GUILayout.TextField(selectedObject.GrasColor.a.ToString(), 5, GUILayout.Width(48), GUILayout.Height(18)));
+
+                            if (GUILayout.Button("Apply", GUILayout.Height(18)))
+                            {
+                                ApplySettings();
+                            }
+
+                        }
+                        GUILayout.EndHorizontal();
                     }
                 }
             }

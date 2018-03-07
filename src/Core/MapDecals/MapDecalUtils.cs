@@ -11,12 +11,12 @@ namespace KerbalKonstructs.Core
     {
         internal static void GetSquadMaps ()
         {
-            MapDecalsMap noHeighmap = new MapDecalsMap();
+            MapDecalsMap noHeighmap = ScriptableObject.CreateInstance<MapDecalsMap>();
             noHeighmap.map = null;
             noHeighmap.isHeightMap = true;
             noHeighmap.Name = "None";
 
-            MapDecalsMap noColormap = new MapDecalsMap();
+            MapDecalsMap noColormap = ScriptableObject.CreateInstance<MapDecalsMap>();
             noColormap.map = null;
             noColormap.isHeightMap = false;
             noColormap.Name = "None";
@@ -33,7 +33,7 @@ namespace KerbalKonstructs.Core
             //    Log.Normal("Stats for: " + mapDecal.name);
                 if (mapDecal.heightMap != null)
                 {
-                    MapDecalsMap heightMap = new MapDecalsMap();
+                    MapDecalsMap heightMap = ScriptableObject.CreateInstance<MapDecalsMap>();
                     heightMap.isHeightMap = true;
                     heightMap.map = mapDecal.heightMap;
                     heightMap.Name = "height_" + mapDecal.name;
@@ -45,7 +45,7 @@ namespace KerbalKonstructs.Core
 
                 if (mapDecal.colorMap != null)
                 {
-                    MapDecalsMap colorMap = new MapDecalsMap();
+                    MapDecalsMap colorMap = ScriptableObject.CreateInstance<MapDecalsMap>();
                     colorMap.isHeightMap = false;
                     colorMap.map = mapDecal.colorMap;
                     colorMap.Name = "color_" + mapDecal.name;
@@ -83,7 +83,7 @@ namespace KerbalKonstructs.Core
 
                 if (mapDecal.heightMap != null)
                 {
-                    MapDecalsMap heightMap = new MapDecalsMap();
+                    MapDecalsMap heightMap = ScriptableObject.CreateInstance<MapDecalsMap>();
                     heightMap.isHeightMap = true;
                     heightMap.map = mapDecal.heightMap;
                     heightMap.Name = "height_" + mapDecal.name;
@@ -93,7 +93,7 @@ namespace KerbalKonstructs.Core
 
                 if (mapDecal.colorMap != null)
                 {
-                    MapDecalsMap colorMap = new MapDecalsMap();
+                    MapDecalsMap colorMap = ScriptableObject.CreateInstance<MapDecalsMap>();
                     colorMap.isHeightMap = false;
                     colorMap.map = mapDecal.colorMap;
                     colorMap.Name = "color_" + mapDecal.name;

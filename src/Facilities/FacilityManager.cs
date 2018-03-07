@@ -65,7 +65,19 @@ namespace KerbalKonstructs.UI
         {
             if (KerbalKonstructs.instance.selectedObject != null)
                 KerbalKonstructs.instance.deselectObject(true, true);
+
+
+            MerchantGUI.lastInstance = null;
+            StorageGUI.lastInstance = null;
             base.Close();
+        }
+
+
+        public override void Open()
+        {
+            MerchantGUI.lastInstance = null;
+            StorageGUI.lastInstance = null;
+            base.Open();
         }
 
         public override void Draw()

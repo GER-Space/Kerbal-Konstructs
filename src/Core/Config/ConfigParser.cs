@@ -292,7 +292,7 @@ namespace KerbalKonstructs.Core
             foreach (UrlDir.UrlConfig conf in configs)
             {
                 //create new Instance and Register in Database
-                MapDecalsMap newMapDecalInstance = new MapDecalsMap();
+                MapDecalsMap newMapDecalInstance = ScriptableObject.CreateInstance<MapDecalsMap>();
                 // Load Settings into instance
                 ParseDecalsMapConfig(newMapDecalInstance, conf.config);
 
@@ -305,12 +305,14 @@ namespace KerbalKonstructs.Core
                     continue;
                 }
 
-                if (newMapDecalInstance.UseAsHeighMap) {
+                if (newMapDecalInstance.UseAsHeighMap)
+                {
                     newMapDecalInstance.CreateMap(MapSO.MapDepth.Greyscale, newMapDecalInstance.mapTexture);
                     newMapDecalInstance.isHeightMap = true;
-                } else
+                }
+                else
                 {
-                    newMapDecalInstance.CreateMap(MapSO.MapDepth.RGB, newMapDecalInstance.mapTexture);
+                    newMapDecalInstance.CreateMap(MapSO.MapDepth.RGBA, newMapDecalInstance.mapTexture);
                 }
                 Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + newMapDecalInstance.isHeightMap.ToString());
 

@@ -92,6 +92,7 @@ namespace KerbalKonstructs
                 {
                     underGroundColor = GrasColorCam.instance.GetCameraColor(staticInstance);
                 }
+                underGroundColor.a = underGroundColor.b - underGroundColor.g;
                 staticInstance.GrasColor = underGroundColor;
             }
             else
@@ -99,8 +100,6 @@ namespace KerbalKonstructs
                 underGroundColor = staticInstance.GrasColor;
             }
             //Log.Normal("underGroundColor: " + underGroundColor.ToString());
-            underGroundColor.a = underGroundColor.b - underGroundColor.g;
-            staticInstance.GrasColor = underGroundColor;
             return underGroundColor;
         }
 
