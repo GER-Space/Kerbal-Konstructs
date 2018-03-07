@@ -51,50 +51,58 @@ namespace KerbalKonstructs
 
 			// Fetch parameter from cfg, using Kerbal Konstructs way
 			var myFields = this.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-			foreach (var field in myFields) {
-				switch (field.Name) {
-				case "animationName":
-					animationName = (string)field.GetValue (this);
-					break;
-				case "reverseAnimation":
-					reverseAnimation = (bool)field.GetValue (this);
-					break;
-				case "timeWarpAnimation":
-					timeWarpAnimation = (bool)field.GetValue (this);
-					break;
-				case "delayLowTimeWarp":
-					delayLowTimeWarp = (float)field.GetValue (this);
-					break;
-				case "delayHighTimeWarp":
-					delayHighTimeWarp = (float)field.GetValue (this);
-					break;
-				case "mathHorizontalAngle":
-					mathHorizontalAngle = (bool)field.GetValue (this);
-					break;
+			foreach (var field in myFields)
+            {
+                switch (field.Name)
+                {
+                    case "animationName":
+                        animationName = (string)field.GetValue(this);
+                        break;
+                    case "reverseAnimation":
+                        reverseAnimation = (bool)field.GetValue(this);
+                        break;
+                    case "timeWarpAnimation":
+                        timeWarpAnimation = (bool)field.GetValue(this);
+                        break;
+                    case "delayLowTimeWarp":
+                        delayLowTimeWarp = (float)field.GetValue(this);
+                        break;
+                    case "delayHighTimeWarp":
+                        delayHighTimeWarp = (float)field.GetValue(this);
+                        break;
+                    case "mathHorizontalAngle":
+                        mathHorizontalAngle = (bool)field.GetValue(this);
+                        break;
 
-				case "horizonAngleOffset":
-					horizonAngleOffset = (float)field.GetValue (this);
-					break;
-				default:
-					break;
-				}
+                    case "horizonAngleOffset":
+                        horizonAngleOffset = (float)field.GetValue(this);
+                        break;
+                    default:
+                        break;
+                }
 			}
 
-			foreach (Animation anim in gameObject.GetComponentsInChildren<Animation> ()) {
-				if (anim [animationName] != null) {
+			foreach (Animation anim in gameObject.GetComponentsInChildren<Animation> ())
+            {
+				if (anim [animationName] != null)
+                {
 					animationComponent = anim;
 					break;
 				}
 			}
-			if (animationComponent == null) {
-				foreach (Animation anim in gameObject.GetComponents<Animation> ()) {
-					if (anim [animationName] != null) {
+			if (animationComponent == null)
+            {
+				foreach (Animation anim in gameObject.GetComponents<Animation> ())
+                {
+					if (anim [animationName] != null)
+                    {
 						animationComponent = anim;
 						break;
 					}
 				}
 			}
-			if (animationComponent == null) {
+			if (animationComponent == null)
+            {
 				Debug.Log ("[StaticLight] no anim found, destroying now");
 				Destroy (this);
 			}
@@ -123,7 +131,8 @@ namespace KerbalKonstructs
 
 			SetGroup ();
 
-			if (isMaster) {
+			if (isMaster)
+            {
 				boundsCenter = GetBoundsCenter ();
 				horizonAngle = GetHorizonAngle ();
 				centerToStatic = FlightGlobals.getUpAxis (FlightGlobals.currentMainBody, boundsCenter);
@@ -141,10 +150,13 @@ namespace KerbalKonstructs
 		{
 			animIsPlaying = false;
 
-			if (reverseAnimation) {
+			if (reverseAnimation)
+            {
 				animationComponent [animationName].normalizedTime = 1f;
 				animIsOn = true;
-			} else {
+			}
+            else
+            {
 				animationComponent [animationName].time = 0;
 				animIsOn = false;
 			}
@@ -153,17 +165,21 @@ namespace KerbalKonstructs
 		void OnDestroy ()
 		{
 			if (isMaster) {
-				if (slaveList.Count > 0) {
+				if (slaveList.Count > 0)
+                {
 					slaveList [0].SetUp ();
 				}
-			} else {
+			}
+            else
+            {
 				master.SetUp ();
 			}
 		}
 
 		public override void StaticObjectUpdate ()
 		{
-			if (hasStarted) {
+			if (hasStarted)
+            {
 				StopObject ();
 			}
 		}
@@ -171,7 +187,8 @@ namespace KerbalKonstructs
 		private void StaticObjectEditorOpen ()
 		{
 			StopObject ();
-			foreach (AnimateOnSunRise module in slaveList) {
+			foreach (AnimateOnSunRise module in slaveList)
+            {
 				module.StopObject ();
 			}
 			guiIsUp = true;
@@ -188,7 +205,8 @@ namespace KerbalKonstructs
 		{
 			slaveList = new List<AnimateOnSunRise> ();
 
-			if (staticInstance.Group == "Ungrouped") {
+			if (staticInstance.Group == "Ungrouped")
+            {
 				master = this;
 				isMaster = true;
 				return;
@@ -196,17 +214,24 @@ namespace KerbalKonstructs
 
 			bool findMaster = false;
 
-			foreach (StaticInstance sInstance in StaticDatabase.GetAllStatics ()) {
-				if (sInstance != staticInstance) {
-					if (sInstance.Group == staticInstance.Group) {
+			foreach (StaticInstance sInstance in StaticDatabase.GetAllStatics ())
+            {
+				if (sInstance != staticInstance)
+                {
+					if (sInstance.Group == staticInstance.Group)
+                    {
 						AnimateOnSunRise module = sInstance.gameObject.GetComponentInChildren<AnimateOnSunRise> ();
-						if (module != null) {
-							if (module.isMaster) {
+						if (module != null)
+                        {
+							if (module.isMaster)
+                            {
 								master = module;
 								findMaster = true;
 								isMaster = false;
 								break;
-							} else {
+							}
+                            else
+                            {
 								slaveList.Add (module);
 							}
 						}
@@ -214,7 +239,8 @@ namespace KerbalKonstructs
 				}
 			}
 
-			if (!findMaster) {
+			if (!findMaster)
+            {
 				master = this;
 				isMaster = true;
 			}
@@ -223,7 +249,8 @@ namespace KerbalKonstructs
 		private Vector3 GetBoundsCenter ()
 		{
 			Bounds groupBounds = new Bounds ();
-			foreach (AnimateOnSunRise module in slaveList) {
+			foreach (AnimateOnSunRise module in slaveList)
+            {
 				
 				groupBounds.Encapsulate (GetBounds (module.gameObject));
 			}
@@ -238,13 +265,16 @@ namespace KerbalKonstructs
 			Bounds meshBounds = staticObject.GetComponentInChildren<MeshFilter> ().mesh.bounds;
 			Bounds colliderBounds = new Bounds ();
 
-			if (staticObject.GetComponentInChildren<Collider> () != null) {
+			if (staticObject.GetComponentInChildren<Collider> () != null)
+            {
 				colliderBounds = staticObject.GetComponentInChildren<Collider> ().bounds;
 			}
 
-			if (meshBounds.size.y > colliderBounds.size.y) {
+			if (meshBounds.size.y > colliderBounds.size.y)
+            {
 				return meshBounds;
-			} else {
+			} else
+            {
 				return colliderBounds;
 			}
 		}
@@ -253,12 +283,14 @@ namespace KerbalKonstructs
 		{
 			float angleHor;
 
-			if (mathHorizontalAngle) {
+			if (mathHorizontalAngle)
+            {
 				float height = Vector3.Distance (boundsCenter, FlightGlobals.currentMainBody.position);
 				float sinus = (float)FlightGlobals.currentMainBody.Radius / height;
 				float angle = Mathf.Asin (sinus) * Mathf.Rad2Deg;
 				angleHor = 180f - angle;
-			} else {
+			} else
+            {
 				angleHor = 90f;
 			}
 
@@ -267,18 +299,23 @@ namespace KerbalKonstructs
 
 		void Update ()
 		{
-			if (isMaster && hasStarted) {
-				if (UI.StaticsEditorGUI.instance.IsOpen () && !guiIsUp) {
+			if (isMaster && hasStarted)
+            {
+				if (UI.StaticsEditorGUI.instance.IsOpen () && !guiIsUp)
+                {
 					StaticObjectEditorOpen ();
 					return;
 				}
-				if (guiIsUp && !UI.StaticsEditorGUI.instance.IsOpen ()) {
+				if (guiIsUp && !UI.StaticsEditorGUI.instance.IsOpen ())
+                {
 					StaticObjectEditorClose ();
 					return;
 				}
 
-				if (!guiIsUp && !mainCoroutineHasStarted) {
-					if (this.isActiveAndEnabled) {
+				if (!guiIsUp && !mainCoroutineHasStarted)
+                {
+					if (this.isActiveAndEnabled)
+                    {
 						SetUp ();
 						StartCoroutine ("SearchTheSun");
 					}
@@ -288,7 +325,8 @@ namespace KerbalKonstructs
 
 		private void CheckSunPos ()
 		{
-			if (animIsPlaying || slaveList.Exists (module => (module.animIsPlaying))) {
+			if (animIsPlaying || slaveList.Exists (module => (module.animIsPlaying)))
+            {
 				return;
 			}
 
@@ -298,7 +336,8 @@ namespace KerbalKonstructs
 			{
 				StartCoroutine ("StartAnim", false);
 
-				foreach (AnimateOnSunRise module in slaveList) {
+				foreach (AnimateOnSunRise module in slaveList)
+                {
 					module.StartCoroutine ("StartAnim", false);
 				}
 
@@ -308,10 +347,10 @@ namespace KerbalKonstructs
 			{
 				StartCoroutine ("StartAnim", true);
 
-				foreach (AnimateOnSunRise module in slaveList) {
+				foreach (AnimateOnSunRise module in slaveList)
+                {
 					module.StartCoroutine ("StartAnim", true);
 				}
-
 			}
 		}
 
@@ -320,9 +359,12 @@ namespace KerbalKonstructs
 			Vector3 staticToSun = sun.position - boundsCenter;
 			float sunAngle = Vector3.Angle (centerToStatic, staticToSun);
 
-			if (sunAngle < horizonAngle) {
+			if (sunAngle < horizonAngle)
+            {
 				return true;
-			} else {
+			}
+            else
+            {
 				return false;
 			}
 		}
@@ -333,9 +375,12 @@ namespace KerbalKonstructs
 			while (true) {
 				
 				CheckSunPos ();
-				if (TimeWarp.CurrentRate < 5f) {
+				if (TimeWarp.CurrentRate < 5f)
+                {
 					yield return timeWarpDelays [(int)TimeWarp.CurrentRate];
-				} else {
+				}
+                else
+                {
 					yield return timeWarpDelays [0];
 				}
 			}
@@ -343,13 +388,17 @@ namespace KerbalKonstructs
 
 		internal IEnumerator StartAnim (bool turnOn)
 		{
-			while (animIsPlaying) {
+			while (animIsPlaying)
+            {
 				yield return timeWarpDelays [0];
 			}
 
-			if (turnOn) {
+			if (turnOn)
+            {
 				StartCoroutine ("SwitchOn");
-			} else {
+			}
+            else
+            {
 				StartCoroutine ("SwitchOff");
 			}
 		}
@@ -357,15 +406,19 @@ namespace KerbalKonstructs
 		private IEnumerator SwitchOn ()
 		{
 			animIsPlaying = true;
-			if (reverseAnimation) {
+			if (reverseAnimation)
+            {
 				animationComponent [animationName].speed = -animationSpeed;
 				animationComponent [animationName].normalizedTime = 1f;
-			} else {
+			}
+            else
+            {
 				animationComponent [animationName].speed = animationSpeed;
 				animationComponent [animationName].time = 0;
 			}
 
-			if (timeWarpAnimation) {
+			if (timeWarpAnimation)
+            {
 				animationComponent [animationName].speed *= TimeWarp.CurrentRate;
 			}
 
@@ -378,15 +431,19 @@ namespace KerbalKonstructs
 		private IEnumerator SwitchOff ()
 		{
 			animIsPlaying = true;
-			if (reverseAnimation) {
+			if (reverseAnimation)
+            {
 				animationComponent [animationName].speed = animationSpeed;
 				animationComponent [animationName].time = 0;
-			} else {
+			}
+            else
+            {
 				animationComponent [animationName].speed = -animationSpeed;
 				animationComponent [animationName].normalizedTime = 1f;
 			}
 
-			if (timeWarpAnimation) {
+			if (timeWarpAnimation)
+            {
 				animationComponent [animationName].speed *= TimeWarp.CurrentRate;
 			}
 

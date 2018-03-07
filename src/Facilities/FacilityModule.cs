@@ -315,7 +315,7 @@ namespace KerbalKonstructs.Modules
             Type myType = this.GetType();
             if (myType.Name == "LaunchSite"  || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR"  )
             {
-                Log.Normal("Skipping facility mouse support for:" + myType.Name);
+                //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
             }
 
@@ -344,8 +344,6 @@ namespace KerbalKonstructs.Modules
         {
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                //Log.Normal("Mouse pressed on: " + staticInstance.gameObject.name);
-                //Log.Normal("Open Facility Window");
                 FacilityManager.selectedInstance = staticInstance;
                 FacilityManager.instance.Open();
 
@@ -377,11 +375,6 @@ namespace KerbalKonstructs.Modules
         }
         #endregion
 
-        // clean up the facSelector
-        //public void OnDestroy()
-        //{
-        //    Log.Normal("Facility Selector Destroyed");
-        //}
 
     }
 
