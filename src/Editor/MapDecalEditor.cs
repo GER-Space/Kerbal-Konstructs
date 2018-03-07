@@ -501,12 +501,12 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(125, selectedDecal.Radius);
+                    selectedDecal.Radius = Math.Max(1, selectedDecal.Radius);
                 }
                 if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
                     selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(125, selectedDecal.Radius);
+                    selectedDecal.Radius = Math.Max(1, selectedDecal.Radius);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -661,11 +661,6 @@ namespace KerbalKonstructs.UI
 
 
             selectedDecal.RemoveScatter = GUILayout.Toggle(selectedDecal.RemoveScatter, "Remove the Scatter Objects (trees/rocks)", GUILayout.Width(250), GUILayout.Height(23));
-                //if (isScanable2 != isScanable)
-                //{
-                //    isScanable = isScanable2;
-                //    saveSettings();
-                //}
             selectedDecal.UseAlphaHeightSmoothing = GUILayout.Toggle(selectedDecal.UseAlphaHeightSmoothing, "UseAlphaHeightSmoothing", GUILayout.Width(250), GUILayout.Height(23));
             selectedDecal.CullBlack = GUILayout.Toggle(selectedDecal.CullBlack, "Cullblack", GUILayout.Width(250), GUILayout.Height(23));
 
