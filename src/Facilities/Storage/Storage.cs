@@ -16,9 +16,6 @@ namespace KerbalKonstructs.Modules
 
     public class Storage : KKFacility
     {
-
-
-
         [CFGSetting]
         public float maxVolume = 0f;
 
