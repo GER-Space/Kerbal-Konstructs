@@ -747,26 +747,10 @@ namespace KerbalKonstructs
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
-                    //foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true).Where(rend => rend.material.color.ToString() == new Color(0.640f, 0.728f, 0.171f, 0.729f).ToString()))
-                    //{
-                    //    Log.Normal("found material in " + model.name);
-                    //    Log.Normal(renderer.material.name);
-                    //    Log.Normal(renderer.material.shader.name);
-
-                    //}
-
-                    Log.Normal("Stats for: " + model.name);
                     // Register new GasColor Module
                     bool hasGrasMaterial = false;
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-                        foreach (var material in renderer.sharedMaterials)
-                        {
-                            if (material.mainTexture != null && material.shader != null)
-                            {
-                                Log.Normal("Material: " + material.name + " , " + material.shader.name + " , " + material.mainTexture.name + " , " + material.color.ToString());
-                            }
-                        }
                         foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
                         {
                             //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
@@ -780,7 +764,7 @@ namespace KerbalKonstructs
                         StaticModule module = new StaticModule();
                         module.moduleNamespace = "KerbalKonstructs";
                         module.moduleClassname = "GrasColor";
-                        module.moduleFields.Add("GrasTextureImage", "BUILTIN:/ksc_exterior_terrain_ground");
+                        module.moduleFields.Add("GrasTextureImage", "BUILTIN:/terrain_grass00_new");
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);
                     }
@@ -818,8 +802,6 @@ namespace KerbalKonstructs
 
                         }
                     }
-
-
                 }
             }
 
