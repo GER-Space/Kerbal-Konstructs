@@ -62,7 +62,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 330, 718);
+        internal Rect toolRect = new Rect(300, 35, 330, 756);
 
         #endregion
 
