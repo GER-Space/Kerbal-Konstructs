@@ -36,8 +36,8 @@ namespace BWStatics
             Debug.Log ("AutoKourseModule: heading = " + heading);
 			int dg0 = heading / 10 % 10;
 			int dg1 = heading / 100 % 10;
-			Transform digit0 = gameObject.transform.GetChild(0).FindChild("digit0_obj");
-			Transform digit1 = gameObject.transform.GetChild(0).FindChild("digit1_obj");
+			Transform digit0 = gameObject.transform.GetChild(0).Find("digit0_obj");
+			Transform digit1 = gameObject.transform.GetChild(0).Find("digit1_obj");
 
 			Renderer dg0renderer = digit0.GetComponent<Renderer>();
 			Renderer dg1renderer = digit1.GetComponent<Renderer>();

@@ -89,8 +89,7 @@ namespace KerbalKonstructs.UI
 
 
                     }
-                }
-                Profiler.EndSample();
+                }                
             }
 
             if (bounds)
