@@ -261,28 +261,22 @@ namespace KerbalKonstructs.UI
                         continue;
                     }
 
+                    if (MiscUtils.isCareerGame())
+                    {
+                        if ((!showOpen && site.isOpen) || (!showClosed && !site.isOpen))
+                        {
+                            continue;
+                        }
+                        // Don't show hidden closed Bases
+                        if (site.LaunchSiteIsHidden && (!site.isOpen))
+                        {
+                            continue;
+                        }
+                    }
+
                     GUILayout.BeginHorizontal();
                     {
-                        if (MiscUtils.isCareerGame())
-                        {
-                            if ((!showOpen && site.isOpen) || (!showClosed && !site.isOpen))
-                            {
-                                continue;
-                            }
-                            // Don't show hidden closed Bases
-                            if (site.LaunchSiteIsHidden && (!site.isOpen))
-                            {
-                                continue;
-                            }
-                            if (site.isOpen)
-                            {
-                                GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
-                            }
-                            else
-                            {
-                                GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
-                            }
-                        }
+                        ShowOpenStatus(site);
 
                         launchButtonName = site.LaunchSiteName;
                         if (site.LaunchSiteName == "Runway")
@@ -310,17 +304,7 @@ namespace KerbalKonstructs.UI
                         }
                         GUI.enabled = true;
 
-                        if (MiscUtils.isCareerGame())
-                        {
-                            if (site.isOpen)
-                            {
-                                GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
-                            }
-                            else
-                            {
-                                GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
-                            }
-                        }
+                        ShowOpenStatus(site);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -407,6 +391,23 @@ namespace KerbalKonstructs.UI
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
+
+
+        internal void ShowOpenStatus(KKLaunchSite site)
+        {
+            if (MiscUtils.isCareerGame())
+            {
+                if (site.isOpen)
+                {
+                    GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
+                }
+                else
+                {
+                    GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
+                }
+            }
+        }
+
 
     }
 }
