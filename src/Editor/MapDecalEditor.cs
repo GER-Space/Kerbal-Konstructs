@@ -65,7 +65,8 @@ namespace KerbalKonstructs.UI
                                         };
         // ComboBox siteTypeMenu;
         #endregion
-        private Vector2 selectMapScroll;
+        private Vector2 selectHeightMapScroll;
+        private Vector2 selectColorMapScroll;
 
         #region Holders
         // Holders
@@ -565,7 +566,7 @@ namespace KerbalKonstructs.UI
 
             if (selectHeightMap)
             {
-                selectMapScroll = GUILayout.BeginScrollView(selectMapScroll);
+                selectHeightMapScroll = GUILayout.BeginScrollView(selectHeightMapScroll);
 
                 foreach (var newmap in DecalsDatabase.allHeightMaps)
                 {
@@ -626,7 +627,7 @@ namespace KerbalKonstructs.UI
 
             if (selectColorMap)
             {
-                selectMapScroll = GUILayout.BeginScrollView(selectMapScroll);
+                selectColorMapScroll = GUILayout.BeginScrollView(selectColorMapScroll);
 
                 foreach (var newmap in DecalsDatabase.allColorMaps)
                 {

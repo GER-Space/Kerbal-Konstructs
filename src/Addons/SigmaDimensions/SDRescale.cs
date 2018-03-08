@@ -43,7 +43,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                Log.Warning("our homeworld is " + homeWorld.displayName +  ", nothing to do");
+                Log.Warning("our homeworld is " + homeWorld.name +  ", nothing to do");
             }
 
 

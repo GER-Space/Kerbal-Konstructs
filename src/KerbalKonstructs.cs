@@ -242,30 +242,6 @@ namespace KerbalKonstructs
                 string sWeight = vVessel.GetTotalMass().ToString();
                 string sLogEntry = lsSite.MissionLog + sDate + ", Launched " + sCraft + ", Mass " + sWeight + " t|";
                 lsSite.MissionLog = sLogEntry;
-
-                //VesselLaunched = true;
-
-                //float dryCost = 0f;
-                //float fuelCost = 0f;
-                //float total = vVessel.GetShipCosts(out dryCost, out fuelCost);
-
-                //var cm = CurrencyModifierQuery.RunQuery(TransactionReasons.VesselRollout, total, 0f, 0f);
-                //total += cm.GetEffectDelta(Currency.Funds);
-                //double launchcost = total;
-                //float fRefund = LaunchSiteManager.GetSiteLaunchRefund(sitename);
-                //Log.Normal("Launch Refund: " + fRefund);
-                //if (fRefund < 1) return;
-
-                //RefundAmount = (launchcost / 100) * fRefund;
-                //VesselCost = launchcost - (RefundAmount);
-                //if (fRefund > 0)
-                //{
-                //    string sMessage = "This launch normally costs " + launchcost.ToString("#0") +
-                //        " but " + sitename + " provides a " + fRefund + "% refund. \n\nSo " + RefundAmount.ToString("#0") + " funds has been credited to you. \n\nEnjoy and thanks for using " +
-                //        sitename + ". Have a safe flight.";
-                //    MiscUtils.PostMessage("Launch Refund", sMessage, MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.ALERT);
-                //    Funding.Instance.AddFunds(RefundAmount, TransactionReasons.VesselRollout);
-                //}
             }
         }
 
@@ -345,7 +321,6 @@ namespace KerbalKonstructs
             {
                 CareerState.ResetFacilitiesOpenState();
 
-                //atMainMenu = true;
                 // reset this for the next Newgame
                 if (InitialisedFacilities)
                 {
