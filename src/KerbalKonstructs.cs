@@ -499,7 +499,7 @@ namespace KerbalKonstructs
                 }
                 else if (FlightGlobals.ActiveVessel != null)
                 {
-                    playerPos = FlightGlobals.ActiveVessel.transform.position;
+                    playerPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
                     //Log.Normal("updateCache using ActiveVessel as playerPos" + FlightGlobals.ActiveVessel.vesselName);
                 }
                 else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)

@@ -262,7 +262,7 @@ namespace KerbalKonstructs.Core
 
 			if (FlightGlobals.ActiveVessel != null)
 			{
-				vPlayerPos = FlightGlobals.ActiveVessel.GetTransform().position;
+				vPlayerPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
                 //Log.Normal("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
 			}
 			else
