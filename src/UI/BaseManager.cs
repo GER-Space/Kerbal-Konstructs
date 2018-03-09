@@ -58,19 +58,17 @@ namespace KerbalKonstructs.UI
 		Vector2 descriptionScrollPosition;
 		Vector2 logScrollPosition;
 
-		public float iFundsOpen = 0;
-		public float iFundsClose = 0;
+
 		public float rangekm = 0;
 
 
-		public Boolean isOpen = false;
+		//public Boolean isOpen = false;
 		public Boolean isFavourite = false;
 		public Boolean displayStats = true;
 		public Boolean displayLog = false;
 		public Boolean foldedIn = false;
 		public Boolean doneFold = false;
-		public Boolean isLocked = false;
-		public Boolean isLaunch = false;
+		//public Boolean isLaunch = false;
 
         private bool layoutIsInitialized = false;
 
@@ -255,18 +253,6 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 			}
 
-			iFundsOpen = selectedSite.OpenCost;
-			iFundsClose = selectedSite.CloseValue;
-
-			bool isAlwaysOpen = false;
-			bool cannotBeClosed = false;
-
-			if (iFundsOpen == 0)
-				isAlwaysOpen = true;
-
-			if (iFundsClose == 0)
-				cannotBeClosed = true;
-
 			if (MiscUtils.isCareerGame())
 			{
 				if (displayLog)
@@ -285,38 +271,35 @@ namespace KerbalKonstructs.UI
 					GUILayout.FlexibleSpace();
 				}
 
-				isOpen = (selectedSite.OpenCloseState == "Open");
-				isLocked = (selectedSite.OpenCloseState == "OpenLocked" || selectedSite.OpenCloseState == "ClosedLocked");
-				isLaunch = (selectedSite.OpenCloseState == "OpenLocked" || selectedSite.OpenCloseState == "Open");
-				GUI.enabled = !isOpen && !isLocked;
-				if (!isAlwaysOpen)
+                GUI.enabled = !selectedSite.isOpen;
+				if (selectedSite.OpenCost > 0)
 				{
 					if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
 					{
-						if (GUILayout.Button("Open Base for \n" + iFundsOpen + " funds", GUILayout.Height(38)))
+						if (GUILayout.Button("Open Base for \n" + selectedSite.OpenCost + " funds", GUILayout.Height(38)))
 						{
 							double currentfunds = Funding.Instance.Funds;
 
-							if (iFundsOpen > currentfunds)
+							if (selectedSite.OpenCost > currentfunds)
 								MiscUtils.HUDMessage("Insufficient funds to open this base!", 10,
 									3);
 							else
 							{
-								selectedSite.OpenCloseState = "Open";
-								Funding.Instance.AddFunds(-iFundsOpen, TransactionReasons.Cheating);
+								selectedSite.SetOpen();
+								Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
 							}
 						}
 					}
 				}
 				GUI.enabled = true;
 
-				GUI.enabled = isOpen && !isLocked;
-				if (!cannotBeClosed)
+				GUI.enabled = selectedSite.isOpen;
+				if (selectedSite.CloseValue > 0)
 				{
-					if (GUILayout.Button("Close Base for \n" + iFundsClose + " funds", GUILayout.Height(38)))
+					if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
 					{
-						Funding.Instance.AddFunds(iFundsClose, TransactionReasons.Cheating);
-						selectedSite.OpenCloseState = "Closed";
+						Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
+						selectedSite.SetClosed();
 					}
 				}
 				GUI.enabled = true;
@@ -328,16 +311,22 @@ namespace KerbalKonstructs.UI
 					GUILayout.BeginHorizontal();
 					{
 						if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName)
-							tStatusLaunchsite = tSetLaunchsite;
-						else
-							if (isOpen || isAlwaysOpen)
-								tStatusLaunchsite = tOpenedLaunchsite;
-							else
-								tStatusLaunchsite = tClosedLaunchsite;
+                        {
+                            tStatusLaunchsite = tSetLaunchsite;
+                        }
+                        else
+							if (selectedSite.isOpen)
+                        {
+                            tStatusLaunchsite = tOpenedLaunchsite;
+                        }
+                        else
+                        {
+                            tStatusLaunchsite = tClosedLaunchsite;
+                        }
 
-						GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
+                        GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
 						
-						GUI.enabled = (isLaunch || isAlwaysOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
+						GUI.enabled = (selectedSite.isOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
 						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
 						{
 							LaunchSiteManager.setLaunchSite(selectedSite);

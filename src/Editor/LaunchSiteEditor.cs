@@ -375,7 +375,6 @@ namespace KerbalKonstructs.UI
                 Log.Normal("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
                 selectedObject.hasLauchSites = true;
                 lsite.staticInstance = selectedObject;
-                lsite.parentInstance = selectedObject;
                 selectedObject.launchSite.body = selectedObject.CelestialBody;
                 addToDB = true;
             }
@@ -392,7 +391,6 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.LaunchSiteDescription = siteDesc;
             selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
             selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
-            selectedObject.launchSite.OpenCloseState = "Open";
             selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
             selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
             selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
@@ -438,7 +436,10 @@ namespace KerbalKonstructs.UI
 
             if (addToDB)
             {
+                selectedObject.launchSite.ParseLSConfig(selectedObject, null);
                 selectedObject.SaveConfig();
+                EditorGUI.instance.enableColliders = true;
+                selectedObject.ToggleAllColliders(true);
                 LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
             }
             selectedObject.SaveConfig();

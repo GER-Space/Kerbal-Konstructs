@@ -22,7 +22,7 @@ namespace KerbalKonstructs.Core
 
         internal static string activeBodyName = "";
 
-
+        private static Vector3 vPlayerPos = Vector3.zero;
 
 
         /// <summary>
@@ -252,29 +252,35 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-
+        
 
         internal static void UpdateCache(Vector3 playerPos)
 		{
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
+            if (playerPos == Vector3.zero)
+            {
 
-			Vector3 vPlayerPos = Vector3.zero;
+                vPlayerPos = Vector3.zero;
 
-			if (FlightGlobals.ActiveVessel != null)
-			{
-				vPlayerPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
-                //Log.Normal("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
-			}
-			else
+                if (FlightGlobals.ActiveVessel != null)
+                {
+                    vPlayerPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
+                    //Log.Normal("StaticDatabase.updateCache(): using active vessel " + FlightGlobals.ActiveVessel.vesselName);
+                }
+                if (vPlayerPos == Vector3.zero)
+                {
+                    vPlayerPos = FlightGlobals.camera_position;
+                }
+                if (vPlayerPos == Vector3.zero)
+                {
+                    Log.UserError("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
+                    return;
+                }
+            }
+            else
             {
                 vPlayerPos = playerPos;
             }
-
-            if (vPlayerPos == Vector3.zero)
-			{
-                    Log.UserError("StaticDatabase.updateCache(): vPlayerPos is still v3.zero ");
-                    return;
-			}
 			
 			if (groupList.ContainsKey(activeBodyName))
 			{

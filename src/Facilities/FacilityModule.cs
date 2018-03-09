@@ -10,7 +10,7 @@ using KerbalKonstructs.UI;
 namespace KerbalKonstructs.Modules
 {
 
-    public enum KKFacilityType 
+    public enum KKFacilityType
     {
         None,
         Merchant,
@@ -50,29 +50,31 @@ namespace KerbalKonstructs.Modules
                 if (openState == true || openString == "Open" || CareerUtils.isSandboxGame || OpenCost == 0f)
                 {
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
             }
-            set
+            private set
             {
                 openState = value;
                 if (openState == true)
                 {
                     OpenCloseState = "Open";
-                } else
+                }
+                else
                 {
                     OpenCloseState = "Closed";
                 }
             }
         }
 
-
         [CFGSetting]
         public string OpenCloseState
         {
-            get {
+            get
+            {
                 if (isOpen)
                 {
                     return "Open";
@@ -82,12 +84,14 @@ namespace KerbalKonstructs.Modules
                     return "Closed";
                 }
             }
-            set {
+            private set
+            {
                 openString = value;
                 if (value == "Open")
                 {
                     openState = true;
-                } else
+                }
+                else
                 {
                     openState = false;
                 }
@@ -128,7 +132,7 @@ namespace KerbalKonstructs.Modules
                     fac.staticInstance = value;
                 }
 
-                
+
             }
         }
 
@@ -139,18 +143,11 @@ namespace KerbalKonstructs.Modules
             {
                 Destroy(fac);
             }
-            //Destroy(this);
-        }
-
-
-        public void Awake()
-        {
-            DontDestroyOnLoad(this);
         }
 
         internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
         {
-            if(!initialized)
+            if (!initialized)
             {
                 InitTypes();
             }
@@ -172,9 +169,8 @@ namespace KerbalKonstructs.Modules
                     ConfigUtil.ReadCFGNode(this, field, cfgNode);
                 }
                 if (field.Name == "OpenCloseState")
-                {
-                    // openString should be set via OpenCloseState
-                    defaultState = openString; 
+                {                   
+                    defaultState = openString;
                 }
             }
 
@@ -195,7 +191,7 @@ namespace KerbalKonstructs.Modules
             // Close everything before saving.
             isOpen = false;
             myFields = allFields[this.GetType().Name];
-            cfgNode.SetValue("FacilityType", this.GetType().Name,true);
+            cfgNode.SetValue("FacilityType", this.GetType().Name, true);
 
             foreach (var field in myFields)
             {
@@ -216,7 +212,7 @@ namespace KerbalKonstructs.Modules
                 {
                     cfgNode.SetValue("OpenCloseState", defaultState, true);
                     continue;
-                } 
+                }
 
                 if (Attribute.IsDefined(field.Value, typeof(CFGSetting)))
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
@@ -278,7 +274,6 @@ namespace KerbalKonstructs.Modules
 
         }
 
-
         private void InitTypes()
         {
 
@@ -288,7 +283,7 @@ namespace KerbalKonstructs.Modules
                 myFields = new Dictionary<string, FieldInfo>();
                 myProperties = new Dictionary<string, PropertyInfo>();
 
-                foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+                foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 {
                     myFields.Add(field.Name, field);
                     //    Log.Normal("Parser Facility (" + this.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
@@ -307,10 +302,13 @@ namespace KerbalKonstructs.Modules
             initialized = true;
         }
 
+        /// <summary>
+        /// Adds the mouse support to the facilities
+        /// </summary>
         internal void AttachSelector()
         {
             Type myType = this.GetType();
-            if (myType.Name == "KKLaunchSite"  || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR"  )
+            if (myType.Name == "KKLaunchSite" || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
             {
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
@@ -322,17 +320,44 @@ namespace KerbalKonstructs.Modules
             }
         }
 
+        /// <summary>
+        /// Open the faclility/Launchsite
+        /// </summary>
+        internal void SetOpen()
+        {
+            isOpen = true;
+        }
+
+        /// <summary>
+        /// Close a facility/LaunchSite
+        /// </summary>
+        internal void SetClosed()
+        {
+            isOpen = false;
+        }
+
+        // Resets the facility/LaunchSite to its default state
+        internal void ResetToDefaultState()
+        {
+            if (OpenCloseState != defaultState)
+            {
+                if (isOpen)
+                {
+                    SetClosed();
+                }
+                else
+                {
+                    SetOpen();
+                }
+            }
+        }
+
     }
 
     internal class KKFacilitySelector : MonoBehaviour
     {
         // we get this passed through the facility module
         internal StaticInstance staticInstance = null;
-
-        public void Awake()
-        {
-                DontDestroyOnLoad(this);
-        }
 
 
         #region Unity mouse extension
@@ -349,26 +374,31 @@ namespace KerbalKonstructs.Modules
 
         void OnMouseEnter()
         {
-            if (staticInstance == null)
-            {
-                staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
-            }
-            if (staticInstance == null)
-            {
-                Log.UserInfo("Cound not determin instance for mouse selector");
-                Destroy(this);
-            }
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
+                if (this.gameObject == null)
+                {
+                    Destroy(this);
+                }
+                if (staticInstance == null)
+                {
+                    staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
+                }
+                if (staticInstance == null)
+                {
+                    Log.UserInfo("Cound not determin instance for mouse selector");
+                    Destroy(this);
+                }
+
                 if (staticInstance.myFacilities[0].isOpen)
                 {
-                    staticInstance.HighlightObject(new Color(0.4f, 0.9f , 0.4f, 0.5f));
+                    staticInstance.HighlightObject(new Color(0.4f, 0.9f, 0.4f, 0.5f));
                 }
                 else
                 {
                     staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
                 }
-                    
+
             }
         }
 

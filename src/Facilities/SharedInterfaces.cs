@@ -74,8 +74,8 @@ namespace KerbalKonstructs.UI
 							}
 							else
 							{
-								// Open the site - save to instance
-								selectedFacility.myFacilities[0].OpenCloseState = "Open";
+                                // Open the site - save to instance
+                                selectedFacility.myFacilities[0].SetOpen();
 
 								// Charge some funds
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
@@ -112,7 +112,8 @@ namespace KerbalKonstructs.UI
 							// Close the site - save to instance
 							// Pay back some funds
 							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Structures);
-							selectedFacility.myFacilities[0].OpenCloseState =  "Closed";
+                            selectedFacility.myFacilities[0].SetClosed();
+                            ;
 
 							//soStoredEventObject = selectedFacility;
 							//if (evFacilityClosed != null)

@@ -314,7 +314,7 @@ namespace KerbalKonstructs.Core
                 {
                     newMapDecalInstance.CreateMap(MapSO.MapDepth.RGBA, newMapDecalInstance.mapTexture);
                 }
-                Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + newMapDecalInstance.isHeightMap.ToString());
+                Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + (newMapDecalInstance.isHeightMap? "as HeighMap" : "as ColorMap"));
 
                 newMapDecalInstance.map = newMapDecalInstance as MapSO;
                 DecalsDatabase.RegisterMap(newMapDecalInstance);

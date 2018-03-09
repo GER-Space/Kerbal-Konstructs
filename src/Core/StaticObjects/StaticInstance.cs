@@ -201,8 +201,11 @@ namespace KerbalKonstructs.Core
 
             InstanceUtil.SetLayerRecursively(this, 15);
 
-            if (bPreview)
+            if (bPreview && editing)
+            {
                 this.ToggleAllColliders(false);
+            }
+                
 
             this.preview = bPreview;
 

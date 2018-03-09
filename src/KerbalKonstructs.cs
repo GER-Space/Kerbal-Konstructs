@@ -166,6 +166,7 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
+
             // for Terrain Rescaling
             SDRescale.SetTerrainRescales();
 
@@ -260,87 +261,85 @@ namespace KerbalKonstructs
                 deselectObject(false, true);
                 camControl.active = false;
             }
+            CancelInvoke("updateCache");
 
-            if (data.Equals(GameScenes.FLIGHT))
+            switch (data)
             {
+                case GameScenes.FLIGHT:
+                    {
+                        InputLockManager.RemoveControlLock("KKEditorLock");
+                        InputLockManager.RemoveControlLock("KKEditorLock2");
 
-                InputLockManager.RemoveControlLock("KKEditorLock");
-                InputLockManager.RemoveControlLock("KKEditorLock2");
 
+                        if (FlightGlobals.ActiveVessel != null)
+                        {
+                            //StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
+                            currentBody = FlightGlobals.ActiveVessel.mainBody;
+                            StaticDatabase.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+                            updateCache();
+                            Hangar.DoHangaredCraftCheck();
+                        }
+                        else
+                        {
+                            Log.Debug("Flight scene load. No activevessel. Activating all statics.");
+                            StaticDatabase.ToggleActiveAllStatics(true);
+                        }
+                        InvokeRepeating("updateCache", 0, 1);
+                    }
+                    break;
+                case GameScenes.EDITOR:
+                    {
+                        // Prevent abuse if selector left open when switching to from VAB and SPH
+                        LaunchSiteSelectorGUI.instance.Close();
+                        LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
-                if (FlightGlobals.ActiveVessel != null)
-                {
-                    //StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
-                    currentBody = FlightGlobals.ActiveVessel.mainBody;
-                    StaticDatabase.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
-                    updateCache();
-                    Hangar.DoHangaredCraftCheck();
-                }
-                else
-                {
-                    Log.Debug("Flight scene load. No activevessel. Activating all statics.");
-                    StaticDatabase.ToggleActiveAllStatics(true);
-                }
+                        // Check if the selected LaunchSite is valid
+                        if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
+                        {
+                            currentSite = LaunchSiteManager.GetDefaultSite();
+                        }
+                        LaunchSiteManager.setLaunchSite(currentSite);
+                    }
+                    break;
+                case GameScenes.SPACECENTER:
+                    {
+                        //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                        //{
+                        //    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
+                        //    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
+                        //    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
+                        //    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
+                        //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
+                        //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
+                        //}
 
-                InvokeRepeating("updateCache", 0, 1);
+                        InputLockManager.RemoveControlLock("KKEditorLock");
+                        // set the LaunchSite to the last use, also update the SpaceCenterCamera with this
+                        //LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
+
+                        // Tighter control over what statics are active
+                        //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+                        currentBody = LaunchSiteManager.GetCurrentLaunchSite().body;
+                        Log.Normal("SC Body is: " + currentBody.name);
+                        StaticDatabase.OnBodyChanged(currentBody);
+                        updateCache();
+                    }
+                    break;
+                case GameScenes.MAINMENU:
+                    {
+                        CareerState.ResetFacilitiesOpenState();
+
+                        // reset this for the next Newgame
+                        if (InitialisedFacilities)
+                        {
+                            InitialisedFacilities = false;
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                CancelInvoke("updateCache");
-            }
 
-            if (data.Equals(GameScenes.SPACECENTER))
-            {
-
-
-                //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                //{
-
-                    
-                //    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
-                //    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
-                //    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
-                //    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
-                //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
-                //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
-                //}
-
-                InputLockManager.RemoveControlLock("KKEditorLock");
-                // set the LaunchSite to the last use, also update the SpaceCenterCamera with this
-                //LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
-
-                // Tighter control over what statics are active
-                //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                currentBody = LaunchSiteManager.GetCurrentLaunchSite().body;
-                Log.Normal("SC Body is: " + currentBody.name);
-                StaticDatabase.OnBodyChanged(currentBody);
-                updateCache();
-            }
-
-            if (data.Equals(GameScenes.MAINMENU))
-            {
-                CareerState.ResetFacilitiesOpenState();
-
-                // reset this for the next Newgame
-                if (InitialisedFacilities)
-                {
-                    InitialisedFacilities = false;
-                }
-            }
-
-            if (data.Equals(GameScenes.EDITOR))
-            {
-                // Prevent abuse if selector left open when switching to from VAB and SPH
-                LaunchSiteSelectorGUI.instance.Close();
-                LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
-
-                // Check if the selected LaunchSite is valid
-                if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
-                {
-                    currentSite = LaunchSiteManager.GetDefaultSite();
-                }
-                LaunchSiteManager.setLaunchSite(currentSite);
-            }
         }
 
 

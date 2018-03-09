@@ -35,7 +35,7 @@ namespace KerbalKonstructs.Modules
 
         }
 
-        new public void Awake()
+        public void Awake()
         {
             Log.Normal("Destroying old FuelTank");
             Destroy(this);

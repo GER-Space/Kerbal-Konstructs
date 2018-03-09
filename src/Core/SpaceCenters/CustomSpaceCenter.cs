@@ -14,13 +14,13 @@ namespace KerbalKonstructs.Core
 
         public static void CreateFromLaunchsite(LaunchSite site)
         {
-            StaticInstance parentinstance = site.parentInstance;
+            StaticInstance parentinstance = site.staticInstance;
             if (parentinstance != null)
             {
                 var csc = new CustomSpaceCenter();
                 csc.SpaceCenterName = site.LaunchSiteName;
                 csc.staticInstance = parentinstance;
-                csc.gameObject = site.parentInstance.gameObject;
+                csc.gameObject = site.staticInstance.gameObject;
                 SpaceCenterManager.addSpaceCenter(csc);
             }
             else

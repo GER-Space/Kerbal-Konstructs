@@ -20,7 +20,15 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                return ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (KerbalKonstructs.instance.disableCareerStrategyLayer));
+                if (HighLogic.LoadedScene == GameScenes.MAINMENU)
+                {
+                    return false;
+                }
+                else
+                {
+                    return ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (KerbalKonstructs.instance.disableCareerStrategyLayer));
+                }
+                
             }
         }
 

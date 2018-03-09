@@ -161,11 +161,14 @@ namespace KerbalKonstructs.Modules
             {
                 if (instance.hasFacilities)
                 {
-                    instance.myFacilities[0].OpenCloseState = instance.myFacilities[0].defaultState;
+                    foreach (KKFacility facility in instance.myFacilities)
+                    {
+                        facility.ResetToDefaultState();
+                    }
                 }
                 if (instance.hasLauchSites)
                 {
-                    instance.launchSite.OpenCloseState = instance.launchSite.defaultState;
+                    instance.launchSite.ResetToDefaultState();
                 }
             }
         }

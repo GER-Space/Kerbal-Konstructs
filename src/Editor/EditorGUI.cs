@@ -49,6 +49,7 @@ namespace KerbalKonstructs.UI
         #region Switches
         // Switches
         internal Boolean enableColliders = false;
+        internal Boolean enableColliders2 = false;
         //internal static bool isScanable = false;
 
         //public static Boolean editingLaunchSite = false;
@@ -765,22 +766,10 @@ namespace KerbalKonstructs.UI
                 {
                     enableColliders = GUILayout.Toggle(enableColliders, "Enable Colliders", GUILayout.Width(140), GUILayout.Height(23));
 
-                    Transform[] gameObjectList = selectedObject.gameObject.GetComponentsInChildren<Transform>();
-                    List<GameObject> colliderList = (from t in gameObjectList where t.gameObject.GetComponent<Collider>() != null select t.gameObject).ToList();
-
-                    if (enableColliders)
+                    if (enableColliders != enableColliders2)
                     {
-                        foreach (GameObject collider in colliderList)
-                        {
-                            collider.GetComponent<Collider>().enabled = true;
-                        }
-                    }
-                    if (!enableColliders)
-                    {
-                        foreach (GameObject collider in colliderList)
-                        {
-                            collider.GetComponent<Collider>().enabled = false;
-                        }
+                        selectedObject.ToggleAllColliders(enableColliders);
+                        enableColliders2 = enableColliders;
                     }
 
                     GUILayout.FlexibleSpace();
@@ -962,6 +951,7 @@ namespace KerbalKonstructs.UI
             instance.configUrl = null;
 
             enableColliders = false;
+            enableColliders2 = false;
             instance.spawnObject(true, false);
         }
 

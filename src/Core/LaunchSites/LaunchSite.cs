@@ -7,9 +7,6 @@ namespace KerbalKonstructs.Core
 {
     public class LaunchSite : KKFacility
     {
-        //public string OpenCloseState = "Closed";
-        //public float OpenCost;
-        //public float CloseValue;
 
         [CFGSetting]
         public string LaunchPadTransform;
@@ -47,59 +44,54 @@ namespace KerbalKonstructs.Core
         internal Texture logo = null;
         internal Texture icon = null;
 
-
         internal float refLon;
         internal float refLat;
         internal float refAlt;
         internal CelestialBody body;
 
-        internal StaticInstance parentInstance;
-
-
         internal GameObject lsGameObject;
         internal PSystemSetup.SpaceCenterFacility facility = null;
 
-        internal override KKFacility ParseConfig(ConfigNode node)
+        internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
-            LaunchSite launchSite = base.ParseConfig(node) as LaunchSite;
-            launchSite.lsGameObject = launchSite.gameObject;
-            // this is might be slow
-            launchSite.parentInstance = InstanceUtil.GetStaticInstanceForGameObject(lsGameObject);
-            launchSite.staticInstance = launchSite.parentInstance;
-            launchSite.body = parentInstance.CelestialBody;
+            if (cfgNode != null)
+            {
+                base.ParseConfig(cfgNode);
+            }
 
-            if ( ! string.IsNullOrEmpty(LaunchSiteLogo) )
+            lsGameObject = instance.gameObject;
+            // this is might be slow
+            staticInstance = instance;
+            body = staticInstance.CelestialBody;
+
+            if (!string.IsNullOrEmpty(LaunchSiteLogo))
             {
                 logo = GameDatabase.Instance.GetTexture(LaunchSiteLogo, false);
 
                 if (logo == null)
-                    logo = GameDatabase.Instance.GetTexture(launchSite.parentInstance.model.path + "/" + launchSite.LaunchSiteLogo, false);
+                    logo = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteLogo, false);
             }
             // use default logo
             if (logo == null)
                 logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
 
-            if (! string.IsNullOrEmpty(LaunchSiteIcon))
+            if (!string.IsNullOrEmpty(LaunchSiteIcon))
             {
-                
+
                 icon = GameDatabase.Instance.GetTexture(LaunchSiteIcon, false);
 
                 if (icon == null)
-                    icon = GameDatabase.Instance.GetTexture(launchSite.parentInstance.model.path + "/" + launchSite.LaunchSiteIcon, false);
+                    icon = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteIcon, false);
             }
 
-            refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
-            refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(launchSite.parentInstance.RadialPosition), 2);
-          
-            refAlt = launchSite.parentInstance.RadiusOffset;
+            refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);
+            refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
+            refAlt = staticInstance.RadiusOffset;
 
-            return launchSite;
         }
 
-
     }
-
     public enum LaunchSiteCategory
     {
         Runway,

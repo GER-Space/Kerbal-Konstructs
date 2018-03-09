@@ -26,7 +26,6 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        internal LaunchSite selectedSite;
 
         private LaunchSiteCategory category;
 
@@ -43,8 +42,8 @@ namespace KerbalKonstructs.UI
         public bool showClosed = true;
         public bool showFavOnly = false;
 
-        private LaunchSite defaultSite = null;
-
+        private static LaunchSite defaultSite = null;
+        internal static LaunchSite selectedSite ;
 
         private string launchButtonName = "";
 
@@ -66,10 +65,23 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            if (selectedSite == null || (LaunchSiteManager.CheckLaunchSiteIsValid(selectedSite) == false ))
+            try
+            {
+
+                if (LaunchSiteManager.CheckLaunchSiteIsValid(LaunchSiteManager.GetLaunchSiteByName(KerbalKonstructs.instance.lastLaunchSiteUsed)))
+                {
+                    selectedSite = LaunchSiteManager.GetLaunchSiteByName(KerbalKonstructs.instance.lastLaunchSiteUsed);
+                    defaultSite = selectedSite;
+                }
+                if (selectedSite.isOpen == false)
+                {
+                    Log.Error("LastSideUsed is invalid, trying default");
+                    selectedSite = LaunchSiteManager.GetDefaultSite();
+                    defaultSite = selectedSite;
+                }
+            } catch
             {
                 selectedSite = LaunchSiteManager.GetDefaultSite();
-                defaultSite = selectedSite;
             }
 
             BaseManager.selectedSite = selectedSite;
@@ -368,7 +380,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Use Default", GUILayout.Height(23)))
                 {
-                    selectedSite = defaultSite;
+                    selectedSite = LaunchSiteManager.GetDefaultSite();
                     LaunchSiteManager.setLaunchSite(selectedSite);
                     MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the launchsite", 10, 0);
                     BaseManager.selectedSite = selectedSite;
