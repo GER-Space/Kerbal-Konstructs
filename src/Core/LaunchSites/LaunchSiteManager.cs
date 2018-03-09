@@ -11,7 +11,7 @@ namespace KerbalKonstructs.Core
 {
     public class LaunchSiteManager
     {
-        private static Dictionary<string,KKLaunchSite> launchSites = new Dictionary<string, KKLaunchSite>();
+        private static Dictionary<string,LaunchSite> launchSites = new Dictionary<string, LaunchSite>();
         private static string currentLaunchSite = "Runway";
         private static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
         public static float rangeNearestOpenBase = 0f;
@@ -19,13 +19,24 @@ namespace KerbalKonstructs.Core
         public static float rangeNearestBase = 0f;
         public static string nearestBase = "";
 
-        internal static KKLaunchSite runway = new KKLaunchSite();
-        internal static KKLaunchSite launchpad = new KKLaunchSite();
+        internal static LaunchSite runway = new LaunchSite();
+        internal static LaunchSite launchpad = new LaunchSite();
 
 
 
         // Handy get of all launchSites
-        public static KKLaunchSite[] allLaunchSites = null;
+        public static LaunchSite[] allLaunchSites = null;
+
+
+        // API for Kerbal Construction Time not for internal use
+        public static List<LaunchSite> AllLaunchSites
+        {
+            get
+            {
+                return allLaunchSites.ToList();
+            }
+        }
+
 
         private static float getKSCLon
         {
@@ -151,7 +162,7 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
-            KKLaunchSite newSite = (instance.gameObject.AddComponent<KKLaunchSite>()).ParseConfig(cfgNode) as KKLaunchSite;
+            LaunchSite newSite = (instance.gameObject.AddComponent<LaunchSite>()).ParseConfig(cfgNode) as LaunchSite;
             instance.hasLauchSites = true;
             instance.launchSite = newSite;
             RegisterLaunchSite(newSite);
@@ -161,7 +172,7 @@ namespace KerbalKonstructs.Core
         /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
         /// <param name="site"></param>
-        internal static void RegisterLaunchSite(KKLaunchSite site)
+        internal static void RegisterLaunchSite(LaunchSite site)
         {
             if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.parentInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
             {
@@ -216,7 +227,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void DeleteLaunchSite (KKLaunchSite site2delete)
+        internal static void DeleteLaunchSite (LaunchSite site2delete)
         {
             if (launchSites.ContainsKey(site2delete.LaunchSiteName))
             {
@@ -233,18 +244,18 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void AddLaunchSite(KKLaunchSite site2add)
+        internal static void AddLaunchSite(LaunchSite site2add)
         {
             launchSites.Add(site2add.LaunchSiteName, site2add);
-            List<KKLaunchSite> tmpList = launchSites.Values.ToList();
-            tmpList.Sort(delegate (KKLaunchSite a, KKLaunchSite b)
+            List<LaunchSite> tmpList = launchSites.Values.ToList();
+            tmpList.Sort(delegate (LaunchSite a, LaunchSite b)
             {
                 return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
             });
             allLaunchSites = tmpList.ToArray();
         }
 
-        internal static KKLaunchSite GetCurrentLaunchSite()
+        internal static LaunchSite GetCurrentLaunchSite()
         {
             return launchSites[currentLaunchSite];
         }
@@ -317,7 +328,7 @@ namespace KerbalKonstructs.Core
         {
             if (launchSites.ContainsKey(siteName))
             {
-                KKLaunchSite site = launchSites[siteName];
+                LaunchSite site = launchSites[siteName];
                 launchSites[siteName].OpenCloseState = launchSites[siteName].OpenCloseState + "Locked";                
             }
         }
@@ -330,7 +341,7 @@ namespace KerbalKonstructs.Core
         {
             if (launchSites.ContainsKey(siteName))
             {
-                KKLaunchSite site = launchSites[siteName];
+                LaunchSite site = launchSites[siteName];
                 if (site.OpenCloseState == "OpenLocked")
                 {
                     site.OpenCloseState = "Open";
@@ -352,7 +363,7 @@ namespace KerbalKonstructs.Core
         {
             if (launchSites.ContainsKey(siteName))
             {
-                KKLaunchSite site = launchSites[siteName];
+                LaunchSite site = launchSites[siteName];
                 sOpenCloseState = site.OpenCloseState;
                 fOpenCost = site.OpenCost;
             }
@@ -370,7 +381,7 @@ namespace KerbalKonstructs.Core
         {
             if (launchSites.ContainsKey(siteName))
             {
-                KKLaunchSite site = launchSites[siteName];
+                LaunchSite site = launchSites[siteName];
                 if (site.OpenCloseState == "OpenLocked" || site.OpenCloseState == "ClosedLocked")
                 {
                     return true;
@@ -426,7 +437,7 @@ namespace KerbalKonstructs.Core
 
 
         // Returns a specific Launchsite, keyed by site.name
-        public static KKLaunchSite GetLaunchSiteByName(string siteName)
+        public static LaunchSite GetLaunchSiteByName(string siteName)
         {
 
             if (checkLaunchSiteExists(siteName))
@@ -441,22 +452,22 @@ namespace KerbalKonstructs.Core
 
 
         // Returns the distance in m from a position to a specified Launchsite
-        public static float getDistanceToBase(Vector3 position, KKLaunchSite site)
+        public static float getDistanceToBase(Vector3 position, LaunchSite site)
         {
             return Vector3.Distance(position, site.lsGameObject.transform.position);
         }
 
         // Returns the nearest open Launchsite to a position and range to the Launchsite in m
         // The basic ATC feature is in here for now
-        public static void GetNearestOpenBase(Vector3 position, out string sBase, out float flRange, out KKLaunchSite lNearest)
+        public static void GetNearestOpenBase(Vector3 position, out string sBase, out float flRange, out LaunchSite lNearest)
         {
             SpaceCenter KSC = SpaceCenter.Instance;
             var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
             string sNearestBase = "";
-            KKLaunchSite lNearestBase = null;
-            KKLaunchSite lKSC = null;
+            LaunchSite lNearestBase = null;
+            LaunchSite lKSC = null;
 
-            foreach (KKLaunchSite site in allLaunchSites)
+            foreach (LaunchSite site in allLaunchSites)
             {
 
                 if (site.isOpen)
@@ -527,19 +538,19 @@ namespace KerbalKonstructs.Core
         }
 
         // Returns the nearest Launchsite to a position and range in m to the Launchsite, regardless of whether it is open or closed
-        public static void getNearestBase(Vector3 position, out string sBase, out string sBase2, out float flRange, out KKLaunchSite lSite, out KKLaunchSite lSite2)
+        public static void getNearestBase(Vector3 position, out string sBase, out string sBase2, out float flRange, out LaunchSite lSite, out LaunchSite lSite2)
         {
             SpaceCenter KSC = SpaceCenter.Instance;
             var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
             var lastSmallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
             string sNearestBase = "";
-            KKLaunchSite lTargetSite = null;
-            KKLaunchSite lLastSite = null;
-            KKLaunchSite lKSC = null;
+            LaunchSite lTargetSite = null;
+            LaunchSite lLastSite = null;
+            LaunchSite lKSC = null;
             string sLastNearest = "";
 
 
-            foreach (KKLaunchSite site in allLaunchSites)
+            foreach (LaunchSite site in allLaunchSites)
             {
                 if (site.lsGameObject == null) continue;
 
@@ -595,7 +606,7 @@ namespace KerbalKonstructs.Core
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
-        public static void setLaunchSite(KKLaunchSite site)
+        public static void setLaunchSite(LaunchSite site)
         {
             if (site.facility != null)
             {
@@ -617,7 +628,7 @@ namespace KerbalKonstructs.Core
            // SetSpaceCenterCam(site);
         }
 
-        internal static void SetSpaceCenterCam(KKLaunchSite site)
+        internal static void SetSpaceCenterCam(LaunchSite site)
         {
             SpaceCenterCamera2 scCam = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>().FirstOrDefault();
             if (scCam != null)
@@ -637,7 +648,7 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal static bool CheckLaunchSiteIsValid(KKLaunchSite site)
+        internal static bool CheckLaunchSiteIsValid(LaunchSite site)
         {
             if (!KerbalKonstructs.instance.launchFromAnySite && (EditorDriver.editorFacility == EditorFacility.VAB) && (site.LaunchSiteType == SiteType.SPH))
             {
@@ -655,9 +666,9 @@ namespace KerbalKonstructs.Core
         /// Returns the currently available default LaunchSite in a editor
         /// </summary>
         /// <returns></returns>
-        internal static KKLaunchSite GetDefaultSite()
+        internal static LaunchSite GetDefaultSite()
         {
-            KKLaunchSite defaultSite = null;
+            LaunchSite defaultSite = null;
             if (EditorDriver.editorFacility == EditorFacility.VAB)
             {
                 defaultSite = GetLaunchSiteByName(KerbalKonstructs.instance.defaultVABlaunchsite);

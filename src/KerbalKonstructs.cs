@@ -224,7 +224,7 @@ namespace KerbalKonstructs
                 if (sitename == "KSC") return;
                 if (sitename == "") return;
 
-                KKLaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
+                LaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
                 float fMissionCount = lsSite.MissionCount;
                 lsSite.MissionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
@@ -332,7 +332,7 @@ namespace KerbalKonstructs
             {
                 // Prevent abuse if selector left open when switching to from VAB and SPH
                 LaunchSiteSelectorGUI.instance.Close();
-                KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+                LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
                 // Check if the selected LaunchSite is valid
                 if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)

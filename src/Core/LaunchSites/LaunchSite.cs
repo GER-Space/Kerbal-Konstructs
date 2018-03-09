@@ -5,7 +5,7 @@ using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Core
 {
-    public class KKLaunchSite : KKFacility
+    public class LaunchSite : KKFacility
     {
         //public string OpenCloseState = "Closed";
         //public float OpenCost;
@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Core
 
         internal override KKFacility ParseConfig(ConfigNode node)
         {
-            KKLaunchSite launchSite = base.ParseConfig(node) as KKLaunchSite;
+            LaunchSite launchSite = base.ParseConfig(node) as LaunchSite;
             launchSite.lsGameObject = launchSite.gameObject;
             // this is might be slow
             launchSite.parentInstance = InstanceUtil.GetStaticInstanceForGameObject(lsGameObject);

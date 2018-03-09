@@ -42,7 +42,7 @@ namespace KerbalKonstructs.UI
 		public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 
 		
-		public static KKLaunchSite selectedSite = null;
+		public static LaunchSite selectedSite = null;
 
 		GUIStyle Yellowtext;
 		GUIStyle TextAreaNoBorder;
@@ -439,13 +439,13 @@ namespace KerbalKonstructs.UI
         }
 
 
-		public static KKLaunchSite getSelectedSite()
+		public static LaunchSite getSelectedSite()
 		{
-			KKLaunchSite thisSite = selectedSite;
+			LaunchSite thisSite = selectedSite;
 			return thisSite;
 		}
 
-		public static void setSelectedSite(KKLaunchSite soSite)
+		public static void setSelectedSite(LaunchSite soSite)
 		{
 			selectedSite = soSite;
 		}

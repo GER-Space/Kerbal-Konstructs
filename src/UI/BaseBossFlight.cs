@@ -62,9 +62,9 @@ namespace KerbalKonstructs.UI
         internal string Base;
         internal string Base2;
         internal float Range;
-        internal KKLaunchSite lNearest;
-        internal KKLaunchSite lBase;
-        internal KKLaunchSite lBase2;
+        internal LaunchSite lNearest;
+        internal LaunchSite lBase;
+        internal LaunchSite lBase2;
         internal string smessage = "";
         internal string sClosed;
         internal float fOpenCost;

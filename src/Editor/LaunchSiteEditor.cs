@@ -370,7 +370,7 @@ namespace KerbalKonstructs.UI
             if (!selectedObject.hasLauchSites)
             {
                 Log.Normal("Creating LaunchSite");
-                KKLaunchSite lsite = new KKLaunchSite();
+                LaunchSite lsite = new LaunchSite();
                 selectedObject.launchSite = lsite;
                 Log.Normal("created; lsite = " + lsite + "; launch site = " + selectedObject.launchSite);
                 selectedObject.hasLauchSites = true;

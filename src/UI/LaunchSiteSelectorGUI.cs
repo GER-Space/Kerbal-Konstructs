@@ -26,7 +26,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        internal KKLaunchSite selectedSite;
+        internal LaunchSite selectedSite;
 
         private LaunchSiteCategory category;
 
@@ -43,7 +43,7 @@ namespace KerbalKonstructs.UI
         public bool showClosed = true;
         public bool showFavOnly = false;
 
-        private KKLaunchSite defaultSite = null;
+        private LaunchSite defaultSite = null;
 
 
         private string launchButtonName = "";
@@ -244,7 +244,7 @@ namespace KerbalKonstructs.UI
 
             sitesScrollPosition = GUILayout.BeginScrollView(sitesScrollPosition);
             {
-                foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
+                foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
                 {
                     if (showFavOnly && (site.favouriteSite != "Yes"))
                     {
@@ -393,7 +393,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal void ShowOpenStatus(KKLaunchSite site)
+        internal void ShowOpenStatus(LaunchSite site)
         {
             if (MiscUtils.isCareerGame())
             {
