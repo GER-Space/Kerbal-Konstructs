@@ -148,7 +148,7 @@ namespace KerbalKonstructs.Core
             if (instance.hasLauchSites)
             {
                 ConfigNode lsNode = cfgNode.AddNode("LaunchSite");
-                instance.launchSite.WriteConfig(lsNode);
+                LaunchSiteParser.WriteConfig(instance.launchSite, lsNode);
             }
 
         }

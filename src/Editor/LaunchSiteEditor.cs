@@ -429,7 +429,7 @@ namespace KerbalKonstructs.UI
                     if (state)
                         ILSConfig.GenerateFullILSConfig(selectedObject);
                     else
-                        ILSConfig.DropILSConfig(selectedObject.launchSite.name, true);
+                        ILSConfig.DropILSConfig(selectedObject.launchSite.LaunchSiteName, true);
                 }
             }
 

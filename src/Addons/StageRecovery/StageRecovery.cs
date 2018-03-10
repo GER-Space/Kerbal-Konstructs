@@ -46,7 +46,7 @@ namespace KerbalKonstructs.Addons
                         continue;
                     }
 
-                    spaceCenter = csc.getSpaceCenter();
+                    spaceCenter = csc.GetSpaceCenter();
                     dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
                     if (dist < smallestDist)

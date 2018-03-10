@@ -290,11 +290,12 @@ namespace KerbalKonstructs
                     {
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
-                        LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+                        LaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
 
                         // Check if the selected LaunchSite is valid
                         if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
                         {
+                            Log.Normal("LS not valid: " + currentSite.LaunchSiteName);
                             currentSite = LaunchSiteManager.GetDefaultSite();
                         }
                         LaunchSiteManager.setLaunchSite(currentSite);
@@ -302,26 +303,25 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.SPACECENTER:
                     {
-                        //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                        //{
-                        //    Log.Normal("Cam2 pqsName       : " + cam.pqsName); // SpaceCenterCamera
-                        //    Log.Normal("Cam2 camTrns       : " + cam.GetCameraTransform().name );
-                        //    Log.Normal("Cam2 InitTrns       : " + cam.initialPositionTransformName);
-                        //    Log.Normal("Cam2 camTrns.parent: " + cam.GetCameraTransform().parent.name);
-                        //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.name); //SpaceCenter
-                        //    Log.Normal("Cam2: " + cam.transform.parent.transform.parent.transform.parent.name); // KSC
-                        //}
-
                         InputLockManager.RemoveControlLock("KKEditorLock");
-                        // set the LaunchSite to the last use, also update the SpaceCenterCamera with this
-                        //LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed));
+                        LaunchSiteManager.KKSitesToKSP();
 
-                        // Tighter control over what statics are active
+
+                        foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                        {
+                            scCam.transform.parent = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform;
+                            scCam.transform.position = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.position;
+                            scCam.initialPositionTransformName = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.name;
+                            scCam.ResetCamera();
+                        }
+
+
                         //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         currentBody = LaunchSiteManager.GetCurrentLaunchSite().body;
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
+
                     }
                     break;
                 case GameScenes.MAINMENU:
@@ -377,7 +377,7 @@ namespace KerbalKonstructs
                         continue;
                     }
 
-                    closestSpaceCenter = csc.getSpaceCenter();
+                    closestSpaceCenter = csc.GetSpaceCenter();
                     double dist = closestSpaceCenter.GreatCircleDistance(csc.staticInstance.CelestialBody.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
                     if (dist < smallestDist)
@@ -1488,17 +1488,15 @@ namespace KerbalKonstructs
 
             if (cfg != null)
             {
-                foreach (FieldInfo f in GetType().GetFields(BindingFlags.Public))
+                foreach (FieldInfo f in GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
                 {
                     if (Attribute.IsDefined(f, typeof(KSPField)))
                     {
                         if (cfg.HasValue(f.Name))
+                        {
+                            //Log.Normal("setting value of: " + f.Name + " to´: " + Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType).ToString());
                             f.SetValue(this, Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType));
-                    }
-                    else
-                    {
-                        //Log.Debug("Attribute not defined as KSPField. This is harmless.");
-                        continue;
+                        }
                     }
                 }
             } else

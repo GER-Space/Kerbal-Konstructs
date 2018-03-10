@@ -20,7 +20,7 @@ namespace KerbalKonstructs.Core
                 var csc = new CustomSpaceCenter();
                 csc.SpaceCenterName = site.LaunchSiteName;
                 csc.staticInstance = parentinstance;
-                csc.gameObject = site.staticInstance.gameObject;
+                csc.gameObject = site.lsGameObject;
                 SpaceCenterManager.addSpaceCenter(csc);
             }
             else
@@ -33,22 +33,24 @@ namespace KerbalKonstructs.Core
         {
          get
             {
-                return getSpaceCenter();
+                return GetSpaceCenter();
             }
         }
 
 
-        public SpaceCenter getSpaceCenter()
+        public SpaceCenter GetSpaceCenter()
         {
             if (_spaceCenter == null)
             {
-                _spaceCenter = staticInstance.gameObject.AddComponent<SpaceCenter>();
+                _spaceCenter = gameObject.AddComponent<SpaceCenter>();
+                gameObject.SetActive(true);
                 _spaceCenter.cb = staticInstance.CelestialBody;
                 _spaceCenter.name = SpaceCenterName;
                 _spaceCenter.AreaRadius = 3000;
 //                _spaceCenter.spaceCenterAreaTrigger = new Collider();
 
                 _spaceCenter.SpaceCenterTransform = staticInstance.gameObject.transform;
+
 
 
                 FieldInfo Latitude = _spaceCenter.GetType().GetField("latitude", BindingFlags.NonPublic | BindingFlags.Instance);

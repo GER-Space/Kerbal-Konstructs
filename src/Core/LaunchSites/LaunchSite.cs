@@ -2,12 +2,51 @@
 using UnityEngine;
 using KerbalKonstructs.Utilities;
 using KerbalKonstructs.Modules;
+using System.Reflection;
+using System.Linq;
+using System.Collections.Generic;
+using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
-    public class LaunchSite : KKFacility
+    public class LaunchSite
     {
+        [CFGSetting]
+        public float OpenCost = 0f;
+        [CFGSetting]
+        public float CloseValue = 0f;
+        [CFGSetting]
+        internal string FacilityType;
+        [CFGSetting]
+        public string FacilityName = "";
+        [CFGSetting]
+        public string OpenCloseState
+        {
+            get
+            {
+                if (isOpen)
+                {
+                    return "Open";
+                }
+                else
+                {
+                    return "Closed";
+                }
+            }
+            private set
+            {
+                openString = value;
+                if (value == "Open")
+                {
+                    openState = true;
+                }
+                else
+                {
+                    openState = false;
+                }
 
+            }
+        }
         [CFGSetting]
         public string LaunchPadTransform;
         [CFGSetting]
@@ -56,6 +95,33 @@ namespace KerbalKonstructs.Core
         }
 
         [CareerSetting]
+        public bool isOpen
+        {
+            get
+            {
+                if (openState == true || openString == "Open" || CareerUtils.isSandboxGame || OpenCost == 0f)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            private set
+            {
+                openState = value;
+                if (openState == true)
+                {
+                    OpenCloseState = "Open";
+                }
+                else
+                {
+                    OpenCloseState = "Closed";
+                }
+            }
+        }
+        [CareerSetting]
         public string favouriteSite = "No";
         [CareerSetting]
         public float MissionCount = 0f;
@@ -64,6 +130,11 @@ namespace KerbalKonstructs.Core
 
 
 
+        private bool openState = false;
+        internal string openString = "Closed";
+        internal string defaultState = "Closed";
+
+        internal StaticInstance staticInstance = null;
 
         internal Texture logo = null;
         internal Texture icon = null;
@@ -78,11 +149,12 @@ namespace KerbalKonstructs.Core
         internal GameObject lsGameObject;
         internal PSystemSetup.SpaceCenterFacility facility = null;
 
+
         internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
             if (cfgNode != null)
             {
-                base.ParseConfig(cfgNode);
+               LaunchSiteParser.ParseConfig(this,cfgNode);
             }
 
             lsGameObject = instance.gameObject;
@@ -117,10 +189,40 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal override void SetOpen()
-        {
-            base.SetOpen();
 
+
+        /// <summary>
+        /// Open the faclility/Launchsite
+        /// </summary>
+        internal void SetOpen()
+        {
+            LaunchSiteManager.OpenLaunchSite(this);
+            isOpen = true;
+        }
+
+        /// <summary>
+        /// Close a facility/LaunchSite
+        /// </summary>
+        internal void SetClosed()
+        {
+            LaunchSiteManager.CloseLaunchSite(this);
+            isOpen = false;
+        }
+
+        // Resets the facility/LaunchSite to its default state
+        internal  void ResetToDefaultState()
+        {
+            if (OpenCloseState != defaultState)
+            {
+                if (isOpen)
+                {
+                    SetClosed();
+                }
+                else
+                {
+                    SetOpen();
+                }
+            }
         }
 
 

@@ -70,11 +70,6 @@ namespace KerbalKonstructs.UI
 			lTargetSite = lsTarget;
 		}
 
-		public static LaunchSite getTargetSite()
-		{
-			return lTargetSite;
-		}
-
 		void prepNGS()
 		{
 			if (lTargetSite != null)

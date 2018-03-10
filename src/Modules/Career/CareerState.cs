@@ -87,7 +87,7 @@ namespace KerbalKonstructs.Modules
                 if (launchSiteNodes.HasNode(CareerUtils.LSKeyFromName(site.LaunchSiteName)))
                 {
                     lsNode = launchSiteNodes.GetNode(CareerUtils.LSKeyFromName(site.LaunchSiteName));
-                    site.LoadCareerConfig(lsNode);
+                    LaunchSiteParser.LoadCareerConfig(site, lsNode);
                 }
             }
             
@@ -125,7 +125,7 @@ namespace KerbalKonstructs.Modules
             {
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = launchSiteNode.AddNode(name);
-                site.SaveCareerConfig(lsNode);
+                LaunchSiteParser.SaveCareerConfig(site, lsNode);
             }
         }
 
