@@ -117,6 +117,13 @@ namespace KerbalKonstructs.Core
 
         }
 
+        internal override void SetOpen()
+        {
+            base.SetOpen();
+
+        }
+
+
     }
     public enum LaunchSiteCategory
     {

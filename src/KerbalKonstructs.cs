@@ -10,7 +10,6 @@ using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
 using System.Reflection;
 using KSP.UI.Screens;
-using Upgradeables;
 using KerbalKonstructs.Addons;
 using KerbalKonstructs.Modules;
 

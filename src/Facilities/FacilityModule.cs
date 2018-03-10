@@ -326,7 +326,7 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Open the faclility/Launchsite
         /// </summary>
-        internal void SetOpen()
+        internal virtual void SetOpen()
         {
             isOpen = true;
         }
@@ -334,13 +334,13 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Close a facility/LaunchSite
         /// </summary>
-        internal void SetClosed()
+        internal virtual void SetClosed()
         {
             isOpen = false;
         }
 
         // Resets the facility/LaunchSite to its default state
-        internal void ResetToDefaultState()
+        internal virtual void ResetToDefaultState()
         {
             if (OpenCloseState != defaultState)
             {
