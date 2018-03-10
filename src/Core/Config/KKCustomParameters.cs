@@ -70,12 +70,16 @@ namespace KerbalKonstructs.Core
         // misc settings
         [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
         public string blank03 = "";
-        [GameParameters.CustomStringParameterUI("", title = "Map Options", lines = 1)]
+        [GameParameters.CustomStringParameterUI("", title = "Misc Settings", lines = 1)]
         public string blank3 = "";
+        [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
+        public string blank04 = "";
         [GameParameters.CustomParameterUI("Show Icons only with LS selector", toolTip = "Show only the icons on the map, when the KK selector is opened", autoPersistance = true)]
         public bool toggleIconsWithBB = false;
         [GameParameters.CustomFloatParameterUI("The master volume for KK sound objects", toolTip = "Set here to adjust the loudness of the AudioPlayer objects.", minValue = 0 , maxValue = 1 , asPercentage = true , stepCount = 100, autoPersistance = true)]
         public float soundMasterVolume = 1f;
+        [GameParameters.CustomParameterUI("Focus last LaunchSite", toolTip = "Switch the SpaceCenter view to the Last LaunchSite used", autoPersistance = true)]
+        public bool focusLastLaunchSite = true;
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {

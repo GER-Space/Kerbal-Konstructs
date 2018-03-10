@@ -108,6 +108,8 @@ namespace KerbalKonstructs
         internal static string newInstancePath { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath = value; } }
         internal static bool useLegacyCamera { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera; } }
 
+        internal static bool focusLastLaunchSite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().focusLastLaunchSite; } }
+
         // map icon settings. These are saved manually
         [KSPField]
         public Boolean mapShowOpen = true;
@@ -306,22 +308,50 @@ namespace KerbalKonstructs
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         LaunchSiteManager.KKSitesToKSP();
 
+                        LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
-                        foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                        {
-                            scCam.transform.parent = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform;
-                            scCam.transform.position = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.position;
-                            scCam.initialPositionTransformName = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.name;
-                            scCam.ResetCamera();
-                        }
-
-
-                        //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                        currentBody = LaunchSiteManager.GetCurrentLaunchSite().body;
+                        currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+                        //currentBody = currentSite.body;
+                        //if (!currentBody.pqsController.isActive)
+                        //{
+                        //    Log.Normal("Activating Body: " + currentBody.name);
+                        //    currentBody.pqsController.isActive = true;
+                        //    currentBody.pqsController.ActivateSphere();
+                        //    currentBody.pqsController.EnableSphere();
+                        //    currentBody.pqsController.StartUpSphere();
+                        //    currentBody.pqsController.ForceStart();
+                        //    Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
+                        //}
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
+                        //if (focusLastLaunchSite )
+                        if (focusLastLaunchSite && (currentSite.body.name == "Kerbin"))
+                        {
+                            foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                            {
+                                scCam.transform.parent = currentSite.lsGameObject.transform;
+                                scCam.transform.position = currentSite.lsGameObject.transform.position;
+                                scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
+                                //FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
+                                //pqsField.SetValue(scCam, currentSite.body.pqsController);
+                                scCam.pqsName = currentSite.body.name;
+                                scCam.ResetCamera();
+                            }
 
+                        }
+                        else
+                        {
+                            foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                            {
+                                scCam.transform.parent = SpaceCenter.Instance.transform;
+                                scCam.transform.position = SpaceCenter.Instance.transform.position;
+                                scCam.initialPositionTransformName = "KSC/SpaceCenter/SpaceCenterCameraPosition";
+                                scCam.pqsName = "Kerbin";
+                                scCam.ResetCamera();
+                            }
+                        }
+                        updateCache();
                     }
                     break;
                 case GameScenes.MAINMENU:
