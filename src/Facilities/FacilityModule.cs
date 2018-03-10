@@ -162,6 +162,8 @@ namespace KerbalKonstructs.Modules
                 }
             }
 
+            myProperties = allProperties[this.GetType().Name];
+
             foreach (var field in myProperties.Values)
             {
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
@@ -205,6 +207,7 @@ namespace KerbalKonstructs.Modules
                     ConfigUtil.Write2CfgNode(this, field.Value, cfgNode);
                 }
             }
+            myProperties = allProperties[this.GetType().Name];
 
             foreach (var field in myProperties)
             {
@@ -308,7 +311,7 @@ namespace KerbalKonstructs.Modules
         internal void AttachSelector()
         {
             Type myType = this.GetType();
-            if (myType.Name == "KKLaunchSite" || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
+            if (myType.Name == "LaunchSite" || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
             {
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
@@ -376,28 +379,36 @@ namespace KerbalKonstructs.Modules
         {
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                if (this.gameObject == null)
+                try
                 {
-                    Destroy(this);
-                }
-                if (staticInstance == null)
+
+                    if (this.gameObject == null)
+                    {
+                        Destroy(this);
+                    }
+                    if (staticInstance == null)
+                    {
+                        staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
+                    }
+                    if (staticInstance == null)
+                    {
+                        Log.UserInfo("Cound not determin instance for mouse selector");
+                        Destroy(this);
+                    }
+
+                    if (staticInstance.myFacilities[0].isOpen)
+                    {
+                        staticInstance.HighlightObject(new Color(0.4f, 0.9f, 0.4f, 0.5f));
+                    }
+                    else
+                    {
+                        staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
+                    }
+                } catch
                 {
-                    staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
-                }
-                if (staticInstance == null)
-                {
-                    Log.UserInfo("Cound not determin instance for mouse selector");
                     Destroy(this);
                 }
 
-                if (staticInstance.myFacilities[0].isOpen)
-                {
-                    staticInstance.HighlightObject(new Color(0.4f, 0.9f, 0.4f, 0.5f));
-                }
-                else
-                {
-                    staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
-                }
 
             }
         }

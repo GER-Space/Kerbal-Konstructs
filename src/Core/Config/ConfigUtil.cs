@@ -300,7 +300,6 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void Write2CfgNode(object source, PropertyInfo property, ConfigNode cfgNode)
         {
-
             switch (property.PropertyType.ToString())
             {
                 case "System.String":

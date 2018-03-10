@@ -197,15 +197,15 @@ namespace KerbalKonstructs.Modules
                 // check if we should display the site or not this is the fastst check, so it shoud be first
                 isOpen = launchSite.isOpen;
 
-                if (!KerbalKonstructs.instance.mapShowHelipads && launchSite.Category == LaunchSiteCategory.Helipad)
+                if (!KerbalKonstructs.instance.mapShowHelipads && launchSite.sitecategory == LaunchSiteCategory.Helipad)
                     continue;
-                if (!KerbalKonstructs.instance.mapShowOther && (launchSite.Category == LaunchSiteCategory.Other))
+                if (!KerbalKonstructs.instance.mapShowOther && (launchSite.sitecategory == LaunchSiteCategory.Other))
                     continue;
-                if (!KerbalKonstructs.instance.mapShowWaterLaunch && (launchSite.Category == LaunchSiteCategory.Waterlaunch))
+                if (!KerbalKonstructs.instance.mapShowWaterLaunch && (launchSite.sitecategory == LaunchSiteCategory.Waterlaunch))
                     continue;
-                if (!KerbalKonstructs.instance.mapShowRocketbases && launchSite.Category == LaunchSiteCategory.RocketPad)
+                if (!KerbalKonstructs.instance.mapShowRocketbases && launchSite.sitecategory == LaunchSiteCategory.RocketPad)
                     continue;
-                if (!KerbalKonstructs.instance.mapShowRunways && launchSite.Category == LaunchSiteCategory.Runway)
+                if (!KerbalKonstructs.instance.mapShowRunways && launchSite.sitecategory == LaunchSiteCategory.Runway)
                     continue;
 
                 if (MiscUtils.isCareerGame())
@@ -245,7 +245,7 @@ namespace KerbalKonstructs.Modules
                 {
                     if (fRadarRadius > 15)
                     {
-                        switch (launchSite.Category)
+                        switch (launchSite.sitecategory)
                         {
                             case LaunchSiteCategory.RocketPad:
                                 GUI.DrawTexture(screenRect, UIMain.VABIcon, ScaleMode.ScaleToFit, true);

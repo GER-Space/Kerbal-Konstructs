@@ -531,7 +531,7 @@ namespace KerbalKonstructs.UI
                                 GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
                                 if (allStaticInstances[ix].hasLauchSites)
                                 {
-                                    launchsiteCategory = allStaticInstances[ix].launchSite.Category;
+                                    launchsiteCategory = allStaticInstances[ix].launchSite.sitecategory;
                                 }
                                 switch (launchsiteCategory)
                                 {

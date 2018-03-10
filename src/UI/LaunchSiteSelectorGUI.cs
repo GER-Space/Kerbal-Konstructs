@@ -263,7 +263,7 @@ namespace KerbalKonstructs.UI
                         continue;
                     }
 
-                    if (category != site.Category && !showAllcategorys)
+                    if (category != site.sitecategory && !showAllcategorys)
                     {
                         continue;
                     }

@@ -23,8 +23,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string LaunchSiteDescription;
         [CFGSetting]
-        public LaunchSiteCategory Category = LaunchSiteCategory.Other;
-        [CFGSetting]
         public float LaunchSiteLength;
         [CFGSetting]
         public float LaunchSiteWidth;
@@ -32,6 +30,30 @@ namespace KerbalKonstructs.Core
         public bool LaunchSiteIsHidden = false;
         [CFGSetting]
         public bool ILSIsActive = false;
+        // legacy API for KTC (needed for KSP 1.2.2 & 1.3.1)
+        [CFGSetting]
+        public string Category
+        {
+            get
+            {
+                return sitecategory.ToString();
+            }
+            set
+            {
+                LaunchSiteCategory tmpCat = LaunchSiteCategory.Other;
+                try
+                {
+                    tmpCat = (LaunchSiteCategory)Enum.Parse(typeof(LaunchSiteCategory), value);
+
+                }
+                catch
+                {
+                    tmpCat = LaunchSiteCategory.Other;
+                }
+                sitecategory = tmpCat;
+
+            }
+        }
 
         [CareerSetting]
         public string favouriteSite = "No";
@@ -41,8 +63,12 @@ namespace KerbalKonstructs.Core
         public string MissionLog = "No Log";
 
 
+
+
         internal Texture logo = null;
         internal Texture icon = null;
+
+        internal LaunchSiteCategory sitecategory = LaunchSiteCategory.Other;
 
         internal float refLon;
         internal float refLat;

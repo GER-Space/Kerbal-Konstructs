@@ -89,7 +89,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteName = "Runway";
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
-            runway.Category = LaunchSiteCategory.Runway;
+            runway.sitecategory = LaunchSiteCategory.Runway;
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -104,7 +104,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteName = "LaunchPad";
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
-            launchpad.Category = LaunchSiteCategory.RocketPad;
+            launchpad.sitecategory = LaunchSiteCategory.RocketPad;
             launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.body = ConfigUtil.GetCelestialBody("HomeWorld");

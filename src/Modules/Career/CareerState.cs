@@ -58,7 +58,9 @@ namespace KerbalKonstructs.Modules
             foreach (StaticInstance instance in StaticDatabase.GetAllStatics())
             {
                 if (!instance.hasFacilities)
+                {
                     continue;
+                }
 
                 ConfigNode instanceNode = facilityNodes.AddNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
                 instanceNode.SetValue("FacilityName", instance.gameObject.name, true);

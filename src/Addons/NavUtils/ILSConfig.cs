@@ -27,7 +27,7 @@ namespace KerbalKonstructs
 			try {
 				string siteName = instance.launchSite.LaunchSiteName;
 				Log.Normal ("ILS: site name = " + siteName);
-				bool isRunway = (instance.launchSite.Category == LaunchSiteCategory.Runway);
+				bool isRunway = (instance.launchSite.sitecategory == LaunchSiteCategory.Runway);
 
 				Transform launchpad = instance.launchSite.lsGameObject.transform.Find(
 					instance.launchSite.LaunchPadTransform);

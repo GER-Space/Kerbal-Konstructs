@@ -397,7 +397,7 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
             selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
             selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
-            selectedObject.launchSite.Category = category;
+            selectedObject.launchSite.sitecategory = category;
 
             if (ILSConfig.DetectNavUtils())
             {
@@ -474,7 +474,7 @@ namespace KerbalKonstructs.UI
                 stOpenCost = string.Format("{0}", flOpenCost);
                 stCloseValue = string.Format("{0}", flCloseValue);
 
-                category = selectedObject.launchSite.Category;
+                category = selectedObject.launchSite.sitecategory;
 
 
                 flLength = selectedObject.launchSite.LaunchSiteLength;
