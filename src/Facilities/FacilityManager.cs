@@ -89,7 +89,6 @@ namespace KerbalKonstructs.UI
             }
 
 
-            StaticInstance soObject = KerbalKonstructs.instance.selectedObject;
             KKWindow = new GUIStyle(GUI.skin.window);
             KKWindow.padding = new RectOffset(3, 3, 5, 5);
 
@@ -117,7 +116,13 @@ namespace KerbalKonstructs.UI
 
         void drawFacilityManagerWindow(int windowID)
         {
-           
+            if (selectedInstance.hasFacilities == false || selectedInstance.myFacilities.Count == 0)
+            {
+                selectedInstance = null;
+                this.Close();
+            }
+
+
             if (!layoutInitialized)
             {
                 InitializeLayout();

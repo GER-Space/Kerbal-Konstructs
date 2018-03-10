@@ -8,18 +8,10 @@ namespace KerbalKonstructs.UI
 {
 	public class SharedInterfaces
 	{
-		//public static event Action<StaticInstance> evFacilityOpened;
-		//public static event Action<StaticInstance> evFacilityClosed;
 
 		public static GUIStyle BoxInfo;
 		public static GUIStyle ButtonSmallText;
 
-		//public static StaticInstance soStoredEventObject;
-
-		//public static StaticInstance getStoredEventObject()
-		//{
-		//	return soStoredEventObject;
-		//}
 
 		public static void OpenCloseFacility(StaticInstance selectedFacility)
 		{
@@ -35,6 +27,8 @@ namespace KerbalKonstructs.UI
 			ButtonSmallText = new GUIStyle(GUI.skin.button);
 			ButtonSmallText.fontSize = 12;
 			ButtonSmallText.fontStyle = FontStyle.Normal;
+
+
 
 			float iFundsOpen2 = selectedFacility.myFacilities[0].OpenCost;
 			float iFundsClose2 = selectedFacility.myFacilities[0].CloseValue;
@@ -80,10 +74,6 @@ namespace KerbalKonstructs.UI
 								// Charge some funds
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
 
-								// Save new state to persistence
-								//soStoredEventObject = selectedFacility;
-								//if (evFacilityOpened != null)
-								//	evFacilityOpened(selectedFacility);
 
                                 // Callback to CommNet.
                                 
@@ -95,10 +85,6 @@ namespace KerbalKonstructs.UI
                             }
                         }
 						GUI.enabled = true;
-					}
-					else
-					{
-						// GUILayout.Box("This facility is always open.", BoxInfo);
 					}
 					
 					if (!cannotBeClosed2)
@@ -113,11 +99,6 @@ namespace KerbalKonstructs.UI
 							// Pay back some funds
 							Funding.Instance.AddFunds(iFundsClose2, TransactionReasons.Structures);
                             selectedFacility.myFacilities[0].SetClosed();
-                            ;
-
-							//soStoredEventObject = selectedFacility;
-							//if (evFacilityClosed != null)
-							//	evFacilityClosed(selectedFacility);
 
                             // Callback to CommNet.
                             if ((selectedFacility.myFacilities[0].FacilityType) == "GroundStation")
@@ -128,10 +109,6 @@ namespace KerbalKonstructs.UI
                         }
 
                         GUI.enabled = true;
-                       }
-                       else
-                       {
-                           // GUILayout.Box("This facility cannot be closed.", BoxInfo);
                        }					
                    }
                    GUILayout.EndHorizontal();
