@@ -28,7 +28,7 @@ namespace KerbalKonstructs.UI
 
 
         private static Vector2 facilityscroll;
-
+        private static float increment = 10f;
 
 
         /// <summary>
@@ -48,6 +48,30 @@ namespace KerbalKonstructs.UI
             }
 
             GUILayout.Space(2);
+            GUILayout.Space(2);
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Stack size: ", GUILayout.Height(18));
+                GUI.enabled = (increment != 1f);
+                if (GUILayout.Button("1", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 1f;
+                }
+                GUI.enabled = (increment != 10f);
+                if (GUILayout.Button("10", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 10f;
+                }
+                GUI.enabled = (increment != 100f);
+                if (GUILayout.Button("100", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 100f;
+                }
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUI.enabled = true;
 
             GUILayout.Label("Store or retrieve these resources: ", GUILayout.Height(30));
 
@@ -126,7 +150,7 @@ namespace KerbalKonstructs.UI
                         GUILayout.FlexibleSpace();
 
                         maxSpaceLeft = selectedFacility.maxVolume - selectedFacility.currentVolume;
-                        storableUnits = Math.Min(1, maxSpaceLeft / resource.volume);
+                        storableUnits = Math.Min(increment, maxSpaceLeft / resource.volume);
                         GUI.enabled = (storableUnits > 0f);
                         if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)))
                         {
@@ -146,13 +170,13 @@ namespace KerbalKonstructs.UI
                         if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
                         {
 
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1, storedAmount), true);
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(increment, storedAmount), true);
                             StoreResource(resource, transferred);
 
                         }
                         if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
                         {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(1, storedAmount), true);
+                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(increment, storedAmount), true);
                             StoreResource(resource, transferred);
                         }
                         GUILayout.Space(10);

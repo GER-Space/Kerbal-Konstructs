@@ -17,6 +17,7 @@ namespace KerbalKonstructs.UI
         internal static Vessel currentVessel = null;
 
         private static Vector2 facilityscroll;
+        private static float increment = 10f;
 
         internal static void MerchantInterface(StaticInstance instance)
         {
@@ -32,8 +33,32 @@ namespace KerbalKonstructs.UI
 
             GUILayout.Space(2);
 
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Stack size: ", GUILayout.Height(18));
+                GUI.enabled = (increment != 1f);
+                if (GUILayout.Button("1", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 1f;
+                }
+                GUI.enabled = (increment != 10f);
+                if (GUILayout.Button("10", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 10f;
+                }
+                GUI.enabled = (increment != 100f);
+                if (GUILayout.Button("100", GUILayout.Height(18), GUILayout.Width(32)))
+                {
+                    increment = 100f;
+                }
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUI.enabled = true;
+
             GUILayout.Label("Buy or sell these resources: ", GUILayout.Height(30));
 
+            GUILayout.Space(2);
             facilityscroll = GUILayout.BeginScrollView(facilityscroll);
             {
                 foreach (TradedResource myResource in selectedFacility.tradedResources)
@@ -47,7 +72,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
                     GUILayout.BeginHorizontal();
                     {
-                        GUILayout.Label(myResource.resource.name, GUILayout.Height(23));
+                        GUILayout.Label(myResource.resource.name, GUILayout.Height(23), GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         if (myResource.canBeSold)
                         {
@@ -76,18 +101,18 @@ namespace KerbalKonstructs.UI
                         xFeedSet.GetConnectedResourceTotals(myResource.resource.id, out double xfeedAmount, out double xfeedMax, true);
                         GUILayout.BeginHorizontal();
                         {
-                            GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
+                            GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18), GUILayout.Width(120));
                             GUILayout.FlexibleSpace();
                             if (myResource.canBeSold)
                             {
                                 if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
                                 {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, increment, true);
                                     BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
                                 }
                                 if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
                                 {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, 1, true);
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, increment, true);
                                     BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
                                 }
                             }
@@ -99,10 +124,10 @@ namespace KerbalKonstructs.UI
                             if (myResource.canBeBought)
                             {
                                 // check if we have enough money to buy the resources
-                                GUI.enabled = ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (Funding.Instance.Funds > (myResource.resource.unitCost * myResource.multiplierBuy)));
+                                GUI.enabled = ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (Funding.Instance.Funds > (myResource.resource.unitCost * increment * myResource.multiplierBuy)));
                                 if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
                                 {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -1, true);
+                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -increment, true);
                                     BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierBuy);
                                 }
                                 GUI.enabled = true;
@@ -112,6 +137,7 @@ namespace KerbalKonstructs.UI
                                 GUILayout.Space(64);
                             }
                         }
+                        GUILayout.Space(16);
                         GUILayout.EndHorizontal();
                     }
                     //GUILayout.Space(4);
