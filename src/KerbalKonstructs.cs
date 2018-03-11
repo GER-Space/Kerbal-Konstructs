@@ -167,7 +167,6 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
-
             // for Terrain Rescaling
             SDRescale.SetTerrainRescales();
 

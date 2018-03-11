@@ -149,6 +149,8 @@ namespace KerbalKonstructs.Core
         internal GameObject lsGameObject;
         internal PSystemSetup.SpaceCenterFacility facility = null;
 
+        private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
+
 
         internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
@@ -186,6 +188,7 @@ namespace KerbalKonstructs.Core
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
             refAlt = staticInstance.RadiusOffset;
+            AttachSelector();
 
         }
 
@@ -225,8 +228,99 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        /// <summary>
+        /// Attaches the MouseSelector to a LaunchSite
+        /// </summary>
+        internal void AttachSelector()
+        {
+            foreach (Collider colloder in lsGameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
+            {
+                KKLaunchSiteSelector selector = colloder.gameObject.AddComponent<KKLaunchSiteSelector>();
+                selector.staticInstance = staticInstance;
+                facSelector.Add(selector);
+            }
+        }
+    }
+
+    internal class KKLaunchSiteSelector : MonoBehaviour
+    {
+        // we get this passed through the facility module
+        internal StaticInstance staticInstance = null;
+
+        #region Unity mouse extension
+
+        void OnMouseDown()
+        {
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                EditorFacility facility;
+                if (staticInstance.launchSite.LaunchSiteType == SiteType.VAB)
+                {
+                    facility = EditorFacility.VAB;
+                }
+                else
+                {
+                    facility = EditorFacility.SPH;
+                }
+                
+
+                EditorDriver.StartupBehaviour = EditorDriver.StartupBehaviours.START_CLEAN;
+                EditorDriver.StartEditor(facility);
+            }
+        }
+
+        void OnMouseEnter()
+        {
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                try
+                {
+
+                    if (this.gameObject == null)
+                    {
+                        Destroy(this);
+                    }
+                    if (staticInstance == null)
+                    {
+                        staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
+                    }
+                    if (staticInstance == null)
+                    {
+                        Log.UserInfo("Cound not determin instance for mouse selector");
+                        Destroy(this);
+                    }
+
+                    if (staticInstance.launchSite.isOpen)
+                    {
+                        staticInstance.HighlightObject(new Color(0.4f, 0.9f, 0.4f, 0.5f));
+                    }
+                    else
+                    {
+                        staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
+                    }
+                }
+                catch
+                {
+                    Destroy(this);
+                }
+
+
+            }
+        }
+
+        void OnMouseExit()
+        {
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                staticInstance.HighlightObject(Color.clear);
+            }
+        }
+        #endregion
+
 
     }
+
+
     public enum LaunchSiteCategory
     {
         Runway,
