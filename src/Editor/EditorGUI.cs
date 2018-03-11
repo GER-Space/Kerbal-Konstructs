@@ -77,7 +77,7 @@ namespace KerbalKonstructs.UI
 
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";
-        private float increment = 0.1f;
+        private float increment = 1f;
 
 
         private VectorRenderer upVR = new VectorRenderer();
