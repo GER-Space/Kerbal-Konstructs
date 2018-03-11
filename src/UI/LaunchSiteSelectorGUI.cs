@@ -351,28 +351,29 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUI.enabled = false;
-                if ((EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != sCurrentSite))
+                if ( (selectedSite.isOpen) &&  (EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != selectedSite.LaunchSiteName))
                 {
                     GUI.enabled = true;
                 }
 
-                if ((EditorDriver.editorFacility == EditorFacility.VAB) && (KerbalKonstructs.instance.defaultVABlaunchsite != sCurrentSite))
+                if ((selectedSite.isOpen) && (EditorDriver.editorFacility == EditorFacility.VAB) && (KerbalKonstructs.instance.defaultVABlaunchsite != selectedSite.LaunchSiteName))
                 {
                     GUI.enabled = true;
                 }
 
                 if (GUILayout.Button("Set as Default", GUILayout.Height(23)))
                 {
-                    if (sCurrentSite != null)
+                    if (selectedSite != null)
                     {
+                        MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the default", 10, 0);
                         if (EditorDriver.editorFacility == EditorFacility.SPH)
                         {
-                            KerbalKonstructs.instance.defaultSPHlaunchsite = sCurrentSite;
+                            KerbalKonstructs.instance.defaultSPHlaunchsite = selectedSite.LaunchSiteName;
                         }
 
                         if (EditorDriver.editorFacility == EditorFacility.VAB)
                         {
-                            KerbalKonstructs.instance.defaultVABlaunchsite = sCurrentSite;
+                            KerbalKonstructs.instance.defaultVABlaunchsite = selectedSite.LaunchSiteName;
                         }
                     }
                 }
