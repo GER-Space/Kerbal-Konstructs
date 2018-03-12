@@ -14,8 +14,38 @@ namespace KerbalKonstructs.Modules
 
     internal class RemoteNet
     {
+
+        static List<GameObject> stockGroundStations = new List<GameObject>();
+
         static List<StaticInstance> openCNStations = new List<StaticInstance>();
         static Dictionary<StaticInstance, Guid> openRTStations = new Dictionary<StaticInstance, Guid>();
+
+
+
+
+
+
+        internal static void ScanForStockStation()
+        {
+            stockGroundStations = new List<GameObject>();
+            foreach (var home in UnityEngine.Object.FindObjectsOfType<CommNetHome>())
+            {
+                // we never touch the KSC
+                if (home.isKSC == true)
+                {
+                    continue;
+                }
+                stockGroundStations.Add(home.gameObject);
+            }
+
+        }
+
+
+
+
+
+
+
 
         /// <summary>
         /// iterates through all potential open TrackingStations and attaches GroundStations
@@ -36,7 +66,10 @@ namespace KerbalKonstructs.Modules
                     {
                         Log.Normal("Found ComNet: " + homes[i].nodeName + " " + homes[i].isKSC);
                         if (homes[i].isKSC == true)
+                        {
                             continue;
+                        }
+
                         UnityEngine.Object.Destroy(homes[i]);
                     }
                 }
