@@ -117,7 +117,6 @@ namespace KerbalKonstructs.Modules
         private List<KKFacilitySelector> facSelector = new List<KKFacilitySelector>();
 
         internal KKFacilityType facType = KKFacilityType.None;
-        private StaticInstance _instance = null;
 
         internal StaticInstance staticInstance = null;
 

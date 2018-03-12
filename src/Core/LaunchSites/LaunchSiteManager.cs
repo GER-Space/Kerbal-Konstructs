@@ -139,7 +139,6 @@ namespace KerbalKonstructs.Core
             AddKSC();
         }
 
-
         internal static void AttachLaunchSite(StaticInstance instance, ConfigNode instanceNode)
         {
             if (instanceNode.HasValue("LaunchPadTransform") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchPadTransform")) && instanceNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchSiteName")))

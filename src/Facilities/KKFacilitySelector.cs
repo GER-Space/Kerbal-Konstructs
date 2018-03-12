@@ -56,12 +56,18 @@ namespace KerbalKonstructs.Core
                     UIMasterController.Instance.AddCanvas(acPrefab.ACScreenPrefab, true);
                     break;
                 case KKFacilityType.Business:
-                    var adminPrefab = FindObjectOfType<AdministrationSceneSpawner>();
-                    UIMasterController.Instance.AddCanvas(adminPrefab.AdministrationScreenPrefab, true);
+                    if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER)
+                    {
+                        var adminPrefab = FindObjectOfType<AdministrationSceneSpawner>();
+                        UIMasterController.Instance.AddCanvas(adminPrefab.AdministrationScreenPrefab, true);
+                    }
                     break;
                 case KKFacilityType.Research:
-                    var researchPrefab = FindObjectOfType<RDSceneSpawner>();
-                    UIMasterController.Instance.AddCanvas(researchPrefab.RDScreenPrefab, true);
+                    if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER || HighLogic.CurrentGame.Mode == Game.Modes.SCIENCE_SANDBOX)
+                    {
+                        var researchPrefab = FindObjectOfType<RDSceneSpawner>();
+                        UIMasterController.Instance.AddCanvas(researchPrefab.RDScreenPrefab, true);
+                    }
                     break;
                 case KKFacilityType.GroundStation:
                     HighLogic.LoadScene(GameScenes.TRACKSTATION);
@@ -127,7 +133,7 @@ namespace KerbalKonstructs.Core
 
                 try
                 {
-                    staticInstance.HighlightObject(new Color(0.7f, 0.7f, 0.7f, 0.5f));
+                    staticInstance.HighlightObject(new Color(0.7f, 0.7f, 0.7f));
                 }
                 catch
                 {
