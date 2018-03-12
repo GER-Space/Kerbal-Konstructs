@@ -112,6 +112,7 @@
     <Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
     <Compile Include="Facilities\Hangar\Hangar.cs" />
+    <Compile Include="Facilities\KKFacilitySelector.cs" />
     <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
     <Compile Include="Facilities\Storage\Storage.cs" />
     <Compile Include="Facilities\Storage\StorageGUI.cs" />

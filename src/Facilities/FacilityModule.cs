@@ -116,25 +116,10 @@ namespace KerbalKonstructs.Modules
 
         private List<KKFacilitySelector> facSelector = new List<KKFacilitySelector>();
 
+        internal KKFacilityType facType = KKFacilityType.None;
         private StaticInstance _instance = null;
 
-        internal StaticInstance staticInstance
-        {
-            get
-            {
-                return _instance;
-            }
-            set
-            {
-                _instance = value;
-                foreach (var fac in facSelector)
-                {
-                    fac.staticInstance = value;
-                }
-
-
-            }
-        }
+        internal StaticInstance staticInstance = null;
 
         // clean up the facSelector
         public void OnDestroy()
@@ -177,7 +162,7 @@ namespace KerbalKonstructs.Modules
             }
 
             FacilityType = this.GetType().Name;
-
+            facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), FacilityType, true);
             AttachSelector();
             return this;
         }
@@ -311,7 +296,7 @@ namespace KerbalKonstructs.Modules
         internal void AttachSelector()
         {
             Type myType = this.GetType();
-            if (myType.Name == "LaunchSite" || myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
+            if (myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
             {
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
@@ -319,7 +304,9 @@ namespace KerbalKonstructs.Modules
 
             foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
-                facSelector.Add(colloder.gameObject.AddComponent<KKFacilitySelector>());
+                KKFacilitySelector selector = colloder.gameObject.AddComponent<KKFacilitySelector>();
+                selector.facility = this;
+                facSelector.Add(selector);
             }
         }
 
@@ -354,74 +341,6 @@ namespace KerbalKonstructs.Modules
                 }
             }
         }
-
-    }
-
-    internal class KKFacilitySelector : MonoBehaviour
-    {
-        // we get this passed through the facility module
-        internal StaticInstance staticInstance = null;
-
-
-        #region Unity mouse extension
-
-        void OnMouseDown()
-        {
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                FacilityManager.selectedInstance = staticInstance;
-                FacilityManager.instance.Open();
-
-            }
-        }
-
-        void OnMouseEnter()
-        {
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                try
-                {
-
-                    if (this.gameObject == null)
-                    {
-                        Destroy(this);
-                    }
-                    if (staticInstance == null)
-                    {
-                        staticInstance = InstanceUtil.GetStaticInstanceForGameObject(this.gameObject);
-                    }
-                    if (staticInstance == null)
-                    {
-                        Log.UserInfo("Cound not determin instance for mouse selector");
-                        Destroy(this);
-                    }
-
-                    if (staticInstance.myFacilities[0].isOpen)
-                    {
-                        staticInstance.HighlightObject(new Color(0.4f, 0.9f, 0.4f, 0.5f));
-                    }
-                    else
-                    {
-                        staticInstance.HighlightObject(new Color(0.9f, 0.4f, 0.4f, 0.5f));
-                    }
-                } catch
-                {
-                    Destroy(this);
-                }
-
-
-            }
-        }
-
-        void OnMouseExit()
-        {
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                staticInstance.HighlightObject(Color.clear);
-            }
-        }
-        #endregion
-
 
     }
 
