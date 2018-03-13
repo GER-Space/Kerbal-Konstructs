@@ -312,18 +312,19 @@ namespace KerbalKonstructs
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         
-                        if (!currentBody.pqsController.isActive)
-                        {
-                            Log.Normal("Activating Body: " + currentBody.name);
-                            currentBody.pqsController.isActive = true;
-                            currentBody.pqsController.isStarted = true;
-                            currentBody.pqsController.ActivateSphere();
-                            currentBody.pqsController.EnableSphere();
-                            currentBody.pqsController.StartUpSphere();
-                            currentBody.pqsController.ForceStart();
-                            currentBody.pqsController.RebuildSphere();
-                            Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
-                        }
+                        //if (!currentBody.pqsController.isActive)
+                        //{
+                        //    Log.Normal("Activating Body: " + currentBody.name);
+                        //    currentBody.pqsController.enabled = true;
+                        //    currentBody.pqsController.isActive = true;
+                        //    currentBody.pqsController.isStarted = true;
+                        //    currentBody.pqsController.ActivateSphere();
+                        //    currentBody.pqsController.EnableSphere();
+                        //    currentBody.pqsController.StartUpSphere();
+                        //    currentBody.pqsController.ForceStart();
+                        //    currentBody.pqsController.RebuildSphere();
+                        //    Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
+                        //}
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();

@@ -194,7 +194,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                PQSCity sitePQS = currentSite.lsGameObject.GetComponentInParent<PQSCity>();
+                PQSCity sitePQS = currentSite.staticInstance.pqsCity;
 
                 foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
                 {
