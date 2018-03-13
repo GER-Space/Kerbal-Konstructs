@@ -109,7 +109,7 @@ namespace KerbalKonstructs
         internal static bool useLegacyCamera { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera; } }
 
         internal static bool focusLastLaunchSite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().focusLastLaunchSite; } }
-
+        internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
         // map icon settings. These are saved manually
         [KSPField]
         public Boolean mapShowOpen = true;
@@ -164,6 +164,7 @@ namespace KerbalKonstructs
             #endregion
 
             SpaceCenterManager.setKSC();
+            ConnectionManager.ScanForStockCommNet();
 
             DontDestroyOnLoad(this);
 

@@ -214,6 +214,8 @@ namespace KerbalKonstructs.Core
         public bool launchFromAnySite = false;
         [GameParameters.CustomParameterUI("Open everything", toolTip = "Use every base and facility without paying money", autoPersistance = true, gameMode = GameParameters.GameMode.CAREER)]
         public bool disableCareerStrategyLayer = false;
+        [GameParameters.CustomParameterUI("Leave Stock CommNet", toolTip = "Do not remove the overpowered Stock CoommNet Stations around Kerbin", autoPersistance = true, gameMode = GameParameters.GameMode.CAREER)]
+        public bool dontRemoveStockCommNet = true;
 
 
 

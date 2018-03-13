@@ -73,15 +73,6 @@ namespace KerbalKonstructs.UI
 
 								// Charge some funds
 								Funding.Instance.AddFunds(-iFundsOpen2, TransactionReasons.Structures);
-
-
-                                // Callback to CommNet.
-                                
-                                if (selectedFacility.myFacilities[0].FacilityType == "GroundStation")
-                                {
-                                    Modules.RemoteNet.AttachGroundStation(selectedFacility);
-                                } 
-
                             }
                         }
 						GUI.enabled = true;
@@ -103,7 +94,7 @@ namespace KerbalKonstructs.UI
                             // Callback to CommNet.
                             if ((selectedFacility.myFacilities[0].FacilityType) == "GroundStation")
                             {
-                                Modules.RemoteNet.DetachGroundStation(selectedFacility);
+                                Modules.ConnectionManager.DetachGroundStation(selectedFacility);
                             }
 
                         }

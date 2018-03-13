@@ -44,7 +44,7 @@ namespace KerbalKonstructs.Career
                 CareerState.Load(node);
             //}
 
-            RemoteNet.LoadGroundStations();
+            ConnectionManager.LoadGroundStations();
 
         }
 
@@ -74,7 +74,7 @@ namespace KerbalKonstructs.Career
             {
                 Log.Normal("Resetting OpenCloseStates for new Games");
                 CareerState.ResetFacilitiesOpenState();
-                RemoteNet.LoadGroundStations();
+                ConnectionManager.LoadGroundStations();
             }
 
             initialized = true;

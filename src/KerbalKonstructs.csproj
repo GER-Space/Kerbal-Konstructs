@@ -126,7 +126,8 @@
     <Compile Include="Modules\Career\CareerState.cs" />
     <Compile Include="Modules\Career\CareerUtils.cs" />
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
-    <Compile Include="Modules\RemoteNet\RemoteNet.cs" />
+    <Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
+    <Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />
