@@ -310,47 +310,27 @@ namespace KerbalKonstructs
 
                         LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
-                        currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                        //currentBody = currentSite.body;
-                        //if (!currentBody.pqsController.isActive)
-                        //{
-                        //    Log.Normal("Activating Body: " + currentBody.name);
-                        //    currentBody.pqsController.isActive = true;
-                        //    currentBody.pqsController.ActivateSphere();
-                        //    currentBody.pqsController.EnableSphere();
-                        //    currentBody.pqsController.StartUpSphere();
-                        //    currentBody.pqsController.ForceStart();
-                        //    Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
-                        //}
+                        //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+                        currentBody = currentSite.body;
+                        if (!currentBody.pqsController.isActive)
+                        {
+                            Log.Normal("Activating Body: " + currentBody.name);
+                            currentBody.pqsController.isActive = true;
+                            currentBody.pqsController.isStarted = true;
+                            currentBody.pqsController.ActivateSphere();
+                            currentBody.pqsController.EnableSphere();
+                            currentBody.pqsController.StartUpSphere();
+                            currentBody.pqsController.ForceStart();
+                            currentBody.pqsController.RebuildSphere();
+                            Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
+                        }
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
-                        //if (focusLastLaunchSite )
-                        if (focusLastLaunchSite && (currentSite.body.name == "Kerbin"))
-                        {
-                            foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                            {
-                                scCam.transform.parent = currentSite.lsGameObject.transform;
-                                scCam.transform.position = currentSite.lsGameObject.transform.position;
-                                scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
-                                //FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
-                                //pqsField.SetValue(scCam, currentSite.body.pqsController);
-                                scCam.pqsName = currentSite.body.name;
-                                scCam.ResetCamera();
-                            }
 
-                        }
-                        else
-                        {
-                            foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-                            {
-                                scCam.transform.parent = SpaceCenter.Instance.transform;
-                                scCam.transform.position = SpaceCenter.Instance.transform.position;
-                                scCam.initialPositionTransformName = "KSC/SpaceCenter/SpaceCenterCameraPosition";
-                                scCam.pqsName = "Kerbin";
-                                scCam.ResetCamera();
-                            }
-                        }
+                        //the function will descide to there the camera should go
+                        CameraController.SetSpaceCenterCam2(currentSite);
+
                         updateCache();
                     }
                     break;
