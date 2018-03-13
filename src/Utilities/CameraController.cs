@@ -149,8 +149,10 @@ namespace KerbalKonstructs.Core
                         }
                         cam.ResetCamera();
                         Log.Normal("fixed the Space Center camera.");
+
                     }
                 }
+            SetNextMorningPoint(currentSite);
         }
 
 
@@ -181,40 +183,50 @@ namespace KerbalKonstructs.Core
                     scCam.ResetCamera();
                 }
             }
+            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad")
+            {
+                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
+                {
+                    cam.altitudeInitial = 45f;
+                    cam.ResetCamera();
 
-            //PQSCity sitePQS = currentSite.lsGameObject.GetComponentInParent<PQSCity>();
+                }
+            }
+            else
+            {
+                PQSCity sitePQS = currentSite.lsGameObject.GetComponentInParent<PQSCity>();
 
-            //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-            //{
-            //    if (sitePQS.repositionToSphere || sitePQS.repositionToSphereSurface)
-            //    {
+                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
+                {
+                    if (sitePQS.repositionToSphere || sitePQS.repositionToSphereSurface)
+                    {
+                        double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
+                        if (sitePQS.repositionToSphereSurface)
+                        {
+                            nomHeight += sitePQS.repositionRadiusOffset;
+                        }
+                        cam.altitudeInitial = 0f - (float)nomHeight;
+                    }
+                    else
+                    {
+                        cam.altitudeInitial = 0f - (float)sitePQS.repositionRadiusOffset;
+                    }
+                    cam.ResetCamera();
+                    Log.Normal("fixed the Space Center camera.");
+                }
+            }
 
-            //        double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
-            //        if (sitePQS.repositionToSphereSurface)
-            //        {
-            //            nomHeight += sitePQS.repositionRadiusOffset;
-            //        }
-            //        cam.altitudeInitial = 0f - (float)nomHeight;
-            //    }
-            //    else
-            //    {
-            //        cam.altitudeInitial = 0f - (float)sitePQS.repositionRadiusOffset;
-            //    }
-            //    cam.ResetCamera();
-            //    Log.Normal("fixed the Space Center camera.");
-            //    SetNextMorningPoint(currentSite);
-            //}
-
+            SetNextMorningPoint(currentSite);
         }
 
         static void SetNextMorningPoint(LaunchSite launchSite)
         {
 
-            double timeOfDawn = ((launchSite.staticInstance.RefLongitude + 180) / 360);
+            double timeOfDawn = ((launchSite.refLon) / 360) *-1;
 
-            KSP.UI.UIWarpToNextMorning.timeOfDawn = timeOfDawn + 0.06;
-            Log.Normal("Fixed the \"warp to next morning\" button");
-
+            KSP.UI.UIWarpToNextMorning.timeOfDawn = (timeOfDawn + 0.05);
+            
+            Log.Normal("Fixed the \"warp to next morning\" button: " + KSP.UI.UIWarpToNextMorning.timeOfDawn.ToString());
         }
 
     }
