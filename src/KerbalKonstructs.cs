@@ -309,9 +309,9 @@ namespace KerbalKonstructs
                         LaunchSiteManager.KKSitesToKSP();
 
                         LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
-
-                        //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                        currentBody = currentSite.body;
+                        //currentBody = currentSite.body;
+                        currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+                        
                         if (!currentBody.pqsController.isActive)
                         {
                             Log.Normal("Activating Body: " + currentBody.name);
@@ -329,7 +329,7 @@ namespace KerbalKonstructs
                         updateCache();
 
                         //the function will descide to there the camera should go
-                        CameraController.SetSpaceCenterCam2(currentSite);
+                        CameraController.SetSpaceCenterCam(currentSite);
 
                         updateCache();
                     }

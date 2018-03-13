@@ -10,13 +10,12 @@ namespace KerbalKonstructs.Modules
 
     internal class KKCommNetHome : CommNetHome
     {
-        //internal new CommNode comm;
+        internal new CommNode comm;
         //internal new CelestialBody body;
         //internal new double lat;
 
         internal KKCommNetHome()
         {
-            this.CreateNode();
         }
 
         internal void RestoreStockStation(ConnectionManager.StockStation stockHome)
@@ -25,6 +24,11 @@ namespace KerbalKonstructs.Modules
             this.displaynodeName = Localizer.Format(stockHome.displaynodeName);
             this.nodeTransform = stockHome.nodeTransform;
             this.isKSC = stockHome.isKSC;
+
+            this.comm = new CommNode();
+            this.comm.antennaTransmit.power = 500000d;
+
+
             //this.body = stockHome.GetComponentInParent<CelestialBody>();
         }
     }

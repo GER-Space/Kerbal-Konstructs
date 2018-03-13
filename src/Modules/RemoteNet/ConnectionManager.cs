@@ -52,6 +52,8 @@ namespace KerbalKonstructs.Modules
                 stockStation.nodeTransform = home.nodeTransform;
                 stockStation.isKSC = home.isKSC;
 
+                Log.Normal("Added stock CommNet to list: " + Localizer.Format(home.displaynodeName));
+
                 stockGroundStations.Add(stockStation);
                 }
         }
@@ -67,6 +69,12 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         internal static void LoadGroundStations()
         {
+            if (HighLogic.LoadedScene == GameScenes.MAINMENU || HighLogic.LoadedScene == GameScenes.LOADING)
+            {
+                return;
+            }
+
+
             // only remove the Stock Stations if we should do it.
             if (KerbalKonstructs.instance.dontRemoveStockCommNet || KerbalKonstructs.instance.enableCommNet == false)
             {
@@ -134,6 +142,7 @@ namespace KerbalKonstructs.Modules
                     }
                 }
                 stockWasRemoved = true;
+                CommNet.CommNetNetwork.Reset();
             }
         }
 
@@ -152,6 +161,7 @@ namespace KerbalKonstructs.Modules
 
                 }
                 stockWasRemoved = false;
+                CommNet.CommNetNetwork.Reset();
             }
         }
 
@@ -162,13 +172,12 @@ namespace KerbalKonstructs.Modules
         /// <param name="instance"></param>
         internal static void AttachGroundStation(StaticInstance instance)
         {
-            GroundStation myfacility = instance.myFacilities.Where(fac => fac.facType == KKFacilityType.GroundStation) as GroundStation;
+            GroundStation myfacility = instance.myFacilities.Where(fac => fac.facType == KKFacilityType.GroundStation).First() as GroundStation;
             // we use a messure of 1000km from the settings.
             if (myfacility.TrackingShort == 0f || instance.Group == "KSCUpgrades")
             {
                 return;
             }
-
             // add CommNet Groundstations
             if (KerbalKonstructs.instance.enableCommNet)
             {
@@ -190,16 +199,16 @@ namespace KerbalKonstructs.Modules
             if (openCNStations.Contains(instance) == false)
             {
                 KKCommNetHome commNetGroudStation = instance.gameObject.AddComponent<KKCommNetHome>();
-
-                commNetGroudStation.nodeName = instance.CelestialBody.name + " " + instance.Group;
+                commNetGroudStation.nodeName = instance.CelestialBody.name + ": " + instance.Group;
 #if!KSP12
-                commNetGroudStation.displaynodeName = instance.CelestialBody.name + " " + instance.Group;
+                commNetGroudStation.nodeName = instance.gameObject.name;
+
+                commNetGroudStation.displaynodeName = instance.CelestialBody.name + ": " + instance.Group;
 #endif
                 // force them to be enabled all the time
-                commNetGroudStation.isKSC = true;
-                //commNetGroudStation.comm = new CommNode();
-                //var commNode = commNetGroudStation.comm;
-                //commNode.antennaTransmit.power = antennaPower;
+                //commNetGroudStation.isKSC = true;
+                commNetGroudStation.comm = new CommNode();
+                commNetGroudStation.comm.antennaTransmit.power = antennaPower;
                 //commNetGroudStation.enabled = true;
                 openCNStations.Add(instance);
                 CommNet.CommNetNetwork.Reset();
