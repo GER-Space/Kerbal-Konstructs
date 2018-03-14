@@ -124,7 +124,7 @@ namespace KerbalKonstructs
             };
 
             // Fetch all enabled Mods
-            PQSMod[] mods = body.GetComponentsInChildren<PQSMod>().Where(m => m.modEnabled && m.sphere == body.pqsController).ToArray();
+            PQSMod[] mods = body.GetComponentsInChildren<PQSMod>(true).Where(m => m.modEnabled && m.sphere == body.pqsController).ToArray();
 
             // Iterate over them and build the height at this point
             // This is neccessary for mods that use the terrain height to 

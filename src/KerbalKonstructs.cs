@@ -310,28 +310,31 @@ namespace KerbalKonstructs
                         LaunchSiteManager.KKSitesToKSP();
 
                         LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
-                        //currentBody = currentSite.body;
-                        currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
-                        
-                        //if (!currentBody.pqsController.isActive)
-                        //{
-                        //    Log.Normal("Activating Body: " + currentBody.name);
-                        //    currentBody.pqsController.enabled = true;
-                        //    currentBody.pqsController.isActive = true;
-                        //    currentBody.pqsController.isStarted = true;
-                        //    currentBody.pqsController.ActivateSphere();
-                        //    currentBody.pqsController.EnableSphere();
-                        //    currentBody.pqsController.StartUpSphere();
-                        //    currentBody.pqsController.ForceStart();
-                        //    currentBody.pqsController.RebuildSphere();
-                        //    Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
-                        //}
+                        currentBody = currentSite.body;
+                        //currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
+
+                        if (!currentBody.pqsController.isActive)
+                        {
+                            Log.Normal("Activating Body: " + currentBody.name);
+                            currentBody.pqsController.gameObject.SetActive(true);
+                            currentBody.pqsController.StartUpSphere();
+                            currentBody.pqsController.enabled = true;
+                            currentBody.pqsController.isActive = true;
+                            foreach (var mod in currentBody.pqsController.GetComponentsInChildren<PQSMod>(true))
+                            {
+                                mod.enabled = true;
+                                mod.modEnabled = true;
+                                mod.gameObject.SetActive(true);
+                            }
+                            currentBody.pqsController.RebuildSphere();
+                            Log.Normal("Body: " + currentBody.pqsController.isActive.ToString());
+                        }
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
 
                         //the function will descide to there the camera should go
-                        CameraController.SetSpaceCenterCam(currentSite);
+                        CameraController.SetSpaceCenterCam2(currentSite);
 
                         updateCache();
                     }
