@@ -19,8 +19,8 @@ namespace KerbalKonstructs.Modules
         static List<StockStation> stockGroundStations = new List<StockStation>();
         static bool stockWasRemoved = false;
 
-        static List<StaticInstance> openCNStations = new List<StaticInstance>();
-        static Dictionary<StaticInstance, Guid> openRTStations = new Dictionary<StaticInstance, Guid>();
+        static internal List<StaticInstance> openCNStations = new List<StaticInstance>();
+        static internal Dictionary<StaticInstance, Guid> openRTStations = new Dictionary<StaticInstance, Guid>();
 
 
         internal  struct StockStation
@@ -59,7 +59,23 @@ namespace KerbalKonstructs.Modules
         }
 
 
+        /// <summary>
+        /// Removes all custom Stations added by KK
+        /// </summary>
+        internal static void ResetAll()
+        {
+            foreach (var rtStation in openRTStations)
+            {
+                RemoteTechAddon.RemoveGroundStation(rtStation.Value);
+            }
+            openRTStations.Clear();
 
+            foreach (var commnetStation in openCNStations)
+            {
+                CloseCommNetStation(commnetStation);
+            }
+            openCNStations.Clear();
+        }
 
 
 

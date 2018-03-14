@@ -51,6 +51,32 @@ namespace KerbalKonstructs.Core
 
         }
 
+        internal static void ResetAll()
+        {
+            List<CelestialBody> dirtyBodies = new List<CelestialBody>();
+            foreach (var mapdecal in allMapDecalInstances)
+            {
+                mapdecal.gameObject.transform.parent = null;
+                mapdecal.mapDecal.transform.parent = null;
+                mapdecal.gameObject.DestroyGameObject();
+                if (!dirtyBodies.Contains(mapdecal.CelestialBody))
+                {
+                    dirtyBodies.Add(mapdecal.CelestialBody);
+                }
+            }
+            foreach (CelestialBody body in dirtyBodies)
+            {
+                body.pqsController.RebuildSphere();
+            }
+            heightMapList.Clear();
+            colorMapList.Clear();
+            allHeightMaps.Clear();
+            allColorMaps.Clear();
+            _allMapDecalInstances.Clear();
+            allMapDecalInstances = new MapDecalInstance[0];
+
+        }
+
         public static MapDecalInstance[] GetAllMapDecalInstances()
         {
             return allMapDecalInstances;

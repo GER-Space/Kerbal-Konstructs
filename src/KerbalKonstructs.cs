@@ -440,6 +440,68 @@ namespace KerbalKonstructs
 
 
         /// <summary>
+        /// Highly experimental Code for reloading all assets after the GameDatabase reloaded
+        /// </summary>
+        void OnGameDatabaseLoaded()
+        {
+            Log.UserWarning("GameDatabase Load Event triggered. Trying to rebuild all assets");
+
+            // Delete everything
+
+            // instances
+            if (selectedObject != null)
+            {
+                deselectObject(true, false);
+            }
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+            {
+                if (instance.hasLauchSites)
+                {
+                    LaunchSiteManager.DeleteLaunchSite(instance.launchSite);
+                }
+                DeleteObject(instance);
+            }
+            deletedInstances.Clear();
+
+            // reset the Database to empty state, as nothing should be loaded anymore
+            StaticDatabase.Reset();
+            ConnectionManager.ResetAll();
+            DecalsDatabase.ResetAll();
+
+            // Load up everything
+            // PQSMapDecal
+            Log.PerfStart("loading MapDecals");
+            MapDecalUtils.GetSquadMaps();
+            ConfigParser.LoadAllMapDecalMaps();
+            ConfigParser.LoadAllMapDecals();
+            Log.PerfStop("loading MapDecals");
+            // end PQSMapDecal
+            Log.PerfStart("Loading Instances");
+
+            LoadSquadModels();
+
+            LoadModels();
+            //  SDTest.WriteTextures();
+
+            LoadModelInstances();
+            Log.PerfStop("Loading Instances");
+            if (HighLogic.LoadedScene != GameScenes.MAINMENU)
+            {
+                ConfigNode careerNode = ConfigNode.Load(KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/persistent.sfs");
+                if (careerNode == null)
+                {
+                    Log.Error("Cannot find persitence file");
+                }
+                else
+                {
+                    CareerState.Load(careerNode.GetNode("KerbalKonstructsSettings"));
+                }
+            }
+            
+
+        }
+
+        /// <summary>
         /// Unity Late Update. Used for KeyCodes and fixing facility levels on new games...
         /// </summary>
         void LateUpdate()
@@ -1372,7 +1434,7 @@ namespace KerbalKonstructs
             }
         }
 
-        public void deleteObject(StaticInstance obj)
+        public void DeleteObject(StaticInstance obj)
         {
             if (selectedObject == obj)
                 deselectObject(true, false);

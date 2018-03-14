@@ -12,6 +12,7 @@ namespace KerbalKonstructs.Core
     {
         private static Dictionary<string, Stopwatch> alltimers = new Dictionary<string, Stopwatch>();
         private static Stopwatch myWatch = null;
+        private static float lastLog = 0f;
 
         /// <summary>
         /// log a normal message, if dbug is aktivated
@@ -136,6 +137,21 @@ namespace KerbalKonstructs.Core
             if (alltimers.TryGetValue(id, out myWatch))
                 myWatch.Start();
         }
+
+        /// <summary>
+        /// Prints out a message only every x seconds.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delay"></param>
+        internal static void NoSpam(string message, float delay = 1)
+        {
+            if ((Time.time - lastLog) > delay)
+            {
+                lastLog = Time.time;
+                Log.Normal(message);
+            }
+        }
+
 
     }
 }

@@ -25,6 +25,15 @@ namespace KerbalKonstructs.Core
         private static Vector3 vPlayerPos = Vector3.zero;
 
 
+        internal static void Reset()
+        {
+            groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
+            modelList = new Dictionary<string, StaticModel>();
+            allStaticModels = new List<StaticModel>();
+            _allStaticInstances = new List<StaticInstance>();
+            allStaticInstances = new StaticInstance[0];
+        }
+
         /// <summary>
         /// Adds the Instance to the instances and Group lists. Also sets the PQSCity.name
         /// </summary>
@@ -50,7 +59,6 @@ namespace KerbalKonstructs.Core
             SetNewName(instance);
 
 		}
-
 
         /// <summary>
         /// Removes a Instance from the group and instance lists.

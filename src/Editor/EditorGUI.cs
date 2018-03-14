@@ -915,7 +915,7 @@ namespace KerbalKonstructs.UI
                 LaunchSiteManager.DeleteLaunchSite(selectedObject.launchSite);
             }
 
-            KerbalKonstructs.instance.deleteObject(selectedObject);
+            KerbalKonstructs.instance.DeleteObject(selectedObject);
             selectedObject = null;
 
             return;
