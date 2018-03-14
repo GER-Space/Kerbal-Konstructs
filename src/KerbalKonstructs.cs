@@ -497,6 +497,7 @@ namespace KerbalKonstructs
                 {
                     CareerState.Load(careerNode.GetNode("KerbalKonstructsSettings"));
                 }
+                updateCache();
             }
             
 
