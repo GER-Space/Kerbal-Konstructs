@@ -157,6 +157,7 @@ namespace KerbalKonstructs
             // draw map icons when needed
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
+            GameEvents.OnGameDatabaseLoaded.Add(OnGameDatabaseLoaded);
             #endregion
 
             #region Other Mods Hooks
