@@ -64,13 +64,16 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         internal static void ResetAll()
         {
-            foreach (var rtStation in openRTStations)
+            var openRTStationsArray = openRTStations.Values.ToArray();
+            var openCommNetStations = openCNStations.ToArray();
+
+            foreach (var rtStation in openRTStationsArray)
             {
-                RemoteTechAddon.RemoveGroundStation(rtStation.Value);
+                RemoteTechAddon.RemoveGroundStation(rtStation);
             }
             openRTStations.Clear();
 
-            foreach (var commnetStation in openCNStations)
+            foreach (var commnetStation in openCommNetStations)
             {
                 CloseCommNetStation(commnetStation);
             }
