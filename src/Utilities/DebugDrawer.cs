@@ -64,7 +64,7 @@ namespace KerbalKonstructs.Utilities
         /// Paints the vector from the start point
         /// </summary>
         /// <param name="start"></param>
-        /// <param name="end"></param>
+        /// <param name="vector"></param>
         /// <param name="col"></param>
         public static void DebugVector(Vector3 start, Vector3 vector, Color col)
         {
@@ -105,7 +105,7 @@ namespace KerbalKonstructs.Utilities
             {
                 if ((lines.Count + points.Count + transforms.Count) == 0 )
                 {
-                    //yield return new WaitForEndOfFrame();
+                    yield return new WaitForEndOfFrame();
                     continue;
                 }
                 yield return new WaitForEndOfFrame();

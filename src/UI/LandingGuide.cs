@@ -58,6 +58,20 @@ namespace KerbalKonstructs.UI
         private static Material lineMaterial4;
         private static Material lineMaterial5;
 
+
+        private Vector3 vlgPos;
+        private Vector3 vcrPos;
+        private float distance;
+        private Vector3 fromShipToEnd;
+        private Vector3 horizontalVector;
+        private double glideAngle;
+
+        // Warning colors
+        private static Color clRight = new Color(0.2f, 0.7f, 0.2f, 0.7f);
+        private static Color clWarn = new Color(0.2f, 0.7f, 0.7f, 0.7f);
+        private static Color clTooHigh = new Color(0.7f, 0.2f, 0.2f, 0.7f);
+
+
         public override void Draw()
         {
             if (!MapView.MapIsEnabled)
@@ -104,47 +118,61 @@ namespace KerbalKonstructs.UI
 
         void drawLandingGuides()
         {
+            if (HighLogic.LoadedScene != GameScenes.FLIGHT)
+            {
+                return;
+            }
             if (soLandingGuide == null || FlightGlobals.ActiveVessel == null || soTDL == null || soTDR == null)
             {
                 return;
             }
 
+            // the vessel is not active?!? we don't deal with such alien spacecraft. 
+            if (FlightGlobals.ActiveVessel.state != Vessel.State.ACTIVE)
+            {
+                return;
+            }
+
+            // Only deal with flying things.
+            if (FlightGlobals.ActiveVessel.situation != Vessel.Situations.FLYING)
+            {
+                return;
+            }
+
+
             vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
             vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
 
-            vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
-            vLineEnd = Camera.main.WorldToScreenPoint(FlightGlobals.ActiveVessel.transform.position);
-
-            Vector3 vlgPos = soLandingGuide.gameObject.transform.position;
-            Vector3 vcrPos = FlightGlobals.ActiveVessel.transform.position;
-            float fDist = Vector3.Distance(vlgPos, vcrPos);
+            vlgPos = soLandingGuide.gameObject.transform.position;
+            vcrPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
+            distance = Vector3.Distance(vlgPos, vcrPos);
 
 
-            if (fDist > 15000) return;
-            if (fDist < 3) return;
+            if (distance > 15000) return;
+            if (distance < 3) return;
 
             float flgWscale = 1f;
             float flgHscale = 1f;
 
-            if (fDist > 10000)
+            if (distance > 10000)
             {
-                flgWscale = 250 / fDist;
-                flgHscale = 100 / fDist;
+                flgWscale = 250 / distance;
+                flgHscale = 100 / distance;
             }
-            else if (fDist > 5000)
+            else if (distance > 5000)
             {
-                flgWscale = 500 / fDist;
-                flgHscale = 250 / fDist;
+                flgWscale = 500 / distance;
+                flgHscale = 250 / distance;
             }
-            else if (fDist > 2500)
+            else if (distance > 2500)
             {
-                flgWscale = 750 / fDist;
-                flgHscale = 500 / fDist;
+                flgWscale = 750 / distance;
+                flgHscale = 500 / distance;
             }
-            else if (fDist > 1000)
+            else if (distance > 1000)
             {
-                flgWscale = 1000 / fDist;
-                flgHscale = 750 / fDist;
+                flgWscale = 1000 / distance;
+                flgHscale = 750 / distance;
             }
             else
             {
@@ -164,53 +192,44 @@ namespace KerbalKonstructs.UI
                 GUI.DrawTexture(Marker8, tTGR, ScaleMode.StretchToFill, true);
             }
 
+
+            vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
+            vLineEnd = Camera.main.WorldToScreenPoint(FlightGlobals.ActiveVessel.GetWorldPos3D());
+
+            fromShipToEnd = vLineStart - vLineEnd;
+            //// Check if we are past the landing guide
+            if (Vector3d.Dot(soLandingGuide.gameObject.transform.forward, fromShipToEnd) < 0)
+            {
+                return;
+            }
+
             if (vLineEnd != Vector3.zero && vLineStart != Vector3.zero)
             {
-                vLineEnd = Camera.main.WorldToScreenPoint(FlightGlobals.ActiveVessel.transform.position);
-                vLineStart = Camera.main.WorldToScreenPoint(soLandingGuide.gameObject.transform.position);
 
-                // ToDo: Not implemented
-                //Color clGood = new Color(0f, 1f, 0f, 0.8f);
-                //Color clBad = new Color(1f, 0f, 0f, 0.8f);
-                Color clLandGuide = new Color(1f, 1f, 1f, 0.8f);
-
-                if (fDist < 8000)
+                // Draw the landing line depending on the angle
+                if (distance < 8000)
                 {
-                    CreateLineMaterial(1);
+                    horizontalVector = Vector3.ProjectOnPlane(fromShipToEnd, soLandingGuide.gameObject.transform.up);
+                    glideAngle = Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude / fromShipToEnd.magnitude);
 
-                    GL.Begin(GL.LINES);
-                    lineMaterial1.SetPass(0);
-                    GL.Color(clLandGuide);
-                    GL.Vertex3(vLineEnd.x - Screen.width / 2, vLineEnd.y - Screen.height / 2, vLineEnd.z);
-                    GL.Vertex3(vLineStart.x - Screen.width / 2, vLineStart.y - Screen.height / 2, vLineStart.z);
-                    GL.End();
-
-                    CreateLineMaterial(2);
-
-                    GL.Begin(GL.LINES);
-                    lineMaterial2.SetPass(0);
-                    GL.Color(clLandGuide);
-                    GL.Vertex3(vLineStart.x - Screen.width / 2, (vLineStart.y - Screen.height / 2) + 200, vLineStart.z);
-                    GL.Vertex3(vLineStart.x - Screen.width / 2, (vLineStart.y - Screen.height / 2) - 150, vLineStart.z);
-                    GL.End();
-
-                    CreateLineMaterial(3);
-
-                    GL.Begin(GL.LINES);
-                    lineMaterial3.SetPass(0);
-                    GL.Color(clLandGuide);
-                    GL.Vertex3((vLineStart.x - Screen.width / 2) + 100, (vLineStart.y - Screen.height / 2) + 5, vLineStart.z);
-                    GL.Vertex3((vLineStart.x - Screen.width / 2) - 100, (vLineStart.y - Screen.height / 2) + 5, vLineStart.z);
-                    GL.End();
-
-                    CreateLineMaterial(4);
-
-                    GL.Begin(GL.LINES);
-                    lineMaterial4.SetPass(0);
-                    GL.Color(clLandGuide);
-                    GL.Vertex3((vLineStart.x - Screen.width / 2) + 150, (vLineStart.y - Screen.height / 2) + 50, vLineStart.z);
-                    GL.Vertex3((vLineStart.x - Screen.width / 2) - 150, (vLineStart.y - Screen.height / 2) + 50, vLineStart.z);
-                    GL.End();
+                    if (glideAngle > 6f)
+                    {
+                        DebugDrawer.DebugLine(vLineStart, vLineEnd, clTooHigh);
+                    }
+                    else
+                    if (glideAngle > 4.5f)
+                    {
+                        DebugDrawer.DebugLine(vLineStart, vLineEnd, clWarn);
+                    }
+                    else
+                    if (glideAngle < 1.5f)
+                    {
+                        DebugDrawer.DebugLine(vLineStart, vLineEnd, clWarn);
+                    }
+                    else
+                    {
+                        DebugDrawer.DebugLine(vLineStart, vLineEnd, clRight);
+                    }
                 }
 
                 Marker1 = new Rect((float)(vLineStart.x) - (25 * flgWscale), (float)(Screen.height - vLineStart.y) - 10, 50 * flgWscale, 4);
@@ -221,16 +240,19 @@ namespace KerbalKonstructs.UI
                 Marker5 = new Rect((float)(Screen.width / 2) - (50 * flgWscale), (float)(Screen.height / 2) - 25, 100 * flgWscale, 4);
                 Marker6 = new Rect((float)(Screen.width / 2) - (75 * flgWscale), (float)(Screen.height / 2) - 40, 150 * flgWscale, 4);
 
-                if (fDist < 15000)
+                if (distance < 15000)
                 {
                     GUI.DrawTexture(Marker1, tLGb, ScaleMode.StretchToFill, true);
                     GUI.DrawTexture(Marker2, tLGm, ScaleMode.StretchToFill, true);
                     GUI.DrawTexture(Marker3, tLGt, ScaleMode.StretchToFill, true);
                 }
-
-                GUI.DrawTexture(Marker4, tLGb, ScaleMode.StretchToFill, true);
-                GUI.DrawTexture(Marker5, tLGm, ScaleMode.StretchToFill, true);
-                GUI.DrawTexture(Marker6, tLGt, ScaleMode.StretchToFill, true);
+                // make them less annoying
+                if (KerbalKonstructs.instance.selectedObject != null)
+                {
+                    GUI.DrawTexture(Marker4, tLGb, ScaleMode.StretchToFill, true);
+                    GUI.DrawTexture(Marker5, tLGm, ScaleMode.StretchToFill, true);
+                    GUI.DrawTexture(Marker6, tLGt, ScaleMode.StretchToFill, true);
+                }
             }
         }
 

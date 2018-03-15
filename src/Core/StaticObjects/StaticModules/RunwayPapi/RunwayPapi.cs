@@ -43,6 +43,8 @@ namespace KerbalKonstructs
         private Animation animTooLow;
 
         private bool showDebug = false;
+        private Vector3d vesselPosition;
+        private Vector3 fromVesseltoPoint;
 
         // Yeh, it's a glide path of 3 degrees and a tolerance of 1.5
 
@@ -131,7 +133,9 @@ namespace KerbalKonstructs
             // from here it should be save to do acually some things.
 
             touchDownPoint = staticInstance.gameObject.transform.position + (staticInstance.gameObject.transform.forward.normalized * touchDownOffset);
-            horizontalVector = Vector3.ProjectOnPlane((touchDownPoint - FlightGlobals.activeTarget.transform.position), staticInstance.gameObject.transform.up);
+            vesselPosition = FlightGlobals.ActiveVessel.GetWorldPos3D();
+            fromVesseltoPoint = touchDownPoint - FlightGlobals.ActiveVessel.GetWorldPos3D();
+            horizontalVector = Vector3.ProjectOnPlane(fromVesseltoPoint, staticInstance.gameObject.transform.up);
 
             if (Vector3d.Dot(horizontalVector, staticInstance.gameObject.transform.forward) < 0)
             {
@@ -150,7 +154,7 @@ namespace KerbalKonstructs
             if (showDebug)
             {
                 DebugDrawer.DebugVector(touchDownPoint, -horizontalVector, new Color(0.2f, 0.2f, 0.7f));
-                DebugDrawer.DebugLine(touchDownPoint, FlightGlobals.ActiveVessel.transform.position, new Color(0.2f, 0.7f, 0.2f));
+                DebugDrawer.DebugLine(touchDownPoint, vesselPosition, new Color(0.2f, 0.7f, 0.2f));
             }
 
             currentState = GetCurrentGlideState();
@@ -184,9 +188,9 @@ namespace KerbalKonstructs
 
         internal GlideState GetCurrentGlideState()
         {
-            glideAngle =  Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude/(touchDownPoint - FlightGlobals.ActiveVessel.GetWorldPos3D()).magnitude);
+            glideAngle =  Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude/fromVesseltoPoint.magnitude);
 
-            Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
+            //Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
 
             if (glideAngle > 6f)
             {
