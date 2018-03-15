@@ -255,35 +255,5 @@ namespace KerbalKonstructs.UI
                 }
             }
         }
-
-        private static void CreateLineMaterial(int iMat = 1)
-        {
-            Material mMat = lineMaterial1;
-            if (iMat == 2) mMat = lineMaterial2;
-            if (iMat == 3) mMat = lineMaterial3;
-            if (iMat == 4) mMat = lineMaterial4;
-            if (iMat == 5) mMat = lineMaterial5;
-
-            if (mMat == null)
-            {
-                var shader = Shader.Find("Hidden/Internal-Colored");
-                mMat = new Material(shader);
-                mMat.hideFlags = HideFlags.HideAndDontSave;
-                // Turn on alpha blending
-                mMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                mMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                // Turn backface culling off
-                mMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-                // Turn off depth writes
-                mMat.SetInt("_ZWrite", 0);
-
-                if (iMat == 1) lineMaterial1 = mMat;
-                if (iMat == 2) lineMaterial2 = mMat;
-                if (iMat == 3) lineMaterial3 = mMat;
-                if (iMat == 4) lineMaterial4 = mMat;
-                if (iMat == 5) lineMaterial5 = mMat;
-            }
-        }
-
     }
 }
