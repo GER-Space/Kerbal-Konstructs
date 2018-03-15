@@ -190,7 +190,7 @@ namespace KerbalKonstructs
         {
             glideAngle =  Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude/fromVesseltoPoint.magnitude);
 
-            //Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
+            Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
 
             if (glideAngle > 6f)
             {
