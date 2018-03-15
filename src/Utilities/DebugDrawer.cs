@@ -60,6 +60,16 @@ namespace KerbalKonstructs.Utilities
             lines.Add(new Line(start, end, col));
         }
 
+        public static void DebugPoint(Vector3 start, Color col)
+        {
+            points.Add(new Point(start, col));
+        }
+
+        public static void DebugTransforms(Transform t)
+        {
+            transforms.Add(new Trans(t.position, t.up, t.right, t.forward));
+        }
+
         /// <summary>
         /// Paints the vector from the start point
         /// </summary>
@@ -69,16 +79,6 @@ namespace KerbalKonstructs.Utilities
         public static void DebugVector(Vector3 start, Vector3 vector, Color col)
         {
             lines.Add(new Line(start, start + vector, col));
-        }
-
-        public static void DebugPoint(Vector3 start, Color col)
-        {
-            points.Add(new Point(start, col));
-        }
-
-        public static void DebugTransforms(Transform t)
-        {
-            transforms.Add(new Trans(t.position, t.up, t.right, t.forward));
         }
 
         private void Start()
@@ -102,18 +102,22 @@ namespace KerbalKonstructs.Utilities
         {
             Debug.Log("DebugDrawer starting");
             while (true)
-            {
-                if ((lines.Count + points.Count + transforms.Count) == 0 )
+            {           
+                yield return new WaitForEndOfFrame();
+                if ((lines.Count + points.Count + transforms.Count) == 0)
                 {
-                    yield return new WaitForEndOfFrame();
                     continue;
                 }
-                yield return new WaitForEndOfFrame();
+
+                Camera cam = GetActiveCam();
+
+                if (cam == null)
+                    continue;
+
                 try
                 {
                     transform.position = Vector3.zero;
 
-                    Camera cam = GetActiveCam();
                     GL.PushMatrix();
                     lineMaterial.SetPass(0);
 
@@ -145,7 +149,13 @@ namespace KerbalKonstructs.Utilities
                         Trans t = transforms[i];
                         DrawTransform(t.pos, t.up, t.right, t.forward);
                     }
-
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("EndOfFrameDrawing Exception" + e);
+                }
+                finally
+                {
                     GL.End();
                     GL.PopMatrix();
 
@@ -153,7 +163,6 @@ namespace KerbalKonstructs.Utilities
                     points.Clear();
                     transforms.Clear();
                 }
-                catch (Exception) { }
             }
         }
 
