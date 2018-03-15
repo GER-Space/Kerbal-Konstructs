@@ -52,11 +52,6 @@ namespace KerbalKonstructs.UI
         private Rect Marker7;
         private Rect Marker8;
 
-        private static Material lineMaterial1;
-        private static Material lineMaterial2;
-        private static Material lineMaterial3;
-        private static Material lineMaterial4;
-        private static Material lineMaterial5;
 
 
         private Vector3 vlgPos;
