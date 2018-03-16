@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using KSP.UI.Screens;
+using KSP;
 
 namespace KerbalKonstructs.Core
 {
@@ -38,6 +39,33 @@ namespace KerbalKonstructs.Core
         internal static void MangleSquadStatic(GameObject gameObject)
         {
             gameObject.transform.parent = null;
+
+            foreach (var bla in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                Log.Normal("MSS: " + bla.GetType().ToString() );
+
+                switch (bla.GetType().ToString())
+                {
+                    case "DestructibleBuilding":
+                        {
+                            UnityEngine.Object.Destroy(bla);
+                        }
+
+                        break;
+                    case "CollisionEventsHandler":
+                        {
+                            UnityEngine.Object.Destroy(bla);
+                        }
+                        break;
+                    case ("CrashObjectName"):
+                        {
+                            UnityEngine.Object.Destroy(bla);
+                        }
+                        break;
+                }
+            }
+
+
             var transforms = gameObject.transform.GetComponentsInChildren<Transform>(true);
             foreach (var transform in transforms)
             {
@@ -61,16 +89,43 @@ namespace KerbalKonstructs.Core
                 GameObject.Destroy(pqs2);
             }
 
-            CommNet.CommNetHome cnhome = gameObject.GetComponent<CommNet.CommNetHome>();
+            CommNet.CommNetHome cnhome = gameObject.GetComponentInChildren<CommNet.CommNetHome>(true);
             if (cnhome != null)
             {
-                GameObject.Destroy(cnhome);
+                UnityEngine.Object.Destroy(cnhome);
+                Log.Normal("destroyed CommNet on: " + gameObject.name);
             }
 
-            DestructibleBuilding destBuilding = gameObject.GetComponentInChildren<DestructibleBuilding>();
+            DestructibleBuilding destBuilding = gameObject.GetComponentInChildren<DestructibleBuilding>(true);
             if (destBuilding != null)
             {
-                GameObject.Destroy(destBuilding);
+                destBuilding.enabled = false;
+                UnityEngine.Object.Destroy(destBuilding);
+                Log.Normal("destroyed Destr Building on: " +gameObject.name);
+            }
+
+
+            Upgradeables.UpgradeableObject  upObject = gameObject.GetComponentInChildren<Upgradeables.UpgradeableObject>(true);
+            if (upObject != null)
+            {
+                upObject.enabled = false;
+                Log.Normal("destroyed " + upObject.GetType().ToString()  + " on : " + gameObject.name);
+                UnityEngine.Object.Destroy(upObject);
+                
+            }
+
+            ScenarioUpgradeableFacilities  scUpObject = gameObject.GetComponentInChildren<ScenarioUpgradeableFacilities>(true);
+            if (scUpObject != null)
+            {
+                Log.Normal("destroyed " + scUpObject.GetType().ToString() + " on : " + gameObject.name);
+                UnityEngine.Object.Destroy(scUpObject);
+            }
+
+             Upgradeables.UpgradeableFacility upfacObject = gameObject.GetComponentInChildren<Upgradeables.UpgradeableFacility>(true);
+            if (upfacObject != null)
+            {
+                Log.Normal("destroyed " + scUpObject.GetType().ToString() + " on : " + gameObject.name);
+                UnityEngine.Object.Destroy(scUpObject);
             }
 
 

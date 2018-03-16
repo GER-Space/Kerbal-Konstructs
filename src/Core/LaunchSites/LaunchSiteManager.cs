@@ -166,7 +166,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void OpenLaunchSite(LaunchSite site)
         {
-            Log.Normal("LSM: OpenLaunchSite");
+    //        Log.Normal("LSM: OpenLaunchSite");
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void CloseLaunchSite(LaunchSite site)
         {
-            Log.Normal("LSM: CloseLaunchSite");
+     //       Log.Normal("LSM: CloseLaunchSite");
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace KerbalKonstructs.Core
             {
                 if (CheckLaunchSiteIsValid(site))
                 {
-                    Log.Normal("Added Site to List: " + site.LaunchSiteName);
+               //     Log.Normal("Added Site to List: " + site.LaunchSiteName);
                     myLaunchSites.Add(site);
                 }
             }

@@ -150,7 +150,7 @@ namespace KerbalKonstructs
 
             #region Game Event Hooks
             GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
-            GameEvents.onLevelWasLoaded.Add(OnLevelWasLoaded);
+            GameEvents.onLevelWasLoaded.Add(OnLevelWasLoad);
             GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecoveryProcessing);
             GameEvents.OnVesselRollout.Add(OnVesselLaunched);
@@ -252,7 +252,7 @@ namespace KerbalKonstructs
         /// GameEvent function for toggeling the visiblility of Statics
         /// </summary>
         /// <param name="data"></param>
-        void OnLevelWasLoaded(GameScenes data)
+        void OnLevelWasLoad(GameScenes data)
         {
             DeletePreviewObject();
 
@@ -313,31 +313,16 @@ namespace KerbalKonstructs
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         // 
-                        // This is currently broken. I have no idea why
-                        //
+                        //// This is currently broken. I have no idea why
+                        ////
                         //if (!currentBody.pqsController.isActive)
                         //{
                         //    Log.Normal("Activating Body: " + currentBody.name);
-                        //    foreach (var mod in currentBody.pqsController.GetComponentsInChildren<PQSMod>(true))
-                        //    {
-                        //        mod.enabled = true;
-                        //        mod.modEnabled = true;
-                        //        mod.gameObject.SetActive(true);
-                        //        mod.OnSetup();
-                        //    }
-                        //    currentBody.pqsController.isFakeBuild = false;
-                        //    currentBody.pqsController.isDisabled = false;
-                        //    currentBody.pqsController.gameObject.SetActive(true);
+                        //    currentBody.pqsController.SetTarget(currentSite.lsGameObject.transform);
+                        //    currentBody.pqsController.SetSecondaryTarget(currentSite.lsGameObject.transform);
                         //    currentBody.pqsController.ActivateSphere();
-                        //    currentBody.pqsController.EnableSphere();
-                        //    currentBody.pqsController.StartUpSphere();
-                        //    foreach (var mod in currentBody.pqsController.GetComponentsInChildren<PQSMod>(true))
-                        //    {
-                        //        mod.enabled = true;
-                        //        mod.modEnabled = true;
-                        //        mod.gameObject.SetActive(true);
-                        //        mod.OnSetup();
-                        //    }
+                        //    FlightGlobals.currentMainBody = currentBody;
+                        //    //currentBody.pqsController.RebuildSphere();
                         //    Log.Normal("Body is active: " + currentBody.pqsController.isActive.ToString());
                         //}
                         Log.Normal("SC Body is: " + currentBody.name);
@@ -390,10 +375,10 @@ namespace KerbalKonstructs
 
                 Log.Normal("OnProcessRecovery");
 
-                SpaceCenter closestSpaceCenter = SpaceCenter.Instance;
+                SpaceCenter closestSpaceCenter = SpaceCenterManager.KSC;
                 CustomSpaceCenter customSC = null;
 
-                double smallestDist = SpaceCenterManager.KSC.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+                double smallestDist = SpaceCenterManager.KSC.GreatCircleDistance(SpaceCenterManager.KSC.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
                 Log.Normal("Distance to KSC is " + smallestDist);
 
                 foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)

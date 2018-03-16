@@ -27,7 +27,7 @@ namespace KerbalKonstructs
         public string TouchDownOffset;
         public string ShowDebugVectors = "false";
 
-        private float touchDownOffset;
+        private float touchDownOffset = 0f;
         private static float maxDist = 3000f;
         private GlideState currentState = GlideState.Right;
         private GlideState lastState;

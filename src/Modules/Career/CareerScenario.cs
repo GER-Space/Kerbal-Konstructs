@@ -61,7 +61,7 @@ namespace KerbalKonstructs.Career
 
             //if (CareerUtils.isCareerGame)
             //{
-                Log.Normal("KKScenario saving career state");
+            Log.Normal("KKScenario saving career state");
                 CareerState.Save(node);
             //}
         }

@@ -962,7 +962,7 @@ namespace KerbalKonstructs.UI
         {
             get
             {
-                return (selectedObject.pqsCity.transform.position + 4 * selectedObject.pqsCity.transform.up + 4 * selectedObject.pqsCity.transform.right);
+                return (selectedObject.pqsCity.transform.position + 4 * selectedObject.pqsCity.transform.up.normalized + 4 * selectedObject.pqsCity.transform.right.normalized);
             }
         }
 

@@ -2,6 +2,7 @@
 using UnityEngine;
 using KerbalKonstructs.Core;
 using KerbalKonstructs;
+using System.Reflection;
 
 
 namespace KerbalKonstructs.Core
@@ -97,11 +98,10 @@ namespace KerbalKonstructs.Core
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
+                    Log.Normal("Restting to: " + currentSite.LaunchSiteName);
                     scCam.transform.parent = currentSite.lsGameObject.transform;
                     scCam.transform.position = currentSite.lsGameObject.transform.position;
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
-                    //FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
-                    //pqsField.SetValue(scCam, currentSite.body.pqsController);
                     scCam.pqsName = currentSite.body.name;
                     scCam.ResetCamera();
                 }
@@ -111,15 +111,16 @@ namespace KerbalKonstructs.Core
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    scCam.transform.parent = SpaceCenter.Instance.transform;
-                    scCam.transform.position = SpaceCenter.Instance.transform.position;
-                    scCam.initialPositionTransformName = "KSC/SpaceCenter/SpaceCenterCameraPosition";
+                    Log.Normal("Restting to KSC");
+                    scCam.transform.parent = SpaceCenter.Instance.gameObject.transform;
+                    scCam.transform.position = SpaceCenter.Instance.gameObject.transform.position;
+                    scCam.initialPositionTransformName = SpaceCenter.Instance.gameObject.transform.name;
                     scCam.pqsName = "Kerbin";
                     scCam.ResetCamera();
                 }
             }
 
-            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad")
+            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad" || currentSite.body.name != "Kerbin")
             {
                 foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
                 {
@@ -163,10 +164,10 @@ namespace KerbalKonstructs.Core
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
                     scCam.transform.parent = currentSite.lsGameObject.transform;
-                    scCam.transform.position = currentSite.lsGameObject.transform.position;
+                    scCam.transform.position = currentSite.lsGameObject.transform.position + Vector3.up * 100;
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
-                    //FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
-                    //pqsField.SetValue(scCam, currentSite.body.pqsController);
+                    FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
+                    pqsField.SetValue(scCam, currentSite.body.pqsController);
                     scCam.pqsName = currentSite.body.name;
                     scCam.ResetCamera();
                 }
