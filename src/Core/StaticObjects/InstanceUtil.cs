@@ -11,6 +11,12 @@ namespace KerbalKonstructs.Core
 {
     internal static class InstanceUtil
     {
+
+//        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+
+        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+
+
         /// <summary>
         /// Returns a StaticObject object for a gives GameObject
         /// </summary>
@@ -42,27 +48,12 @@ namespace KerbalKonstructs.Core
 
             foreach (var bla in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
-                Log.Normal("MSS: " + bla.GetType().ToString() );
 
-                switch (bla.GetType().ToString())
+                if (behaviosToRemove.Contains(bla.GetType()))
                 {
-                    case "DestructibleBuilding":
-                        {
-                            UnityEngine.Object.Destroy(bla);
-                        }
-
-                        break;
-                    case "CollisionEventsHandler":
-                        {
-                            UnityEngine.Object.Destroy(bla);
-                        }
-                        break;
-                    case ("CrashObjectName"):
-                        {
-                            UnityEngine.Object.Destroy(bla);
-                        }
-                        break;
-                }
+               //     Log.Normal("Removed: " + bla.GetType().ToString());
+                    UnityEngine.Object.Destroy(bla);
+                }               
             }
 
 
@@ -76,58 +67,12 @@ namespace KerbalKonstructs.Core
                     GameObject.Destroy(transform.gameObject);
                 }
 
-                if (transform.name.Equals("commnetnode", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    transform.parent = null;
-                    GameObject.Destroy(transform.gameObject);
-                }
+                //if (transform.name.Equals("commnetnode", StringComparison.InvariantCultureIgnoreCase))
+                //{
+                //    transform.parent = null;
+                //    GameObject.Destroy(transform.gameObject);
+                //}
             }
-
-            PQSCity2 pqs2 = gameObject.GetComponent<PQSCity2>();
-            if (pqs2 != null)
-            {
-                GameObject.Destroy(pqs2);
-            }
-
-            CommNet.CommNetHome cnhome = gameObject.GetComponentInChildren<CommNet.CommNetHome>(true);
-            if (cnhome != null)
-            {
-                UnityEngine.Object.Destroy(cnhome);
-                Log.Normal("destroyed CommNet on: " + gameObject.name);
-            }
-
-            DestructibleBuilding destBuilding = gameObject.GetComponentInChildren<DestructibleBuilding>(true);
-            if (destBuilding != null)
-            {
-                destBuilding.enabled = false;
-                UnityEngine.Object.Destroy(destBuilding);
-                Log.Normal("destroyed Destr Building on: " +gameObject.name);
-            }
-
-
-            Upgradeables.UpgradeableObject  upObject = gameObject.GetComponentInChildren<Upgradeables.UpgradeableObject>(true);
-            if (upObject != null)
-            {
-                upObject.enabled = false;
-                Log.Normal("destroyed " + upObject.GetType().ToString()  + " on : " + gameObject.name);
-                UnityEngine.Object.Destroy(upObject);
-                
-            }
-
-            ScenarioUpgradeableFacilities  scUpObject = gameObject.GetComponentInChildren<ScenarioUpgradeableFacilities>(true);
-            if (scUpObject != null)
-            {
-                Log.Normal("destroyed " + scUpObject.GetType().ToString() + " on : " + gameObject.name);
-                UnityEngine.Object.Destroy(scUpObject);
-            }
-
-             Upgradeables.UpgradeableFacility upfacObject = gameObject.GetComponentInChildren<Upgradeables.UpgradeableFacility>(true);
-            if (upfacObject != null)
-            {
-                Log.Normal("destroyed " + scUpObject.GetType().ToString() + " on : " + gameObject.name);
-                UnityEngine.Object.Destroy(scUpObject);
-            }
-
 
         }
 
