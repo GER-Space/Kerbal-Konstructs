@@ -15,7 +15,9 @@ namespace KerbalKonstructs
             TooHigh,
             High,
             Right,
-            TooLow
+            Low,
+            TooLow,
+            Off
         }
 
 
@@ -25,12 +27,15 @@ namespace KerbalKonstructs
         public string AminNameTooLow;
 
         public string TouchDownOffset;
+
+        public string ReverseDirections = "false";
+
         public string ShowDebugVectors = "false";
 
         private float touchDownOffset = 0f;
-        private static float maxDist = 3000f;
-        private GlideState currentState = GlideState.Right;
-        private GlideState lastState;
+        private static float maxDist = 5000f;
+        private GlideState currentState = GlideState.Off;
+        private GlideState lastState = GlideState.Off;
 
         private double currentDistance;
         private double glideAngle;
@@ -40,11 +45,14 @@ namespace KerbalKonstructs
         private Animation animTooHigh;
         private Animation animHigh;
         private Animation animRight;
-        private Animation animTooLow;
+        private Animation animLow;
 
         private bool showDebug = false;
         private Vector3d vesselPosition;
         private Vector3 fromVesseltoPoint;
+
+        private bool isreverse = false;
+        private int directionsMult = 1;
 
         // Yeh, it's a glide path of 3 degrees and a tolerance of 1.5
 
@@ -59,6 +67,7 @@ namespace KerbalKonstructs
                                       from AnimationState animationState in animationList
                                       where animationState.name == AnimNameTooHigh
                                select animationList).FirstOrDefault();
+            //    animTooHigh.wrapMode = WrapMode.Loop;
             }
             if (animHigh == null)
             {
@@ -67,6 +76,7 @@ namespace KerbalKonstructs
                                from AnimationState animationState in animationList
                                where animationState.name == AnimNameHigh
                             select animationList).FirstOrDefault();
+            //    animHigh.wrapMode = WrapMode.Loop;
             }
             if (animRight == null)
             {
@@ -75,14 +85,16 @@ namespace KerbalKonstructs
                                from AnimationState animationState in animationList
                                where animationState.name == AnimNameRight
                              select animationList).FirstOrDefault();
+            //    animRight.wrapMode = WrapMode.Loop;
             }
-            if (animTooLow == null)
+            if (animLow == null)
             {
-                animTooLow = (from animationList in gameObject.GetComponentsInChildren<Animation>()
+                animLow = (from animationList in gameObject.GetComponentsInChildren<Animation>()
                                where animationList != null
                                from AnimationState animationState in animationList
                                where animationState.name == AminNameTooLow
                               select animationList).FirstOrDefault();
+            //    animLow.wrapMode = WrapMode.Loop;
             }
         }
 
@@ -96,11 +108,29 @@ namespace KerbalKonstructs
 
         public void Awake()
         {
-            touchDownOffset = float.Parse(TouchDownOffset);
+            try
+            {
+                touchDownOffset = float.Parse(TouchDownOffset);
+            } catch
+            {
+                touchDownOffset = 0;
+                Log.Normal("Could not Parse touchDownOffset");
+            }
             if (!bool.TryParse(ShowDebugVectors, out showDebug))
             {
                 Log.UserWarning("PAPI Module: could not parse ShowDebugVectors to bool: " + ShowDebugVectors);
             }
+
+            if (!bool.TryParse(ReverseDirections, out isreverse))
+            {
+                Log.UserWarning("PAPI Module: could not parse ReverseDirections to bool: " + ShowDebugVectors);
+            }
+            if (isreverse)
+            {
+                directionsMult = -1;
+                Log.Normal("Reverse is activated");
+            }
+
         }
 
 
@@ -109,37 +139,42 @@ namespace KerbalKonstructs
             // dont do anything when its not in flight
             if (HighLogic.LoadedScene != GameScenes.FLIGHT)
             {
+                SetAllOff();
                 return;
             }
 
             // hmm no vessel found.. thats bad because you are not flying... 
             if (FlightGlobals.ActiveVessel == null)
             {
+                SetAllOff();
                 return; 
             }
 
             // the vessel is not active?!? we don't deal with such alien spacecraft. 
             if (FlightGlobals.ActiveVessel.state != Vessel.State.ACTIVE)
             {
+                SetAllOff();
                 return;
             }
 
             // Only deal with flying things.
             if (FlightGlobals.ActiveVessel.situation != Vessel.Situations.FLYING)
             {
+                SetAllOff();
                 return;
             }
 
             // from here it should be save to do acually some things.
 
-            touchDownPoint = staticInstance.gameObject.transform.position + (staticInstance.gameObject.transform.forward.normalized * touchDownOffset);
+            touchDownPoint = staticInstance.gameObject.transform.position + (directionsMult * staticInstance.gameObject.transform.forward.normalized * touchDownOffset);
             vesselPosition = FlightGlobals.ActiveVessel.GetWorldPos3D();
-            fromVesseltoPoint = touchDownPoint - FlightGlobals.ActiveVessel.GetWorldPos3D();
+            fromVesseltoPoint = (touchDownPoint - FlightGlobals.ActiveVessel.GetWorldPos3D());
             horizontalVector = Vector3.ProjectOnPlane(fromVesseltoPoint, staticInstance.gameObject.transform.up);
 
-            if (Vector3d.Dot(horizontalVector, staticInstance.gameObject.transform.forward) < 0)
+            if (Vector3d.Dot(horizontalVector, directionsMult * staticInstance.gameObject.transform.forward.normalized) < 0)
             {
                 // we are behind the lights. no need to update them anymore.
+                SetAllOff();
                 return;
             }
 
@@ -148,6 +183,7 @@ namespace KerbalKonstructs
             // Do nothing if too far away
             if (currentDistance > maxDist)
             {
+                SetAllOff();
                 return;
             }
 
@@ -168,23 +204,87 @@ namespace KerbalKonstructs
                 {
                     case GlideState.TooHigh:
                         if (animTooHigh != null)
-                            animTooHigh.Play();
+                        {
+                            StartAnim(animLow, AminNameTooLow);
+                            StartAnim(animRight, AnimNameRight);
+                            StartAnim(animHigh, AnimNameHigh);
+                            StartAnim(animTooHigh, AnimNameTooHigh);
+                        }
+
                         break;
                     case GlideState.High:
                         if (animHigh != null)
-                            animHigh.Play();
+                        {
+                            StartAnim(animLow, AminNameTooLow);
+                            StartAnim(animRight, AnimNameRight);
+                            StartAnim(animHigh, AnimNameHigh);
+                            StopAnim(animTooHigh, AnimNameTooHigh);
+                        }
+
                         break;
                     case GlideState.Right:
                         if (animRight != null)
-                            animRight.Play();
+                        {
+                            StartAnim(animLow, AminNameTooLow);
+                            StartAnim(animRight, AnimNameRight);
+                            StopAnim(animHigh, AnimNameHigh);
+                            StopAnim(animTooHigh, AnimNameTooHigh);
+                        }
+
+                        break;
+                    case GlideState.Low:
+                        if (animLow != null)
+                        {
+                            StartAnim(animLow, AminNameTooLow);
+                            StopAnim(animRight, AnimNameRight);
+                            StopAnim(animHigh, AnimNameHigh);
+                            StopAnim(animTooHigh, AnimNameTooHigh);
+
+                        }
                         break;
                     case GlideState.TooLow:
-                        if (animTooLow != null)
-                            animTooLow.Play();
+                        if (animLow != null)
+                        {
+                            StopAnim(animLow, AminNameTooLow);
+                            StopAnim(animRight, AnimNameRight);
+                            StopAnim(animHigh, AnimNameHigh);
+                            StopAnim(animTooHigh, AnimNameTooHigh);
+                        }
                         break;
                 }
             }
         }
+
+
+        internal void SetAllOff()
+        {
+            currentState = GlideState.Off;
+            if (lastState != currentState)
+            {
+                StopAnim(animLow, AminNameTooLow);
+                StopAnim(animRight, AnimNameRight);
+                StopAnim(animHigh, AnimNameHigh);
+                StopAnim(animTooHigh, AnimNameTooHigh);
+            }
+            lastState = currentState;
+        }
+
+
+        internal static void StopAnim(Animation anim, string animationName)
+        {
+            anim[animationName].speed = -1f;
+            anim[animationName].normalizedTime = 1f;
+            anim.Play();
+        }
+
+        internal static void StartAnim(Animation anim, string animationName)
+        {
+            anim[animationName].speed = 1f;
+            anim[animationName].normalizedTime = 0f;
+            anim.Play();
+        }
+
+
 
         internal GlideState GetCurrentGlideState()
         {
@@ -196,11 +296,15 @@ namespace KerbalKonstructs
             {
                 return GlideState.TooHigh;
             }
-            if (glideAngle > 4.5f)
+            if (glideAngle > 4f && glideAngle < 6f)
             {
                 return GlideState.High;
             }
-            if (glideAngle < 1.5f)
+            if (glideAngle < 2.5f && glideAngle >= 2f)
+            {
+                return GlideState.Low;
+            }
+            if (glideAngle < 2f)
             {
                 return GlideState.TooLow;
             }
