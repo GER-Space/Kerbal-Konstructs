@@ -197,7 +197,7 @@ namespace KerbalKonstructs
 
             if (lastState != currentState)
             {
-                Log.Normal("PAPI: Switching State: " + lastState.ToString() + " to " + currentState.ToString());
+                //Log.Normal("PAPI: Switching State: " + lastState.ToString() + " to " + currentState.ToString());
                 lastState = currentState;
 
                 switch (currentState)
@@ -290,7 +290,7 @@ namespace KerbalKonstructs
         {
             glideAngle =  Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude/fromVesseltoPoint.magnitude);
 
-            Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
+            //Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
 
             if (glideAngle > 6f)
             {
