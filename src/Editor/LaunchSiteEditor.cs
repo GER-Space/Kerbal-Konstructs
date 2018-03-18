@@ -238,6 +238,11 @@ namespace KerbalKonstructs.UI
             GUILayout.Label(" m");
             GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("SpaceCenter Camera rotation: ", GUILayout.Width(220));
+            selectedObject.launchSite.InitialCameraRotation = float.Parse(GUILayout.TextField(selectedObject.launchSite.InitialCameraRotation.ToString(), GUILayout.Height(19)));
+            GUILayout.EndHorizontal();
+
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Site Category: ", GUILayout.Width(115));
@@ -347,7 +352,7 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
 
-            GUILayout.Label("NOTE: If a newly created launchsite object does not display when launched from, a restart of KSP will be required for the site to be correctly rendered.");
+            GUILayout.Label("NOTE: The SC angle is for a better initial vew on your SpaceCenter on the SC scene");
 
             GUILayout.Space(1);
             GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
