@@ -91,10 +91,13 @@ namespace KerbalKonstructs.Core
             }
         }
 
-
+        /// <summary>
+        /// Set the SpaceCenterCam to the location os the current LaunchSite
+        /// </summary>
+        /// <param name="currentSite"></param>
         internal static void SetSpaceCenterCam(LaunchSite currentSite)
         {
-            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == "Kerbin"))
+            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
@@ -115,12 +118,12 @@ namespace KerbalKonstructs.Core
                     scCam.transform.parent = SpaceCenter.Instance.gameObject.transform;
                     scCam.transform.position = SpaceCenter.Instance.gameObject.transform.position;
                     scCam.initialPositionTransformName = SpaceCenter.Instance.gameObject.transform.name;
-                    scCam.pqsName = "Kerbin";
+                    scCam.pqsName = ConfigUtil.GetCelestialBody("HomeWorld").name;
                     scCam.ResetCamera();
                 }
             }
 
-            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad" || currentSite.body.name != "Kerbin")
+            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad" || currentSite.body.name != ConfigUtil.GetCelestialBody("HomeWorld").name)
             {
                 foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
                 {

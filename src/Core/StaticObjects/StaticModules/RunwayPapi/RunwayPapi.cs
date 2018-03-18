@@ -54,6 +54,8 @@ namespace KerbalKonstructs
         private bool isreverse = false;
         private int directionsMult = 1;
 
+        private Dictionary<string, bool> isWhite = new Dictionary<string, bool>();
+
         // Yeh, it's a glide path of 3 degrees and a tolerance of 1.5
 
 
@@ -67,8 +69,10 @@ namespace KerbalKonstructs
                                       from AnimationState animationState in animationList
                                       where animationState.name == AnimNameTooHigh
                                select animationList).FirstOrDefault();
-            //    animTooHigh.wrapMode = WrapMode.Loop;
+                //    animTooHigh.wrapMode = WrapMode.Loop;
+                isWhite.Add(AnimNameTooHigh, false);
             }
+            
             if (animHigh == null)
             {
                 animHigh = (from animationList in gameObject.GetComponentsInChildren<Animation>()
@@ -76,7 +80,8 @@ namespace KerbalKonstructs
                                from AnimationState animationState in animationList
                                where animationState.name == AnimNameHigh
                             select animationList).FirstOrDefault();
-            //    animHigh.wrapMode = WrapMode.Loop;
+                //    animHigh.wrapMode = WrapMode.Loop;
+                isWhite.Add(AnimNameHigh, false);
             }
             if (animRight == null)
             {
@@ -85,7 +90,8 @@ namespace KerbalKonstructs
                                from AnimationState animationState in animationList
                                where animationState.name == AnimNameRight
                              select animationList).FirstOrDefault();
-            //    animRight.wrapMode = WrapMode.Loop;
+                //    animRight.wrapMode = WrapMode.Loop;
+                isWhite.Add(AnimNameRight, false);
             }
             if (animLow == null)
             {
@@ -94,7 +100,8 @@ namespace KerbalKonstructs
                                from AnimationState animationState in animationList
                                where animationState.name == AminNameTooLow
                               select animationList).FirstOrDefault();
-            //    animLow.wrapMode = WrapMode.Loop;
+                //    animLow.wrapMode = WrapMode.Loop;
+                isWhite.Add(AminNameTooLow, false);
             }
         }
 
@@ -205,50 +212,50 @@ namespace KerbalKonstructs
                     case GlideState.TooHigh:
                         if (animTooHigh != null)
                         {
-                            StartAnim(animLow, AminNameTooLow);
-                            StartAnim(animRight, AnimNameRight);
-                            StartAnim(animHigh, AnimNameHigh);
-                            StartAnim(animTooHigh, AnimNameTooHigh);
+                            SetWhite(animLow, AminNameTooLow);
+                            SetWhite(animRight, AnimNameRight);
+                            SetWhite(animHigh, AnimNameHigh);
+                            SetWhite(animTooHigh, AnimNameTooHigh);
                         }
 
                         break;
                     case GlideState.High:
                         if (animHigh != null)
                         {
-                            StartAnim(animLow, AminNameTooLow);
-                            StartAnim(animRight, AnimNameRight);
-                            StartAnim(animHigh, AnimNameHigh);
-                            StopAnim(animTooHigh, AnimNameTooHigh);
+                            SetWhite(animLow, AminNameTooLow);
+                            SetWhite(animRight, AnimNameRight);
+                            SetWhite(animHigh, AnimNameHigh);
+                            SetRed(animTooHigh, AnimNameTooHigh);
                         }
 
                         break;
                     case GlideState.Right:
                         if (animRight != null)
                         {
-                            StartAnim(animLow, AminNameTooLow);
-                            StartAnim(animRight, AnimNameRight);
-                            StopAnim(animHigh, AnimNameHigh);
-                            StopAnim(animTooHigh, AnimNameTooHigh);
+                            SetWhite(animLow, AminNameTooLow);
+                            SetWhite(animRight, AnimNameRight);
+                            SetRed(animHigh, AnimNameHigh);
+                            SetRed(animTooHigh, AnimNameTooHigh);
                         }
 
                         break;
                     case GlideState.Low:
                         if (animLow != null)
                         {
-                            StartAnim(animLow, AminNameTooLow);
-                            StopAnim(animRight, AnimNameRight);
-                            StopAnim(animHigh, AnimNameHigh);
-                            StopAnim(animTooHigh, AnimNameTooHigh);
+                            SetWhite(animLow, AminNameTooLow);
+                            SetRed(animRight, AnimNameRight);
+                            SetRed(animHigh, AnimNameHigh);
+                            SetRed(animTooHigh, AnimNameTooHigh);
 
                         }
                         break;
                     case GlideState.TooLow:
                         if (animLow != null)
                         {
-                            StopAnim(animLow, AminNameTooLow);
-                            StopAnim(animRight, AnimNameRight);
-                            StopAnim(animHigh, AnimNameHigh);
-                            StopAnim(animTooHigh, AnimNameTooHigh);
+                            SetRed(animLow, AminNameTooLow);
+                            SetRed(animRight, AnimNameRight);
+                            SetRed(animHigh, AnimNameHigh);
+                            SetRed(animTooHigh, AnimNameTooHigh);
                         }
                         break;
                 }
@@ -261,27 +268,35 @@ namespace KerbalKonstructs
             currentState = GlideState.Off;
             if (lastState != currentState)
             {
-                StopAnim(animLow, AminNameTooLow);
-                StopAnim(animRight, AnimNameRight);
-                StopAnim(animHigh, AnimNameHigh);
-                StopAnim(animTooHigh, AnimNameTooHigh);
+                SetRed(animLow, AminNameTooLow);
+                SetRed(animRight, AnimNameRight);
+                SetRed(animHigh, AnimNameHigh);
+                SetRed(animTooHigh, AnimNameTooHigh);
             }
             lastState = currentState;
         }
 
 
-        internal static void StopAnim(Animation anim, string animationName)
+        internal void SetRed(Animation anim, string animationName)
         {
-            anim[animationName].speed = -1f;
-            anim[animationName].normalizedTime = 1f;
-            anim.Play();
+            if (isWhite[animationName])
+            {                
+                anim[animationName].speed = -1f;
+                anim[animationName].normalizedTime = 1f;
+                isWhite[animationName] = false;
+                anim.Play();
+            }
         }
 
-        internal static void StartAnim(Animation anim, string animationName)
+        internal void SetWhite(Animation anim, string animationName)
         {
-            anim[animationName].speed = 1f;
-            anim[animationName].normalizedTime = 0f;
-            anim.Play();
+            if (!isWhite[animationName])
+            {
+                anim[animationName].speed = 1f;
+                anim[animationName].normalizedTime = 0f;
+                isWhite[animationName] = true;
+                anim.Play();
+            }
         }
 
 
