@@ -66,6 +66,8 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float LaunchSiteWidth;
         [CFGSetting]
+        public float InitialCameraRotation = 90f;
+        [CFGSetting]
         public bool LaunchSiteIsHidden = false;
         [CFGSetting]
         public bool ILSIsActive = false;

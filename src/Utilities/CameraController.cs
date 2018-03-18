@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Linq;
 using KerbalKonstructs.Core;
 using KerbalKonstructs;
 using System.Reflection;
@@ -106,19 +107,21 @@ namespace KerbalKonstructs.Core
                     scCam.transform.position = currentSite.lsGameObject.transform.position;
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
                     scCam.pqsName = currentSite.body.name;
+                    scCam.rotationInitial = currentSite.InitialCameraRotation;
                     scCam.ResetCamera();
                 }
-
             }
             else
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
                     Log.Normal("Restting to KSC");
-                    scCam.transform.parent = SpaceCenter.Instance.gameObject.transform;
-                    scCam.transform.position = SpaceCenter.Instance.gameObject.transform.position;
-                    scCam.initialPositionTransformName = SpaceCenter.Instance.gameObject.transform.name;
+                    Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
+                    scCam.transform.parent = kscRnD.gameObject.transform;
+                    scCam.transform.position = kscRnD.gameObject.transform.transform.position;
+                    scCam.initialPositionTransformName = kscRnD.gameObject.transform.name;
                     scCam.pqsName = ConfigUtil.GetCelestialBody("HomeWorld").name;
+                    scCam.rotationInitial = -60;
                     scCam.ResetCamera();
                 }
             }

@@ -328,10 +328,7 @@ namespace KerbalKonstructs
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
-
-                        //the function will descide to there the camera should go
                         CameraController.SetSpaceCenterCam(currentSite);
-
                         updateCache();
                     }
                     break;
@@ -580,8 +577,8 @@ namespace KerbalKonstructs
                     if (spaceCenterCam.gameObject.transform.parent.transform.parent != null)
                     {
                         Log.Normal("using SpaceCenterCam2 as position");
-                        Log.Normal(spaceCenterCam.gameObject.transform.parent.name);
-                        playerPos = spaceCenterCam.gameObject.transform.parent.position;
+                        Log.Normal("SC2Name: " +spaceCenterCam.gameObject.transform.name);
+                        playerPos = spaceCenterCam.gameObject.transform.position;
                     }
                     else
                     {

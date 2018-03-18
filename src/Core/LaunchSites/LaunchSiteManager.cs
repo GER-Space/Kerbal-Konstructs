@@ -108,7 +108,8 @@ namespace KerbalKonstructs.Core
             runway.refAlt = 69f;
             runway.LaunchSiteLength = 2500f;
             runway.LaunchSiteWidth = 75f;
-            runway.lsGameObject = SpaceCenter.Instance.gameObject;
+            runway.InitialCameraRotation = -60f;
+            runway.lsGameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             runway.SetOpen();
 
             launchpad.LaunchSiteName = "LaunchPad";
@@ -123,7 +124,8 @@ namespace KerbalKonstructs.Core
             launchpad.refAlt = 72;
             launchpad.LaunchSiteLength = 20f;
             launchpad.LaunchSiteWidth = 20f;
-            launchpad.lsGameObject = SpaceCenter.Instance.gameObject;
+            launchpad.InitialCameraRotation = -60f;
+            launchpad.lsGameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             launchpad.SetOpen();
 
 
