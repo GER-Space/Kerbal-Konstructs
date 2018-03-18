@@ -112,12 +112,12 @@ namespace KerbalKonstructs.UI
             myResearch = selectedFacility.myFacilities[0] as Research;
             myBusiness = selectedFacility.myFacilities[0] as Business;
 
-            lastCheckTime = (float)facField.GetField("LastCheck").GetValue(selectedFacility.myFacilities[0]);
+            lastCheckTime = myBusiness.LastCheck;
 
 			if (lastCheckTime == 0)
 			{
 				lastCheckTime = (float)Planetarium.GetUniversalTime();
-                facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], lastCheckTime);
+                myBusiness.LastCheck =  lastCheckTime;
 			}
 
             if (facilityType == "Research" || facilityType == "Business")
@@ -172,16 +172,16 @@ namespace KerbalKonstructs.UI
 
                 facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0], defaultProductionRate);
 
-                currentStaff = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
+                currentStaff = myBusiness.StaffCurrent;
                 currentProductionRate = defaultProductionRate * currentStaff;
 
                 currentTime = (float)Planetarium.GetUniversalTime();
-                Log.Normal("Current time: " + currentTime);
+             //   Log.Normal("Current time: " + currentTime);
 
 				// Deal with revert exploits
 				if (lastCheckTime > currentTime)
 				{
-                    facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
+                    myBusiness.LastCheck = currentTime;
 				}
 
                 daysPast = ((currentTime - lastCheckTime) / 21600f);
@@ -204,7 +204,7 @@ namespace KerbalKonstructs.UI
 					{
 						ResearchAndDevelopment.Instance.AddScience(currentProduced, TransactionReasons.Cheating);
                         myResearch.ScienceOCurrent = 0f;
-                        facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
+                        myResearch.LastCheck = currentTime;
                     }
 
 				}
@@ -214,7 +214,7 @@ namespace KerbalKonstructs.UI
 					{
 						Funding.Instance.AddFunds(currentProduced, TransactionReasons.Cheating);
                         myBusiness.FundsOCurrent = 0f;
-                        facField.GetField("LastCheck").SetValue(selectedFacility.myFacilities[0], currentTime);
+                        myBusiness.LastCheck = currentTime;
                     }
 				}				
 

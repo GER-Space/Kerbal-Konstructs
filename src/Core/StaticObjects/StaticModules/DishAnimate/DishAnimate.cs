@@ -11,7 +11,15 @@ namespace KerbalKonstructs
     {
         public string RotationTrasform;
         public string ElevationTransform;
+        public string MaxSpeed = "10";
+        public string FakeTimeWarp = "1";
+        public string MaxElevation = "90";
+        public string MinElevation = "10";
 
+        private float speedMax = 10f;
+        private float timeWarpFake = 1f;
+        private float maxElevation = 90f;
+        private float minElevation = 10f;
 
         private Transform rotTransform;
         private Transform elTransform;
@@ -36,6 +44,27 @@ namespace KerbalKonstructs
                 Destroy(this);
             }
 
+            if (!float.TryParse(MaxSpeed, out speedMax))
+            {
+                Log.UserWarning("Cannot parse MaxSpeed: " + MaxSpeed);
+            }
+
+            if (!float.TryParse(FakeTimeWarp, out timeWarpFake))
+            {
+                Log.UserWarning("Cannot parse FakeTimeWarp: " + FakeTimeWarp);
+            }
+
+            if (!float.TryParse(MaxElevation, out maxElevation))
+            {
+                Log.UserWarning("Cannot parse MaxElevation: " + MaxElevation);
+            }
+
+            if (!float.TryParse(MinElevation, out minElevation))
+            {
+                Log.UserWarning("Cannot parse MinElevation: " + MinElevation);
+            }
+
+
             dish = new DishController.Dish();
 
             dish.elevationTransform = elTransform;
@@ -48,8 +77,11 @@ namespace KerbalKonstructs
             controller.dishes = new DishController.Dish[] { dish };
             controller.enabled = true;
 
-            controller.maxElevation = 90f;
-            controller.minElevation = 10f;
+            controller.fakeTimeWarp = timeWarpFake;
+            controller.maxSpeed = speedMax;
+
+            controller.maxElevation = maxElevation;
+            controller.minElevation = minElevation;
 
         }
 
