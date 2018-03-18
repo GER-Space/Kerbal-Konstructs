@@ -21,19 +21,18 @@ namespace KerbalKonstructs
 
         public void Start()
         {
-            Log.Normal("DishAnimate Awake start");
             rotTransform = gameObject.transform.FindRecursive(RotationTrasform);
             elTransform = gameObject.transform.FindRecursive(ElevationTransform);
 
             if (rotTransform == null)
             {
-                Log.Normal("Rotations Trasform not found");
+                Log.Normal("DishAnimate: Rotations Transform not found");
                 Destroy(this);
             }
 
             if (elTransform == null)
             {
-                Log.Normal("Elevation Trasform not found");
+                Log.Normal("DishAnimate: Elevation Transform not found");
                 Destroy(this);
             }
 
@@ -50,9 +49,7 @@ namespace KerbalKonstructs
             controller.enabled = true;
 
             controller.maxElevation = 90f;
-            controller.minElevation = 0f;
-
-            Log.Normal("DishAnimate Awake complete");
+            controller.minElevation = 10f;
 
         }
 
