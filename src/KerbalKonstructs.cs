@@ -228,7 +228,7 @@ namespace KerbalKonstructs
                 if (sitename == "KSC") return;
                 if (sitename == "") return;
 
-                LaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
+                KKLaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
                 float fMissionCount = lsSite.MissionCount;
                 lsSite.MissionCount = fMissionCount + 1;
                 double dSecs = HighLogic.CurrentGame.UniversalTime;
@@ -294,7 +294,7 @@ namespace KerbalKonstructs
                     {
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
-                        LaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
+                        KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
 
                         // Check if the selected LaunchSite is valid
                         if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
@@ -310,7 +310,7 @@ namespace KerbalKonstructs
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         LaunchSiteManager.KKSitesToKSP();
 
-                        LaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+                        KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         // 

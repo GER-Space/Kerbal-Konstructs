@@ -45,7 +45,7 @@ namespace KerbalKonstructs.UI
 		private double dshipheading;
 		private double dreqheading;
 
-		static LaunchSite lTargetSite = null;
+		static KKLaunchSite lTargetSite = null;
 
 		public Texture tTextureLeft = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
 		public Texture tTextureRight = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
@@ -65,7 +65,7 @@ namespace KerbalKonstructs.UI
 				NGSRect = GUI.Window(0xB00B1E9, NGSRect, drawNGSWindow, "", UIMain.navStyle);
 		}
 
-		public static void setTargetSite(LaunchSite lsTarget, string sName = "")
+		public static void setTargetSite(KKLaunchSite lsTarget, string sName = "")
 		{
 			lTargetSite = lsTarget;
 		}

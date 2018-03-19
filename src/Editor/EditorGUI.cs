@@ -73,7 +73,7 @@ namespace KerbalKonstructs.UI
 
         internal static StaticInstance selectedObject = null;
         internal StaticInstance selectedObjectPrevious = null;
-        internal static LaunchSite lTargetSite = null;
+        internal static KKLaunchSite lTargetSite = null;
 
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";

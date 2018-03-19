@@ -81,7 +81,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         internal static void LoadLaunchSites(ConfigNode launchSiteNodes)
         {
-            foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
+            foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
             {
                 ConfigNode lsNode;
                 if (launchSiteNodes.HasNode(CareerUtils.LSKeyFromName(site.LaunchSiteName)))
@@ -121,7 +121,7 @@ namespace KerbalKonstructs.Modules
         {
             string name = null;
 
-            foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
+            foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
             {
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = launchSiteNode.AddNode(name);

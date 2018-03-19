@@ -9,7 +9,7 @@ using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
-    public class LaunchSite
+    public class KKLaunchSite
     {
         [CFGSetting]
         public float OpenCost = 0f;
