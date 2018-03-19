@@ -21,9 +21,9 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal string author = "Unknown";
         [CFGSetting]
-        internal string title;
+        internal string title = "No Titel Set";
         [CFGSetting]
-        internal string category;
+        internal string category = "None";
         [CFGSetting]
         internal string manufacturer;
         [CFGSetting]
@@ -37,7 +37,7 @@ namespace KerbalKonstructs.Core
         internal float DefaultLaunchSiteWidth;
 
         [CFGSetting]
-        internal bool keepConvex;
+        internal bool keepConvex = true;
         [CFGSetting]
         internal bool isSquad = false;
 
