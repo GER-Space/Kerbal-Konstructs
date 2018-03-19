@@ -8,8 +8,9 @@ using UnityEngine;
 using CommNet;
 using KerbalKonstructs.Addons;
 using KerbalKonstructs.Utilities;
+#if!KSP12
 using KSP.Localization;
-
+#endif
 namespace KerbalKonstructs.Modules
 {
 
@@ -48,11 +49,13 @@ namespace KerbalKonstructs.Modules
                 StockStation stockStation = new StockStation();
                 stockStation.gameObject = home.gameObject;
                 stockStation.nodeName = home.nodeName;
+#if !KSP12
                 stockStation.displaynodeName = Localizer.Format(home.displaynodeName);
+#endif
                 stockStation.nodeTransform = home.nodeTransform;
                 stockStation.isKSC = home.isKSC;
 
-                Log.Normal("Added stock CommNet to list: " + Localizer.Format(home.displaynodeName));
+                Log.Normal("Added stock CommNet to list: " + home.nodeName);
 
                 stockGroundStations.Add(stockStation);
                 }
@@ -219,7 +222,7 @@ namespace KerbalKonstructs.Modules
             {
                 KKCommNetHome commNetGroudStation = instance.gameObject.AddComponent<KKCommNetHome>();
                 commNetGroudStation.nodeName = instance.CelestialBody.name + ": " + instance.Group;
-#if!KSP12
+#if !KSP12
                 commNetGroudStation.nodeName = instance.gameObject.name;
 
                 commNetGroudStation.displaynodeName = instance.CelestialBody.name + ": " + instance.Group;

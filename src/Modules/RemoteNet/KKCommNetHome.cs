@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CommNet;
+#if!KSP12
 using KSP.Localization;
-
+#endif
 namespace KerbalKonstructs.Modules
 {
 
@@ -21,7 +22,9 @@ namespace KerbalKonstructs.Modules
         internal void RestoreStockStation(ConnectionManager.StockStation stockHome)
         {
             this.nodeName = stockHome.nodeName;
+#if !KSP12
             this.displaynodeName = Localizer.Format(stockHome.displaynodeName);
+#endif
             this.nodeTransform = stockHome.nodeTransform;
             this.isKSC = stockHome.isKSC;
 
