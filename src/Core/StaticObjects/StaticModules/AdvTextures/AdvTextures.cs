@@ -26,7 +26,9 @@ namespace KerbalKonstructs
         public string _SpecGlossMap = null;     // U5 metallic (standard shader - spec gloss setup)
 
         private int textureIndex = 0;
+        private List<string> targetTransforms = new List<string>();
 
+        private string[] seperators = new string[] {" " , "," , ";" };
 
         public void Start()
         {
@@ -36,11 +38,14 @@ namespace KerbalKonstructs
                 Log.UserError("AdvancedTexture: could not parse BuiltinIndex " + BuiltinIndex);
             }
 
+            targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
             {
-                if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !transforms.Contains(renderer.transform.name))
+                if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
+                {
                     continue;
+                }
 
                 ReplaceShader(renderer,newShader);
 
