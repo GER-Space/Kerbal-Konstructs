@@ -34,6 +34,7 @@ namespace KerbalKonstructs
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
 
+        internal static bool scCamWasAltered = false;
 
         //internal double VesselCost = 0;
         //internal double RefundAmount = 0;
@@ -328,14 +329,17 @@ namespace KerbalKonstructs
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         updateCache();
-                        CameraController.SetSpaceCenterCam(currentSite);
+                        if (scCamWasAltered || focusLastLaunchSite)
+                        {
+                            CameraController.SetSpaceCenterCam(currentSite);
+                        }
                         updateCache();
                     }
                     break;
                 case GameScenes.MAINMENU:
                     {
                         CareerState.ResetFacilitiesOpenState();
-
+                        scCamWasAltered = false;
                         // reset this for the next Newgame
                         if (InitialisedFacilities)
                         {

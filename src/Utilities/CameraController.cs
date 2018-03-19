@@ -109,6 +109,7 @@ namespace KerbalKonstructs.Core
                     scCam.pqsName = currentSite.body.name;
                     scCam.rotationInitial = currentSite.InitialCameraRotation;
                     scCam.ResetCamera();
+                    KerbalKonstructs.scCamWasAltered = true;
                 }
             }
             else
@@ -123,6 +124,7 @@ namespace KerbalKonstructs.Core
                     scCam.pqsName = ConfigUtil.GetCelestialBody("HomeWorld").name;
                     scCam.rotationInitial = -60;
                     scCam.ResetCamera();
+                    KerbalKonstructs.scCamWasAltered = false;
                 }
             }
 
