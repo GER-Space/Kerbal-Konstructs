@@ -28,7 +28,8 @@ namespace KerbalKonstructs
         private int textureIndex = 0;
         private List<string> targetTransforms = new List<string>();
 
-        private string[] seperators = new string[] {" " , "," , ";" };
+        private string[] seperators = new string[] { " ", ",", ";" };
+
 
         public void Start()
         {
@@ -40,6 +41,11 @@ namespace KerbalKonstructs
 
             targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
+            //foreach (var bla in targetTransforms)
+            //{
+            //    Log.Normal("AdvancedTexture: Found Transform: " + bla);
+            //}
+
             foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
             {
                 if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
@@ -47,7 +53,7 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                ReplaceShader(renderer,newShader);
+                ReplaceShader(renderer, newShader);
 
                 var myFields = this.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
@@ -55,7 +61,7 @@ namespace KerbalKonstructs
                 {
                     if (texturemap.Name.Contains("_") && (texturemap.GetValue(this) != null))
                     {
-                        Log.Normal(" Advanced texture" + texturemap.Name + " : " + (string)texturemap.GetValue(this));
+                     //   Log.Normal(" Advanced texture" + texturemap.Name + " : " + (string)texturemap.GetValue(this));
                         Texture2D newTexture = KKGraphics.GetTexture((string)texturemap.GetValue(this), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)), textureIndex);
                         renderer.material.SetTexture(texturemap.Name, newTexture);
                     }
