@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -11,6 +12,8 @@ namespace KerbalKonstructs
     {
         private static Dictionary<string, Shader> allShaders = new Dictionary<string, Shader>();
         private static bool loadedShaders = false;
+
+        private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
 
         /// <summary>
         /// Load all shaders into the system and fill our shader database.
@@ -74,13 +77,32 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="textureName"></param>
         /// <returns></returns>
-        internal static Texture2D GetTexture(string textureName, bool asNormal = false)
+        internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0)
         {
+            string textureKey;
+
+            if (textureName.StartsWith("BUILTIN:"))
+            {
+                {
+                    textureKey = Regex.Replace(textureName, "BUILTIN:/", "") + index.ToString();
+                }
+
+            }
+            else
+            {
+                textureKey = Regex.Replace(textureName, "/", "_") + index.ToString();
+            }
+
+            if (cachedTextures.ContainsKey(textureKey))
+            {
+                return cachedTextures[textureKey];
+            }
+
             Texture2D foundTexture = null;
             if (textureName.StartsWith("BUILTIN:"))
             {
                 string textureNameShort = Regex.Replace(textureName, "BUILTIN:/", "");
-                foundTexture = Resources.FindObjectsOfTypeAll<Texture>().FirstOrDefault(tex => tex.name == textureNameShort) as Texture2D;
+                foundTexture = Resources.FindObjectsOfTypeAll<Texture>().Where(tex => tex.name == textureNameShort).ToList()[index] as Texture2D;
                 if (foundTexture == null)
                 {
                     Log.UserError("Could not find built-in texture " + textureNameShort);
@@ -95,6 +117,7 @@ namespace KerbalKonstructs
                     foundTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
                 }
             }
+            cachedTextures.Add(textureKey, foundTexture);
             return foundTexture;
         }
 

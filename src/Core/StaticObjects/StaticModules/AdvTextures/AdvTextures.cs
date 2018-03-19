@@ -16,6 +16,7 @@ namespace KerbalKonstructs
         public string transforms = "Any";
 
         public string _MainTex = null;          // texture
+        public string BuiltinIndex = "0";
         public string _BumpMap = null;          // normal map
         public string _ParallaxMap = null;      // height map
         public string _Emissive = null;         // legacy shader  U4 name for emissive map
@@ -24,11 +25,18 @@ namespace KerbalKonstructs
         public string _OcclusionMap = null;     // ambient occlusion
         public string _SpecGlossMap = null;     // U5 metallic (standard shader - spec gloss setup)
 
-
+        private int textureIndex = 0;
 
 
         public void Start()
         {
+
+            if (!int.TryParse(BuiltinIndex, out textureIndex))
+            {
+                Log.UserError("AdvancedTexture: could not parse BuiltinIndex " + BuiltinIndex);
+            }
+
+
             foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
             {
                 if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !transforms.Contains(renderer.transform.name))
@@ -43,11 +51,14 @@ namespace KerbalKonstructs
                     if (texturemap.Name.Contains("_") && (texturemap.GetValue(this) != null))
                     {
                         Log.Normal(" Advanced texture" + texturemap.Name + " : " + (string)texturemap.GetValue(this));
-                        Texture2D newTexture = KKGraphics.GetTexture((string)texturemap.GetValue(this), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)));
+                        Texture2D newTexture = KKGraphics.GetTexture((string)texturemap.GetValue(this), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)), textureIndex);
                         renderer.material.SetTexture(texturemap.Name, newTexture);
                     }
                 }
             }
+
+
+
         }
 
 
