@@ -23,7 +23,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal string title = "No Titel Set";
         [CFGSetting]
-        internal string category = "None";
+        internal string category = "Unknown";
         [CFGSetting]
         internal string manufacturer;
         [CFGSetting]
