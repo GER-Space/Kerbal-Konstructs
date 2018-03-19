@@ -70,8 +70,8 @@ namespace KerbalKonstructs.UI
         String categoryfilter = "";
         String titleFilter = "";
 
-        String groupfilter = "";
-        String groupfilterset = "";
+        String groupFilterString = "";
+        String groupFilter = "";
 
 
         float localRange = 10000f;
@@ -585,10 +585,10 @@ namespace KerbalKonstructs.UI
                 string sGroupHolder = "";
                 if (!showLocal)
                 {
-                    if (groupfilterset != "")
+                    if (groupFilter != "")
                     {
                         sGroupHolder = allStaticInstances[ix].Group;
-                        if (!sGroupHolder.Contains(groupfilterset))
+                        if (!sGroupHolder.Contains(groupFilter))
                         {
                             isLocal = false;
                         }
@@ -691,15 +691,15 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Filter by Group:", GUILayout.Width(140));
                 //GUILayout.FlexibleSpace();
-                groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
+                groupFilterString = GUILayout.TextField(groupFilterString, 40, GUILayout.Width(140));
                 if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
                 {
-                    groupfilterset = groupfilter;
+                    groupFilter = groupFilterString;
                 }
                 if (GUILayout.Button(new GUIContent(tCancelSearch, "Remove Filter."), GUILayout.Width(23), GUILayout.Height(23)))
                 {
-                    groupfilter = "";
-                    groupfilterset = "";
+                    groupFilterString = "";
+                    groupFilter = "";
                 }
             }
             GUILayout.EndHorizontal();
