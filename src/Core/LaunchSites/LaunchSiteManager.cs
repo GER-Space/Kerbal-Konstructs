@@ -678,6 +678,7 @@ namespace KerbalKonstructs.Core
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
+            
 
             KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
         }

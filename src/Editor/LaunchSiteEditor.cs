@@ -67,6 +67,8 @@ namespace KerbalKonstructs.UI
         internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
         float flOpenCost, flCloseValue, flLength, flWidth;
 
+        private string initialCameraRotation = "90";
+
         internal LaunchSiteCategory category = LaunchSiteCategory.Other;
 
         private bool guiInitialized = false;
@@ -240,7 +242,7 @@ namespace KerbalKonstructs.UI
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("SpaceCenter Camera rotation: ", GUILayout.Width(220));
-            selectedObject.launchSite.InitialCameraRotation = float.Parse(GUILayout.TextField(selectedObject.launchSite.InitialCameraRotation.ToString(), GUILayout.Height(19)));
+            initialCameraRotation = (GUILayout.TextField(initialCameraRotation, GUILayout.Height(19)));
             GUILayout.EndHorizontal();
 
 
@@ -403,6 +405,7 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
             selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
             selectedObject.launchSite.sitecategory = category;
+            selectedObject.launchSite.InitialCameraRotation = float.Parse(initialCameraRotation);
 
             if (ILSConfig.DetectNavUtils())
             {
@@ -481,6 +484,7 @@ namespace KerbalKonstructs.UI
 
                 category = selectedObject.launchSite.sitecategory;
 
+                initialCameraRotation = selectedObject.launchSite.InitialCameraRotation.ToString();
 
                 flLength = selectedObject.launchSite.LaunchSiteLength;
 
@@ -509,6 +513,7 @@ namespace KerbalKonstructs.UI
                 flCloseValue = 0f;
                 stOpenCost = string.Format("{0}", flOpenCost);
                 stCloseValue = string.Format("{0}", flCloseValue);
+                initialCameraRotation = "90";
 
                 category = LaunchSiteCategory.Other;
 
