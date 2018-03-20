@@ -67,7 +67,7 @@ namespace KerbalKonstructs.Core
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
                     instanceFields.Add(field.Name, field);
-                    Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
+                   // Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
                 }
             }
 

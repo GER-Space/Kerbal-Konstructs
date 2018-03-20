@@ -233,7 +233,7 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                    Log.Normal("Loaded MapDecal instance " + instance.Name);
+                   // Log.Normal("Loaded MapDecal instance " + instance.Name);
                     if (!bodies2Update.Contains(instance.CelestialBody))
                     {
                         bodies2Update.Add(instance.CelestialBody);
