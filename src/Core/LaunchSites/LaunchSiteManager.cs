@@ -299,7 +299,7 @@ namespace KerbalKonstructs.Core
         internal static void SetupKSPFacilities()
         {
 
-            Log.Normal("SetupKSPFacilities Called");
+           // Log.Normal("SetupKSPFacilities Called");
 
             PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
 
