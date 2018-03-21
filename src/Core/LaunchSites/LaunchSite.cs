@@ -152,7 +152,7 @@ namespace KerbalKonstructs.Core
         internal CelestialBody body;
 
         internal GameObject lsGameObject;
-        internal PSystemSetup.SpaceCenterFacility facility = null;
+        internal PSystemSetup.SpaceCenterFacility spaceCenterFacility = null;
 
         private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
 

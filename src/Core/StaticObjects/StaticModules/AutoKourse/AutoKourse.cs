@@ -29,20 +29,29 @@ namespace BWStatics
 
         private int headingAdj;
 
-        public void Awake() {
+        private bool isInitialized = false;
 
-            Initialize();
 
+        public void Start() {
+
+            if (!isInitialized)
+            {
+                Initialize();
+            }
 			try {
 				setTextures();
 			}
 			catch {
-				Debug.Log ("AutoKourseModule: Awake failed in setTextures()");
+				Debug.Log ("AutoKourseModule: Start failed in setTextures()");
 			}	
 		}
 
 		public override void StaticObjectUpdate() {
-			setTextures ();
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+            setTextures ();
 		}
 
         private void Initialize()

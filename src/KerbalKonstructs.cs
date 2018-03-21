@@ -292,9 +292,20 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.EDITOR:
                     {
+
+
+
+
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
                         KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
+
+                        if (currentSite.LaunchSiteType == SiteType.Any)
+                        {
+                            currentSite.spaceCenterFacility.editorFacility = EditorDriver.editorFacility;
+                            LaunchSiteManager.SetupKSPFacilities();
+                        }
+
                         Log.Normal("");
                         Log.Normal("Valid sites");
                         foreach (var site in EditorDriver.ValidLaunchSites)

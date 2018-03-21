@@ -32,7 +32,7 @@ namespace KerbalKonstructs.Core
         internal static KKLaunchSite runway = new KKLaunchSite();
         internal static KKLaunchSite launchpad = new KKLaunchSite();
 
-
+        private static List<PSystemSetup.SpaceCenterFacility> KKFacilities = null;
 
         // Handy get of all launchSites
         public static KKLaunchSite[] allLaunchSites = null;
@@ -234,14 +234,17 @@ namespace KerbalKonstructs.Core
         /// <param name="site"></param>
         internal static void RegisterLaunchSite(KKLaunchSite site)
         {
-            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform) != null)
+            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.staticInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
             {
                 site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.staticInstance.gameObject.name = site.LaunchSiteName;
 
-				List<PSystemSetup.SpaceCenterFacility> facilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
+                if (KKFacilities == null)
+                {
+                    KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
+                }
 
-                if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
+                if (KKFacilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
                     //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
                     PSystemSetup.SpaceCenterFacility spaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
@@ -261,19 +264,15 @@ namespace KerbalKonstructs.Core
                     {
                         spaceCenterFacility.editorFacility = EditorFacility.VAB;
                         // move everything a bit above ground, so they explode less
-                        site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform).localPosition += Vector3.up * 2;
+                        //site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform).localPosition += Vector3.up * 100;
                     }
                     else
                     {
                         spaceCenterFacility.editorFacility = EditorFacility.SPH;
                     }
-                    
 
-
-                    facilities.Add(spaceCenterFacility);
-					PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
-
-                    site.facility = spaceCenterFacility;
+                    KKFacilities.Add(spaceCenterFacility);
+                    site.spaceCenterFacility = spaceCenterFacility;
 
                     AddLaunchSite(site);
                 }
@@ -281,15 +280,8 @@ namespace KerbalKonstructs.Core
                 {
                     Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
                 }
-                MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (updateSitesMI == null)
-                {
-                    Log.UserError("You are screwed. Failed to find SetupFacilities().");
-                }
-                else
-                {
-                    updateSitesMI.Invoke(PSystemSetup.Instance, null);
-                }
+
+                SetupKSPFacilities();
 
                 if (site.staticInstance.gameObject != null)
                 {                    
@@ -300,6 +292,25 @@ namespace KerbalKonstructs.Core
             else
             {
                 Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
+            }
+        }
+
+
+        internal static void SetupKSPFacilities()
+        {
+
+            Log.Normal("SetupKSPFacilities Called");
+
+            PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
+
+            MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (updateSitesMI == null)
+            {
+                Log.UserError("You are screwed. Failed to find SetupFacilities().");
+            }
+            else
+            {
+                updateSitesMI.Invoke(PSystemSetup.Instance, null);
             }
         }
 
@@ -695,15 +706,15 @@ namespace KerbalKonstructs.Core
 
             //Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
             // without detouring some internal functions we have to fake the facility name... which is pretty bad
-            if (site.facility != null)
+            if (site.spaceCenterFacility != null)
             {
                 if (EditorDriver.editorFacility == EditorFacility.SPH)
                 {
-                    site.facility.name = "Runway";
+                    site.spaceCenterFacility.name = "Runway";
                 }
                 else
                 {
-                    site.facility.name = "LaunchPad";
+                    site.spaceCenterFacility.name = "LaunchPad";
                 }
 
                 //var field = typeof(EditorDriver).GetField("selectedlaunchSiteName", BindingFlags.Static | BindingFlags.NonPublic);
