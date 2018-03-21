@@ -37,7 +37,7 @@ namespace KerbalKonstructs.Core
         internal float DefaultLaunchSiteWidth;
 
         [CFGSetting]
-        internal bool keepConvex = true;
+        internal bool keepConvex;
         [CFGSetting]
         internal bool isSquad = false;
 
