@@ -203,11 +203,6 @@ namespace KerbalKonstructs.Core
         {
             //stockSite = PSystemSetup.Instance.launchSites;
             Log.Normal("ClearKSP called");
-            foreach (var site in PSystemSetup.Instance.LaunchSites)
-            {
-                Log.Normal("Stock site: " + site.launchSiteName);
-                Log.Normal("Stock site: " + site.launchSiteTransformURL);
-            }
 
             foreach (KKLaunchSite site in allLaunchSites)
             {
@@ -249,24 +244,34 @@ namespace KerbalKonstructs.Core
                 if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
                     //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
-                    PSystemSetup.SpaceCenterFacility newSpaceCenter = new PSystemSetup.SpaceCenterFacility();
-                    newSpaceCenter.name = "";
-                    newSpaceCenter.facilityName = site.LaunchSiteName;
-                    newSpaceCenter.facilityPQS = site.staticInstance.CelestialBody.pqsController;
-                    newSpaceCenter.facilityTransformName = site.staticInstance.gameObject.name;
+                    PSystemSetup.SpaceCenterFacility spaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
+                    spaceCenterFacility.name = site.LaunchSiteName;
+                    spaceCenterFacility.facilityName = site.LaunchSiteName;
+                    spaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
+                    spaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
                     // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
                     //     newFacility.facilityTransformName = instance.gameObject.transform.name;
-                    newSpaceCenter.pqsName = site.body.pqsController.name;
+                    spaceCenterFacility.pqsName = site.body.pqsController.name;
                     PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
                     spawnPoint.name = site.LaunchSiteName;
                     spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-                    newSpaceCenter.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
-                    newSpaceCenter.spawnPoints[0] = spawnPoint;
+                    spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
+                    spaceCenterFacility.spawnPoints[0] = spawnPoint;
+                    if (site.LaunchSiteType == SiteType.VAB)
+                    {
+                        spaceCenterFacility.editorFacility = EditorFacility.VAB;
+                    }
+                    else
+                    {
+                        spaceCenterFacility.editorFacility = EditorFacility.SPH;
+                    }
+                    
 
-					facilities.Add(newSpaceCenter);
+
+                    facilities.Add(spaceCenterFacility);
 					PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
-                    site.facility = newSpaceCenter;
+                    site.facility = spaceCenterFacility;
 
                     AddLaunchSite(site);
                 }
@@ -664,6 +669,30 @@ namespace KerbalKonstructs.Core
         // Original author: medsouz
         public static void setLaunchSite(KKLaunchSite site)
         {
+            //foreach (var lsite in EditorDriver.ValidLaunchSites)
+            //{
+            //    Log.Normal("Stock site: " + lsite);
+            //}
+            //if (site.LaunchSiteType == SiteType.Any)
+            //{
+
+
+            //   site.facility.editorFacility = EditorDriver.editorFacility;
+                
+
+            //    MethodInfo setValidFunction = typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.Static | BindingFlags.NonPublic);
+            //    setValidFunction.Invoke(null, null);
+            //    Log.Normal("Set anyType to current editor");
+
+            //}
+
+            //foreach (var lsite in EditorDriver.ValidLaunchSites)
+            //{
+            //    Log.Normal("Stock site: " + lsite);
+            //}
+
+            //Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
+            // without detouring some internal functions we have to fake the facility name... which is pretty bad
             if (site.facility != null)
             {
                 if (EditorDriver.editorFacility == EditorFacility.SPH)
@@ -674,11 +703,14 @@ namespace KerbalKonstructs.Core
                 {
                     site.facility.name = "LaunchPad";
                 }
+
+                //var field = typeof(EditorDriver).GetField("selectedlaunchSiteName", BindingFlags.Static | BindingFlags.NonPublic);
+                //field.SetValue(null, site.LaunchSiteName);
             }
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
-            
+            //Log.Normal("EditorDriver still thinks this is: " + EditorDriver.SelectedLaunchSiteName);
 
             KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
         }

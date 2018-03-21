@@ -295,6 +295,13 @@ namespace KerbalKonstructs
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
                         KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
+                        Log.Normal("");
+                        Log.Normal("Valid sites");
+                        foreach (var site in EditorDriver.ValidLaunchSites)
+                        {
+                            Log.Normal("Stock site: " + site);
+                        }
+
 
                         // Check if the selected LaunchSite is valid
                         if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
