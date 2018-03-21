@@ -28,12 +28,16 @@ namespace BWStatics
         private Vector3 forward;
 
         private int headingAdj;
+        private bool isInitialized = false;
 
-        public void Awake() {
+        public void Start() {
 
-            Initialize();
+            if (!isInitialized)
+            {
+                Initialize();
+            }
 
-			try {
+            try {
 				setTextures();
 			}
 			catch {
@@ -42,7 +46,11 @@ namespace BWStatics
 		}
 
 		public override void StaticObjectUpdate() {
-			setTextures ();
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+            setTextures ();
 		}
 
         private void Initialize()

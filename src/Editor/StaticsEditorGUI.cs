@@ -309,7 +309,7 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(fButtonWidth - 10), GUILayout.Height(23)))
+                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.saveObjects();
                     smessage = "Saved all changes to all objects.";
