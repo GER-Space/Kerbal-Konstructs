@@ -234,7 +234,7 @@ namespace KerbalKonstructs.Core
         /// <param name="site"></param>
         internal static void RegisterLaunchSite(KKLaunchSite site)
         {
-            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.staticInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
+            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform) != null)
             {
                 site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.staticInstance.gameObject.name = site.LaunchSiteName;
@@ -260,6 +260,8 @@ namespace KerbalKonstructs.Core
                     if (site.LaunchSiteType == SiteType.VAB)
                     {
                         spaceCenterFacility.editorFacility = EditorFacility.VAB;
+                        // move everything a bit above ground, so they explode less
+                        site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform).localPosition += Vector3.up * 2;
                     }
                     else
                     {
