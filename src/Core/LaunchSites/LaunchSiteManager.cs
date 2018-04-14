@@ -677,6 +677,20 @@ namespace KerbalKonstructs.Core
             lSite2 = lLastSite;
         }
 
+        public static void ResetLaunchSiteFacilityName()
+        {
+            Log.Normal("OnVesselLaunched");
+            ;
+            if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
+            {
+                return;
+            }
+            // reset the name to the site, so it can be fetched again
+            KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
+            lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+        }
+
+
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
@@ -691,7 +705,7 @@ namespace KerbalKonstructs.Core
 
 
             //   site.facility.editorFacility = EditorDriver.editorFacility;
-                
+
 
             //    MethodInfo setValidFunction = typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.Static | BindingFlags.NonPublic);
             //    setValidFunction.Invoke(null, null);
@@ -703,6 +717,9 @@ namespace KerbalKonstructs.Core
             //{
             //    Log.Normal("Stock site: " + lsite);
             //}
+
+            // set the facilityname of the old site to its original value, so it can be found later
+            ResetLaunchSiteFacilityName();
 
             //Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
             // without detouring some internal functions we have to fake the facility name... which is pretty bad
@@ -722,10 +739,9 @@ namespace KerbalKonstructs.Core
             }
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
+
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
             //Log.Normal("EditorDriver still thinks this is: " + EditorDriver.SelectedLaunchSiteName);
-
-            KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
         }
 
 

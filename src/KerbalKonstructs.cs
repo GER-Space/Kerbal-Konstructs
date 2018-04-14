@@ -215,18 +215,22 @@ namespace KerbalKonstructs
         void OnVesselLaunched(ShipConstruct vVessel)
         {
             Log.Normal("OnVesselLaunched");
+            string sitename = LaunchSiteManager.getCurrentLaunchSite();
+            if (sitename == "Runway" || sitename == "LaunchPad" || sitename == "KSC" || sitename == "")
+            {
+                return;
+            }
+            // reset the name to the site, so it can be fetched again
+            KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
+            lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+
             if (!CareerUtils.isCareerGame)
             {
                 return;
             }
             else
             {
-                Log.Normal("OnVesselLaunched is Career");
-                string sitename = LaunchSiteManager.getCurrentLaunchSite();
-                if (sitename == "Runway") return;
-                if (sitename == "LaunchPad") return;
-                if (sitename == "KSC") return;
-                if (sitename == "") return;
+                Log.Normal("OnVesselLaunched is Career");               
 
                 KKLaunchSite lsSite = LaunchSiteManager.GetLaunchSiteByName(sitename);
                 float fMissionCount = lsSite.MissionCount;
@@ -300,11 +304,11 @@ namespace KerbalKonstructs
                         LaunchSiteSelectorGUI.instance.Close();
                         KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
 
-                        if (currentSite.LaunchSiteType == SiteType.Any)
-                        {
-                            currentSite.spaceCenterFacility.editorFacility = EditorDriver.editorFacility;
-                            LaunchSiteManager.SetupKSPFacilities();
-                        }
+                        //if (currentSite.LaunchSiteType == SiteType.Any)
+                        //{
+                        //    currentSite.spaceCenterFacility.editorFacility = EditorDriver.editorFacility;
+                        //    LaunchSiteManager.SetupKSPFacilities();
+                        //}
 
                         Log.Normal("");
                         Log.Normal("Valid sites");
