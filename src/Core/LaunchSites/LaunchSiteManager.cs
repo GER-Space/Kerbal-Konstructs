@@ -32,6 +32,8 @@ namespace KerbalKonstructs.Core
         internal static LaunchSite runway = new LaunchSite();
         internal static LaunchSite launchpad = new LaunchSite();
 
+        internal static LaunchSite ksc2 = new LaunchSite();
+
 
 
         // Handy get of all launchSites
@@ -131,7 +133,66 @@ namespace KerbalKonstructs.Core
 
             AddLaunchSite(runway);
             AddLaunchSite(launchpad);
+
+            AddKSC2();
         }
+
+
+        public static void AddKSC2()
+        {
+            CelestialBody body = ConfigUtil.GetCelestialBody("HomeWorld");
+            var mods = body.pqsController.transform.GetComponentsInChildren<PQSCity>(true);
+            PQSCity ksc2PQS = null;
+
+
+
+            foreach (var m in mods)
+            {
+                if (m.name == "KSC2")
+                {
+                    ksc2PQS = m;
+                    break;
+                }
+            }
+
+            if (ksc2PQS == null)
+            {
+                return; 
+            }
+
+            StaticInstance ksc2Instance = new StaticInstance();
+
+            ksc2Instance.gameObject = ksc2PQS.gameObject;
+            ksc2Instance.hasLauchSites = true;
+            ksc2Instance.pqsCity = ksc2PQS;
+            ksc2Instance.RadialPosition = ksc2PQS.repositionRadial;
+            ksc2Instance.RefLatitude = KKMath.GetLatitudeInDeg(ksc2PQS.repositionRadial);
+            ksc2Instance.RefLongitude = KKMath.GetLongitudeInDeg(ksc2PQS.repositionRadial);
+            ksc2Instance.CelestialBody = body;
+
+
+            ksc2.staticInstance = ksc2Instance;
+            ksc2.LaunchSiteName = "KSC2";
+            ksc2.LaunchPadTransform = "launchpad/PlatformPlane";
+            ksc2.LaunchSiteAuthor = "Squad";
+            ksc2.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+            ksc2.LaunchSiteType = SiteType.VAB;
+            ksc2.sitecategory = LaunchSiteCategory.RocketPad;
+            ksc2.LaunchSiteDescription = "The hidden KSC2";
+            ksc2.body = ConfigUtil.GetCelestialBody("HomeWorld");
+            ksc2.refLat = (float)ksc2Instance.RefLatitude;
+            ksc2.refLon = (float)ksc2Instance.RefLongitude;
+            ksc2.refAlt = (float)(body.pqsController.GetSurfaceHeight(ksc2PQS.repositionRadial) - body.Radius );
+            ksc2.LaunchSiteLength = 15f;
+            ksc2.LaunchSiteWidth = 15f;
+            ksc2.InitialCameraRotation = 135f;
+            ksc2.lsGameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase) ).FirstOrDefault().gameObject;
+            ksc2.SetOpen();
+
+            RegisterLaunchSite(ksc2);
+
+        }
+
 
         /// <summary>
         /// contructor

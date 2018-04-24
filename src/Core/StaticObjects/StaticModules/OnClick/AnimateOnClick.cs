@@ -30,6 +30,7 @@ namespace KerbalKonstructs
         private bool animationPlaying = false;
         private bool playAnimationForward = true;
         private Animation animationComponent;
+        private AnimationTrigger trigger;
 
         void Start()
         {
@@ -41,87 +42,65 @@ namespace KerbalKonstructs
                                       where animationState.name == animationName
                                       select animationList).FirstOrDefault();
 
-                GameObject obj = (from t in gameObject.GetComponentsInChildren<Transform>()
-                                  where t.gameObject != null && t.gameObject.name == collider
-                                  select t.gameObject).FirstOrDefault();
+                foreach (var transform in gameObject.GetComponentsInChildren<Transform>(true).Where(t => t.gameObject != null && t.gameObject.name == collider))
+                {
+                    trigger = transform.gameObject.AddComponent<AnimationTrigger>();
+                    trigger.animateOnClick = this;
+                }
 
-                AnimateOnClick colliderObject = obj.AddComponent<AnimateOnClick>();
-                colliderObject.collider = collider;
-                colliderObject.animationName = animationName;
-                colliderObject.HighlightOnHover = HighlightOnHover;
-                colliderObject.animationSpeed = animationSpeed;
-                colliderObject.animationComponent = animationComponent;
-
-                if (!bool.TryParse(playSound, out colliderObject.useSound))
+                if (!bool.TryParse(playSound, out useSound))
                 {
                     Log.UserError("canot parse useSoundWithAnimation: " + playSound);
+                    useSound = false;
                 }
-                if (!bool.TryParse(soundPlayAsLoopDuringAnimation, out colliderObject.soundAsLoop))
+                if (!bool.TryParse(soundPlayAsLoopDuringAnimation, out soundAsLoop))
                 {
-                    Log.UserError("canot parse soundAsLoop: " + soundPlayAsLoopDuringAnimation);
+                    Log.UserError("canot parse soundPlayAsLoopDuringAnimation: " + soundPlayAsLoopDuringAnimation);
                 }
 
-                if (!float.TryParse(soundMinDistance, out colliderObject.soundFallOff))
+                if (!float.TryParse(soundMinDistance, out soundFallOff))
                 {
-                    Log.UserError("canot parse soundAsLoop: " + soundPlayAsLoopDuringAnimation);
+                    Log.UserError("canot parse soundMinDistance: " + soundMinDistance);
                 }
 
-                if (!float.TryParse(soundMaxDistance, out colliderObject.soundMaxDist))
+                if (!float.TryParse(soundMaxDistance, out soundMaxDist))
                 {
-                    Log.UserError("canot parse soundAsLoop: " + soundPlayAsLoopDuringAnimation);
+                    Log.UserError("canot parse soundMaxDistance: " + soundMaxDistance);
                 }
 
-                if (colliderObject.useSound)
+                if (useSound)
                 {
                     AudioClip audioClip = GameDatabase.Instance.GetAudioClip(soundFile);
                     if (audioClip == null)
                     {
                         Log.UserError("Could not find sound file: " + soundFile);
+                        useSound = false;
                     }
                     else
                     {
-                        colliderObject.audioPlayer = gameObject.AddComponent<AudioSource>();
+                        audioPlayer = gameObject.AddComponent<AudioSource>();
 
-                        colliderObject.audioPlayer.clip = audioClip;
-                        colliderObject.audioPlayer.minDistance = colliderObject.soundFallOff;
-                        colliderObject.audioPlayer.maxDistance = colliderObject.soundMaxDist;
-                        colliderObject.audioPlayer.loop = colliderObject.soundAsLoop;
-                        colliderObject.audioPlayer.volume = 1;
-                        colliderObject.audioPlayer.playOnAwake = false;
-                        colliderObject.audioPlayer.spatialBlend = 1f;
-                        colliderObject.audioPlayer.rolloffMode = AudioRolloffMode.Linear;
+                        audioPlayer.clip = audioClip;
+                        audioPlayer.minDistance = soundFallOff;
+                        audioPlayer.maxDistance = soundMaxDist;
+                        audioPlayer.loop = soundAsLoop;
+                        audioPlayer.volume = 1;
+                        audioPlayer.playOnAwake = false;
+                        audioPlayer.spatialBlend = 1f;
+                        audioPlayer.rolloffMode = AudioRolloffMode.Linear;
                     }
                 }
-
-                Destroy(this);
             }
         }
 
-        void OnMouseDown()
+        public void PlayAnimation()
         {
             if (!animationPlaying)
                 StartCoroutine(playAnimation());
         }
 
-        void OnMouseEnter()
-        {
-            if (HighlightOnHover)
-            {
-                gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-                gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
-            }
-        }
 
-        void OnMouseExit()
-        {
-            if (HighlightOnHover)
-            {
-                gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
-                gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
-            }
-        }
-
-        IEnumerator playAnimation()
+        public IEnumerator playAnimation()
         {
             if (useSound)
             {
@@ -140,4 +119,38 @@ namespace KerbalKonstructs
             }
         }
     }
+
+
+
+
+    public class AnimationTrigger : MonoBehaviour
+    {
+        public AnimateOnClick animateOnClick;
+
+        void OnMouseEnter()
+        {
+            if (animateOnClick.HighlightOnHover)
+            {
+                gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+                gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.green);
+            }
+        }
+
+        void OnMouseExit()
+        {
+            if (animateOnClick.HighlightOnHover)
+            {
+                gameObject.GetComponent<Renderer>().material.SetFloat("_RimFalloff", 2.5f);
+                gameObject.GetComponent<Renderer>().material.SetColor("_RimColor", Color.clear);
+            }
+        }
+
+        void OnMouseDown()
+        {
+            animateOnClick.PlayAnimation();
+        }
+
+    }
+
+
 }
