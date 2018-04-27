@@ -220,8 +220,7 @@ namespace KerbalKonstructs
                 {
 					if (sInstance.Group == staticInstance.Group)
                     {
-						AnimateOnSunRise module = sInstance.gameObject.GetComponentInChildren<AnimateOnSunRise> ();
-						if (module != null)
+                        foreach (var module in sInstance.gameObject.GetComponentsInChildren<AnimateOnSunRise>())                      
                         {
 							if (module.isMaster)
                             {
