@@ -133,8 +133,6 @@ namespace KerbalKonstructs.Core
 
             AddLaunchSite(runway);
             AddLaunchSite(launchpad);
-
-            AddKSC2();
         }
 
 
@@ -187,7 +185,9 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchSiteWidth = 15f;
             ksc2.InitialCameraRotation = 135f;
             ksc2.lsGameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase) ).FirstOrDefault().gameObject;
-            ksc2.SetOpen();
+            ksc2.OpenCost = 1f;
+            ksc2.SetClosed();
+            ksc2.LaunchSiteIsHidden = true;
 
             RegisterLaunchSite(ksc2);
 
@@ -200,6 +200,7 @@ namespace KerbalKonstructs.Core
         static LaunchSiteManager()
         {
             AddKSC();
+            AddKSC2();
         }
 
         internal static void AttachLaunchSite(StaticInstance instance, ConfigNode instanceNode)

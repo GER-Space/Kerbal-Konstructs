@@ -32,5 +32,20 @@ namespace KerbalKonstructs.Core
             //return null;
         }
 
+        public static Transform[] FindAllRecursive(this Transform transform, string name)
+        {
+            List<Transform> transforms = new List<Transform>();
+
+            foreach (Transform child in transform.gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                if (child.name == name)
+                {
+                    transforms.Add(child);
+                }
+            }
+
+            return transforms.ToArray();
+        }
+
     }
 }
