@@ -99,6 +99,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\DishAnimate\DishAnimate.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\GrasColor\GrasColor.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\SunEvent\AnimateOnSunRise.cs" />
     <Compile Include="Editor\DrawObject.cs" />
