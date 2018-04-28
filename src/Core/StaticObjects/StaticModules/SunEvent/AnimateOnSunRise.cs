@@ -103,7 +103,7 @@ namespace KerbalKonstructs
 			}
 			if (animationComponent == null)
             {
-				Debug.Log ("[StaticLight] no anim found, destroying now");
+			    Log.UserError ("[StaticLight] no anim found, destroying now");
 				Destroy (this);
 			}
 
@@ -220,21 +220,20 @@ namespace KerbalKonstructs
                 {
 					if (sInstance.Group == staticInstance.Group)
                     {
-						AnimateOnSunRise module = sInstance.gameObject.GetComponentInChildren<AnimateOnSunRise> ();
-						if (module != null)
+                        foreach (var module in sInstance.gameObject.GetComponentsInChildren<AnimateOnSunRise>())
                         {
-							if (module.isMaster)
+                            if (module.isMaster)
                             {
-								master = module;
-								findMaster = true;
-								isMaster = false;
-								break;
-							}
+                                master = module;
+                                findMaster = true;
+                                isMaster = false;
+                                break;
+                            }
                             else
                             {
-								slaveList.Add (module);
-							}
-						}
+                                slaveList.Add(module);
+                            }
+                        }
 					}
 				}
 			}
