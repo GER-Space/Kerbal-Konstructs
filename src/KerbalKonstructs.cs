@@ -160,8 +160,12 @@ namespace KerbalKonstructs
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
             GameEvents.OnGameDatabaseLoaded.Add(OnGameDatabaseLoaded);
-            GameEvents.onGUILaunchScreenSpawn.Add(OnSelectorLoaded);
-            GameEvents.onEditorRestart.Add(OnEditorRestart);
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+            {
+
+                GameEvents.onGUILaunchScreenSpawn.Add(OnSelectorLoaded);
+                GameEvents.onEditorRestart.Add(OnEditorRestart);
+            }
             #endregion
 
             #region Other Mods Hooks
@@ -300,9 +304,10 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.EDITOR:
                     {
-
-                        LaunchSiteManager.OnEditorLoaded();
-
+                        if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+                        {
+                            LaunchSiteManager.OnEditorLoaded();
+                        }
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
