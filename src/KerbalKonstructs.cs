@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -159,6 +160,8 @@ namespace KerbalKonstructs
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
             GameEvents.OnGameDatabaseLoaded.Add(OnGameDatabaseLoaded);
+            GameEvents.onGUILaunchScreenSpawn.Add(OnSelectorLoaded);
+            GameEvents.onEditorRestart.Add(OnEditorRestart);
             #endregion
 
             #region Other Mods Hooks
@@ -203,6 +206,7 @@ namespace KerbalKonstructs
             //SDTest.GetModelStats();
             //Log.PerfStop("Model Test");
             //SDTest.GetShaderStats();
+            //SDTest.ScanParticles();
         }
 
         #region Game Events
@@ -297,7 +301,7 @@ namespace KerbalKonstructs
                 case GameScenes.EDITOR:
                     {
 
-
+                        LaunchSiteManager.OnEditorLoaded();
 
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
@@ -383,6 +387,37 @@ namespace KerbalKonstructs
             updateCache();
         }
 
+
+        public void OnSelectorLoaded(GameEvents.VesselSpawnInfo info)
+        {
+            Log.Normal("Reseting LaunchSite Lists on Selector spawn");
+            IEnumerator coroutine = WaitAndReset(info);
+            StartCoroutine(coroutine);
+        }
+
+
+        public IEnumerator WaitAndReset(GameEvents.VesselSpawnInfo info)
+        {
+            yield return new WaitForSeconds(1);
+            LaunchSiteManager.ResetLaunchSites();
+            LaunchSiteManager.RegisterMHLaunchSites(info.callingFacility.facilityType);
+
+            KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
+            if (uILaunchsiteController == null)
+            {
+                Log.UserWarning("LaunchSitecontroller not found");
+            }
+            else
+            {
+                uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+            }
+        }
+
+        public void OnEditorRestart()
+        {
+            Log.Normal("On Editor Restart");
+            LaunchSiteManager.OnEditorLoaded();
+        }
 
 
         /// <summary>
@@ -808,11 +843,30 @@ namespace KerbalKonstructs
 
                     // the runways have all the same spawnpoint.
                     if (facility.name.Equals("Runway", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         model.DefaultLaunchPadTransform = "End09/SpawnPoint";
+                    }
 
                     // Launchpads also 
                     if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         model.DefaultLaunchPadTransform = "LaunchPad_spawn";
+
+
+                        //Log.Normal("LauchPadFX: " + model.name);
+
+                        //foreach (var psystem in facility.UpgradeLevels[i].facilityPrefab.GetComponentsInChildren<ParticleSystem>(true))
+                        //{
+                        //    Log.Normal("LauchPadFX: ParticleSystem: " + psystem.name + " : " + psystem.gameObject.name );
+                        //}
+
+                        //foreach (var pr in facility.UpgradeLevels[i].facilityPrefab.GetComponentsInChildren<ParticleSystemRenderer>(true))
+                        //{
+                        //    Log.Normal("LauchPadFX: ParticleSystemRenderer: " + pr.name + " : " + pr.gameObject.name);
+                        //}
+
+
+                    }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
