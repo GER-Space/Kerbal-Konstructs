@@ -27,6 +27,26 @@ namespace KerbalKonstructs.Addons
 
         private static bool initialized = false;
 
+        //public static void ScanParticles()
+        //{
+        //    //var pliste = Resources.FindObjectsOfTypeAll<ParticleSystem>();
+
+        //    //foreach (var system in pliste)
+        //    //{
+        //    //    Log.Normal("ParticleSystem: " + system.name);
+        //    //}
+
+        //    //var prliste = Resources.FindObjectsOfTypeAll<ParticleSystemRenderer>();
+
+        //    //foreach (var renderer in prliste)
+        //    //{
+        //    //    Log.Normal("ParticleRenderer: " + renderer.name);
+        //    //    Log.Normal("ParticleRendererMat: " + renderer.material.name);
+        //    //}
+
+        //}
+
+
         private static void Add2Group(string groupName, Vector3 pos )
         {
             if (! groupMembers.ContainsKey(groupName) )
