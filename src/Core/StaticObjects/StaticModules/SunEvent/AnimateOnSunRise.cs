@@ -231,7 +231,7 @@ namespace KerbalKonstructs
 							}
                             else
                             {
-								slaveList.Add (module);
+								slaveList.Add(module);
 							}
 						}
 					}
