@@ -15,7 +15,7 @@ namespace KerbalKonstructs
 
         private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
 
-        private static List<string> imageExtentions = new List<string> { ".png", ".tga" , ".jpg" , ".dds"};
+        private static List<string> imageExtentions = new List<string> { ".png", ".tga" , ".jpg"};
 
         /// <summary>
         /// Load all shaders into the system and fill our shader database.
@@ -117,7 +117,7 @@ namespace KerbalKonstructs
                 Texture2D tmpTexture = null;
 
                 //// Otherwise search the game database for one loaded from GameData/
-                if (GameDatabase.Instance.ExistsTexture(textureName))
+                if (GameDatabase.Instance.ExistsTexture(textureName) && (GetImageExtention(textureName) != null))
                 {
                     // Get the texture URL
                     tmpTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
@@ -125,6 +125,11 @@ namespace KerbalKonstructs
 
                     foundTexture = new Texture2D(tmpTexture.width, tmpTexture.height, TextureFormat.ARGB32, false);
                     foundTexture.LoadImage﻿(System.IO.File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), false);
+                }
+                else
+                {
+                    Log.UserWarning("TextureLoader faild. Fallback to GameDatabase");
+                    foundTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
                 }
 
                 //// Otherwise search the game database for one loaded from GameData/
@@ -145,15 +150,15 @@ namespace KerbalKonstructs
             string path = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(0, pathIndex +1);
             string imageShortName = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(pathIndex + 1);
 
-            Log.Normal("path: " + path);
-            Log.Normal("imageShortName: " + imageShortName);
+            //Log.Normal("path: " + path);
+            //Log.Normal("imageShortName: " + imageShortName);
 
             foreach (var filename in System.IO.Directory.GetFiles(path, (imageShortName + ".*")))
             {
-                Log.Normal("Found Filename: " + filename);
+                //Log.Normal("Found Filename: " + filename);
                 foreach (string pattern in imageExtentions)
                 {
-                    Log.Normal("pattern:" + pattern);
+                    //Log.Normal("pattern:" + pattern);
                     if (filename.Contains(pattern))
                     {
                         return pattern;
@@ -161,7 +166,7 @@ namespace KerbalKonstructs
                 }
             }
 
-            Log.UserError("Could not find an image with the name");
+            Log.UserError("Could not find an image with the name: " + imageName);
             return null;
         }
 
