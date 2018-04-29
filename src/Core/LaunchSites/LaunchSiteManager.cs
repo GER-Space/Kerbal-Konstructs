@@ -239,40 +239,6 @@ namespace KerbalKonstructs.Core
      //       Log.Normal("LSM: CloseLaunchSite");
         }
 
-        /// <summary>
-        /// (Re)Imports all open LaunchSites to Stock LaunchSite handler
-        /// </summary>
-        internal static void KKSitesToKSP()
-        {
-            List<KKLaunchSite> myLaunchSites = new List<KKLaunchSite>();
-            Log.Normal("LSM: KKSitesToKSP");
-
-            ClearKSPLaunchSites();
-
-            foreach (KKLaunchSite site in allLaunchSites)
-            {
-                if (CheckLaunchSiteIsValid(site))
-                {
-               //     Log.Normal("Added Site to List: " + site.LaunchSiteName);
-                    myLaunchSites.Add(site);
-                }
-            }
-        }
-
-        internal static void ClearKSPLaunchSites()
-        {
-            //stockSite = PSystemSetup.Instance.launchSites;
-            Log.Normal("ClearKSP called");
-
-            foreach (KKLaunchSite site in allLaunchSites)
-            {
-                //if (stockLaunchSite.contains(site.stockSite))
-                //{
-                //    stocklaunchSite.Remove(site.Stocksite);
-                //}
-            }
-        }
-
 
         /// <summary>
         /// Creates a new LaunchSite out of a cfg-node and Registers it with RegisterLaunchSite
@@ -481,14 +447,17 @@ namespace KerbalKonstructs.Core
             }
 
             List<PSystemSetup.SpaceCenterFacility> spaceCenters = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
-            PSystemSetup.SpaceCenterFacility spaceTodel = spaceCenters.Where(x => x.facilityName == site.LaunchSiteName).FirstOrDefault();
+            PSystemSetup.SpaceCenterFacility spaceToDel = spaceCenters.Where(x => x.facilityName == site.LaunchSiteName).FirstOrDefault();
 
-            if (spaceTodel != null)
+            if (spaceToDel != null)
             {
-                spaceCenters.Remove(spaceTodel);
+                spaceCenters.Remove(spaceToDel);
                 PSystemSetup.Instance.SpaceCenterFacilities = spaceCenters.ToArray();
                 Log.Normal("Launchsite: " + site.LaunchSiteName + " sucessfully unregistered");
             }
+
+            KKFacilities.Remove(site.spaceCenterFacility);
+
         }
 
 
@@ -850,28 +819,6 @@ namespace KerbalKonstructs.Core
         // Original author: medsouz
         public static void setLaunchSite(KKLaunchSite site)
         {
-            //foreach (var lsite in EditorDriver.ValidLaunchSites)
-            //{
-            //    Log.Normal("Stock site: " + lsite);
-            //}
-            //if (site.LaunchSiteType == SiteType.Any)
-            //{
-
-
-            //   site.facility.editorFacility = EditorDriver.editorFacility;
-
-
-            //    MethodInfo setValidFunction = typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.Static | BindingFlags.NonPublic);
-            //    setValidFunction.Invoke(null, null);
-            //    Log.Normal("Set anyType to current editor");
-
-            //}
-
-            //foreach (var lsite in EditorDriver.ValidLaunchSites)
-            //{
-            //    Log.Normal("Stock site: " + lsite);
-            //}
-
             // set the facilityname of the old site to its original value, so it can be found later
             ResetLaunchSiteFacilityName();
 

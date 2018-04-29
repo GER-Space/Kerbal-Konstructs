@@ -357,7 +357,6 @@ namespace KerbalKonstructs
                 case GameScenes.SPACECENTER:
                     {
                         InputLockManager.RemoveControlLock("KKEditorLock");
-                        LaunchSiteManager.KKSitesToKSP();
 
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
                         //currentBody = currentSite.body;
@@ -547,15 +546,15 @@ namespace KerbalKonstructs
             // reset the Database to empty state, as nothing should be loaded anymore
             StaticDatabase.Reset();
             ConnectionManager.ResetAll();
-            //DecalsDatabase.ResetAll();
+            DecalsDatabase.ResetAll();
 
             // Load up everything
             // PQSMapDecal
-            //Log.PerfStart("loading MapDecals");
-            //MapDecalUtils.GetSquadMaps();
-            //ConfigParser.LoadAllMapDecalMaps();
-            //ConfigParser.LoadAllMapDecals();
-            //Log.PerfStop("loading MapDecals");
+            Log.PerfStart("loading MapDecals");
+            MapDecalUtils.GetSquadMaps();
+            ConfigParser.LoadAllMapDecalMaps();
+            ConfigParser.LoadAllMapDecals();
+            Log.PerfStop("loading MapDecals");
             // end PQSMapDecal
             Log.PerfStart("Loading Instances");
 
