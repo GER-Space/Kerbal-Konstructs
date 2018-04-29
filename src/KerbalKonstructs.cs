@@ -160,6 +160,7 @@ namespace KerbalKonstructs
             GameEvents.OnMapEntered.Add(MapIconDraw.instance.Open);
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
             GameEvents.OnGameDatabaseLoaded.Add(OnGameDatabaseLoaded);
+            GameEvents.onVesselGoOffRails.Add(FixWaterLaunch);
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
             {
 
@@ -214,6 +215,25 @@ namespace KerbalKonstructs
         }
 
         #region Game Events
+
+
+        /// <summary>
+        /// called by onVesselGoOffRails
+        /// </summary>
+        void FixWaterLaunch(Vessel vessel)
+        {
+            if (vessel.situation == Vessel.Situations.PRELAUNCH)
+            {
+                KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
+                if (lastSite.sitecategory == LaunchSiteCategory.Waterlaunch)
+                {
+                    Log.Normal("Trying to bring the vessel back to the surface.");
+                    vessel.transform.position = lastSite.lsGameObject.transform.Find(lastSite.LaunchPadTransform).position;
+                }
+
+            }
+            
+        }
 
 
         /// <summary>
