@@ -171,6 +171,7 @@ namespace KerbalKonstructs.Core
             ksc2.staticInstance = ksc2Instance;
             ksc2.LaunchSiteName = "KSC2";
             ksc2.LaunchPadTransform = "launchpad/PlatformPlane";
+                       
             ksc2.LaunchSiteAuthor = "KerbalKonstructs";
             ksc2.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
             ksc2.LaunchSiteType = SiteType.VAB;
@@ -183,7 +184,8 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchSiteLength = 15f;
             ksc2.LaunchSiteWidth = 15f;
             ksc2.InitialCameraRotation = 135f;
-            ksc2.lsGameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().gameObject;
+            //            ksc2.lsGameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().gameObject;
+            ksc2.lsGameObject = ksc2PQS.gameObject;
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;
@@ -228,7 +230,10 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void OpenLaunchSite(KKLaunchSite site)
         {
-    //        Log.Normal("LSM: OpenLaunchSite");
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+                OnEditorLoaded();
+            }
         }
 
         /// <summary>
@@ -236,7 +241,10 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void CloseLaunchSite(KKLaunchSite site)
         {
-     //       Log.Normal("LSM: CloseLaunchSite");
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+                OnEditorLoaded();
+            }
         }
 
 
@@ -260,7 +268,7 @@ namespace KerbalKonstructs.Core
         /// <param name="site"></param>
         internal static void RegisterLaunchSite(KKLaunchSite site)
         {
-            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.staticInstance.gameObject.transform.Find(site.LaunchPadTransform) != null)
+            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.lsGameObject.transform.Find(site.LaunchPadTransform) != null)
             {
                 site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
                 site.staticInstance.gameObject.name = site.LaunchSiteName;
@@ -312,7 +320,7 @@ namespace KerbalKonstructs.Core
                 if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
                 {
                     // Dont do anything here, because we do it later in the editor or when the spawn dialog is called
-                    //CreateMHLaunchSite(site);
+                   
                 } else
                 {
                     RegisterLaunchSitesStock(site);
