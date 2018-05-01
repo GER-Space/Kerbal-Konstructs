@@ -341,8 +341,8 @@ namespace KerbalKonstructs.Core
         public static void AlterMHSelector()
         {
             ResetLaunchSiteFacilityName();
-            Log.Normal("AMH: Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
-            Log.Normal("AMH: Current site: " + currentLaunchSite);
+            //Log.Normal("AMH: Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
+            //Log.Normal("AMH: Current site: " + currentLaunchSite);
             RegisterMHLaunchSites(EditorDriver.editorFacility);
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
             if (uILaunchsiteController == null)
@@ -438,26 +438,6 @@ namespace KerbalKonstructs.Core
             typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
 
         }
-
-
-
-
-        //internal static void CreateMHLaunchSite(KKLaunchSite site, EditorFacility facility)
-        //{
-        //    Log.Normal("Creating MH LaunchSite for: " + site.LaunchSiteName + " " + facility.ToString());
-        //    LaunchSite.SpawnPoint spawnPoint = new LaunchSite.SpawnPoint();
-        //    spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-        //    spawnPoint.name = site.LaunchSiteName;
-
-        //    LaunchSite.SpawnPoint[] spawnPoints = new LaunchSite.SpawnPoint[1] { spawnPoint };
-
-        //    LaunchSite launchSite = new LaunchSite(site.LaunchSiteName, site.body.name, site.LaunchSiteName, spawnPoints, site.lsGameObject.transform.name, facility);
-
-        //    launchSite.Setup(site.staticInstance.pqsCity, new PQS[1] { site.body.pqsController });
-        //    PSystemSetup.Instance.AddLaunchSite(launchSite);
-        //    Log.Normal("created: " + site.LaunchSiteName);
-
-        //}
 
         internal static void RegisterLaunchSitesStock(KKLaunchSite site)
         {
@@ -857,8 +837,6 @@ namespace KerbalKonstructs.Core
 
         public static void ResetLaunchSiteFacilityName()
         {
-            Log.Normal("ResetLaunchSiteName");
-            ;
             if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
             {
                 return;
