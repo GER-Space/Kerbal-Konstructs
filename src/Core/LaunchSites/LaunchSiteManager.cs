@@ -351,13 +351,8 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                //GameEvents.onEditorRestart.Fire();
                 uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
-                //uILaunchsiteController.GetType().GetMethod("setupToggleGroup", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
-                //uILaunchsiteController.GetType().GetMethod("setSelectedItem", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
             }
-
-//            var bla = Type.GetType("KSP.UI.Screens.EditorLaunchPadItem");
 
             var launchPadItems = (System.Collections.IList)uILaunchsiteController.GetType().GetField("launchPadItems", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(uILaunchsiteController);
             if (launchPadItems == null)
@@ -366,7 +361,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                Log.Normal("launchPadItems found ");
+                //Log.Normal("launchPadItems found ");
                 foreach (var item in launchPadItems)
                 {
                     var type = item.GetType();
@@ -377,7 +372,7 @@ namespace KerbalKonstructs.Core
                     else
                     {
                         string siteName = (string)item.GetType().GetField("siteName").GetValue(item);
-                        Log.Normal(" altering button for siteName: " + siteName);
+                        //Log.Normal(" altering button for siteName: " + siteName);
 
                         Button button = (Button)item.GetType().GetField("buttonLaunch").GetValue(item);
                         Toggle toggleSetDefault = (Toggle)item.GetType().GetField("toggleSetDefault").GetValue(item);
@@ -407,20 +402,6 @@ namespace KerbalKonstructs.Core
                 }
 
             }
-
-            //KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(currentLaunchSite);
-            //// Check if the selected LaunchSite is valid
-            //if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
-            //{
-            //    Log.Normal("LS not valid: " + currentSite.LaunchSiteName);
-            //    currentSite = LaunchSiteManager.GetDefaultSite();
-            //    LaunchSiteManager.setLaunchSite(currentSite);
-            //    AlterMHSelector();
-            //}
-            //else
-            //{
-            //    LaunchSiteManager.setLaunchSite(currentSite);
-            //}
         }
 
 
