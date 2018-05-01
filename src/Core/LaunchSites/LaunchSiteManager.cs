@@ -338,19 +338,11 @@ namespace KerbalKonstructs.Core
         }
 
 
-       // internal static void ResetLaunchSites()
-       // {
-       //     //List<LaunchSite> launchSites = PSystemSetup.Instance.StockLaunchSites.ToList();
-       //   //  List<LaunchSite> launchSites = new List<LaunchSite>();
-
-       ////     PSystemSetup.Instance.GetType().GetField("launchsites", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(PSystemSetup.Instance, launchSites);
-       // }
-
-
         public static void AlterMHSelector()
         {
-            Log.Normal("Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
-            //ResetLaunchSites();
+            ResetLaunchSiteFacilityName();
+            Log.Normal("AMH: Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
+            Log.Normal("AMH: Current site: " + currentLaunchSite);
             RegisterMHLaunchSites(EditorDriver.editorFacility);
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
             if (uILaunchsiteController == null)
@@ -361,7 +353,8 @@ namespace KerbalKonstructs.Core
             {
                 //GameEvents.onEditorRestart.Fire();
                 uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
-                uILaunchsiteController.GetType().GetMethod("setSelectedItem", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+                //uILaunchsiteController.GetType().GetMethod("setupToggleGroup", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+                //uILaunchsiteController.GetType().GetMethod("setSelectedItem", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
             }
 
 //            var bla = Type.GetType("KSP.UI.Screens.EditorLaunchPadItem");
@@ -376,10 +369,7 @@ namespace KerbalKonstructs.Core
                 Log.Normal("launchPadItems found ");
                 foreach (var item in launchPadItems)
                 {
-                    Log.Normal("Item found");
-
                     var type = item.GetType();
-
                     if (type == null)
                     {
                         Log.Warning("Cound not retrieve type");
@@ -387,7 +377,7 @@ namespace KerbalKonstructs.Core
                     else
                     {
                         string siteName = (string)item.GetType().GetField("siteName").GetValue(item);
-                        Log.Normal("SiteName: " + siteName);
+                        Log.Normal(" altering button for siteName: " + siteName);
 
                         Button button = (Button)item.GetType().GetField("buttonLaunch").GetValue(item);
                         Toggle toggleSetDefault = (Toggle)item.GetType().GetField("toggleSetDefault").GetValue(item);
@@ -397,18 +387,26 @@ namespace KerbalKonstructs.Core
 
                         buttonFixer.siteName = siteName;
 
+                        if (siteName == currentLaunchSite)
+                        {
+                            toggleSetDefault.isOn = true;
+                        }
+                        else
+                        {
+                            toggleSetDefault.isOn = false;
+                        }
+
                         if (launchSiteNames.Contains(siteName))
                         {
                             toggleSetDefault.onValueChanged.AddListener(buttonFixer.SetDefault);
                             button.onClick.RemoveAllListeners();
                             button.onClick.AddListener(buttonFixer.LauchVessel);
                         }
+
                     }
                 }
 
             }
-
-
 
             //KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(currentLaunchSite);
             //// Check if the selected LaunchSite is valid
@@ -416,9 +414,13 @@ namespace KerbalKonstructs.Core
             //{
             //    Log.Normal("LS not valid: " + currentSite.LaunchSiteName);
             //    currentSite = LaunchSiteManager.GetDefaultSite();
+            //    LaunchSiteManager.setLaunchSite(currentSite);
+            //    AlterMHSelector();
             //}
-            //LaunchSiteManager.setLaunchSite(currentSite);
-
+            //else
+            //{
+            //    LaunchSiteManager.setLaunchSite(currentSite);
+            //}
         }
 
 
@@ -704,7 +706,7 @@ namespace KerbalKonstructs.Core
                         mySite = site;
                     }
                 }
-                Log.Normal("Returning LS:" + mySite.LaunchSiteName);
+                Log.Normal("Returning LS: " + mySite.LaunchSiteName);
                 return mySite;
             }
             else

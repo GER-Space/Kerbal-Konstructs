@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using KerbalKonstructs;
+using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
@@ -21,10 +22,10 @@ namespace KerbalKonstructs.Core
 
         public void SetDefault(bool value)
         {
-            LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(siteName));
             if (value)
             {
                 LaunchSiteManager.setLaunchSite(LaunchSiteManager.GetLaunchSiteByName(siteName));
+                MiscUtils.HUDMessage(siteName + " has been set as the launchsite", 10, 0);
 
                 if (EditorDriver.editorFacility == EditorFacility.VAB)
                 {

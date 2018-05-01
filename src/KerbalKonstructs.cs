@@ -330,7 +330,7 @@ namespace KerbalKonstructs
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
-                        KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(lastLaunchSiteUsed);
+                        KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
                         //if (currentSite.LaunchSiteType == SiteType.Any)
                         //{
@@ -338,12 +338,12 @@ namespace KerbalKonstructs
                         //    LaunchSiteManager.SetupKSPFacilities();
                         //}
 
-                        Log.Normal("");
-                        Log.Normal("Valid sites");
-                        foreach (var site in EditorDriver.ValidLaunchSites)
-                        {
-                            Log.Normal("Stock site: " + site);
-                        }
+                        //Log.Normal("");
+                        //Log.Normal("Valid sites");
+                        //foreach (var site in EditorDriver.ValidLaunchSites)
+                        //{
+                        //    Log.Normal("Stock site: " + site);
+                        //}
 
 
                         // Check if the selected LaunchSite is valid
