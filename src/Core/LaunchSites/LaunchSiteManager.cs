@@ -193,6 +193,8 @@ namespace KerbalKonstructs.Core
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;
+
+            ksc2Instance.launchSite = ksc2;
             RegisterLaunchSite(ksc2);
         }
 
@@ -397,7 +399,6 @@ namespace KerbalKonstructs.Core
 
                         if (launchSiteNames.Contains(siteName))
                         {
-
                             toggleSetDefault.onValueChanged.AddListener(buttonFixer.SetDefault);
                             button.onClick.RemoveAllListeners();
                             button.onClick.AddListener(buttonFixer.LauchVessel);
