@@ -6,6 +6,7 @@ using KSP.UI.Screens;
 using KSP.UI;
 using System.Collections.Generic;
 using KerbalKonstructs.UI;
+using UnityEngine.UI;
 
 
 namespace KerbalKonstructs.Core
@@ -38,6 +39,8 @@ namespace KerbalKonstructs.Core
 
         // Handy get of all launchSites
         public static KKLaunchSite[] allLaunchSites = null;
+
+        public static List<string> launchSiteNames = new List<string>();
 
 
         // API for Kerbal Construction Time not for internal use
@@ -160,6 +163,7 @@ namespace KerbalKonstructs.Core
             StaticInstance ksc2Instance = new StaticInstance();
 
             ksc2Instance.gameObject = ksc2PQS.gameObject;
+            //ksc2Instance.gameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().gameObject;
             ksc2Instance.hasLauchSites = true;
             ksc2Instance.pqsCity = ksc2PQS;
             ksc2Instance.RadialPosition = ksc2PQS.repositionRadial;
@@ -171,7 +175,7 @@ namespace KerbalKonstructs.Core
             ksc2.staticInstance = ksc2Instance;
             ksc2.LaunchSiteName = "KSC2";
             ksc2.LaunchPadTransform = "launchpad/PlatformPlane";
-                       
+
             ksc2.LaunchSiteAuthor = "KerbalKonstructs";
             ksc2.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
             ksc2.LaunchSiteType = SiteType.VAB;
@@ -189,9 +193,7 @@ namespace KerbalKonstructs.Core
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;
-
             RegisterLaunchSite(ksc2);
-
         }
 
         /// <summary>
@@ -225,16 +227,6 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        /// <summary>
-        /// Function that is called when a launchSite is opened
-        /// </summary>
-        internal static void OpenLaunchSite(KKLaunchSite site)
-        {
-            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
-            {
-                OnEditorLoaded();
-            }
-        }
 
         /// <summary>
         /// Called when a Launchsite is closed
@@ -243,7 +235,20 @@ namespace KerbalKonstructs.Core
         {
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
             {
-                OnEditorLoaded();
+                Log.Normal("Close: " + site.LaunchSiteName);
+                AlterMHSelector();
+            }
+        }
+
+        /// <summary>
+        /// Function that is called when a launchSite is opened
+        /// </summary>
+        internal static void OpenLaunchSite(KKLaunchSite site)
+        {
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+                Log.Normal("OpenSite: " + site.LaunchSiteName);
+                AlterMHSelector();
             }
         }
 
@@ -256,7 +261,7 @@ namespace KerbalKonstructs.Core
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
             KKLaunchSite mySite = new KKLaunchSite();
-            mySite.ParseLSConfig(instance,cfgNode);
+            mySite.ParseLSConfig(instance, cfgNode);
             instance.hasLauchSites = true;
             instance.launchSite = mySite;
             RegisterLaunchSite(mySite);
@@ -266,13 +271,14 @@ namespace KerbalKonstructs.Core
         /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
         /// <param name="site"></param>
-        internal static void RegisterLaunchSite(KKLaunchSite site)
+        internal static void RegisterLaunchSite(KKLaunchSite site , bool isSquad = false)
         {
-            if (! string.IsNullOrEmpty(site.LaunchSiteName) && site.lsGameObject.transform.Find(site.LaunchPadTransform) != null)
+            if (!string.IsNullOrEmpty(site.LaunchSiteName) && site.lsGameObject.transform.Find(site.LaunchPadTransform) != null)
             {
-                site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
-                site.staticInstance.gameObject.name = site.LaunchSiteName;
 
+                    site.lsGameObject.transform.name = site.LaunchSiteName;
+                    site.lsGameObject.name = site.LaunchSiteName;
+                
                 if (KKFacilities == null)
                 {
                     KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
@@ -298,8 +304,6 @@ namespace KerbalKonstructs.Core
                     if (site.LaunchSiteType == SiteType.VAB)
                     {
                         spaceCenterFacility.editorFacility = EditorFacility.VAB;
-                        // move everything a bit above ground, so they explode less
-                        //site.staticInstance.gameObject.transform.FindRecursive(site.LaunchPadTransform).localPosition += Vector3.up * 100;
                     }
                     else
                     {
@@ -316,18 +320,11 @@ namespace KerbalKonstructs.Core
                     Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
                 }
 
-
-                if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
-                {
-                    // Dont do anything here, because we do it later in the editor or when the spawn dialog is called
-                   
-                } else
-                {
-                    RegisterLaunchSitesStock(site);
-                }
+                RegisterLaunchSitesStock(site);
+                
 
                 if (site.staticInstance.gameObject != null)
-                {                    
+                {
                     CustomSpaceCenter.CreateFromLaunchsite(site);
                 }
 
@@ -339,23 +336,20 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void ResetLaunchSites()
-        {
-            List<LaunchSite> launchSites = PSystemSetup.Instance.StockLaunchSites.ToList();
+       // internal static void ResetLaunchSites()
+       // {
+       //     //List<LaunchSite> launchSites = PSystemSetup.Instance.StockLaunchSites.ToList();
+       //   //  List<LaunchSite> launchSites = new List<LaunchSite>();
 
-            PSystemSetup.Instance.GetType().GetField("launchsites", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(PSystemSetup.Instance, launchSites);
-        }
+       ////     PSystemSetup.Instance.GetType().GetField("launchsites", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(PSystemSetup.Instance, launchSites);
+       // }
 
 
-        public static void OnEditorLoaded()
+        public static void AlterMHSelector()
         {
             Log.Normal("Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
-            ResetLaunchSites();
+            //ResetLaunchSites();
             RegisterMHLaunchSites(EditorDriver.editorFacility);
-
-
-
-
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
             if (uILaunchsiteController == null)
             {
@@ -363,8 +357,67 @@ namespace KerbalKonstructs.Core
             }
             else
             {
+                //GameEvents.onEditorRestart.Fire();
                 uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+                uILaunchsiteController.GetType().GetMethod("setSelectedItem", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
             }
+
+//            var bla = Type.GetType("KSP.UI.Screens.EditorLaunchPadItem");
+
+            var launchPadItems = (System.Collections.IList)uILaunchsiteController.GetType().GetField("launchPadItems", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(uILaunchsiteController);
+            if (launchPadItems == null)
+            {
+                Log.Normal("No launchPadItems found ");
+            }
+            else
+            {
+                Log.Normal("launchPadItems found ");
+                foreach (var item in launchPadItems)
+                {
+                    Log.Normal("Item found");
+
+                    var type = item.GetType();
+
+                    if (type == null)
+                    {
+                        Log.Warning("Cound not retrieve type");
+                    }
+                    else
+                    {
+                        string siteName = (string)item.GetType().GetField("siteName").GetValue(item);
+                        Log.Normal("SiteName: " + siteName);
+
+                        Button button = (Button)item.GetType().GetField("buttonLaunch").GetValue(item);
+                        Toggle toggleSetDefault = (Toggle)item.GetType().GetField("toggleSetDefault").GetValue(item);
+                        GameObject gameObj = (GameObject)item.GetType().GetProperty("gameObject").GetValue(item, null);
+
+                        LaunchSiteButton buttonFixer = gameObj.AddComponent<LaunchSiteButton>();
+
+                        buttonFixer.siteName = siteName;
+
+                        if (launchSiteNames.Contains(siteName))
+                        {
+
+                            toggleSetDefault.onValueChanged.AddListener(buttonFixer.SetDefault);
+                            button.onClick.RemoveAllListeners();
+                            button.onClick.AddListener(buttonFixer.LauchVessel);
+                        }
+                    }
+                }
+
+            }
+
+
+
+            //KKLaunchSite currentSite = LaunchSiteManager.GetLaunchSiteByName(currentLaunchSite);
+            //// Check if the selected LaunchSite is valid
+            //if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
+            //{
+            //    Log.Normal("LS not valid: " + currentSite.LaunchSiteName);
+            //    currentSite = LaunchSiteManager.GetDefaultSite();
+            //}
+            //LaunchSiteManager.setLaunchSite(currentSite);
+
         }
 
 
@@ -389,7 +442,12 @@ namespace KerbalKonstructs.Core
 
                 if (site.isOpen)
                 {
-                    CreateMHLaunchSite(site, facility);
+                    site.spaceCenterFacility.editorFacility = facility;
+                    //CreateMHLaunchSite(site, facility);
+                }
+                else
+                {
+                    site.spaceCenterFacility.editorFacility = EditorFacility.None;
                 }
             }
 
@@ -400,22 +458,22 @@ namespace KerbalKonstructs.Core
 
 
 
-        internal static void CreateMHLaunchSite(KKLaunchSite site, EditorFacility facility)
-        {
-            Log.Normal("Creating MH LaunchSite for: " + site.LaunchSiteName + " " + facility.ToString());
-            LaunchSite.SpawnPoint spawnPoint = new LaunchSite.SpawnPoint();
-            spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-            spawnPoint.name = site.LaunchSiteName;
+        //internal static void CreateMHLaunchSite(KKLaunchSite site, EditorFacility facility)
+        //{
+        //    Log.Normal("Creating MH LaunchSite for: " + site.LaunchSiteName + " " + facility.ToString());
+        //    LaunchSite.SpawnPoint spawnPoint = new LaunchSite.SpawnPoint();
+        //    spawnPoint.spawnTransformURL = site.LaunchPadTransform;
+        //    spawnPoint.name = site.LaunchSiteName;
 
-            LaunchSite.SpawnPoint[] spawnPoints = new LaunchSite.SpawnPoint[1] { spawnPoint };
+        //    LaunchSite.SpawnPoint[] spawnPoints = new LaunchSite.SpawnPoint[1] { spawnPoint };
 
-            LaunchSite launchSite = new LaunchSite(site.LaunchSiteName, site.body.name, site.LaunchSiteName, spawnPoints, site.lsGameObject.transform.name, facility);
+        //    LaunchSite launchSite = new LaunchSite(site.LaunchSiteName, site.body.name, site.LaunchSiteName, spawnPoints, site.lsGameObject.transform.name, facility);
 
-            launchSite.Setup(site.staticInstance.pqsCity, new PQS[1]{site.body.pqsController});
-            PSystemSetup.Instance.AddLaunchSite(launchSite);
-            Log.Normal("created: " + site.LaunchSiteName);
+        //    launchSite.Setup(site.staticInstance.pqsCity, new PQS[1] { site.body.pqsController });
+        //    PSystemSetup.Instance.AddLaunchSite(launchSite);
+        //    Log.Normal("created: " + site.LaunchSiteName);
 
-        }
+        //}
 
         internal static void RegisterLaunchSitesStock(KKLaunchSite site)
         {
@@ -427,7 +485,7 @@ namespace KerbalKonstructs.Core
         internal static void SetupKSPFacilities()
         {
 
-           // Log.Normal("SetupKSPFacilities Called");
+            // Log.Normal("SetupKSPFacilities Called");
 
             PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
 
@@ -473,7 +531,7 @@ namespace KerbalKonstructs.Core
         /// Deletes a LaunchSite from the internal Database
         /// </summary>
         /// <param name="site2delete"></param>
-        internal static void DeleteLaunchSite (KKLaunchSite site2delete)
+        internal static void DeleteLaunchSite(KKLaunchSite site2delete)
         {
             if (launchSites.Contains(site2delete))
             {
@@ -486,8 +544,9 @@ namespace KerbalKonstructs.Core
                 }
 
                 allLaunchSites = launchSites.ToArray();
+                launchSiteNames.Remove(site2delete.LaunchSiteName);
                 UnregisterLaunchSite(site2delete);
-            } 
+            }
         }
 
         /// <summary>
@@ -504,6 +563,7 @@ namespace KerbalKonstructs.Core
                 return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
             });
             allLaunchSites = tmpList.ToArray();
+            launchSiteNames.Add(site2add.LaunchSiteName);
         }
 
         internal static KKLaunchSite GetCurrentLaunchSite()
@@ -591,8 +651,9 @@ namespace KerbalKonstructs.Core
         {
             if (checkLaunchSiteExists(siteName))
             {
-                return GetLaunchSiteByName(siteName).isOpen;             
-            } else
+                return GetLaunchSiteByName(siteName).isOpen;
+            }
+            else
             {
                 return false;
             }
@@ -624,7 +685,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         public static bool checkLaunchSiteExists(string siteName)
         {
-            return (launchSites.Where(x => x.LaunchSiteName.Equals(siteName,StringComparison.InvariantCultureIgnoreCase)).Count() > 0);
+            return (launchSites.Where(x => x.LaunchSiteName.Equals(siteName, StringComparison.InvariantCultureIgnoreCase)).Count() > 0);
         }
 
 
@@ -634,7 +695,7 @@ namespace KerbalKonstructs.Core
             KKLaunchSite mySite = null;
             if (checkLaunchSiteExists(siteName))
             {
-                
+
                 foreach (KKLaunchSite site in allLaunchSites)
                 {
                     if (site.LaunchSiteName.Equals(siteName))
@@ -757,12 +818,14 @@ namespace KerbalKonstructs.Core
 
             foreach (KKLaunchSite site in allLaunchSites)
             {
-                if (site.lsGameObject == null) continue;
+                if (site.lsGameObject == null)
+                    continue;
 
                 var radialposition = site.lsGameObject.transform.position;
                 var dist = Vector3.Distance(position, radialposition);
 
-                if (radialposition == position) continue;
+                if (radialposition == position)
+                    continue;
 
                 if (site.LaunchSiteName == "Runway" || site.LaunchSiteName == "LaunchPad")
                 {
@@ -810,7 +873,7 @@ namespace KerbalKonstructs.Core
 
         public static void ResetLaunchSiteFacilityName()
         {
-            Log.Normal("OnVesselLaunched");
+            Log.Normal("ResetLaunchSiteName");
             ;
             if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
             {
@@ -892,7 +955,8 @@ namespace KerbalKonstructs.Core
                     if (defaultSite != null && defaultSite.isOpen)
                     {
                         return defaultSite;
-                    } else
+                    }
+                    else
                     {
                         Log.UserError("DefaultSite is null");
                         defaultSite = GetLaunchSiteByName("LaunchPad");
@@ -911,7 +975,7 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            else 
+            else
             {
                 try
                 {
@@ -928,7 +992,8 @@ namespace KerbalKonstructs.Core
                         KerbalKonstructs.instance.defaultSPHlaunchsite = "Runway";
                         return defaultSite;
                     }
-                } catch
+                }
+                catch
                 {
                     Log.Error("LaunchSite is broken");
                     defaultSite = GetLaunchSiteByName("Runway");

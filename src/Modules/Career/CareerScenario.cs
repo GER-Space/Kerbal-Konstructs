@@ -12,7 +12,7 @@ namespace KerbalKonstructs.Career
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.SPACECENTER, GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.TRACKSTATION)]
     public class KerbalKonstructsSettings : ScenarioModule
     {
-
+        [Persistent (isPersistant = true)]
         internal bool initialized = false;
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace KerbalKonstructs.Career
             //if (CareerUtils.isCareerGame)
             //{
             Log.Normal("KKScenario saving career state");
-                CareerState.Save(node);
+            CareerState.Save(node);
             //}
         }
 

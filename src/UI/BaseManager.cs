@@ -286,7 +286,8 @@ namespace KerbalKonstructs.UI
 							else
 							{
 								selectedSite.SetOpen();
-								Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
+                                LaunchSiteManager.OpenLaunchSite(selectedSite);
+                                Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
 							}
 						}
 					}
@@ -299,7 +300,8 @@ namespace KerbalKonstructs.UI
 					if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
 					{
 						Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
-						selectedSite.SetClosed();
+                        LaunchSiteManager.CloseLaunchSite(selectedSite);
+                        selectedSite.SetClosed();
 					}
 				}
 				GUI.enabled = true;

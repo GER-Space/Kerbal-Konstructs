@@ -25,7 +25,7 @@ namespace KerbalKonstructs.Modules
 
                 if (!facilityNodes.HasNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString())))
                 {
-                    Log.UserWarning("No entry foud in savegame: " + instance.gameObject.name);
+                    Log.UserWarning("No entry found in savegame: " + instance.gameObject.name);
                     continue;
                 }
 
@@ -83,12 +83,14 @@ namespace KerbalKonstructs.Modules
         {
             foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
             {
+                //Log.Normal("Loading LS: " + site.LaunchSiteName + " " + site.isOpen);
                 ConfigNode lsNode;
                 if (launchSiteNodes.HasNode(CareerUtils.LSKeyFromName(site.LaunchSiteName)))
                 {
                     lsNode = launchSiteNodes.GetNode(CareerUtils.LSKeyFromName(site.LaunchSiteName));
                     LaunchSiteParser.LoadCareerConfig(site, lsNode);
                 }
+                //Log.Normal("Loading LS: " + site.LaunchSiteName + " " + site.isOpen);
             }
             
 
@@ -123,6 +125,7 @@ namespace KerbalKonstructs.Modules
 
             foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
             {
+                //Log.Normal("Saving LS: " + site.LaunchSiteName + " " + site.isOpen);
                 name = CareerUtils.LSKeyFromName(site.LaunchSiteName);
                 ConfigNode lsNode = launchSiteNode.AddNode(name);
                 LaunchSiteParser.SaveCareerConfig(site, lsNode);

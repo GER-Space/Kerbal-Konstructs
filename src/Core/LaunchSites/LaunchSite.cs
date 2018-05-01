@@ -113,7 +113,7 @@ namespace KerbalKonstructs.Core
                     return false;
                 }
             }
-            private set
+            set
             {
                 openState = value;
                 if (openState == true)
@@ -204,7 +204,6 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal void SetOpen()
         {
-            LaunchSiteManager.OpenLaunchSite(this);
             isOpen = true;
         }
 
@@ -213,7 +212,6 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal void SetClosed()
         {
-            LaunchSiteManager.CloseLaunchSite(this);
             isOpen = false;
         }
 

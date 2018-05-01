@@ -166,6 +166,7 @@ namespace KerbalKonstructs
 
                 GameEvents.onGUILaunchScreenSpawn.Add(OnSelectorLoaded);
                 GameEvents.onEditorRestart.Add(OnEditorRestart);
+                //GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequested);
             }
             #endregion
 
@@ -324,7 +325,7 @@ namespace KerbalKonstructs
                     {
                         if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
                         {
-                            LaunchSiteManager.OnEditorLoaded();
+                            LaunchSiteManager.AlterMHSelector();
                         }
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
@@ -421,7 +422,7 @@ namespace KerbalKonstructs
         public IEnumerator WaitAndReset(GameEvents.VesselSpawnInfo info)
         {
             yield return new WaitForSeconds(1);
-            LaunchSiteManager.ResetLaunchSites();
+            //LaunchSiteManager.ResetLaunchSites();
             LaunchSiteManager.RegisterMHLaunchSites(info.callingFacility.facilityType);
 
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
@@ -438,8 +439,20 @@ namespace KerbalKonstructs
         public void OnEditorRestart()
         {
             Log.Normal("On Editor Restart");
-            LaunchSiteManager.OnEditorLoaded();
+            LaunchSiteManager.AlterMHSelector();
         }
+
+        //public void OnGameSceneLoadRequested(GameScenes scene)
+        //{
+        //    if (scene == GameScenes.MAINMENU)
+        //    {
+        //        Log.Normal("OnGameSceneLoadRequested");
+        //        LaunchSiteManager.ResetLaunchSites();
+        //        typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+
+
+        //    }
+        //}
 
 
         /// <summary>
