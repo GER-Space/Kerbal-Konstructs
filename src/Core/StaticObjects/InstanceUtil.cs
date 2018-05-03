@@ -14,7 +14,7 @@ namespace KerbalKonstructs.Core
 
 //        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
-        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
 
         /// <summary>
@@ -46,13 +46,13 @@ namespace KerbalKonstructs.Core
         {
             gameObject.transform.parent = null;
 
-            foreach (var bla in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
+            foreach (var component in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
 
-                if (behaviosToRemove.Contains(bla.GetType()))
+                if (behavioursToRemove.Contains(component.GetType()))
                 {
                //     Log.Normal("Removed: " + bla.GetType().ToString());
-                    UnityEngine.Object.Destroy(bla);
+                    UnityEngine.Object.Destroy(component);
                 }               
             }
 

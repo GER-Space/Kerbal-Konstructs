@@ -649,7 +649,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         public static bool checkLaunchSiteExists(string siteName)
         {
-            return (launchSites.Where(x => x.LaunchSiteName.Equals(siteName, StringComparison.InvariantCultureIgnoreCase)).Count() > 0);
+            return (launchSiteNames.Contains(siteName));
         }
 
 
