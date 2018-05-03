@@ -838,14 +838,14 @@ namespace KerbalKonstructs
                             wreck.keepConvex = true;
                             wreck.title = modelTitle + " wreck " + wreckCount.ToString();
                             wreck.mesh = wreckName;
-                            wreck.category = "Squad KSC";
+                            wreck.category = "Squad KSC wreck";
                             wreck.author = "Squad";
                             wreck.manufacturer = "Squad";
                             wreck.description = "Squad original " + wreck.title;
 
                             wreck.isSquad = true;
                             wreck.prefab = transform.gameObject;
-                            wreck.prefab.GetComponent<Transform>().parent = null;
+                            //wreck.prefab.GetComponent<Transform>().parent = null;
                             StaticDatabase.RegisterModel(wreck, wreck.name);
 
                         }
