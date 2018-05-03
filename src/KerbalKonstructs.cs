@@ -887,20 +887,6 @@ namespace KerbalKonstructs
                     {
                         model.DefaultLaunchPadTransform = "LaunchPad_spawn";
 
-
-                        //Log.Normal("LauchPadFX: " + model.name);
-
-                        //foreach (var psystem in facility.UpgradeLevels[i].facilityPrefab.GetComponentsInChildren<ParticleSystem>(true))
-                        //{
-                        //    Log.Normal("LauchPadFX: ParticleSystem: " + psystem.name + " : " + psystem.gameObject.name );
-                        //}
-
-                        //foreach (var pr in facility.UpgradeLevels[i].facilityPrefab.GetComponentsInChildren<ParticleSystemRenderer>(true))
-                        //{
-                        //    Log.Normal("LauchPadFX: ParticleSystemRenderer: " + pr.name + " : " + pr.gameObject.name);
-                        //}
-
-
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason

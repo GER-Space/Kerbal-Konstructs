@@ -133,7 +133,7 @@ namespace KerbalKonstructs.Core
             // only rebuild the sphere when we use the editor
             if (doUpdate)
             {
-                mapDecal.RebuildSphere();
+                mapDecal.sphere.ForceStart();
             }
         }
 
