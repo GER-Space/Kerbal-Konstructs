@@ -886,7 +886,6 @@ namespace KerbalKonstructs
                     if (facility.name.Equals("LaunchPad", StringComparison.CurrentCultureIgnoreCase))
                     {
                         model.DefaultLaunchPadTransform = "LaunchPad_spawn";
-
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
@@ -1256,6 +1255,24 @@ namespace KerbalKonstructs
                         collider.convex = false;
                     }
                 }
+
+                //foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
+                //{
+                //    foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
+                //    {
+                //        //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
+                //        if (material.HasProperty("_SpecColor"))
+                //        {
+                //            material.SetColor("_SpecColor", new Color(0.5f, 0.5f, 0.5f, 0.5f));
+                //        }
+
+                //        if (material.HasProperty("_Shininess"))
+                //        {
+                //            material.SetFloat("_Shininess", 0.08f);
+                //        }
+
+                //    }
+                //}
 
                 StaticDatabase.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
