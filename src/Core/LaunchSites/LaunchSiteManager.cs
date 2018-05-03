@@ -189,6 +189,7 @@ namespace KerbalKonstructs.Core
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;
 
+            ksc2Instance.launchSite = ksc2;
             RegisterLaunchSite(ksc2);
 
         }
