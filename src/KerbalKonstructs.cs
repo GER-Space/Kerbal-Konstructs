@@ -843,6 +843,27 @@ namespace KerbalKonstructs
         public void LoadSquadKSCModels()
         {
 
+            var dotAnim = Resources.FindObjectsOfTypeAll<TimeOfDayAnimation>().Where(x => x.gameObject.name == "SpaceCenter").First();
+
+            if (dotAnim != null)
+            {
+                //Log.Normal("DN found: " + dotAnim.gameObject.name);
+                //Log.Normal("DN emissiveColorProperty: " + dotAnim.emissiveColorProperty);
+                //Log.Normal("DN tgtColor: " + dotAnim.emissiveTgtColor);
+
+                InstanceUtil.dayNightEmissives = dotAnim.emissives;
+                InstanceUtil.dotPoperty = dotAnim.emissiveColorProperty;
+                InstanceUtil.dotColor = dotAnim.emissiveTgtColor;
+                InstanceUtil.dotAnimationCurve = dotAnim.emissivesCurve;
+
+                foreach (TimeOfDayAnimation.MaterialProperty mp in dotAnim.emissives)
+                {
+                    //Log.Normal("DN matname: " + mp.material.name);
+                    InstanceUtil.materialPropertyNames.Add(mp.material.name);
+                }
+            }
+
+
             // first we find get all upgradeable facilities
             Upgradeables.UpgradeableObject[] upgradeablefacilities;
             upgradeablefacilities = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>();

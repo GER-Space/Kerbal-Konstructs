@@ -16,6 +16,14 @@ namespace KerbalKonstructs.Core
 
         private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
+        internal static List<TimeOfDayAnimation.MaterialProperty> dayNightEmissives = null;
+        internal static Color dotColor;
+        internal static string dotPoperty;
+        internal static AnimationCurve dotAnimationCurve;
+        internal static List<string> materialPropertyNames = new List<string>();
+
+
+
 
         /// <summary>
         /// Returns a StaticObject object for a gives GameObject
@@ -73,6 +81,34 @@ namespace KerbalKonstructs.Core
                 //    GameObject.Destroy(transform.gameObject);
                 //}
             }
+
+            TimeOfDayAnimation dotAnim = gameObject.AddComponent<TimeOfDayAnimation>();
+            dotAnim.emissives = new List<TimeOfDayAnimation.MaterialProperty>();
+            foreach (var renderer in gameObject.GetComponentsInChildren<Renderer>(true))
+            {
+                foreach (Material mat in renderer.materials)
+                {
+                   // Log.Normal("found Material: " + gameObject.name +" " +  mat.name);
+                    foreach (string matname in materialPropertyNames)
+                    {
+                        if (mat.name.Contains(matname) && mat.HasProperty(dotPoperty))
+                        {
+                            //Log.Normal("added Materialproperty to: " + gameObject.name + " "+ mat.name);
+
+                            TimeOfDayAnimation.MaterialProperty mp = new TimeOfDayAnimation.MaterialProperty();
+                            mp.material = mat;
+                            mp.propertyName = dotPoperty;
+                            mp.isDirty = true;
+                            dotAnim.emissives.Add(mp);
+                            break;
+                        }
+                    }
+                }
+            }
+            dotAnim.emissiveTgtColor = dotColor;
+            dotAnim.emissiveColorProperty = dotPoperty;
+            dotAnim.emissivesCurve = dotAnimationCurve;
+            dotAnim.enabled = true;
 
         }
 
