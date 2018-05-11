@@ -232,7 +232,7 @@ namespace KerbalKonstructs.Core
         {
 
             //double timeOfDawn = ((launchSite.refLon) / 360) * -1;
-            double timeOfDawn = ((1.06 * (0.25 - launchSite.body.initialRotation / 360 ) - ((launchSite.refLon) / 360) +1) %1 );
+            double timeOfDawn = ((0.95 * (0.25 - launchSite.body.initialRotation / 360 ) - ((launchSite.refLon) / 360) +1) %1 );
 
             KSP.UI.UIWarpToNextMorning.timeOfDawn = (timeOfDawn + 0.05);
             
