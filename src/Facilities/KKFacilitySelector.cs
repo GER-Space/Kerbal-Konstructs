@@ -84,13 +84,13 @@ namespace KerbalKonstructs.Core
             {
                 Initialize();
             }
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT && !InputLockManager.IsLocked(ControlTypes.FLIGHTUIMODE))
             {
                 FacilityManager.selectedInstance = facility.staticInstance;
                 FacilityManager.instance.Open();
 
             }
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES))
             {
                 SpaceCenterAction();
             }

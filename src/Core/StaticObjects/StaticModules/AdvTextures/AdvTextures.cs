@@ -12,6 +12,7 @@ namespace KerbalKonstructs
     {
 
         public string newShader = null;
+        public string newMaterial = "";
 
         public string transforms = "Any";
 
@@ -53,7 +54,16 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                ReplaceShader(renderer, newShader);
+                if (newMaterial != "")
+                {
+                    ReplaceMaterial(renderer, newMaterial);
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(newShader))
+                {
+                    ReplaceShader(renderer, newShader);
+                }
 
                 var myFields = this.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
@@ -73,15 +83,31 @@ namespace KerbalKonstructs
         }
 
 
+        private void ReplaceMaterial(MeshRenderer renderer, string materialName)
+        {
+            //Log.Normal("Material replaceder called");
+            Material foundMaterial = KKGraphics.GetMaterial(materialName);
+            if (foundMaterial != null)
+            {
+                Log.Normal("Material replaced: " + foundMaterial.name);
+                renderer.material = Instantiate(foundMaterial);
+            }
+
+        }
+
+
         private void ReplaceShader(MeshRenderer renderer, string newShaderName)
         {
-            if (string.IsNullOrEmpty(newShaderName) || !KKGraphics.HasShader(newShaderName))
+            if (!KKGraphics.HasShader(newShaderName))
             {
+                Log.UserError("No Shader like this found: " + newShaderName);
                 return;
             }
 
             Shader newShader = KKGraphics.GetShader(newShaderName);
             renderer.material.shader = newShader;
+            //Log.Normal("Applied Shader: " + newShader.name);
+
         }
 
     }

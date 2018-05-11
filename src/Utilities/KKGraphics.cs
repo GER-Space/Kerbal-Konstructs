@@ -12,8 +12,11 @@ namespace KerbalKonstructs
     {
         private static Dictionary<string, Shader> allShaders = new Dictionary<string, Shader>();
         private static bool loadedShaders = false;
+        private static bool loadedMaterials = false;
 
         private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
+        private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
+
         private static List<string> imageExtentions = new List<string> { ".png", ".tga", ".jpg" };
 
         /// <summary>
@@ -142,7 +145,6 @@ namespace KerbalKonstructs
             return foundTexture;
         }
 
-
         private static string GetImageExtention(string imageName)
         {
             int pathIndex = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).LastIndexOf('/');
@@ -169,6 +171,31 @@ namespace KerbalKonstructs
             return null;
         }
 
+
+        internal static Material GetMaterial(string materialName)
+        {
+            if (!loadedMaterials)
+            {
+                foreach (Material material in Resources.FindObjectsOfTypeAll<Material>())
+                {
+                    cachedMaterials.Add(material.name, material);
+                }
+
+                loadedMaterials = true;
+            }
+
+            if (cachedMaterials.ContainsKey(materialName))
+            {
+                return cachedMaterials[materialName];
+            }
+            if (cachedMaterials.ContainsKey(materialName + " (Instance)"))
+            {
+                return cachedMaterials[materialName + " (Instance)"];
+            }
+
+            Log.UserError("No Material found: " + materialName);
+            return null;
+        }
 
     }
 }

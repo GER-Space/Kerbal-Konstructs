@@ -253,7 +253,7 @@ namespace KerbalKonstructs.Core
 
         void OnMouseDown()
         {
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES))
             {
                 EditorFacility facility;
                 if (staticInstance.launchSite.LaunchSiteType == SiteType.VAB)
