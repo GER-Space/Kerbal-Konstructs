@@ -103,6 +103,8 @@
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\SunEvent\AnimateOnSunRise.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\Water\KKWaterFloating.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\DrawObject.cs" />
     <Compile Include="Editor\DrawTools.cs" />
     <Compile Include="Editor\MapDecalEditor.cs" />

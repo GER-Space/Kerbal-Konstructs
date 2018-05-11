@@ -240,7 +240,7 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                    Log.Normal("Loaded MapDecal instance " + instance.Name);
+                    //Log.Normal("Loaded MapDecal instance " + instance.Name);
                     if (!bodies2Update.Contains(instance.CelestialBody))
                     {
                         bodies2Update.Add(instance.CelestialBody);
@@ -321,7 +321,7 @@ namespace KerbalKonstructs.Core
                 {
                     newMapDecalInstance.CreateMap(MapSO.MapDepth.RGBA, newMapDecalInstance.mapTexture);
                 }
-                Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + (newMapDecalInstance.isHeightMap? "as HeighMap" : "as ColorMap"));
+                //Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + (newMapDecalInstance.isHeightMap? "as HeighMap" : "as ColorMap"));
 
                 newMapDecalInstance.map = newMapDecalInstance as MapSO;
                 DecalsDatabase.RegisterMap(newMapDecalInstance);

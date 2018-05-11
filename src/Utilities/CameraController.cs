@@ -230,7 +230,7 @@ namespace KerbalKonstructs.Core
 
         static void SetNextMorningPoint(KKLaunchSite launchSite)
         {
-            double timeOfDawn = (( 1.065* (0.25 - launchSite.body.initialRotation / 360) - ((launchSite.refLon) / 360) + 1) % 1);
+            double timeOfDawn = (( 0.95* (0.25 - launchSite.body.initialRotation / 360) - ((launchSite.refLon) / 360) + 1) % 1);
 
             KSP.UI.UIWarpToNextMorning.timeOfDawn = (timeOfDawn + 0.05);
             

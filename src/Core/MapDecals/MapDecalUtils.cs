@@ -146,7 +146,7 @@ namespace KerbalKonstructs.Core
             newMapDecal.AbsolutOffset = (float)alt;
             newMapDecal.mapDecal.transform.up = FlightGlobals.currentMainBody.GetSurfaceNVector(lat, lon);
 
-            Log.Normal("New MapDecalInstance created");
+            //Log.Normal("New MapDecalInstance created");
             return newMapDecal;
 
         }

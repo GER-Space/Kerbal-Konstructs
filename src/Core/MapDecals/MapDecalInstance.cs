@@ -122,11 +122,11 @@ namespace KerbalKonstructs.Core
 
             mapDecal.smoothColor = SmoothColor;
 
-            Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
-            Log.Normal("MapDecal: Radius: "  + Radius.ToString());
-            Log.Normal("MapDecal: Vector:  " + mapDecal.position.ToString());
-            Log.Normal("MapDecal: Offset: " + AbsolutOffset);
-            Log.Normal("MapDecal: UseABS: " + UseAbsolut.ToString());
+            //Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
+            //Log.Normal("MapDecal: Radius: "  + Radius.ToString());
+            //Log.Normal("MapDecal: Vector:  " + mapDecal.position.ToString());
+            //Log.Normal("MapDecal: Offset: " + AbsolutOffset);
+            //Log.Normal("MapDecal: UseABS: " + UseAbsolut.ToString());
 
 
             mapDecal.OnSetup();

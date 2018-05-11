@@ -1023,6 +1023,12 @@ namespace KerbalKonstructs
                 string modelName = "SQUAD_" + pqs2.gameObject.name;
                 string modelTitle = "Squad " + pqs2.gameObject.name;
 
+
+                if (modelName.Contains("Clone"))
+                {
+                    continue;
+                }
+
                 // don't double register the models a second time (they will do this) 
                 // maybe with a "without green flag" and filter that our later at spawn in mangle
                 if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))

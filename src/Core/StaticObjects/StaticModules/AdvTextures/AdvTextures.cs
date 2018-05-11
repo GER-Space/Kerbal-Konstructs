@@ -15,6 +15,8 @@ namespace KerbalKonstructs
 
         public string transforms = "Any";
 
+        public string newMaterial = "";
+
         public string _MainTex = null;          // texture
         public string BuiltinIndex = "0";
         public string _BumpMap = null;          // normal map
@@ -33,6 +35,7 @@ namespace KerbalKonstructs
 
         public void Start()
         {
+            //Log.Normal("AdvTexture called on " + staticInstance.model.name);
 
             if (!int.TryParse(BuiltinIndex, out textureIndex))
             {
@@ -40,6 +43,7 @@ namespace KerbalKonstructs
             }
 
             targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+
 
             //foreach (var bla in targetTransforms)
             //{
@@ -53,7 +57,20 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                ReplaceShader(renderer, newShader);
+                if (newMaterial != "")
+                {
+                    ReplaceMaterial(renderer, newMaterial);
+                    return;
+                }
+
+
+
+                if (!string.IsNullOrEmpty(newShader))
+                {
+                    ReplaceShader(renderer, newShader);
+                }
+        
+                
 
                 var myFields = this.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
@@ -73,15 +90,31 @@ namespace KerbalKonstructs
         }
 
 
+        private void ReplaceMaterial(MeshRenderer renderer, string materialName)
+        {
+            //Log.Normal("Material replaceder called");
+            Material foundMaterial = KKGraphics.GetMaterial(materialName);
+            if (foundMaterial != null)
+            {
+                Log.Normal("Material replaced: " + foundMaterial.name);
+                renderer.material = Instantiate(foundMaterial);  
+            }
+
+        }
+
+
         private void ReplaceShader(MeshRenderer renderer, string newShaderName)
         {
-            if (string.IsNullOrEmpty(newShaderName) || !KKGraphics.HasShader(newShaderName))
+            if (!KKGraphics.HasShader(newShaderName))
             {
+                Log.UserError("No Shader like this found: " + newShaderName);
                 return;
             }
 
             Shader newShader = KKGraphics.GetShader(newShaderName);
             renderer.material.shader = newShader;
+            //Log.Normal("Applied Shader: " + newShader.name);
+
         }
 
     }
