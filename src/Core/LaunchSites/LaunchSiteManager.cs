@@ -843,7 +843,14 @@ namespace KerbalKonstructs.Core
             }
             // reset the name to the site, so it can be fetched again
             KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
-            lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+            if (lastSite != null)
+            {
+                lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+            }
+            else
+            {
+                // do nothing
+            }
         }
 
 
@@ -889,6 +896,11 @@ namespace KerbalKonstructs.Core
 
         internal static bool CheckLaunchSiteIsValid(KKLaunchSite site)
         {
+            // check for deleted launchsites
+            if (site == null)
+            {
+                return false;
+            }
             if (!KerbalKonstructs.instance.launchFromAnySite && (EditorDriver.editorFacility == EditorFacility.VAB) && (site.LaunchSiteType == SiteType.SPH))
             {
                 return false;

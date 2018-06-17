@@ -323,10 +323,6 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.EDITOR:
                     {
-                        if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
-                        {
-                            LaunchSiteManager.AlterMHSelector();
-                        }
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
                         LaunchSiteSelectorGUI.instance.Close();
@@ -345,14 +341,18 @@ namespace KerbalKonstructs
                         //    Log.Normal("Stock site: " + site);
                         //}
 
-
                         // Check if the selected LaunchSite is valid
-                        if (LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
+                        if ( LaunchSiteManager.CheckLaunchSiteIsValid(currentSite) == false)
                         {
-                            Log.Normal("LS not valid: " + currentSite.LaunchSiteName);
+                            Log.Normal("LS not valid: " + LaunchSiteManager.getCurrentLaunchSite());
                             currentSite = LaunchSiteManager.GetDefaultSite();
                         }
                         LaunchSiteManager.setLaunchSite(currentSite);
+                        if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+                        {
+                            LaunchSiteManager.AlterMHSelector();
+                        }
+
                     }
                     break;
                 case GameScenes.SPACECENTER:
@@ -360,6 +360,10 @@ namespace KerbalKonstructs
                         InputLockManager.RemoveControlLock("KKEditorLock");
 
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+                        if (currentSite == null)
+                        {
+                            currentSite = LaunchSiteManager.GetLaunchSiteByName("LaunchPad");
+                        }
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         // 
