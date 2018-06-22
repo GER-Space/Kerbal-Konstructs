@@ -387,6 +387,7 @@ namespace KerbalKonstructs
                             CameraController.SetSpaceCenterCam(currentSite);
                         }
                         updateCache();
+                       // LaunchSiteManager.AlterMHSelector();
                     }
                     break;
                 case GameScenes.MAINMENU:
