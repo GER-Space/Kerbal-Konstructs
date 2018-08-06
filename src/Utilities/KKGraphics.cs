@@ -154,7 +154,10 @@ namespace KerbalKonstructs
             {
                 foreach (Material material in Resources.FindObjectsOfTypeAll<Material>())
                 {
-                    cachedMaterials.Add(material.name, material);
+                    if (!cachedMaterials.ContainsKey(material.name))
+                    {
+                        cachedMaterials.Add(material.name, material);
+                    }
                 }
 
                 loadedMaterials = true;
