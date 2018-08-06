@@ -27,6 +27,7 @@ namespace KerbalKonstructs.UI
         private static float currentStaff = 0;
         private static float currentProductionRate = 0;
         private static float lastCheckTime = 0;
+        private static FieldInfo checkTimeField;
 
         private static float defaultProductionRate;
 
@@ -109,16 +110,20 @@ namespace KerbalKonstructs.UI
             {
                 facField = typeof(Business);
             }
+
+
             myResearch = selectedFacility.myFacilities[0] as Research;
             myBusiness = selectedFacility.myFacilities[0] as Business;
 
-            lastCheckTime = myBusiness.LastCheck;
+            checkTimeField = facField.GetField("LastCheck");
 
-			if (lastCheckTime == 0)
+            lastCheckTime = (float)checkTimeField.GetValue(selectedFacility.myFacilities[0]);
+
+            if (lastCheckTime == 0)
 			{
 				lastCheckTime = (float)Planetarium.GetUniversalTime();
-                myBusiness.LastCheck =  lastCheckTime;
-			}
+                checkTimeField.SetValue(selectedFacility.myFacilities[0], lastCheckTime);
+            }
 
             if (facilityType == "Research" || facilityType == "Business")
 			{
@@ -147,8 +152,7 @@ namespace KerbalKonstructs.UI
                     }
                     maxProduced = myResearch.ScienceOMax;
                 }
-
-				if (facilityType == "Business")
+                if (facilityType == "Business")
 				{
 					produces = "Funds";
 					maxProduced = myBusiness.FundsOMax;
@@ -169,10 +173,9 @@ namespace KerbalKonstructs.UI
 					}
                     maxProduced = myBusiness.FundsOMax;
                 }
-
                 facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0], defaultProductionRate);
 
-                currentStaff = myBusiness.StaffCurrent;
+                currentStaff = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
                 currentProductionRate = defaultProductionRate * currentStaff;
 
                 currentTime = (float)Planetarium.GetUniversalTime();
@@ -181,9 +184,8 @@ namespace KerbalKonstructs.UI
 				// Deal with revert exploits
 				if (lastCheckTime > currentTime)
 				{
-                    myBusiness.LastCheck = currentTime;
-				}
-
+                    checkTimeField.SetValue(selectedFacility.myFacilities[0], currentTime);
+                }
                 daysPast = ((currentTime - lastCheckTime) / 21600f);
                 currentProduced = daysPast * currentProductionRate;
                 
@@ -197,7 +199,6 @@ namespace KerbalKonstructs.UI
 				GUILayout.FlexibleSpace();
 				GUILayout.Label("Current: " + currentProduced.ToString("#0") + " | Max: " + maxProduced.ToString("#0"), LabelInfo);
 				GUILayout.EndHorizontal();
-
                 if (facilityType == "Research")
 				{
 					if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
@@ -208,7 +209,7 @@ namespace KerbalKonstructs.UI
                     }
 
 				}
-				if (facilityType == "Business")
+                if (facilityType == "Business")
 				{
 					if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
 					{
