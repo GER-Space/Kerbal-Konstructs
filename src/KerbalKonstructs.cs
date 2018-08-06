@@ -1017,7 +1017,6 @@ namespace KerbalKonstructs
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
                 model.prefab = pqs.gameObject;
 
-
                 StaticDatabase.RegisterModel(model, modelName);
 
             }
@@ -1054,6 +1053,13 @@ namespace KerbalKonstructs
                 model.description = "Squad original " + modelTitle;
 
                 model.isSquad = true;
+
+
+                if (modelName == "SQUAD_MobileLaunchPad")
+                {
+                    model.category = "Squad LaunchSite";
+                    model.DefaultLaunchPadTransform = "SpawnPoint";
+                }
 
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
