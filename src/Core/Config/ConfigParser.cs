@@ -270,6 +270,11 @@ namespace KerbalKonstructs.Core
         internal static void SaveMapDecalInstance(MapDecalInstance instance)
         {
 
+            if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
+            {
+                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
+            }
+
             if (instance.configPath == null)
             {
                 instance.configPath = KerbalKonstructs.newInstancePath + "/KK_MapDecal_" + instance.Name + ".cfg";

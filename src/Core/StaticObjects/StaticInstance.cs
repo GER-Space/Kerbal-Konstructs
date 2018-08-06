@@ -64,7 +64,7 @@ namespace KerbalKonstructs.Core
 
         public GameObject gameObject;
         public PQSCity pqsCity;
-        //public PQSCity2 pqsCity2;
+      //  public PQSCity2 pqsCity2;
         internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Core
                         pqsCity.repositionToSphere = false;
                         break;
                 }
-
+                pqsCity.ResetCelestialBody();
                 pqsCity.Orientate();
             }
             // Notify modules about update
@@ -239,6 +239,7 @@ namespace KerbalKonstructs.Core
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
+            pqsCity.transform.parent = CelestialBody.pqsController.transform;
 
 
             switch (heighReference)
@@ -281,16 +282,20 @@ namespace KerbalKonstructs.Core
             }
 
 
+            pqsCity.lat = RefLatitude ;
+            pqsCity.lon = RefLongitude;
+            pqsCity.alt = RadiusOffset;
+            pqsCity.ResetCelestialBody();
             pqsCity.OnSetup();
             pqsCity.Orientate();
 
 
-            //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
-            //lodObject.visibleRange = VisibilityRange;
-            //lodObject.objects = new GameObject[] { };
+            PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
+            lodObject.visibleRange = VisibilityRange;
+            lodObject.objects = new GameObject[] { };
             //pqsCity2 = gameObject.AddComponent<PQSCity2>();
-            //pqsCity2.objects = new [] { lodObject } ;
-            //pqsCity2.objectName = ""; 
+            //pqsCity2.objects = new[] { lodObject };
+            //pqsCity2.objectName = "";
             //pqsCity2.lat = RefLatitude;
             //pqsCity2.lon = RefLongitude;
             //pqsCity2.alt = RadiusOffset;

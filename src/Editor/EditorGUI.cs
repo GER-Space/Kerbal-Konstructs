@@ -946,7 +946,10 @@ namespace KerbalKonstructs.UI
             instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
 
             instance.model = model;
-            Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath );
+            if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
+            {
+                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
+            }
             instance.configPath = KerbalKonstructs.newInstancePath + "/" + model.name + "-instances.cfg";
             instance.configUrl = null;
 
