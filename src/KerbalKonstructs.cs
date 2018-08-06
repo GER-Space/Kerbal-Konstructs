@@ -1180,8 +1180,8 @@ namespace KerbalKonstructs
 
                     if (child.gameObject.name == "Model")
                     {
-                        string modelName = "SQUAD_" + pqs2.gameObject.name + "_" + child.gameObject.name;
-                        string modelTitle = "Squad " + pqs2.gameObject.name + " " + child.gameObject.name;
+                        string modelName = "SQUAD_Desert_Runway";
+                        string modelTitle = "Squad Desert Runway";
 
                         // don't double register the models a second time (they will do this) 
                         // maybe with a "without green flag" and filter that our later at spawn in mangle

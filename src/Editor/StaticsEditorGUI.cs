@@ -88,7 +88,7 @@ namespace KerbalKonstructs.UI
         LaunchSiteCategory launchsiteCategory;
 
         // models change only once
-        private static StaticModel [] allStaticModels;
+        private static StaticModel[] allStaticModels;
         //static need only be loaded once per three seconnds
         private static float lastloaded = 0f;
         internal static StaticInstance[] allStaticInstances;
@@ -347,7 +347,7 @@ namespace KerbalKonstructs.UI
                 {
                     ShowModelsScroll();
 
- 
+
                 }
                 // edting existing instances
                 if (showAll || showLocal)
@@ -862,6 +862,11 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
 
+        }
+
+        internal static void ResetInstancesList()
+        {
+            lastloaded = 0f;
         }
 
 

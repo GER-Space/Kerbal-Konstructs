@@ -915,8 +915,11 @@ namespace KerbalKonstructs.UI
                 LaunchSiteManager.DeleteLaunchSite(selectedObject.launchSite);
             }
 
+
             KerbalKonstructs.instance.DeleteObject(selectedObject);
             selectedObject = null;
+
+            StaticsEditorGUI.ResetInstancesList();
 
             return;
         }
