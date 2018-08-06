@@ -839,6 +839,10 @@ namespace KerbalKonstructs
             LoadSquadAnomalies();
             LoadSquadAnomaliesLevel2();
             LoadSquadAnomaliesLevel3();
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+            {
+                LoadDesertSiteAssets();
+            }
         }
 
 
@@ -1024,6 +1028,11 @@ namespace KerbalKonstructs
             foreach (PQSCity2 pqs2 in Resources.FindObjectsOfTypeAll<PQSCity2>())
             {
 
+                if (pqs2.gameObject.name == "Desert_Airfield")
+                {
+                    continue;
+                }
+
                 string modelName = "SQUAD_" + pqs2.gameObject.name;
                 string modelTitle = "Squad " + pqs2.gameObject.name;
 
@@ -1055,7 +1064,7 @@ namespace KerbalKonstructs
                 model.isSquad = true;
 
 
-                if (modelName == "SQUAD_MobileLaunchPad")
+                if (modelName == "SQUAD_MobileLaunchPad" || modelName == "SQUAD_Desert_Airfield")
                 {
                     model.category = "Squad LaunchSite";
                     model.DefaultLaunchPadTransform = "SpawnPoint";
@@ -1130,6 +1139,148 @@ namespace KerbalKonstructs
                 }
             }
         }
+
+        /// <summary>
+        /// Loads the individual components of the desert Airfield into the static database
+        /// </summary>
+        public static void LoadDesertSiteAssets()
+        {
+
+            List<string> allStatics = new List<string>{"Model", ""};
+
+
+            foreach (PQSCity2 pqs2 in Resources.FindObjectsOfTypeAll<PQSCity2>())
+            {
+
+                if (pqs2.gameObject == null)
+                    continue;
+
+                if (pqs2.gameObject.name != "Desert_Airfield")
+                {
+                    continue;
+                }
+
+                Log.Normal("found PQS2 " + pqs2.gameObject.name);
+
+                GameObject baseGameObject = pqs2.gameObject;
+                foreach (var child in baseGameObject.GetComponentsInChildren<Transform>(true))
+                {
+                    if (child.parent == null)
+                    {
+                        continue;
+                    }
+
+                    // we only want to be one level down.
+                    if (child.parent.gameObject != baseGameObject)
+                    {
+                        continue;
+                    }
+
+                    Log.Normal("found child " + child.gameObject.name);
+
+                    if (child.gameObject.name == "Model")
+                    {
+                        string modelName = "SQUAD_" + pqs2.gameObject.name + "_" + child.gameObject.name;
+                        string modelTitle = "Squad " + pqs2.gameObject.name + " " + child.gameObject.name;
+
+                        // don't double register the models a second time (they will do this) 
+                        // maybe with a "without green flag" and filter that our later at spawn in mangle
+                        if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                            continue;
+
+
+                        StaticModel model = new StaticModel();
+                        model.name = modelName;
+
+                        // Fill in FakeNews errr values
+                        model.path = "KerbalKonstructs/" + modelName;
+                        model.configPath = model.path + ".cfg";
+                        model.keepConvex = true;
+                        model.title = modelTitle;
+                        model.mesh = modelName;
+                        model.category = "Squad Desert";
+                        model.author = "Squad";
+                        model.manufacturer = "Squad";
+                        model.description = "Squad original " + modelTitle;
+
+                        model.isSquad = true;
+
+                        model.DefaultLaunchPadTransform = "End09/SpawnPoint";                        
+
+                        // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                        model.prefab = child.gameObject;
+
+
+                        StaticDatabase.RegisterModel(model, modelName);
+                    }
+
+                    if (child.gameObject.name == "GroundObjects")
+                    {
+                        GameObject baseObject = child.gameObject;
+
+                        foreach (var child2 in baseGameObject.GetComponentsInChildren<Transform>(true))
+                        {
+                            if (child2.parent == null)
+                            {
+                                continue;
+                            }
+
+                            // we only want to be one level down.
+                            if (child2.parent.gameObject != baseObject)
+                            {
+                                continue;
+                            }
+
+                            //Filter out multiple instances or boken stuff
+                            if (child2.gameObject.name.Contains("(") || child2.gameObject.name.Contains("windmill"))
+                            {
+                                continue;
+                            }
+
+
+                            Log.Normal("found child2 " + child2.gameObject.name);
+
+                            string modelName = "SQUAD_" + pqs2.gameObject.name + "_" + child2.gameObject.name;
+                            string modelTitle = "Squad " + pqs2.gameObject.name + " " + child2.gameObject.name;
+
+                            // don't double register the models a second time (they will do this) 
+                            // maybe with a "without green flag" and filter that our later at spawn in mangle
+                            if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                                continue;
+
+
+                            StaticModel model = new StaticModel();
+                            model.name = modelName;
+
+                            // Fill in FakeNews errr values
+                            model.path = "KerbalKonstructs/" + modelName;
+                            model.configPath = model.path + ".cfg";
+                            model.keepConvex = true;
+                            model.title = modelTitle;
+                            model.mesh = modelName;
+                            model.category = "Squad Desert";
+                            model.author = "Squad";
+                            model.manufacturer = "Squad";
+                            model.description = "Squad original " + modelTitle;
+
+                            model.isSquad = true;
+
+                            // we reference only the original prefab, as we cannot instantiate an instance for some reason
+                            model.prefab = child2.gameObject;
+
+
+                            StaticDatabase.RegisterModel(model, modelName);
+
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+
+
 
         /// <summary>
         /// used for loading the pyramid parts

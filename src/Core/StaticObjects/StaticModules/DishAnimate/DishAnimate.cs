@@ -9,6 +9,7 @@ namespace KerbalKonstructs
 {
     public class DishAnimate : StaticModule
     {
+        public string RotationTrasform; // legacy
         public string RotationTransform;
         public string ElevationTransform;
         public string MaxSpeed = "10";
@@ -29,6 +30,10 @@ namespace KerbalKonstructs
 
         public void Start()
         {
+            if (RotationTrasform != null && RotationTransform == null)
+            {
+                RotationTransform = RotationTrasform;
+            }
             rotTransform = gameObject.transform.FindRecursive(RotationTransform);
             elTransform = gameObject.transform.FindRecursive(ElevationTransform);
 
