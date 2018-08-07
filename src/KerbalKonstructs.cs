@@ -230,7 +230,7 @@ namespace KerbalKonstructs
                 {
                     Log.Normal("Trying to bring the vessel back to the surface.");
                     vessel.SetPosition(lastSite.lsGameObject.transform.Find(lastSite.LaunchPadTransform).position); 
-                }
+                }        
             }           
         }
 
