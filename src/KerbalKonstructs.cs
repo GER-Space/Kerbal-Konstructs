@@ -623,10 +623,10 @@ namespace KerbalKonstructs
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
 
-                if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
-                {
-                    API.SpawnObject("KKflagDemo");
-                }
+                //if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+                //{
+                //    API.SpawnObject("KKflagDemo");
+                //}
 
                 if (useLegacyCamera && camControl.active)
                 {
