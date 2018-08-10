@@ -13,7 +13,7 @@ namespace KerbalKonstructs.Modules
 {
     internal static class CareerState
     {
-        private static void LoadFacilities(ConfigNode facilityNodes)
+        private static void LoadFacilitiesLegacy(ConfigNode facilityNodes)
         {
 
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
@@ -49,6 +49,39 @@ namespace KerbalKonstructs.Modules
 
         }
 
+
+        private static void LoadFacilitiesUUID(ConfigNode facilityNodes)
+        {
+
+            foreach (ConfigNode instanceNode in facilityNodes.nodes)
+            {
+                if (!StaticDatabase.instancedByUUID.ContainsKey(instanceNode.name))
+                {
+                    Log.UserWarning("No entry found in database for UUID: " + instanceNode.name);
+                    continue;
+                }
+
+                StaticInstance instance = StaticDatabase.instancedByUUID[instanceNode.name];
+
+                foreach (var facNode in instanceNode.GetNodes())
+                {
+                    int index = int.Parse(facNode.GetValue("Index"));
+                    if (instance.myFacilities[index].FacilityType == facNode.name)
+                    {
+                        //Log.Normal("Load State: " + instance.pqsCity.name + " : "  + facNode.name);
+                        instance.myFacilities[index].LoadCareerConfig(facNode);
+
+                    }
+                    else
+                    {
+                        Log.UserError("Facility Index Missmatch in fac: " + instance.gameObject.name);
+                    }
+                }
+
+            }
+
+        }
+
         /// <summary>
         /// saves the facility settings to the cfg file
         /// </summary>
@@ -62,7 +95,7 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                ConfigNode instanceNode = facilityNodes.AddNode(CareerUtils.KeyFromString(instance.RadialPosition.ToString()));
+                ConfigNode instanceNode = facilityNodes.AddNode(instance.UUID);
                 instanceNode.SetValue("FacilityName", instance.gameObject.name, true);
                 instanceNode.SetValue("FacilityType", instance.facilityType.ToString(), true);
 
@@ -79,7 +112,7 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Loads the state of the LauchSites
         /// </summary>
-        internal static void LoadLaunchSites(ConfigNode launchSiteNodes)
+        internal static void LoadLaunchSitesLegacy(ConfigNode launchSiteNodes)
         {
             foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
             {
@@ -104,17 +137,28 @@ namespace KerbalKonstructs.Modules
         {
             ConfigNode facNode;
             ConfigNode lsNode;
+            Log.PerfStart("Loading");
+
+            bool useUUID = kkcfgNode.HasValue("useUUID");
 
             if (kkcfgNode.HasNode("Facilities"))
             {
                 facNode = kkcfgNode.GetNode("Facilities");
-                LoadFacilities(facNode);
+                if (useUUID)
+                {
+                    LoadFacilitiesUUID(facNode);
+                }
+                else
+                {
+                    LoadFacilitiesLegacy(facNode);
+                }
             }
             if (kkcfgNode.HasNode("LaunchSites"))
             {
                 lsNode = kkcfgNode.GetNode("LaunchSites");
-                LoadLaunchSites(lsNode);
+                LoadLaunchSitesLegacy(lsNode);
             }
+            Log.PerfStop("Loading");
 
         }
 
@@ -137,6 +181,8 @@ namespace KerbalKonstructs.Modules
             ConfigNode facNode;
             ConfigNode lsNode;
 
+            kkcfgNode.SetValue("useUUID", true, true);
+
             if (kkcfgNode.HasNode("Facilities"))
             {
                 facNode = kkcfgNode.GetNode("Facilities");
@@ -158,6 +204,10 @@ namespace KerbalKonstructs.Modules
             }
 
             SaveLaunchsites(lsNode);
+
+
+
+
         }
 
         internal static void ResetFacilitiesOpenState()

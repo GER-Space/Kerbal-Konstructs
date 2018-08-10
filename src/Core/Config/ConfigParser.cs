@@ -340,6 +340,13 @@ namespace KerbalKonstructs.Core
         /// <param name="pathname"></param>
         internal static void SaveInstanceByCfg(string pathname)
         {
+
+            if (string.IsNullOrEmpty(pathname))
+            {
+                Log.UserWarning("Trying to save a static insance with null configpath. ");
+                return;
+            }
+
             Log.Normal("Saving File: " + pathname);
             StaticInstance[] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();
             StaticInstance firstInstance = allInstances.First();

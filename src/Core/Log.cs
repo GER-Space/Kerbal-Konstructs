@@ -99,6 +99,11 @@ namespace KerbalKonstructs.Core
         internal static void PerfStart(string id = "default")
         {
             myWatch = new Stopwatch();
+
+            if (alltimers.ContainsKey(id))
+            {
+                alltimers.Remove(id);
+            }
             alltimers.Add(id, myWatch);
             myWatch.Start();
         }

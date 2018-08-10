@@ -127,7 +127,7 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            allStaticModels = StaticDatabase.allStaticModels.ToArray();
+            allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
             base.Open();
             EditorGUI.instance.Open();
         }

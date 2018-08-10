@@ -13,7 +13,6 @@ using System.Reflection;
 using KSP.UI.Screens;
 using KerbalKonstructs.Addons;
 using KerbalKonstructs.Modules;
-
 using Debug = UnityEngine.Debug;
 
 
@@ -624,6 +623,11 @@ namespace KerbalKonstructs
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
 
+                if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+                {
+                    API.SpawnObject("KKflagDemo");
+                }
+
                 if (useLegacyCamera && camControl.active)
                 {
                     camControl.updateCamera();
@@ -711,8 +715,7 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="configurl"></param>
         /// <param name="model"></param>
-        /// <param name="bSecondPass"></param>
-		internal void loadInstances(UrlDir.UrlConfig configurl, StaticModel model, bool bSecondPass = false)
+		internal void LoadInstances(UrlDir.UrlConfig configurl, StaticModel model)
         {
             if (model == null)
             {
@@ -744,7 +747,16 @@ namespace KerbalKonstructs
                 ConfigParser.ParseInstanceConfig(instance, instanceCfgNode);
 
                 if (instance.CelestialBody == null)
+                {
                     continue;
+                }
+
+                if ( (!string.IsNullOrEmpty(instance.UUID)) && StaticDatabase.instancedByUUID.ContainsKey(instance.UUID))
+                {
+                    Log.UserWarning("Duplicate UUID found. this should never happen: " + instance.UUID);
+                    Log.UserWarning("Check: " + StaticDatabase.instancedByUUID[instance.UUID].configPath + " and " + instance.configPath);
+                    continue;
+                }
 
                 // create RadialPosition, If we don't have one.
                 if (instance.RadialPosition.Equals(Vector3.zero))
@@ -768,50 +780,7 @@ namespace KerbalKonstructs
                         instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
                         instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
                     }
-                }
-
-                // sometimes we need a second pass.. (do we???)
-                // 
-
-                if (bSecondPass)
-                {
-                    Vector3 secondInstanceKey = instance.RadialPosition;
-                    bool bSpaceOccupied = false;
-
-                    
-                    foreach (StaticInstance soThis in StaticDatabase.GetAllStatics().Where(x => x.RadialPosition == instance.RadialPosition))
-                    {
-                        Vector3 firstInstanceKey = soThis.RadialPosition;                      
-
-                            if (soThis.model.mesh == instance.model.mesh)
-                            {
-                                if ((soThis.RadiusOffset == instance.RadiusOffset) && (soThis.RotationAngle == instance.RotationAngle))
-                                {
-                                    bSpaceOccupied = true;
-                                    Log.UserWarning("Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
-                                    + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine +
-                                    "File1: " + soThis.configPath + Environment.NewLine +
-                                    "File2: " + instance.configPath);
-                                    break;
-                                }
-                                else
-                                {
-                                    Log.Debug("Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
-                                }
-                            }
-                            else
-                            {
-                                Log.Debug("Different models. Allowing. Could be a terrain foundation or integrator.");
-                            }
-                        
-                    }
-
-                    if (bSpaceOccupied)
-                    {
-                        //Debug.LogWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
-                        continue;
-                    }
-                }
+                }              
 
                 instance.spawnObject(false, false);
 
@@ -1465,7 +1434,7 @@ namespace KerbalKonstructs
 
                 StaticDatabase.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
-                loadInstances(conf, model, false);
+                LoadInstances(conf, model);
             }
         }
 
@@ -1491,7 +1460,7 @@ namespace KerbalKonstructs
                 StaticModel model = StaticDatabase.GetModelByName(modelname);
                 if (model != null)
                 {
-                    loadInstances(conf, model, true);
+                    LoadInstances(conf, model);
                 }
                 else { Log.UserError("No Model named " + modelname + " found as defined in: " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"); }
             }
@@ -1623,6 +1592,12 @@ namespace KerbalKonstructs
             HashSet<String> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
+                if (instance.isInSavegame)
+                {
+                    continue;
+                }
+
+
                 // ignore allready processed cfg files
                 if (processedInstances.Contains(instance.configPath))
                 {
@@ -1645,6 +1620,11 @@ namespace KerbalKonstructs
             // check for orqhaned files
             foreach (StaticInstance deletedInstance in deletedInstances)
             {
+                if (deletedInstance.isInSavegame)
+                {
+                    continue;
+                }
+
                 if (!processedInstances.Contains(deletedInstance.configPath))
                 {
                     if (deletedInstance.configPath == deletedInstance.model.configPath)

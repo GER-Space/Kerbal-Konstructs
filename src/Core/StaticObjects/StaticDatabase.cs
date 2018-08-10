@@ -20,6 +20,9 @@ namespace KerbalKonstructs.Core
         private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
         internal static StaticInstance [] allStaticInstances  = new StaticInstance [0] ;
 
+
+        internal static Dictionary<string, StaticInstance> instancedByUUID = new Dictionary<string, StaticInstance>();
+
         internal static string activeBodyName = "";
 
         private static Vector3 vPlayerPos = Vector3.zero;
@@ -40,8 +43,16 @@ namespace KerbalKonstructs.Core
         /// <param name="instance"></param>
         internal static void AddStatic(StaticInstance instance)
 		{
+
+            if (string.IsNullOrEmpty(instance.UUID))
+            {
+                instance.UUID = GetNewUUID();
+            }
+
             _allStaticInstances.Add(instance);
             allStaticInstances = _allStaticInstances.ToArray();
+
+            instancedByUUID.Add(instance.UUID, instance);
 
             String bodyName = instance.CelestialBody.bodyName;
 			String groupName = instance.Group;
@@ -61,11 +72,33 @@ namespace KerbalKonstructs.Core
 		}
 
         /// <summary>
+        /// Generate a UUID that is not already in the database
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetNewUUID()
+        {
+            string newUUID = Guid.NewGuid().ToString();
+
+            while (instancedByUUID.ContainsKey(newUUID))
+            {
+                newUUID = Guid.NewGuid().ToString();
+                Log.UserWarning("Duplicate UUID generated. You should play lottery");
+            }
+            return newUUID;
+
+        }
+
+
+        /// <summary>
         /// Removes a Instance from the group and instance lists.
         /// </summary>
         /// <param name="instance"></param>
         internal static void DeleteStatic(StaticInstance instance)
         {
+            if (instancedByUUID.ContainsKey(instance.UUID))
+            {
+                instancedByUUID.Remove(instance.UUID);
+            }
             if (_allStaticInstances.Contains(instance))
             {
                 _allStaticInstances.Remove(instance);
@@ -82,6 +115,7 @@ namespace KerbalKonstructs.Core
                     groupList[bodyName][groupName].DeleteObject(instance);
                 }
             }
+            instance.gameObject.DestroyGameObject();
         }
 
         /// <summary>
@@ -165,51 +199,51 @@ namespace KerbalKonstructs.Core
             }
 		}
 
-        /// <summary>
-        /// toggles the visiblility of all statics on a planet
-        /// </summary>
-        /// <param name="cBody"></param>
-        /// <param name="bActive"></param>
-        /// <param name="bOpposite"></param>
-        internal static void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
-		{
-            Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
+  //      /// <summary>
+  //      /// toggles the visiblility of all statics on a planet
+  //      /// </summary>
+  //      /// <param name="cBody"></param>
+  //      /// <param name="bActive"></param>
+  //      /// <param name="bOpposite"></param>
+  //      internal static void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
+		//{
+  //          Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
 
-			foreach (StaticInstance instance in allStaticInstances)
-			{
-                if (instance.CelestialBody == cBody)
-                {
-                    InstanceUtil.SetActiveRecursively(instance, bActive);
-                }
-                else
-                {
-                    if (bOpposite)
-                    {
-                        InstanceUtil.SetActiveRecursively(instance, !bActive);
-                    }
-                }
-            }
-		}
+		//	foreach (StaticInstance instance in allStaticInstances)
+		//	{
+  //              if (instance.CelestialBody == cBody)
+  //              {
+  //                  InstanceUtil.SetActiveRecursively(instance, bActive);
+  //              }
+  //              else
+  //              {
+  //                  if (bOpposite)
+  //                  {
+  //                      InstanceUtil.SetActiveRecursively(instance, !bActive);
+  //                  }
+  //              }
+  //          }
+		//}
 
-        /// <summary>
-        /// toggles the visiblility of all statics in a group
-        /// </summary>
-        /// <param name="sGroup"></param>
-        /// <param name="bActive"></param>
-        /// <param name="bOpposite"></param>
-        internal static void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
-		{
-            Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
+  //      /// <summary>
+  //      /// toggles the visiblility of all statics in a group
+  //      /// </summary>
+  //      /// <param name="sGroup"></param>
+  //      /// <param name="bActive"></param>
+  //      /// <param name="bOpposite"></param>
+  //      internal static void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
+		//{
+  //          Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
 
-			foreach (StaticInstance instance in allStaticInstances)
-			{
-				if (instance.Group == sGroup)
-					InstanceUtil.SetActiveRecursively(instance, bActive);
-				else
-					if (bOpposite)
-						InstanceUtil.SetActiveRecursively(instance, !bActive);
-			}
-		}
+		//	foreach (StaticInstance instance in allStaticInstances)
+		//	{
+		//		if (instance.Group == sGroup)
+		//			InstanceUtil.SetActiveRecursively(instance, bActive);
+		//		else
+		//			if (bOpposite)
+		//				InstanceUtil.SetActiveRecursively(instance, !bActive);
+		//	}
+		//}
 
         /// <summary>
         /// Disables all Statics on the current active planet

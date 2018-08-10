@@ -22,7 +22,8 @@ namespace KerbalKonstructs.Career
         public override void OnLoad(ConfigNode node)
         {
 
-           
+            CareerObjects.LoadBuildings(node);
+
             // resetting old state in caase it is needed
             CareerState.ResetFacilitiesOpenState();
 
@@ -64,6 +65,8 @@ namespace KerbalKonstructs.Career
             Log.Normal("KKScenario saving career state");
             CareerState.Save(node);
             //}
+
+            CareerObjects.SaveBuildings(node);
         }
 
         public void Start()

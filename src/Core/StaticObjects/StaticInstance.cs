@@ -21,6 +21,10 @@ namespace KerbalKonstructs.Core
     public class StaticInstance
     {
 
+        // UUID for later identification
+        [CFGSetting]
+        public string UUID;
+
         // Position
         [CFGSetting]
         public CelestialBody CelestialBody = null;
@@ -60,6 +64,9 @@ namespace KerbalKonstructs.Core
         // Special Effects
         [CFGSetting]
         public Color GrasColor = Color.clear;
+
+
+
 
 
         public GameObject gameObject;
@@ -107,6 +114,8 @@ namespace KerbalKonstructs.Core
 
         private Vector3 origScale;
         internal bool isActive;
+
+        internal bool isInSavegame = false;
 
         internal int indexInGroup = 0;
 
@@ -282,8 +291,8 @@ namespace KerbalKonstructs.Core
             }
 
 
-            pqsCity.lat = RefLatitude ;
-            pqsCity.lon = RefLongitude;
+            //pqsCity.lat = RefLatitude ;
+            //pqsCity.lon = RefLongitude;
             pqsCity.alt = RadiusOffset;
             pqsCity.ResetCelestialBody();
             pqsCity.OnSetup();
@@ -372,6 +381,12 @@ namespace KerbalKonstructs.Core
         internal void SaveConfig()
         {
             ConfigParser.SaveInstanceByCfg(configPath);
+        }
+
+        internal void Destroy()
+        {
+  //          KerbalKonstructs.instance.DeleteObject(this);
+//            StaticDatabase.DeleteStatic(this);
         }
 
 	}
