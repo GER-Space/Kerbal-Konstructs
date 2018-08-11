@@ -838,6 +838,34 @@ namespace KerbalKonstructs
                         model.modules.Add(module);
                     }
 
+                    // Animate Tracking Dishes Lv1
+                    if (modelName == "KSC_TrackingStation_level_1")
+                    {
+                        //Log.Normal("Dish: Found TrackingStation");
+
+                        foreach (Transform dishTransform in model.prefab.transform.FindAllRecursive("TS_dish"))
+                        {                            
+                            DishController.Dish dish = new DishController.Dish();
+
+                            dish.elevationTransform = dishTransform.FindRecursive("dish_antenna");
+                            //dish.elevationInit = new Quaternion();
+                            dish.rotationTransform = dishTransform.FindRecursive("dish_support");
+
+                            dish.elevationTransform.parent = dish.rotationTransform;
+
+                            DishController controller = dishTransform.gameObject.AddComponent<DishController>();
+                            controller.dishes = new DishController.Dish[] { dish };
+                            controller.enabled = true;
+
+                            controller.fakeTimeWarp = 1f;
+                            controller.maxSpeed = 10f;
+
+                            controller.maxElevation = 20f;
+                            controller.minElevation = -70f;
+                        }
+                    }
+
+
                     StaticDatabase.RegisterModel(model, modelName);
 
                     // try to extract the wrecks from the facilities

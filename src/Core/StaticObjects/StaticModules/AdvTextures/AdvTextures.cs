@@ -57,7 +57,7 @@ namespace KerbalKonstructs
                 if (newMaterial != "")
                 {
                     ReplaceMaterial(renderer, newMaterial);
-                    return;
+                    continue;
                 }
 
                 if (!string.IsNullOrEmpty(newShader))
