@@ -68,5 +68,18 @@ namespace KerbalKonstructs
         }
 
 
+        public static GameObject GetGameObject(string uuid)
+        {
+            if (StaticDatabase.instancedByUUID.ContainsKey(uuid))
+            {
+                return (StaticDatabase.instancedByUUID[uuid]).gameObject;
+            }
+            else
+            {
+                Log.UserWarning("API:GetGameObject: Can´t find a static with the UUID: " + uuid);
+                return null;
+            }
+        }
+
     }
 }

@@ -57,12 +57,13 @@ namespace KerbalKonstructs
                     continue;
                 }
 
+               // Log.Normal("Processing Transform: " + renderer.transform.name);
+
                 if (newMaterial != "")
                 {
                     ReplaceMaterial(renderer, newMaterial);
-                    return;
+                    continue;
                 }
-
 
 
                 if (!string.IsNullOrEmpty(newShader))

@@ -365,6 +365,19 @@ namespace KerbalKonstructs.Core
         }
 
 
+        internal KKFacility GetFacility(KKFacilityType facilityType)
+        {
+            foreach (KKFacility facility in myFacilities)
+            {
+                if (facility.facType == facilityType)
+                {
+                    return facility;
+                }
+            }
+            return null;
+        }
+
+
         /// <summary>
         /// resets the object highlightColor to 0 and resets the editing flag.
         /// </summary>

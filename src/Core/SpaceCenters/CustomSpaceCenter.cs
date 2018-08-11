@@ -12,6 +12,8 @@ namespace KerbalKonstructs.Core
         internal StaticInstance staticInstance;
         internal GameObject gameObject;
 
+        internal bool isFromFacility = false;
+
         public static void CreateFromLaunchsite(KKLaunchSite site)
         {
             StaticInstance parentinstance = site.staticInstance;
@@ -21,7 +23,7 @@ namespace KerbalKonstructs.Core
                 csc.SpaceCenterName = site.LaunchSiteName;
                 csc.staticInstance = parentinstance;
                 csc.gameObject = site.lsGameObject;
-                SpaceCenterManager.addSpaceCenter(csc);
+                SpaceCenterManager.AddSpaceCenter(csc);
             }
             else
             {
@@ -51,9 +53,24 @@ namespace KerbalKonstructs.Core
                 _spaceCenter.enabled = true;
                 _spaceCenter.Start();
             }           
-
             return _spaceCenter;
         }
+
+        public bool isOpen
+        {
+            get
+            {
+                if (isFromFacility)
+                {
+                    return staticInstance.GetFacility(Modules.KKFacilityType.RecoveryBase).isOpen;
+                }
+                else
+                {
+                    return staticInstance.launchSite.isOpen;
+                }
+            }
+        }
+
 
     }
 }

@@ -45,6 +45,9 @@ namespace KerbalKonstructs.Modules
         private bool display2 = false;
         private bool isOpen = false;
 
+        private bool cscIsOpen = false;
+        private bool cscDisplay = false;
+
         Vector3 launchSitePosition;
         Vector3 lsPosition;
         Rect screenRect;
@@ -55,6 +58,7 @@ namespace KerbalKonstructs.Modules
             {
                 drawTrackingStations();
                 DrawLaunchsites();
+                DrawSpaceCenters();
             }
         }
 
@@ -282,6 +286,84 @@ namespace KerbalKonstructs.Modules
                     }
                 }
             }
+        }
+
+
+        private void DrawSpaceCenters()
+        {
+            if (!KerbalKonstructs.instance.mapShowRecovery)
+                return;
+
+            body = PlanetariumCamera.fetch.target.GetReferenceBody();
+
+            displayingTooltip2 = false;
+
+            // Do tracking stations first
+            foreach (CustomSpaceCenter customSpaceCenter in SpaceCenterManager.spaceCenters)
+            {
+                if ((mapHideIconsBehindBody) && (IsOccluded(customSpaceCenter.gameObject.transform.position, body)))
+                {
+                    continue;
+                }
+
+                cscIsOpen = customSpaceCenter.isOpen;
+
+
+
+                if (KerbalKonstructs.instance.mapShowRecovery)
+                    cscDisplay = true;
+                if (!KerbalKonstructs.instance.mapShowClosed && !cscIsOpen)
+                    cscDisplay = false;
+                if (!KerbalKonstructs.instance.mapShowOpen && cscIsOpen)
+                    cscDisplay = false;
+
+                if (!cscDisplay)
+                    continue;
+
+                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(customSpaceCenter.gameObject.transform.position));
+
+                Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
+                // Distance between camera and spawnpoint sort of
+                float fPosZ = pos.z;
+                float fRadarRadius = 12800 / fPosZ;
+
+                if (fRadarRadius > 15)
+                {
+                    GUI.DrawTexture(screenRect6, UIMain.waterLaunchIcon, ScaleMode.ScaleToFit, true);
+                }
+
+                if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
+                {
+
+
+                    var objectpos2 = customSpaceCenter.staticInstance.CelestialBody.transform.InverseTransformPoint(customSpaceCenter.gameObject.transform.position);
+
+                    var disObjectLat2 = KKMath.GetLatitudeInDeg(objectpos2);
+                    var disObjectLon2 = KKMath.GetLongitudeInDeg(objectpos2);
+
+                    if (disObjectLon2 < 0)
+                        disObjectLon2 = disObjectLon2 + 360;
+
+                    //Only display one tooltip at a time
+                    DisplayMapIconToolTip("Recovery Base " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+
+                    if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
+                    {
+                        if (customSpaceCenter.isFromFacility)
+                        {
+                            //# = customSpaceCenter.staticInstance;
+                            FacilityManager.selectedInstance = customSpaceCenter.staticInstance;
+                            FacilityManager.instance.Open();
+                        }
+                        else
+                        {
+                            BaseManager.setSelectedSite(customSpaceCenter.staticInstance.launchSite);
+                            BaseManager.instance.Open();
+                        }
+                    }
+                }
+            }
+
         }
 
 

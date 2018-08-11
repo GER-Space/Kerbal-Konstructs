@@ -57,12 +57,15 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle BoxNoBorder;
 		public static GUIStyle BoxNoBorderW;
 		public static GUIStyle ButtonKK;
-		public static GUIStyle ButtonRed;
+        public static GUIStyle ButtonInactive;
+        public static GUIStyle ButtonRed;
 		public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
         public static GUIStyle DeadButton;
         public static GUIStyle LabelInfo;
+        public static GUIStyle ButtonTextYellow;
+        public static GUIStyle ButtonDefault;
 
         public static GUIStyle KKWindow;
 
@@ -102,7 +105,17 @@ namespace KerbalKonstructs.UI
 			ButtonKK.normal.background = tNormalButton;
 			ButtonKK.hover.background = tHoverButton;
 
-			Yellowtext = new GUIStyle(GUI.skin.box);
+            ButtonInactive = new GUIStyle(GUI.skin.button);
+            ButtonInactive.padding.left = 0;
+            ButtonInactive.padding.right = 0;
+            ButtonInactive.normal.background = tNormalButton;
+            ButtonInactive.hover.background = tHoverButton;
+            ButtonInactive.normal.textColor = XKCDColors.Grey;
+            ButtonInactive.active.textColor = XKCDColors.Grey;
+            ButtonInactive.focused.textColor = XKCDColors.Grey;
+            ButtonInactive.hover.textColor = XKCDColors.Grey;
+
+            Yellowtext = new GUIStyle(GUI.skin.box);
 			Yellowtext.normal.textColor = Color.yellow;
 			Yellowtext.normal.background = null;
 
@@ -151,6 +164,15 @@ namespace KerbalKonstructs.UI
 
             KKWindow = new GUIStyle(GUI.skin.window);
             KKWindow.padding = new RectOffset(8, 8, 3, 3);
+
+            ButtonTextYellow = new GUIStyle(GUI.skin.button);       
+            ButtonTextYellow.normal.textColor = XKCDColors.YellowGreen;
+            ButtonTextYellow.active.textColor = XKCDColors.YellowGreen;
+            ButtonTextYellow.focused.textColor = XKCDColors.YellowGreen;
+            ButtonTextYellow.hover.textColor = XKCDColors.YellowGreen;
+
+            ButtonDefault = new GUIStyle(GUI.skin.button);
+
         }
 
 		public static void SetTextures()

@@ -121,6 +121,7 @@
     <Compile Include="Facilities\Hangar\Hangar.cs" />
     <Compile Include="Facilities\KKFacilitySelector.cs" />
     <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
+    <Compile Include="Facilities\RecoveryBase\RecoveryBase.cs" />
     <Compile Include="Facilities\Storage\Storage.cs" />
     <Compile Include="Facilities\Storage\StorageGUI.cs" />
     <Compile Include="Facilities\Merchant\Merchant.cs" />

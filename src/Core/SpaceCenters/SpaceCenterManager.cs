@@ -16,10 +16,15 @@ namespace KerbalKonstructs.Core
 			KSC = SpaceCenter.Instance;
 		}
 
-		public static void addSpaceCenter(CustomSpaceCenter csc)
+		public static void AddSpaceCenter(CustomSpaceCenter csc)
 		{
 			spaceCenters.Add(csc);
 		}
+
+        public static void RemoveSpaceCenter(CustomSpaceCenter csc)
+        {
+            spaceCenters.Remove(csc);
+        }
 
         internal static CustomSpaceCenter GetCSC(string name)
         {
