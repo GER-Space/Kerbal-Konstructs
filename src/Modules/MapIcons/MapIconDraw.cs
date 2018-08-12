@@ -345,7 +345,14 @@ namespace KerbalKonstructs.Modules
                         disObjectLon2 = disObjectLon2 + 360;
 
                     //Only display one tooltip at a time
-                    DisplayMapIconToolTip("Recovery Base " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    if (customSpaceCenter.isFromFacility)
+                    {
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.GetFacility(KKFacilityType.RecoveryBase).FacilityName  + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    }
+                    else
+                    {
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.launchSite.LaunchSiteName  + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    }
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
