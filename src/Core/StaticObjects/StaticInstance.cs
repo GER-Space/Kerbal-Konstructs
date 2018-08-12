@@ -199,7 +199,7 @@ namespace KerbalKonstructs.Core
             // mangle Squads statics
             if (model.isSquad)
             {
-                InstanceUtil.MangleSquadStatic(gameObject);
+                InstanceUtil.MangleSquadStatic(this);
             }
 
             // Objects spawned at runtime should be active, ones spawned at loading not

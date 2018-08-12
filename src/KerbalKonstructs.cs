@@ -814,6 +814,8 @@ namespace KerbalKonstructs
             {
                 LoadDesertSiteAssets();
             }
+            MangleTrackingDishes();
+
         }
 
 
@@ -859,7 +861,9 @@ namespace KerbalKonstructs
                     // don't double register the models a second time (they will do this) 
                     // maybe with a "without green flag" and filter that our later at spawn in mangle
                     if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                    {
                         continue;
+                    }
 
                     StaticModel model = new StaticModel();
                     model.name = modelName;
@@ -914,36 +918,6 @@ namespace KerbalKonstructs
                         model.modules.Add(module);
                     }
 
-
-                    // Animate Tracking Dishes Lv1
-                    if (modelName == "KSC_TrackingStation_level_1")
-                    {
-                        Log.Normal("Dish: Found TrackingStation");
-
-                        foreach (Transform dishTransform in model.prefab.transform.FindAllRecursive("TS_dish"))
-                        {
-                            Log.Normal("Dish: Found Dish");
-                            DishController.Dish dish = new DishController.Dish();
-
-                            dish.elevationTransform = dishTransform.FindRecursive("dish_antenna");
-                            //dish.elevationInit = new Quaternion();
-                            dish.rotationTransform = dishTransform.FindRecursive("dish_support");
-
-                            dish.elevationTransform.parent = dish.rotationTransform;
-
-                            DishController controller = dishTransform.gameObject.AddComponent<DishController>();
-                            controller.dishes = new DishController.Dish[] { dish };
-                            controller.enabled = true;
-
-                            controller.fakeTimeWarp = 1f;
-                            controller.maxSpeed = 10f;
-
-                            controller.maxElevation = 20f;
-                            controller.minElevation = -70f;
-                        }
-                    }
-
-
                     StaticDatabase.RegisterModel(model, modelName);
 
                     // try to extract the wrecks from the facilities
@@ -991,8 +965,9 @@ namespace KerbalKonstructs
             foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
             {
                 if (pqs.gameObject.name == "KSC" || pqs.gameObject.name == "KSC2" || pqs.gameObject.name == "Pyramids"  || pqs.gameObject.name == "Pyramid" || pqs.gameObject.name == "CommNetDish")
+                {
                     continue;
-
+                }
 
                 string modelName = "SQUAD_" + pqs.gameObject.name;
                 string modelTitle = "Squad " + pqs.gameObject.name;
@@ -1000,7 +975,9 @@ namespace KerbalKonstructs
                 // don't double register the models a second time (they will do this) 
                 // maybe with a "without green flag" and filter that our later at spawn in mangle
                 if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                {
                     continue;
+                }
 
                 StaticModel model = new StaticModel();
                 model.name = modelName;
@@ -1018,17 +995,14 @@ namespace KerbalKonstructs
 
                 model.isSquad = true;
 
-
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
                 model.prefab = pqs.gameObject;
 
                 StaticDatabase.RegisterModel(model, modelName);
-
             }
 
             foreach (PQSCity2 pqs2 in Resources.FindObjectsOfTypeAll<PQSCity2>())
             {
-
                 if (pqs2.gameObject.name == "Desert_Airfield")
                 {
                     continue;
@@ -1036,7 +1010,6 @@ namespace KerbalKonstructs
 
                 string modelName = "SQUAD_" + pqs2.gameObject.name;
                 string modelTitle = "Squad " + pqs2.gameObject.name;
-
 
                 if (modelName.Contains("Clone"))
                 {
@@ -1046,7 +1019,9 @@ namespace KerbalKonstructs
                 // don't double register the models a second time (they will do this) 
                 // maybe with a "without green flag" and filter that our later at spawn in mangle
                 if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                {
                     continue;
+                }
 
                 StaticModel model = new StaticModel();
                 model.name = modelName;
@@ -1063,7 +1038,6 @@ namespace KerbalKonstructs
                 model.description = "Squad original " + modelTitle;
 
                 model.isSquad = true;
-
 
                 if (modelName == "SQUAD_MobileLaunchPad" || modelName == "SQUAD_Desert_Airfield")
                 {
@@ -1087,7 +1061,9 @@ namespace KerbalKonstructs
             foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
             {
                 if (pqs.gameObject.name != "KSC2" && pqs.gameObject.name != "Pyramids" && pqs.gameObject.name != "CommNetDish")
+                {
                     continue;
+                }
 
                 GameObject baseGameObject = pqs.gameObject;
                 foreach (var child in baseGameObject.GetComponentsInChildren<Transform>(true))
@@ -1104,12 +1080,15 @@ namespace KerbalKonstructs
                     // don't double register the models a second time (they will do this) 
                     // maybe with a "without green flag" and filter that our later at spawn in mangle
                     if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                    {
                         continue;
+                    }
 
                     // filter out some unneded stuff
                     if (modelName.Contains("ollider") || modelName.Contains("onolit"))
+                    {
                         continue;
-
+                    }
 
                     StaticModel model = new StaticModel();
                     model.name = modelName;
@@ -1134,7 +1113,6 @@ namespace KerbalKonstructs
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
                     model.prefab = child.gameObject;
-
 
                     StaticDatabase.RegisterModel(model, modelName);
                 }
@@ -1247,8 +1225,9 @@ namespace KerbalKonstructs
                             // don't double register the models a second time (they will do this) 
                             // maybe with a "without green flag" and filter that our later at spawn in mangle
                             if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
+                            {
                                 continue;
-
+                            }
 
                             StaticModel model = new StaticModel();
                             model.name = modelName;
@@ -1269,19 +1248,99 @@ namespace KerbalKonstructs
                             // we reference only the original prefab, as we cannot instantiate an instance for some reason
                             model.prefab = child2.gameObject;
 
-
                             StaticDatabase.RegisterModel(model, modelName);
 
                         }
                     }
-
                 }
             }
-
         }
 
 
+        public static void MangleTrackingDishes()
+        {
+            // StrackingStation LV1
+            //
+            StaticModel model = StaticDatabase.GetModelByName("KSC_TrackingStation_level_1");
+            List<DishController.Dish> dishes = new List<DishController.Dish>();
 
+            DishController controller = model.prefab.AddComponent<DishController>();
+
+            controller.fakeTimeWarp = 1f;
+            controller.maxSpeed = 10f;
+            controller.maxElevation = 20f;
+            controller.minElevation = -70f;
+
+            foreach (Transform dishTransform in model.prefab.transform.FindAllRecursive("TS_dish"))
+            {
+                Log.Normal("Dish: Found Dish");
+                DishController.Dish dish = new DishController.Dish();
+
+                dish.elevationTransform = dishTransform.FindRecursive("dish_antenna");
+                //dish.elevationInit = new Quaternion();
+                dish.rotationTransform = dishTransform.FindRecursive("dish_support");
+
+                dish.elevationTransform.parent = dish.rotationTransform;
+
+                dishes.Add(dish);
+
+            }
+            controller.dishes = dishes.ToArray();
+            controller.enabled = true;
+
+
+            // StrackingStation LV2
+            //
+            model = StaticDatabase.GetModelByName("KSC_TrackingStation_level_2");
+            dishes.Clear();
+
+            controller = model.prefab.AddComponent<DishController>();
+
+            controller.fakeTimeWarp = 1f;
+            controller.maxSpeed = 10f;
+            controller.maxElevation = 20f;
+            controller.minElevation = -70f;
+
+            foreach (Transform dishTransform in model.prefab.transform.FindAllRecursive("TS_dish"))
+            {
+                Log.Normal("Dish: Found Dish");
+                DishController.Dish dish = new DishController.Dish();
+
+                dish.elevationTransform = dishTransform.FindRecursive("dish_antenna");
+                //dish.elevationInit = new Quaternion();
+                dish.rotationTransform = dishTransform.FindRecursive("dish_support");
+
+                dish.elevationTransform.parent = dish.rotationTransform;
+
+                dishes.Add(dish);
+            }
+            controller.dishes = dishes.ToArray();
+            controller.enabled = true;
+
+
+            // Extract LV3 Dish as Extra Dish
+            model = StaticDatabase.GetModelByName("KSC_TrackingStation_level_3");
+
+            Transform dishNorth = model.prefab.transform.FindRecursive("dish_north");
+            string modelName = "SQUAD_LV3_Tracking_Dish" ;
+            StaticModel dishModel = new StaticModel();
+            dishModel.prefab = dishNorth.gameObject;
+           // dishModel.prefab.transform.parent = null;
+            dishModel.name = modelName;
+            dishModel.path = "KerbalKonstructs/" + modelName;
+            dishModel.configPath = model.path + ".cfg";
+            dishModel.keepConvex = true;
+            dishModel.title = "TrackingStation Lv3 Dish";
+            dishModel.mesh = modelName;
+            dishModel.category = "Dish";
+            dishModel.author = "Squad";
+            dishModel.manufacturer = "Squad";
+            dishModel.description = "Squad original TrackingStation Lv3 Dish";
+
+            dishModel.isSquad = true;
+
+            StaticDatabase.RegisterModel(dishModel, dishModel.name);
+        }
 
         /// <summary>
         /// used for loading the pyramid parts
