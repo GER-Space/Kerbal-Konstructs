@@ -297,7 +297,8 @@ namespace KerbalKonstructs.Core
                 ParseDecalsMapConfig(newMapDecalInstance, conf.config);
 
                 newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-                newMapDecalInstance.mapTexture = GameDatabase.Instance.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
+                //newMapDecalInstance.mapTexture = GameDatabase.Instance.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
+                newMapDecalInstance.mapTexture = KKGraphics.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
 
                 if (newMapDecalInstance.mapTexture == null)
                 {
