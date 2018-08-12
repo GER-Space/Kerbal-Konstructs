@@ -329,7 +329,7 @@ namespace KerbalKonstructs.Modules
 
                 if (fRadarRadius > 15)
                 {
-                    GUI.DrawTexture(screenRect6, UIMain.waterLaunchIcon, ScaleMode.ScaleToFit, true);
+                    GUI.DrawTexture(screenRect6, UIMain.iconRecoveryBase, ScaleMode.ScaleToFit, true);
                 }
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
