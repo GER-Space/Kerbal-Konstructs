@@ -958,7 +958,7 @@ namespace KerbalKonstructs.UI
 
             enableColliders = false;
             enableColliders2 = false;
-            instance.spawnObject(true, false);
+            instance.SpawnObject(true);
         }
 
         /// <summary>

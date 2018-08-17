@@ -565,12 +565,11 @@ namespace KerbalKonstructs.Modules
             instance.configPath = null;
             instance.configUrl = null;
 
-            instance.spawnObject(true, false);
+            instance.SpawnObject(true);
 
             KerbalKonstructs.instance.selectedObject = instance;
 
             selectedObject = instance;
-
             startPosition = selectedObject.gameObject.transform.position;
 
             instance.HighlightObject(XKCDColors.FreshGreen);

@@ -12,9 +12,6 @@ namespace KerbalKonstructs
         public string WaterSurfaceQuadNames = "";
         public string ColliderNames = "";
 
-
-
-
         private List<Collider> waterColliders = new List<Collider>();
 
         private List<string> colNames = new List<string>();
@@ -23,15 +20,15 @@ namespace KerbalKonstructs
         private string[] seperators = new string[] { " ", ",", ";" };
 
         private GameObject waterSurface;
-
         private double waterLevel = 0d;
+
+        private List<KKCallBackWorker> workers = new List<KKCallBackWorker>();
 
 
         internal void Start()
         {
 
             waterNames = WaterSurfaceQuadNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
-
             if (waterNames.Count > 0)
             {
                 waterSurface = gameObject.transform.FindRecursive(waterNames[0]).gameObject;
@@ -64,15 +61,34 @@ namespace KerbalKonstructs
         {
             waterLevel = staticInstance.CelestialBody.GetAltitude(waterSurface.transform.position);
 
-            foreach (Collider col in gameObject.GetComponentsInChildren<Collider>(true))
+            //KKCallBack kkCall = gameObject.GetComponentInChildren<KKCallBack>(true);
+            Log.Normal("WaterSurface: Adding KKCallBack to GameObject");
+            KKCallBack kkCall = gameObject.AddComponent<KKCallBack>();
+            kkCall.ColliderNames = ColliderNames;
+
+            if (!kkCall.isSetup)
             {
-                if (colNames.Contains(col.name))
-                {
-                    KKWaterFloating floatingTrigger = col.gameObject.AddComponent<KKWaterFloating>();
-                    floatingTrigger.waterLevel = waterLevel;
-                }
+                kkCall.Start();
             }
 
+            foreach (KKCallBackWorker worker in gameObject.GetComponentsInChildren<KKCallBackWorker>(true))
+            {
+                workers.Add(worker);
+                worker.onEnterAction = MakePartFloat;
+                worker.onExitAction = RemoveCustomWaterLevel;
+            }
+        }
+
+
+        // called by OnTriggerEnter
+        internal void MakePartFloat(Part myPart)
+        {
+            myPart.partBuoyancy.waterLevel = waterLevel;
+        }
+
+        internal void RemoveCustomWaterLevel(Part myPart)
+        {
+            myPart.partBuoyancy.waterLevel = 0;
         }
 
 
@@ -83,13 +99,8 @@ namespace KerbalKonstructs
                 foreach (Transform trans in gameObject.transform.FindAllRecursive(name))
                 {
                     Log.Normal("Added water effect to: " + name);
-
                 }
-
             }
-
         }
-
-
     }
 }

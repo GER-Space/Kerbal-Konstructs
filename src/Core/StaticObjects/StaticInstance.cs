@@ -194,7 +194,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="editing"></param>
         /// <param name="bPreview"></param>
-        internal void spawnObject(Boolean editing, Boolean bPreview)
+        internal void SpawnObject(Boolean editing = false, Boolean bPreview = false)
         {
             // mangle Squads statics
             if (model.isSquad)
@@ -219,12 +219,16 @@ namespace KerbalKonstructs.Core
             this.preview = bPreview;
 
             if (editing)
+            {
                 KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+            }
 
             float objvisibleRange = VisibilityRange;
 
             if (objvisibleRange < 1)
+            {
                 objvisibleRange = 25000f;
+            }
 
             PQSCity.LODRange range = new PQSCity.LODRange
             {
@@ -360,8 +364,6 @@ namespace KerbalKonstructs.Core
                 pqsObjectList.Add(pqsCity as PQSSurfaceObject);
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
-
-
         }
 
 

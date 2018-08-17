@@ -573,7 +573,7 @@ namespace KerbalKonstructs.UI
 
             instance.model = model;
 
-            instance.spawnObject(true, true);
+            instance.SpawnObject(true, true);
             // KerbalKonstructs.instance.selectObject(obj, false);
             currPreview = instance;
         }

@@ -38,6 +38,7 @@ namespace KerbalKonstructs.Modules
                     instanceNode.AddValue("Position", instance.RadialPosition);
                     instanceNode.AddValue("Altitude", instance.RadiusOffset);
                     instanceNode.AddValue("Rotation", instance.RotationAngle);
+                    instanceNode.AddValue("IsScanable", instance.isScanable);
                 }
             }
         }
@@ -113,7 +114,12 @@ namespace KerbalKonstructs.Modules
             instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
             instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
 
-            instance.spawnObject(false, false);
+            if (cfgNode.HasValue("IsScanable"))
+            {
+                bool.TryParse(cfgNode.GetValue("IsScanable"), out instance.isScanable);
+            }
+
+            instance.SpawnObject();
 
         }
 

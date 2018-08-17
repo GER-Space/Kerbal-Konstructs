@@ -129,6 +129,11 @@ namespace KerbalKonstructs.Core
             }
 
 
+            //if (instance.model.name == "KSC_Runway_level_2")
+            //{
+            //    SquadStatics.PimpLv2Runway(instance.gameObject);
+            //}
+
         }
 
         internal static void SetActiveRecursively(StaticInstance instance, bool active)
