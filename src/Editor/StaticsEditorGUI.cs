@@ -857,7 +857,7 @@ namespace KerbalKonstructs.UI
             if (GUILayout.Button("Spawn new MapDecal", GUILayout.Width(170)))
             {
                 EditorGUI.instance.Close();
-                EditorGUI.selectedObject = null;
+                EditorGUI.selectedInstance = null;
 
                 MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 
