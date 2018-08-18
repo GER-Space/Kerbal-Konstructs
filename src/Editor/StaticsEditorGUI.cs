@@ -129,7 +129,6 @@ namespace KerbalKonstructs.UI
         {
             allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
             base.Open();
-            EditorGUI.instance.Open();
         }
 
         public override void Close()
@@ -254,6 +253,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("" + "Spawn New", GUILayout.Height(23), GUILayout.Width(110)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = true;
                     showAll = false;
                     showLocal = false;
@@ -267,6 +267,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("All Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = false;
                     showAll = true;
                     showLocal = false;
@@ -281,6 +282,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Local Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = false;
                     showLocal = true;
                     showAll = false;
@@ -432,7 +434,10 @@ namespace KerbalKonstructs.UI
                 (float)FlightGlobals.ActiveVessel.altitude,
                 KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
                 0f);
-
+            if (!EditorGUI.instance.IsOpen())
+            {
+                EditorGUI.instance.Open();
+            }
         }
 
 
@@ -579,7 +584,9 @@ namespace KerbalKonstructs.UI
                         isLocal = dist < localRange;
                     }
                     else
+                    {
                         isLocal = false;
+                    }
                 }
 
                 string sGroupHolder = "";
@@ -637,6 +644,11 @@ namespace KerbalKonstructs.UI
                     {
                         enableColliders = true;
                         EditorGUI.CloseEditors();
+                        if (!EditorGUI.instance.IsOpen())
+                        {
+                            EditorGUI.instance.Open();
+                        }
+
 
                         if (selectedObject != null)
                         {
@@ -844,10 +856,8 @@ namespace KerbalKonstructs.UI
             //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
             if (GUILayout.Button("Spawn new MapDecal", GUILayout.Width(170)))
             {
-                if (EditorGUI.instance.IsOpen())
-                {
-                    EditorGUI.instance.Close();
-                }
+                EditorGUI.instance.Close();
+                EditorGUI.selectedObject = null;
 
                 MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 

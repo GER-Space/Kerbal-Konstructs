@@ -347,7 +347,8 @@ namespace KerbalKonstructs.Core
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
             if (uILaunchsiteController == null)
             {
-                Log.UserWarning("LaunchSitecontroller not found");
+                Log.UserWarning("UILaunchsiteController not found");
+                return;
             }
             else
             {

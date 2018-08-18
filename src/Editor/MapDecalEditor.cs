@@ -58,11 +58,7 @@ namespace KerbalKonstructs.UI
         internal GUIStyle KKWindows;
         internal GUIStyle BoxNoBorder;
 
-        internal GUIContent[] siteTypeOptions = {
-                                            new GUIContent("VAB"),
-                                            new GUIContent("SPH"),
-                                            new GUIContent("ANY")
-                                        };
+      
         // ComboBox siteTypeMenu;
         #endregion
         private Vector2 selectHeightMapScroll;
@@ -123,8 +119,8 @@ namespace KerbalKonstructs.UI
         public override void Close()
         {
             CloseVectors();
-            selectedDecal = null;
             base.Close();
+            selectedDecal = null;
         }
 
         #region draw Methods

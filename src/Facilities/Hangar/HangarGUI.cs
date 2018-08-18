@@ -244,7 +244,7 @@ namespace KerbalKonstructs.UI
 			GUILayout.FlexibleSpace();
 		}
 
-		public static Boolean HangarwayIsClear(StaticInstance soHangar)
+		public static Boolean HangarwayIsClear(StaticInstance instance)
 		{
 			Boolean bIsClear = true;
 
@@ -256,7 +256,7 @@ namespace KerbalKonstructs.UI
 				if (vVessel.vesselType == VesselType.Flag) continue;
 				if (vVessel.situation != Vessel.Situations.LANDED) continue;
 
-				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, soHangar.gameObject.transform.position);
+				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, instance.gameObject.transform.position);
 				if (vDistToCraft > 260) continue;
 				else
 					bIsClear = false;
@@ -265,9 +265,9 @@ namespace KerbalKonstructs.UI
 			return bIsClear;
 		}
 
-		public static void CacheHangaredCraft(StaticInstance obj)
+		public static void CacheHangaredCraft(StaticInstance instance)
 		{
-            Hangar myHangar = obj.myFacilities[0] as Hangar;
+            Hangar myHangar = instance.myFacilities[0] as Hangar;
 			string sInStorage = myHangar.InStorage1;
 			string sInStorage2 = myHangar.InStorage2;
 			string sInStorage3 = myHangar.InStorage3;
@@ -404,9 +404,9 @@ namespace KerbalKonstructs.UI
             typeof(Hangar).GetField(sSpace).SetValue(myHangar, "None");
 		}
 
-		public static void UnhangarCraft(Vessel vVesselStored, StaticInstance soHangar)
+		public static void UnhangarCraft(Vessel vVesselStored, StaticInstance instance)
 		{
-			RemoveCorrectCraft(vVesselStored, soHangar);
+			RemoveCorrectCraft(vVesselStored, instance);
 
 			// Convert the stored protovessel to a new protovessel.
 			// Use BackupVessel because that seems to work and protovessel does not. `\o/`
