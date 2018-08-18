@@ -39,6 +39,8 @@ namespace KerbalKonstructs.Modules
         private static List<StaticInstance> groundStations;
         private static KKLaunchSite[] lauchSites;
 
+        private static CustomSpaceCenter[] spaceCenters;
+
         private KKLaunchSite launchSite;
         private CelestialBody body;
         private StaticInstance groundStation;
@@ -65,7 +67,7 @@ namespace KerbalKonstructs.Modules
         public override void Open()
         {
             CacheGroundStations();
-            CacheLaunchSites();
+            CacheObjects();
             base.Open();
         }
 
@@ -99,9 +101,11 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Caches the launchsites for later use
         /// </summary>
-        private void CacheLaunchSites()
+        private void CacheObjects()
         {
             lauchSites = LaunchSiteManager.allLaunchSites;
+            spaceCenters = SpaceCenterManager.spaceCenters.ToArray();
+
         }
 
 
@@ -299,7 +303,7 @@ namespace KerbalKonstructs.Modules
             displayingTooltip2 = false;
 
             // Do tracking stations first
-            foreach (CustomSpaceCenter customSpaceCenter in SpaceCenterManager.spaceCenters)
+            foreach (CustomSpaceCenter customSpaceCenter in spaceCenters)
             {
                 if ((mapHideIconsBehindBody) && (IsOccluded(customSpaceCenter.gameObject.transform.position, body)))
                 {
