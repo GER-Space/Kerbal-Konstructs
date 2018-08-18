@@ -915,6 +915,10 @@ namespace KerbalKonstructs.UI
                 Log.Normal("Try to select Object: " + myHitinstance.gameObject.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
                 KerbalKonstructs.instance.selectObject(myHitinstance, true, true, false);
+                if (!EditorGUI.instance.IsOpen())
+                {
+                    EditorGUI.instance.Open();
+                }
             }
 
         }

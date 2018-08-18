@@ -85,6 +85,12 @@ namespace KerbalKonstructs.Core
             //    instance.pqsCity = null;
             //    Log.Normal("444");
             //}
+
+            if (groupCenter == null && instance.Group != "Ungrouped")
+            {
+                groupCenter = instance.gameObject;
+            }
+
             _groupInstances.Add(instance);
             groupInstances = _groupInstances.ToArray();
             UpdateCacheSettings();

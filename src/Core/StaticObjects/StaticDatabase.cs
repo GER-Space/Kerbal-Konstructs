@@ -337,7 +337,7 @@ namespace KerbalKonstructs.Core
                     else
                     {
                         //Log.Normal("Checking Group: " + group.name  ); 
-                        var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
+                        var dist = Vector3.Distance(group.groupCenter.transform.position, vPlayerPos);
                         bool isClose = (dist < group.visibilityRange);
                         Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
 
