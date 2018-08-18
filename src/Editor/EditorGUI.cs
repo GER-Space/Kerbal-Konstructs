@@ -991,7 +991,7 @@ namespace KerbalKonstructs.UI
         {
             get
             {
-                return (selectedInstance.pqsCity.transform.position + 4 * selectedInstance.pqsCity.transform.up.normalized + 4 * selectedInstance.pqsCity.transform.right.normalized);
+                return (selectedInstance.gameObject.transform.position + 4 * selectedInstance.gameObject.transform.up.normalized + 4 * selectedInstance.gameObject.transform.right.normalized);
             }
         }
 
@@ -1067,15 +1067,15 @@ namespace KerbalKonstructs.UI
                 northVR.SetShow(false);
                 eastVR.SetShow(false);
 
-                fwdVR.Vector = selectedInstance.pqsCity.transform.forward;
+                fwdVR.Vector = selectedInstance.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.draw();
 
-                upVR.Vector = selectedInstance.pqsCity.transform.up;
+                upVR.Vector = selectedInstance.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.draw();
 
-                rightVR.Vector = selectedInstance.pqsCity.transform.right;
+                rightVR.Vector = selectedInstance.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.draw();
             }
@@ -1105,7 +1105,7 @@ namespace KerbalKonstructs.UI
         {
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
-            fwdVR.Vector = selectedInstance.pqsCity.transform.forward;
+            fwdVR.Vector = selectedInstance.gameObject.transform.forward;
             fwdVR.Scale = 30d;
             fwdVR.Start = vectorDrawPosition;
             fwdVR.SetLabel("forward");
@@ -1113,14 +1113,14 @@ namespace KerbalKonstructs.UI
             fwdVR.SetLayer(5);
 
             upVR.Color = new Color(0, 1, 0);
-            upVR.Vector = selectedInstance.pqsCity.transform.up;
+            upVR.Vector = selectedInstance.gameObject.transform.up;
             upVR.Scale = 30d;
             upVR.Start = vectorDrawPosition;
             upVR.SetLabel("up");
             upVR.Width = 0.01d;
 
             rightVR.Color = new Color(1, 0, 0);
-            rightVR.Vector = selectedInstance.pqsCity.transform.right;
+            rightVR.Vector = selectedInstance.gameObject.transform.right;
             rightVR.Scale = 30d;
             rightVR.Start = vectorDrawPosition;
             rightVR.SetLabel("right");
@@ -1301,7 +1301,11 @@ namespace KerbalKonstructs.UI
             }
             // adjust transform for scaled models
             direction = direction / selectedInstance.ModelScale;
+
+            //selectedInstance.gameObject.transform.Translate(direction);
+
             direction = selectedInstance.gameObject.transform.TransformVector(direction);
+
             double northInc = Vector3d.Dot(northVector, direction);
             double eastInc = Vector3d.Dot(eastVector, direction);
             double upInc = Vector3d.Dot(upVector, direction);

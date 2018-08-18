@@ -245,15 +245,14 @@ namespace KerbalKonstructs.Core
             pqsCity.reorientInitialUp = Orientation; //orientation
             pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
             pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-            gameObject.transform.parent = CelestialBody.pqsController.transform;
             pqsCity.sphere = CelestialBody.pqsController;
             origScale = pqsCity.transform.localScale;             // save the original scale for later use
             pqsCity.transform.localScale *= ModelScale;
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
+            gameObject.transform.parent = CelestialBody.pqsController.transform;
             pqsCity.transform.parent = CelestialBody.pqsController.transform;
-
 
             switch (heighReference)
             {
@@ -303,9 +302,9 @@ namespace KerbalKonstructs.Core
             pqsCity.Orientate();
 
 
-            PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
-            lodObject.visibleRange = VisibilityRange;
-            lodObject.objects = new GameObject[] { };
+            //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
+            //lodObject.visibleRange = VisibilityRange;
+            //lodObject.objects = new GameObject[] { };
             //pqsCity2 = gameObject.AddComponent<PQSCity2>();
             //pqsCity2.objects = new[] { lodObject };
             //pqsCity2.objectName = "";

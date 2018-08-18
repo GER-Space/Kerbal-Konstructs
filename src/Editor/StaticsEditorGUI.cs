@@ -413,7 +413,7 @@ namespace KerbalKonstructs.UI
 
             foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
             {
-                if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+                if (obj.CelestialBody == FlightGlobals.currentMainBody)
                 {
                     var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
                     if (dist < fRange)
@@ -578,7 +578,7 @@ namespace KerbalKonstructs.UI
 
                 if (showLocal)
                 {
-                    if (allStaticInstances[ix].pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+                    if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
                     {
                         var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
                         isLocal = dist < localRange;

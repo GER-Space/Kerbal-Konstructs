@@ -58,9 +58,11 @@ namespace KerbalKonstructs.Core
 			String groupName = instance.Group;
 
 			if (!groupList.ContainsKey(bodyName))
-				groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+            {
+                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+            }
 
-			if (!groupList[bodyName].ContainsKey(groupName))
+            if (!groupList[bodyName].ContainsKey(groupName))
 			{
 				StaticGroup group = new StaticGroup(groupName, bodyName);			
 				groupList[bodyName].Add(groupName, group);
@@ -171,7 +173,7 @@ namespace KerbalKonstructs.Core
 
             modelCount--;
             instance.indexInGroup = modelCount;
-            instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + modelCount;
+            instance.gameObject.name = groupName + "_" + instance.model.name + "_" + modelCount;
          //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
         }
 

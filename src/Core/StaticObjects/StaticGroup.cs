@@ -15,7 +15,8 @@ namespace KerbalKonstructs.Core
         private List<StaticInstance> _groupInstances = new List<StaticInstance>();
         public StaticInstance[]  groupInstances = new StaticInstance[]{};
 
-        internal StaticInstance groupCenter = null;
+        internal GameObject groupCenter = null;
+        internal PQSCity groupPQS;
 
         public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
@@ -29,16 +30,72 @@ namespace KerbalKonstructs.Core
 			visibilityRange = 0f; 
 		}
 
-		public void AddStatic(StaticInstance obj)
+		public void AddStatic(StaticInstance instance)
 		{
-			_groupInstances.Add(obj);
+            //Log.Normal("AddStatic ");
+            //Log.Normal("Adding: " + instance.Group + " " + instance.model.name);
+            //if (groupCenter == null && instance.Group != "Ungrouped")
+            //{
+            //    Log.Normal("Adding new GroupCenter Object: " + instance.Group + " " + instance.model.name);
+
+            //    groupCenter = new GameObject();
+            //    groupCenter.name = instance.Group + "_PQS";
+
+            //    groupPQS = groupCenter.AddComponent<PQSCity>();
+
+            //    PQSCity.LODRange range = new PQSCity.LODRange
+            //    {
+            //        renderers = new GameObject[0],
+            //        objects = new GameObject[0],
+            //        visibleRange = 25000
+            //    };
+            //    groupPQS.lod = new[] { range };
+            //    groupPQS.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
+            //    groupPQS.repositionRadial = instance.RadialPosition; //position
+            //    groupPQS.repositionRadiusOffset = instance.RadiusOffset; //height
+            //    groupPQS.reorientInitialUp = instance.Orientation; //orientation
+            //    groupPQS.reorientFinalAngle = instance.RotationAngle; //rotation x axis
+            //    groupPQS.reorientToSphere = true; //adjust rotations to match the direction of gravity
+            //    groupPQS.sphere = instance.CelestialBody.pqsController;
+            //    groupPQS.order = 100;
+            //    groupPQS.modEnabled = true;
+            //    groupPQS.repositionToSphere = true; //enable repositioning
+            //    groupPQS.transform.parent = instance.CelestialBody.pqsController.transform;
+
+            //    groupPQS.repositionToSphereSurface = true; //Snap to surface?
+            //    groupPQS.repositionToSphereSurfaceAddHeight = true;
+            //    groupPQS.repositionToSphere = false;
+
+
+
+            //    //pqsCity.lat = RefLatitude ;
+            //    //pqsCity.lon = RefLongitude;
+            //    groupPQS.alt = instance.RadiusOffset;
+            //    groupPQS.ResetCelestialBody();
+            //    groupPQS.OnSetup();
+            //    groupPQS.Orientate();
+
+            //}
+            //if (instance.Group != "Ungrouped")
+            //{
+            //    Log.Normal("3334");
+            //    instance.gameObject.transform.parent = groupCenter.transform;
+            //    instance.pqsCity.enabled = false;
+            //    instance.pqsCity.modEnabled = false;
+            //    instance.pqsCity = null;
+            //    Log.Normal("444");
+            //}
+            _groupInstances.Add(instance);
             groupInstances = _groupInstances.ToArray();
             UpdateCacheSettings();
 		}
 
-		public void RemoveStatic(StaticInstance obj)
+
+
+
+		public void RemoveStatic(StaticInstance instance)
 		{
-			_groupInstances.Remove(obj);
+			_groupInstances.Remove(instance);
             groupInstances = _groupInstances.ToArray();
             UpdateCacheSettings();
 		}
@@ -55,7 +112,7 @@ namespace KerbalKonstructs.Core
 
 
             // FIRST ONE IS THE CENTER
-            groupCenter = groupInstances[0];
+         //   groupCenter = groupInstances[0];
             centerPoint = groupInstances[0].gameObject.transform.position;
             vRadPos = (Vector3)groupInstances[0].RadialPosition;
             groupInstances[0].GroupCenter = "true";

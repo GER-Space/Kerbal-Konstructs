@@ -587,7 +587,7 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                return (selectedObject.pqsCity.transform.position + 4 * selectedObject.pqsCity.transform.up.normalized + 4 * selectedObject.pqsCity.transform.right.normalized);
+                return (selectedObject.gameObject.transform.position + 4 * selectedObject.gameObject.transform.up.normalized + 4 * selectedObject.gameObject.transform.right.normalized);
             }
         }
 
@@ -666,15 +666,15 @@ namespace KerbalKonstructs.Modules
                 northVR.SetShow(false);
                 eastVR.SetShow(false);
 
-                fwdVR.Vector = selectedObject.pqsCity.transform.forward;
+                fwdVR.Vector = selectedObject.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.draw();
 
-                upVR.Vector = selectedObject.pqsCity.transform.up;
+                upVR.Vector = selectedObject.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.draw();
 
-                rightVR.Vector = selectedObject.pqsCity.transform.right;
+                rightVR.Vector = selectedObject.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.draw();
             }
@@ -704,7 +704,7 @@ namespace KerbalKonstructs.Modules
         {
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
-            fwdVR.Vector = selectedObject.pqsCity.transform.forward;
+            fwdVR.Vector = selectedObject.gameObject.transform.forward;
             fwdVR.Scale = 30d;
             fwdVR.Start = vectorDrawPosition;
             fwdVR.SetLabel("forward");
@@ -712,14 +712,14 @@ namespace KerbalKonstructs.Modules
             fwdVR.SetLayer(5);
 
             upVR.Color = new Color(0, 1, 0);
-            upVR.Vector = selectedObject.pqsCity.transform.up;
+            upVR.Vector = selectedObject.gameObject.transform.up;
             upVR.Scale = 30d;
             upVR.Start = vectorDrawPosition;
             upVR.SetLabel("up");
             upVR.Width = 0.01d;
 
             rightVR.Color = new Color(1, 0, 0);
-            rightVR.Vector = selectedObject.pqsCity.transform.right;
+            rightVR.Vector = selectedObject.gameObject.transform.right;
             rightVR.Scale = 30d;
             rightVR.Start = vectorDrawPosition;
             rightVR.SetLabel("right");
