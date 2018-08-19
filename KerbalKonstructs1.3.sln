@@ -9,17 +9,26 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Release12|Any CPU = Release12|Any CPU
 		Test|Any CPU = Test|Any CPU
+		Test12|Any CPU = Test12|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C733C176-867C-4B72-B979-1004A1A4F193}.Release12|Any CPU.ActiveCfg = Release12|Any CPU
+		{C733C176-867C-4B72-B979-1004A1A4F193}.Release12|Any CPU.Build.0 = Release12|Any CPU
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{C733C176-867C-4B72-B979-1004A1A4F193}.Test|Any CPU.Build.0 = Test|Any CPU
+		{C733C176-867C-4B72-B979-1004A1A4F193}.Test12|Any CPU.ActiveCfg = Test12|Any CPU
+		{C733C176-867C-4B72-B979-1004A1A4F193}.Test12|Any CPU.Build.0 = Test12|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BAC218FC-232B-403E-A41C-698367BE55CD}
 	EndGlobalSection
 EndGlobal

@@ -41,6 +41,9 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         internal bool isSquad = false;
 
+        [CFGSetting]
+        internal bool isHidden = false;
+
         // need checking
         [CFGSetting]
         internal float cost;
@@ -63,5 +66,7 @@ namespace KerbalKonstructs.Core
         internal float DefaultScienceOMax;
         [CFGSetting]
         internal float DefaultFundsOMax;
+
+
 	}
 }

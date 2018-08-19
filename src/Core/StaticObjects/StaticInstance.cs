@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
 
 
         public bool hasLauchSites = false;
-        public LaunchSite launchSite;
+        public KKLaunchSite launchSite;
 
         public KKFacilityType facilityType = KKFacilityType.None;
         public List<KKFacility> myFacilities = new List<KKFacility>();
@@ -185,7 +185,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="editing"></param>
         /// <param name="bPreview"></param>
-        internal void spawnObject(Boolean editing, Boolean bPreview)
+        internal void SpawnObject(Boolean editing = false, Boolean bPreview = false)
         {
             // mangle Squads statics
             if (model.isSquad)

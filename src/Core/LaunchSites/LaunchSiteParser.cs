@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Core
 
 
 
-        internal static void ParseConfig(LaunchSite site, ConfigNode cfgNode)
+        internal static void ParseConfig(KKLaunchSite site, ConfigNode cfgNode)
         {
             if (!initialized)
             {
@@ -46,7 +46,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void WriteConfig(LaunchSite site, ConfigNode cfgNode)
+        internal static void WriteConfig(KKLaunchSite site, ConfigNode cfgNode)
         {
             if (!initialized)
             {
@@ -84,7 +84,7 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal static void SaveCareerConfig(LaunchSite site, ConfigNode cfgNode)
+        internal static void SaveCareerConfig(KKLaunchSite site, ConfigNode cfgNode)
         {
             if (!initialized)
             {
@@ -108,7 +108,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal static void LoadCareerConfig(LaunchSite site, ConfigNode cfgNode)
+        internal static void LoadCareerConfig(KKLaunchSite site, ConfigNode cfgNode)
         {
             if (!initialized)
             {
@@ -137,13 +137,13 @@ namespace KerbalKonstructs.Core
                 launchSiteFields = new Dictionary<string, FieldInfo>();
                 launchSiteProperties = new Dictionary<string, PropertyInfo>();
 
-                foreach (FieldInfo field in typeof(LaunchSite).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+                foreach (FieldInfo field in typeof(KKLaunchSite).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 {
                     launchSiteFields.Add(field.Name, field);
                     //    Log.Normal("Parser Facility (" + site.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
                 }
 
-                foreach (PropertyInfo property in typeof(LaunchSite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                foreach (PropertyInfo property in typeof(KKLaunchSite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
                 {
                     launchSiteProperties.Add(property.Name, property);
                     //   Log.Normal("Parser Facility (" + site.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());

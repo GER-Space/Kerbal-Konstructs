@@ -96,7 +96,7 @@ namespace KerbalKonstructs.Core
         /// Set the SpaceCenterCam to the location os the current LaunchSite
         /// </summary>
         /// <param name="currentSite"></param>
-        internal static void SetSpaceCenterCam(LaunchSite currentSite)
+        internal static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
             if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
             {
@@ -165,7 +165,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal static void SetSpaceCenterCam2(LaunchSite currentSite)
+        internal static void SetSpaceCenterCam2(KKLaunchSite currentSite)
         {
             if (KerbalKonstructs.focusLastLaunchSite)
             {
@@ -228,7 +228,7 @@ namespace KerbalKonstructs.Core
             SetNextMorningPoint(currentSite);
         }
 
-        static void SetNextMorningPoint(LaunchSite launchSite)
+        static void SetNextMorningPoint(KKLaunchSite launchSite)
         {
 
             //double timeOfDawn = ((launchSite.refLon) / 360) * -1;

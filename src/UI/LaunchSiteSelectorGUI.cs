@@ -42,8 +42,8 @@ namespace KerbalKonstructs.UI
         public bool showClosed = true;
         public bool showFavOnly = false;
 
-        private static LaunchSite defaultSite = null;
-        internal static LaunchSite selectedSite ;
+        private static KKLaunchSite defaultSite = null;
+        internal static KKLaunchSite selectedSite ;
 
         private string launchButtonName = "";
 
@@ -256,7 +256,7 @@ namespace KerbalKonstructs.UI
 
             sitesScrollPosition = GUILayout.BeginScrollView(sitesScrollPosition);
             {
-                foreach (LaunchSite site in LaunchSiteManager.allLaunchSites)
+                foreach (KKLaunchSite site in LaunchSiteManager.allLaunchSites)
                 {
                     if (showFavOnly && (site.favouriteSite != "Yes"))
                     {
@@ -406,7 +406,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal void ShowOpenStatus(LaunchSite site)
+        internal void ShowOpenStatus(KKLaunchSite site)
         {
             if (MiscUtils.isCareerGame())
             {

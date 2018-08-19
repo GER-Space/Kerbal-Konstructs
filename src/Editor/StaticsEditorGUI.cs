@@ -88,7 +88,7 @@ namespace KerbalKonstructs.UI
         LaunchSiteCategory launchsiteCategory;
 
         // models change only once
-        private static StaticModel [] allStaticModels;
+        private static StaticModel[] allStaticModels;
         //static need only be loaded once per three seconnds
         private static float lastloaded = 0f;
         internal static StaticInstance[] allStaticInstances;
@@ -127,9 +127,8 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            allStaticModels = StaticDatabase.allStaticModels.ToArray();
+            allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
             base.Open();
-            EditorGUI.instance.Open();
         }
 
         public override void Close()
@@ -254,6 +253,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("" + "Spawn New", GUILayout.Height(23), GUILayout.Width(110)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = true;
                     showAll = false;
                     showLocal = false;
@@ -267,6 +267,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("All Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = false;
                     showAll = true;
                     showLocal = false;
@@ -281,6 +282,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Local Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
                     creatingInstance = false;
                     showLocal = true;
                     showAll = false;
@@ -309,7 +311,7 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), GUILayout.Width(110), GUILayout.Height(23)))
+                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextYellow : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.saveObjects();
                     smessage = "Saved all changes to all objects.";
@@ -347,7 +349,7 @@ namespace KerbalKonstructs.UI
                 {
                     ShowModelsScroll();
 
- 
+
                 }
                 // edting existing instances
                 if (showAll || showLocal)
@@ -411,7 +413,7 @@ namespace KerbalKonstructs.UI
 
             foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
             {
-                if (obj.pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+                if (obj.CelestialBody == FlightGlobals.currentMainBody)
                 {
                     var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
                     if (dist < fRange)
@@ -432,7 +434,10 @@ namespace KerbalKonstructs.UI
                 (float)FlightGlobals.ActiveVessel.altitude,
                 KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
                 0f);
-
+            if (!EditorGUI.instance.IsOpen())
+            {
+                EditorGUI.instance.Open();
+            }
         }
 
 
@@ -573,13 +578,15 @@ namespace KerbalKonstructs.UI
 
                 if (showLocal)
                 {
-                    if (allStaticInstances[ix].pqsCity.sphere == FlightGlobals.currentMainBody.pqsController)
+                    if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
                     {
                         var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
                         isLocal = dist < localRange;
                     }
                     else
+                    {
                         isLocal = false;
+                    }
                 }
 
                 string sGroupHolder = "";
@@ -637,6 +644,11 @@ namespace KerbalKonstructs.UI
                     {
                         enableColliders = true;
                         EditorGUI.CloseEditors();
+                        if (!EditorGUI.instance.IsOpen())
+                        {
+                            EditorGUI.instance.Open();
+                        }
+
 
                         if (selectedObject != null)
                         {
@@ -844,10 +856,8 @@ namespace KerbalKonstructs.UI
             //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
             if (GUILayout.Button("Spawn new MapDecal", GUILayout.Width(170)))
             {
-                if (EditorGUI.instance.IsOpen())
-                {
-                    EditorGUI.instance.Close();
-                }
+                EditorGUI.instance.Close();
+                EditorGUI.selectedInstance = null;
 
                 MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 
@@ -862,6 +872,11 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
 
+        }
+
+        internal static void ResetInstancesList()
+        {
+            lastloaded = 0f;
         }
 
 
@@ -900,6 +915,10 @@ namespace KerbalKonstructs.UI
                 Log.Normal("Try to select Object: " + myHitinstance.gameObject.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
                 KerbalKonstructs.instance.selectObject(myHitinstance, true, true, false);
+                if (!EditorGUI.instance.IsOpen())
+                {
+                    EditorGUI.instance.Open();
+                }
             }
 
         }
