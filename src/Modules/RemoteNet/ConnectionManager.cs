@@ -28,7 +28,9 @@ namespace KerbalKonstructs.Modules
         {
             internal GameObject gameObject;
             internal string nodeName;
+#if !KSP12
             internal string displaynodeName;
+#endif
             internal Transform nodeTransform;
             internal bool isKSC ;
         }
@@ -156,11 +158,11 @@ namespace KerbalKonstructs.Modules
                     if (home != null)
                     {
                         UnityEngine.Object.Destroy(home);
-                        Log.Normal("deleted stock GroundStation: " + station.displaynodeName);
+                        Log.Normal("deleted stock GroundStation: " + station.nodeName);
                     }
                     else
                     {
-                        Log.Warning("Could not find CommNet to delete: " + station.displaynodeName);
+                        Log.Warning("Could not find CommNet to delete: " + station.nodeName);
                     }
                 }
                 stockWasRemoved = true;
@@ -179,7 +181,7 @@ namespace KerbalKonstructs.Modules
                 {
                     KKCommNetHome commNetHome = station.gameObject.AddComponent<KKCommNetHome>();
                     commNetHome.RestoreStockStation(station);
-                    Log.Normal("Restored CommNetHome: " + station.displaynodeName);
+                    Log.Normal("Restored CommNetHome: " + station.nodeName);
 
                 }
                 stockWasRemoved = false;

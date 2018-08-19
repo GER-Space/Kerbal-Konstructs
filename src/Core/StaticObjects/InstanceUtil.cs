@@ -11,13 +11,15 @@ namespace KerbalKonstructs.Core
 {
     internal static class InstanceUtil
     {
-        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+
 
         internal static List<TimeOfDayAnimation.MaterialProperty> dayNightEmissives = null;
         internal static Color dotColor;
         internal static string dotPoperty;
         internal static AnimationCurve dotAnimationCurve;
         internal static List<string> materialPropertyNames = new List<string>();
+
 
         /// <summary>
         /// Returns a StaticObject object for a gives GameObject
@@ -44,18 +46,19 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Removes the wreck model from an KSC Object.
         /// </summary>
-        internal static void MangleSquadStatic(GameObject gameObject)
+        internal static void MangleSquadStatic(StaticInstance instance)
         {
-            gameObject.transform.parent = null;
+            GameObject gameObject = instance.gameObject;
 
-            foreach (var bla in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
+            gameObject.transform.parent = null;
+            foreach (var component in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
 
-                if (behaviosToRemove.Contains(bla.GetType()))
+                if (behavioursToRemove.Contains(component.GetType()))
                 {
-               //     Log.Normal("Removed: " + bla.GetType().ToString());
-                    UnityEngine.Object.Destroy(bla);
-                }               
+                    //     Log.Normal("Removed: " + bla.GetType().ToString());
+                    UnityEngine.Object.Destroy(component);
+                }
             }
 
 
@@ -104,6 +107,28 @@ namespace KerbalKonstructs.Core
             dotAnim.emissivesCurve = dotAnimationCurve;
             dotAnim.enabled = true;
 
+            // Lv3 Tracking Dish Animation
+            if (instance.model.name == "SQUAD_LV3_Tracking_Dish")
+            {
+                DishController controller = gameObject.AddComponent<DishController>();
+
+                controller.fakeTimeWarp = 1f;
+                controller.maxSpeed = 2 / instance.ModelScale;
+                controller.maxElevation = 90f;
+                controller.minElevation = 5f;
+
+                DishController.Dish dish = new DishController.Dish();
+                dish.rotationTransform = gameObject.transform.FindRecursive("Lower Assembly");
+                dish.elevationTransform = gameObject.transform.FindRecursive("Satellite Dish");
+                controller.dishes = new DishController.Dish[] { dish };
+                controller.enabled = true;
+            }
+
+
+            //if (instance.model.name == "KSC_Runway_level_2")
+            //{
+            //    SquadStatics.PimpLv2Runway(instance.gameObject);
+            //}
 
         }
 
