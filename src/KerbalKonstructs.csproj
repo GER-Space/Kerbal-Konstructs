@@ -96,6 +96,7 @@
     <Compile Include="Core\MapDecals\MapDecalUtils.cs" />
     <Compile Include="Core\SquadStatics.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnTrigger\AnimateOnTrigger.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBack.cs" />
