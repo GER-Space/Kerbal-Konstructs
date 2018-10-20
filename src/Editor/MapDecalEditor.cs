@@ -44,7 +44,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 380, 810);
+        internal Rect toolRect = new Rect(300, 35, 380, 840);
 
         #endregion
 
@@ -661,6 +661,15 @@ namespace KerbalKonstructs.UI
             selectedDecal.UseAlphaHeightSmoothing = GUILayout.Toggle(selectedDecal.UseAlphaHeightSmoothing, "UseAlphaHeightSmoothing", GUILayout.Width(250), GUILayout.Height(23));
             selectedDecal.CullBlack = GUILayout.Toggle(selectedDecal.CullBlack, "Cullblack", GUILayout.Width(250), GUILayout.Height(23));
 
+            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Group: ", GUILayout.Height(23));
+                GUILayout.FlexibleSpace();
+                selectedDecal.Group = GUILayout.TextField(selectedDecal.Group, 30, GUILayout.Width(185), GUILayout.Height(23));
+            }
+            GUILayout.EndHorizontal();
 
             GUILayout.FlexibleSpace();
 

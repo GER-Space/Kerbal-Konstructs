@@ -164,7 +164,7 @@ namespace KerbalKonstructs.UI
 						StartLine = GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceStart");
 						if (StartLine != null)
 						{
-							fDistToStart = StartLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
+							fDistToStart = Vector3.Distance(StartLine.gameObject.transform.position, FlightGlobals.ActiveVessel.GetTransform().position);
 
 							if (fDistToStart < 150)
 							{
@@ -227,7 +227,7 @@ namespace KerbalKonstructs.UI
 							FinishLine = GetNearestFacility(FlightGlobals.ActiveVessel.GetTransform().position, "RaceFinish");
 							if (FinishLine != null)
 							{
-								fDistToFinish = FinishLine.GetDistanceToObject(FlightGlobals.ActiveVessel.GetTransform().position);
+								fDistToFinish = Vector3.Distance(FinishLine.gameObject.transform.position,FlightGlobals.ActiveVessel.GetTransform().position);
 
 								GUILayout.Box("Distance to Finish Line: " + fDistToFinish.ToString("#0.0") + " m");
 

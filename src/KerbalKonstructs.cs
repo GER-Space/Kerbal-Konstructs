@@ -169,7 +169,7 @@ namespace KerbalKonstructs
                 GameEvents.onEditorRestart.Add(OnEditorRestart);
                 //GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequested);
             }
-            #endregion
+#endregion
 
             #region Other Mods Hooks
             StageRecovery.AttachStageRecovery();

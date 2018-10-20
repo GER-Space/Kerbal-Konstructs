@@ -7,12 +7,19 @@ cd /c/Git/Kerbal-Konstructs
 VERSION=`grep -i AssemblyFileVersion src/Properties/AssemblyInfo.cs  | cut -d "\"" -f 2`
 
 
-FILENAME="Kerbal-Konstructs-${VERSION}.zip"
-
 MAJOR=`echo ${VERSION} | cut -d "." -f 1 `
 MINOR=`echo ${VERSION} | cut -d "." -f 2 `
 PATCH=`echo ${VERSION} | cut -d "." -f 3 `
 BUILD=`echo ${VERSION} | cut -d "." -f 4 `
+
+
+if (test $1 != "") ; then
+  
+VERSION=${VERSION}_$1
+fi
+
+FILENAME="Kerbal-Konstructs-${VERSION}.zip"
+
 
 
 if test -e $FILENAME ; then 

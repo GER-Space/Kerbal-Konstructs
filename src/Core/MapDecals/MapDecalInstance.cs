@@ -61,6 +61,8 @@ namespace KerbalKonstructs.Core
         public float Angle = 0f;
         [CFGSetting]
         public int Order = 100000;
+        [CFGSetting]
+        public string Group = "Ungrouped";
 
 
         internal MapDecalsMap heighMap = null;

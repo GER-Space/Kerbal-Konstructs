@@ -42,10 +42,10 @@ namespace KerbalKonstructs
         {
 
             enterAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                        where animationList != null
-                        from AnimationState animationState in animationList
-                        where animationState.name == AnimOnEnter
-                        select animationList).FirstOrDefault();
+                         where animationList != null
+                         from AnimationState animationState in animationList
+                         where animationState.name == AnimOnEnter
+                         select animationList).FirstOrDefault();
 
             stayAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
                         where animationList != null
@@ -116,7 +116,7 @@ namespace KerbalKonstructs
             {
                 vesselIsInside[myPart.vessel] = true;
                 PlayAnim(enterAnim, AnimOnEnter);
-            }           
+            }
         }
 
         internal void PlayOnExit(Part myPart)
@@ -176,7 +176,7 @@ namespace KerbalKonstructs
         }
     }
 
-    
+
 
 
 }

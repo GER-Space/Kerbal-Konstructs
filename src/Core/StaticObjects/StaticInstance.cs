@@ -182,13 +182,6 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal float GetDistanceToObject(Vector3 vPosition)
-        {
-            float fDistance = 0f;
-            fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
-            return fDistance;
-        }
-
         /// <summary>
         /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
         /// </summary>
