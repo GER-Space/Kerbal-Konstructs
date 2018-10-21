@@ -41,6 +41,9 @@ namespace KerbalKonstructs.Core
         internal static Dictionary<string, FieldInfo> mapDecalFields = new Dictionary<string, FieldInfo>();
         internal static Dictionary<string, FieldInfo> mapDecalsMapFields = new Dictionary<string, FieldInfo>();
 
+        internal static Dictionary<string, FieldInfo> groupCenterFields = new Dictionary<string, FieldInfo>();
+
+
         internal static HashSet<string> facilitiyTypes = new HashSet<string>();
 
 
@@ -88,6 +91,13 @@ namespace KerbalKonstructs.Core
                 }
             }
 
+            foreach (FieldInfo field in typeof(GroupCenter).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (Attribute.IsDefined(field, typeof(CFGSetting)))
+                {
+                    groupCenterFields.Add(field.Name, field);
+                }
+            }
 
             facilitiyTypes = new HashSet<string>(Enum.GetNames(typeof(KKFacilityType)));
 

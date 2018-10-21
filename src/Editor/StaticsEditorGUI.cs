@@ -13,6 +13,15 @@ namespace KerbalKonstructs.UI
     public class StaticsEditorGUI : KKWindow
     {
 
+        private enum EditorMode
+        {
+            SPAWN,
+            ALL,
+            LOCAL,
+            PQS,
+            GROUP
+        }
+
         private static StaticsEditorGUI _instance = null;
 
         public static StaticsEditorGUI instance
@@ -28,7 +37,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        Rect editorRect = new Rect(10, 25, 680, 540);
+        Rect editorRect = new Rect(10, 25, 750, 540);
 
         GUIStyle DeadButton;
         GUIStyle DeadButtonRed;
@@ -48,10 +57,8 @@ namespace KerbalKonstructs.UI
         public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
 
         // List items
-        private static bool creatingInstance = false;
-        private static bool showLocal = true;
-        private static bool showAll = false;
-        private static bool editDecals = false;
+        private static EditorMode mode = EditorMode.LOCAL;
+
 
         public Boolean enableColliders = false;
 
@@ -248,51 +255,42 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
 
-                GUI.enabled = !creatingInstance;
+                GUI.enabled = (mode != EditorMode.SPAWN);
 
                 if (GUILayout.Button("" + "Spawn New", GUILayout.Height(23), GUILayout.Width(110)))
                 {
                     EditorGUI.CloseEditors();
                     MapDecalEditor.Instance.Close();
-                    creatingInstance = true;
-                    showAll = false;
-                    showLocal = false;
-                    editDecals = false;
+                    mode = EditorMode.SPAWN;
                 }
 
                 GUILayout.Space(5);
 
-                GUI.enabled = !showAll;
+                GUI.enabled = (mode != EditorMode.ALL);
 
                 if (GUILayout.Button("All Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
                     MapDecalEditor.Instance.Close();
-                    creatingInstance = false;
-                    showAll = true;
-                    showLocal = false;
-                    editDecals = false;
+                    mode = EditorMode.ALL;
                     KerbalKonstructs.instance.DeletePreviewObject();
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
-                GUI.enabled = !showLocal;
+                GUI.enabled = (mode != EditorMode.LOCAL);
 
                 if (GUILayout.Button("Local Instances", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
                     MapDecalEditor.Instance.Close();
-                    creatingInstance = false;
-                    showLocal = true;
-                    showAll = false;
-                    editDecals = false;
+                    mode = EditorMode.LOCAL;
                     KerbalKonstructs.instance.DeletePreviewObject();
                 }
 
                 GUI.enabled = true;
                 GUILayout.Space(2);
-                GUI.enabled = !editDecals;
+                GUI.enabled = (mode != EditorMode.PQS);
 
                 if (GUILayout.Button("Edit MapDecals", GUILayout.Width(110), GUILayout.Height(23)))
                 {
@@ -300,13 +298,26 @@ namespace KerbalKonstructs.UI
                     {
                         EditorGUI.instance.Close();
                     }
-                    editDecals = true;
-                    showAll = false;
-                    creatingInstance = false;
-                    showLocal = false;
+                    mode = EditorMode.PQS;
                     KerbalKonstructs.instance.DeletePreviewObject();
                 }
 
+
+                GUI.enabled = true;
+                GUILayout.Space(2);
+                GUI.enabled = (mode != EditorMode.GROUP);
+
+                if (GUILayout.Button("Edit Groups", GUILayout.Width(110), GUILayout.Height(23)))
+                {
+                    if (EditorGUI.instance.IsOpen())
+                    {
+                        EditorGUI.instance.Close();
+                    }
+                    MapDecalEditor.Instance.Close();
+
+                    mode = EditorMode.GROUP;
+                    KerbalKonstructs.instance.DeletePreviewObject();
+                }
 
                 GUI.enabled = true;
 
@@ -321,7 +332,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
 
-            if (creatingInstance)
+            if (mode == EditorMode.SPAWN)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(15);
@@ -344,23 +355,21 @@ namespace KerbalKonstructs.UI
 
             scrollPos = GUILayout.BeginScrollView(scrollPos);
             {
-                // spawning new instances
-                if (creatingInstance)
+                switch (mode)
                 {
-                    ShowModelsScroll();
-
-
-                }
-                // edting existing instances
-                if (showAll || showLocal)
-                {
-                    ShowInstancesScroll();
-                }
-
-                // PQS List
-                if (editDecals)
-                {
-                    ShowDecalsScroll();
+                    case EditorMode.SPAWN:
+                        ShowModelsScroll();
+                        break;
+                    case EditorMode.ALL:
+                    case EditorMode.LOCAL:
+                        ShowInstancesScroll();
+                        break;
+                    case EditorMode.PQS:
+                        ShowDecalsScroll();
+                        break;
+                    case EditorMode.GROUP:
+                        ShowGroupScroll();
+                        break;
                 }
 
             }
@@ -370,25 +379,26 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
-            if (creatingInstance)
+
+            switch (mode)
             {
-                ShowModelsFooter();
-            }
-            if (showAll)
-            {
-                ShowInstancesFootersAll();
+                case EditorMode.SPAWN:
+                    ShowModelsFooter();
+                    break;
+                case EditorMode.ALL:
+                    ShowInstancesFootersAll();
+                    break;
+                case EditorMode.LOCAL:
+                    ShowInstancesFootersLocal();
+                    break;
+                case EditorMode.PQS:
+                    ShowDecalsFooter();
+                    break;
+                case EditorMode.GROUP:
+                    ShowGroupFooter();
+                    break;
             }
 
-
-            if (showLocal)
-            {
-                ShowInstancesFootersLocal();
-            }
-
-            if (editDecals)
-            {
-                ShowDecalsFooter();
-            }
 
             #endregion
 
@@ -576,7 +586,7 @@ namespace KerbalKonstructs.UI
             {
                 bool isLocal = true;
 
-                if (showLocal)
+                if (mode == EditorMode.LOCAL)
                 {
                     if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
                     {
@@ -590,7 +600,7 @@ namespace KerbalKonstructs.UI
                 }
 
                 string sGroupHolder = "";
-                if (!showLocal)
+                if (mode != EditorMode.LOCAL)
                 {
                     if (groupFilter != "")
                     {
@@ -670,7 +680,7 @@ namespace KerbalKonstructs.UI
                     }
                     //GUI.enabled = true;
 
-                    if (showLocal)
+                    if (mode == EditorMode.LOCAL)
                     {
                         GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
                         if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
@@ -785,7 +795,7 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = false;
             GUILayout.Label(localRange.ToString("0") + " m", GUILayout.Width(50));
-            GUI.enabled = showLocal;
+            GUI.enabled = (mode == EditorMode.LOCAL);
             if (GUILayout.Button("-", GUILayout.Width(25)))
             {
                 if (localRange < 5000)
@@ -809,13 +819,13 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("Group:");
 
             // GUILayout.Space(5);
-            GUI.enabled = showLocal;
+            GUI.enabled = (mode == EditorMode.LOCAL);
             customgroup = GUILayout.TextField(customgroup, 25, GUILayout.Width(125));
 
 
             GUI.enabled = true;
 
-            GUI.enabled = showLocal;
+            GUI.enabled = (mode == EditorMode.LOCAL);
 
 
 
@@ -873,6 +883,63 @@ namespace KerbalKonstructs.UI
 
 
         }
+
+
+
+        internal void ShowGroupScroll()
+        {
+            foreach (var groupCenter in StaticDatabase.allCenters.Values)
+            {
+                if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
+                {
+                    continue;
+                }
+
+                if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > 25000)
+                {
+                    continue;
+                }
+
+                if (GUILayout.Button(new GUIContent(" " + groupCenter.Group, "Edit this Group."), GUILayout.Height(23)))
+                {
+                    EditorGUI.CloseEditors();
+                    MapDecalEditor.Instance.Close();
+                   // MapDecalEditor.selectedDecal = mapDecalInstance;
+                    MapDecalEditor.Instance.Open();
+                }
+
+            }
+        }
+
+        internal void ShowGroupFooter()
+        {
+            GUILayout.BeginHorizontal();
+
+            //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
+            //GUILayout.FlexibleSpace();
+            //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
+            if (GUILayout.Button("Spawn new Group", GUILayout.Width(170)))
+            {
+                EditorGUI.instance.Close();
+                EditorGUI.selectedInstance = null;
+
+                MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
+
+                if (MapDecalEditor.selectedDecal == null)
+                {
+                    Log.UserError("No Group created");
+                }
+                MapDecalEditor.Instance.Open();
+
+                Log.Normal("MapDecal Editor spawned");
+
+            }
+            GUILayout.EndHorizontal();
+
+
+        }
+
+
 
         internal static void ResetInstancesList()
         {

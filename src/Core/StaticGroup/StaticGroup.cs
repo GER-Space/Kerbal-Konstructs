@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Core
         private List<StaticInstance> _groupInstances = new List<StaticInstance>();
         public StaticInstance[]  groupInstances = new StaticInstance[]{};
 
-        internal StaticInstance groupCenter = null;
+        internal GroupCenter groupCenter = null;
 
         public Vector3 centerPoint = Vector3.zero;
 		public float visibilityRange = 0;
@@ -26,19 +26,22 @@ namespace KerbalKonstructs.Core
 			this.name = name;
 			bodyName = body;
 			centerPoint = Vector3.zero;
-			visibilityRange = 0f; 
-		}
+			visibilityRange = 0f;
+            groupCenter = StaticDatabase.allCenters[body + "_" + name];
+            // FIRST ONE IS THE CENTER
+            centerPoint = groupCenter.gameObject.transform.position;
+        }
 
-		public void AddStatic(StaticInstance obj)
+		public void AddStatic(StaticInstance instance)
 		{
-			_groupInstances.Add(obj);
+			_groupInstances.Add(instance);
             groupInstances = _groupInstances.ToArray();
             UpdateCacheSettings();
 		}
 
-		public void RemoveStatic(StaticInstance obj)
+		public void RemoveStatic(StaticInstance instance)
 		{
-			_groupInstances.Remove(obj);
+			_groupInstances.Remove(instance);
             groupInstances = _groupInstances.ToArray();
             UpdateCacheSettings();
 		}
@@ -48,26 +51,15 @@ namespace KerbalKonstructs.Core
         {
             float highestVisibility = 0;
             float furthestDist = 0;
-
-            centerPoint = Vector3.zero;
-            StaticInstance soCenter = null;
-            Vector3 vRadPos = Vector3.zero;
-
-
-            // FIRST ONE IS THE CENTER
-            groupCenter = groupInstances[0];
-            centerPoint = groupInstances[0].gameObject.transform.position;
-            vRadPos = (Vector3)groupInstances[0].RadialPosition;
-            groupInstances[0].GroupCenter = "true";
-            soCenter = groupInstances[0];
+            
 
             for (int i = 0; i < groupInstances.Length; i++)
             {
 
-                if (groupInstances[i] != soCenter) groupInstances[i].GroupCenter = "false";
-
                 if (groupInstances[i].VisibilityRange > highestVisibility)
+                {
                     highestVisibility = groupInstances[i].VisibilityRange;
+                }
 
                 float dist = Vector3.Distance(centerPoint, groupInstances[i].gameObject.transform.position);
 

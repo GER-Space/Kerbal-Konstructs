@@ -20,6 +20,11 @@ namespace KerbalKonstructs.Core
         private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
         internal static StaticInstance [] allStaticInstances  = new StaticInstance [0] ;
 
+        internal static Dictionary<string, StaticInstance> instancedByUUID = new Dictionary<string, StaticInstance>();
+
+        internal static Dictionary<string, GroupCenter> allCenters = new Dictionary<string, GroupCenter>();
+
+
         internal static string activeBodyName = "";
 
         private static Vector3 vPlayerPos = Vector3.zero;
@@ -40,8 +45,15 @@ namespace KerbalKonstructs.Core
         /// <param name="instance"></param>
         internal static void AddStatic(StaticInstance instance)
 		{
+            if (string.IsNullOrEmpty(instance.UUID))
+            {
+                instance.UUID = GetNewUUID();
+            }
+
             _allStaticInstances.Add(instance);
             allStaticInstances = _allStaticInstances.ToArray();
+
+            instancedByUUID.Add(instance.UUID, instance);
 
             String bodyName = instance.CelestialBody.bodyName;
 			String groupName = instance.Group;
@@ -59,6 +71,23 @@ namespace KerbalKonstructs.Core
             SetNewName(instance);
 
 		}
+
+        /// <summary>
+        /// Generate a UUID that is not already in the database
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetNewUUID()
+        {
+            string newUUID = Guid.NewGuid().ToString();
+
+            while (instancedByUUID.ContainsKey(newUUID))
+            {
+                newUUID = Guid.NewGuid().ToString();
+                Log.UserWarning("Duplicate UUID generated. You should play lottery");
+            }
+            return newUUID;
+
+        }
 
         /// <summary>
         /// Removes a Instance from the group and instance lists.
@@ -137,7 +166,7 @@ namespace KerbalKonstructs.Core
 
             modelCount--;
             instance.indexInGroup = modelCount;
-            instance.pqsCity.name = groupName + "_" + instance.model.name + "_" + modelCount;
+            instance.gameObject.name = groupName + "_" + instance.model.name + "_" + modelCount;
          //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
         }
 

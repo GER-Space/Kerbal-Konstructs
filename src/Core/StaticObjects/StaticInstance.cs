@@ -20,12 +20,17 @@ namespace KerbalKonstructs.Core
 
     public class StaticInstance
     {
+        // UUID for later identification
+        [CFGSetting]
+        public string UUID;
 
         // Position
         [CFGSetting]
         public CelestialBody CelestialBody = null;
         [CFGSetting]
         public Vector3 RadialPosition = Vector3.zero;
+        [CFGSetting]
+        public Vector3 RelativePosition = Vector3.zero;
         [CFGSetting]
         public Vector3 Orientation;
         [CFGSetting]
@@ -53,8 +58,6 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string Group = "Ungrouped";
         [CFGSetting]
-        public string GroupCenter = "false";
-        [CFGSetting]
         public int IsRelativeToTerrain = (int)HeightReference.Unset;
 
         // Special Effects
@@ -63,12 +66,15 @@ namespace KerbalKonstructs.Core
 
 
         public GameObject gameObject;
-        public PQSCity pqsCity;
+        internal PQSCity pqsCity;
         //public PQSCity2 pqsCity2;
         internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;
+
+
+        internal GroupCenter groupCenter = null;
 
         public bool hasFacilities
         {
@@ -210,12 +216,116 @@ namespace KerbalKonstructs.Core
             this.preview = bPreview;
 
             if (editing)
+            {
                 KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+            }
 
             float objvisibleRange = VisibilityRange;
 
             if (objvisibleRange < 1)
+            {
                 objvisibleRange = 25000f;
+            }
+
+
+            if (!StaticDatabase.allCenters.ContainsKey(groupCenterName))
+            {
+                if (RadialPosition.Equals(Vector3.zero))
+                {
+                    Log.UserError("No Group Found and no position found to create a Group: " + configPath );
+                    return;
+                }
+
+                Log.Normal("Creating a new Group Center: " + groupCenterName);
+
+                GroupCenter center = new GroupCenter();
+                center.Group = Group;
+                center.RadialPosition = RadialPosition;
+                center.CelestialBody = CelestialBody;
+                center.Spawn();
+            }
+
+            groupCenter = StaticDatabase.allCenters[groupCenterName];
+
+            if (RelativePosition.Equals(Vector3.zero))
+            {
+                LegacySpawnInstance();
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                pqsCity.enabled = false;
+                pqsCity.sphere = null;
+
+                RelativePosition = gameObject.transform.localPosition;
+                Orientation = gameObject.transform.localEulerAngles;
+
+            }
+            else
+            {
+                gameObject.transform.position = groupCenter.gameObject.transform.position;
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                gameObject.transform.localPosition = RelativePosition;
+                gameObject.transform.localEulerAngles = Orientation;
+            }
+
+
+            foreach (StaticModule module in model.modules)
+            {
+                Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
+
+                if (mod != null)
+                {
+                    mod.staticInstance = this;
+                    foreach (string fieldName in module.moduleFields.Keys)
+                    {
+                        FieldInfo field = mod.GetType().GetField(fieldName);
+                        if (field != null)
+                        {
+                            field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
+                        }
+                        else
+                        {
+                            Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
+                        }
+                    }
+                }
+                else
+                {
+                    Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
+                }
+            }
+
+            foreach (GameObject gorenderer in rendererList)
+            {
+                gorenderer.GetComponent<Renderer>().enabled = true;
+            }
+
+            StaticDatabase.AddStatic(this);
+
+            // Add them to the bodys objectlist, so they show up as anomalies
+            // After we got a new Name from StaticDatabase.AddStatic()
+            if (isScanable)
+            {
+                Log.Normal("Added " + gameObject.name + " to scanable Objects");
+                var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
+                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
+            }
+
+
+        }
+
+
+        private void LegacySpawnInstance()
+        {
+
+            float objvisibleRange = VisibilityRange;
+
+            if (objvisibleRange < 1)
+            {
+                objvisibleRange = 25000f;
+            }
+
+            pqsCity = gameObject.AddComponent<PQSCity>();
 
             PQSCity.LODRange range = new PQSCity.LODRange
             {
@@ -223,8 +333,6 @@ namespace KerbalKonstructs.Core
                 objects = new GameObject[0],
                 visibleRange = objvisibleRange
             };
-
-            pqsCity = gameObject.AddComponent<PQSCity>();
             pqsCity.lod = new[] { range };
             pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
             pqsCity.repositionRadial = RadialPosition; //position
@@ -279,75 +387,8 @@ namespace KerbalKonstructs.Core
                     }
                     break;
             }
-
-
             pqsCity.OnSetup();
             pqsCity.Orientate();
-
-
-            //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
-            //lodObject.visibleRange = VisibilityRange;
-            //lodObject.objects = new GameObject[] { };
-            //pqsCity2 = gameObject.AddComponent<PQSCity2>();
-            //pqsCity2.objects = new [] { lodObject } ;
-            //pqsCity2.objectName = ""; 
-            //pqsCity2.lat = RefLatitude;
-            //pqsCity2.lon = RefLongitude;
-            //pqsCity2.alt = RadiusOffset;
-            //pqsCity2.up = Orientation;
-            //pqsCity2.rotation = RotationAngle;
-            //pqsCity2.sphere = CelestialBody.pqsController;
-
-
-            //pqsCity2.OnSetup();
-            //pqsCity2.Orientate();
-
-
-            foreach (StaticModule module in model.modules)
-            {
-                Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
-                StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
-
-                if (mod != null)
-                {
-                    mod.staticInstance = this;
-                    foreach (string fieldName in module.moduleFields.Keys)
-                    {
-                        FieldInfo field = mod.GetType().GetField(fieldName);
-                        if (field != null)
-                        {
-                            field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
-                        }
-                        else
-                        {
-                            Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
-                        }
-                    }
-                }
-                else
-                {
-                    Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
-                }
-            }
-
-            foreach (GameObject gorenderer in rendererList)
-            {
-                gorenderer.GetComponent<Renderer>().enabled = true;
-            }
-
-            StaticDatabase.AddStatic(this);
-
-            // Add them to the bodys objectlist, so they show up as anomalies
-            // After we got a new Name from StaticDatabase.AddStatic()
-            if (isScanable)
-            {
-                Log.Normal("Added " + gameObject.name + " to scanable Objects");
-                var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
-                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
-                CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
-            }
-
-
         }
 
 
@@ -368,6 +409,15 @@ namespace KerbalKonstructs.Core
         {
             ConfigParser.SaveInstanceByCfg(configPath);
         }
+
+        internal string groupCenterName
+        {
+            get
+            {
+                return (CelestialBody.name + "_" + Group);
+            }
+        }
+
 
 	}
 }

@@ -173,6 +173,8 @@ namespace KerbalKonstructs
             // for Terrain Rescaling
             SDRescale.SetTerrainRescales();
 
+            ConfigParser.LoadAllGroupCenter();
+
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();
@@ -636,21 +638,31 @@ namespace KerbalKonstructs
                     model = model,
                     configUrl = configurl,
                     configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg",
-                    gameObject = Instantiate(model.prefab)
                 };
-                if (instance.gameObject == null)
+                ConfigParser.ParseInstanceConfig(instance, instanceCfgNode);
+                
+                if (instance.CelestialBody == null)
                 {
-                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    instance = null;
                     continue;
                 }
 
-                ConfigParser.ParseInstanceConfig(instance, instanceCfgNode);
-
-                if (instance.CelestialBody == null)
+                if (instance.Group == null)
+                {
+                    instance = null;
                     continue;
+                }
+
+                instance.gameObject = Instantiate(model.prefab);
+                if (instance.gameObject == null)
+                {
+                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    instance = null;
+                    continue;
+                }
 
                 // create RadialPosition, If we don't have one.
-                if (instance.RadialPosition.Equals(Vector3.zero))
+                if (instance.RadialPosition.Equals(Vector3.zero) && instance.RelativePosition.Equals(Vector3.zero))
                 {
                     if (instance.RefLatitude != 361f && instance.RefLongitude != 361f)
                     {
@@ -659,64 +671,12 @@ namespace KerbalKonstructs
                     }
                     else
                     {
-                        Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
-                        continue;
-                    }
-                }
-                else
-                {
-                    // create LAT & LON out of Radialposition, when not changed by config
-                    if (instance.RefLatitude == 361f || instance.RefLongitude == 361f)
-                    {
-                        instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-                        instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
-                    }
-                }
-
-                // sometimes we need a second pass.. (do we???)
-                // 
-
-                if (bSecondPass)
-                {
-                    Vector3 secondInstanceKey = instance.RadialPosition;
-                    bool bSpaceOccupied = false;
-
-                    
-                    foreach (StaticInstance soThis in StaticDatabase.GetAllStatics().Where(x => x.RadialPosition == instance.RadialPosition))
-                    {
-                        Vector3 firstInstanceKey = soThis.RadialPosition;                      
-
-                            if (soThis.model.mesh == instance.model.mesh)
-                            {
-                                if ((soThis.RadiusOffset == instance.RadiusOffset) && (soThis.RotationAngle == instance.RotationAngle))
-                                {
-                                    bSpaceOccupied = true;
-                                    Log.UserWarning("Attempted to import identical custom instance to same RadialPosition as existing instance: Check for duplicate custom statics: " + Environment.NewLine
-                                    + soThis.model.mesh + " : " + firstInstanceKey.ToString() + Environment.NewLine +
-                                    "File1: " + soThis.configPath + Environment.NewLine +
-                                    "File2: " + instance.configPath);
-                                    break;
-                                }
-                                else
-                                {
-                                    Log.Debug("Different rotation or offset. Allowing. Could be a feature of the same model such as a doorway being used. Will cause z tearing probably.");
-                                }
-                            }
-                            else
-                            {
-                                Log.Debug("Different models. Allowing. Could be a terrain foundation or integrator.");
-                            }
-                        
-                    }
-
-                    if (bSpaceOccupied)
-                    {
-                        Log.UserWarning("KK: Attempted to import identical custom instance to same RadialPosition as existing instance. Skipped. Check for duplicate custom statics you have installed. Did you export the custom instances to make a pack? If not, ask the mod-makers if they are duplicating the same stuff as each other.");
+                        Log.UserError("Neither RelativePosition, RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
                         continue;
                     }
                 }
 
-                instance.SpawnObject(false, false);
+                instance.SpawnObject();
 
                 AttachFacilities(instance, instanceCfgNode);
 
@@ -977,6 +937,9 @@ namespace KerbalKonstructs
         /// </summary>
         public void saveObjects()
         {
+
+            SaveGrouCenters();
+
             HashSet<String> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
@@ -1019,6 +982,15 @@ namespace KerbalKonstructs
 
             }
         }
+
+        internal void SaveGrouCenters()
+        {
+            foreach (GroupCenter center in StaticDatabase.allCenters.Values)
+            {
+                center.Save();
+            }
+        }
+
 
         internal bool hasDeletedInstances
         {

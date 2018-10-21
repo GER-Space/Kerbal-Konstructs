@@ -2,7 +2,7 @@
 #
 #
 
-cd /c/Git/Kerbal-Konstructs-1.3.1
+cd /c/Git/Kerbal-Konstructs_1.3.1
 
 VERSION=`grep -i AssemblyFileVersion src/Properties/AssemblyInfo.cs  | cut -d "\"" -f 2`
 
@@ -35,4 +35,4 @@ sed -i "s/BUILD\":.*/BUILD\":$BUILD/" GameData/KerbalKonstructs/KerbalKonstructs
 
 /c/Program\ Files/7-Zip/7z.exe a -r  $FILENAME GameData
 
-
+sleep 10
