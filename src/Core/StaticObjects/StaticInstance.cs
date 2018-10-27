@@ -124,35 +124,48 @@ namespace KerbalKonstructs.Core
         /// </summary>
         public void Update()
         {
-            if (pqsCity != null)
-            {
-                pqsCity.repositionRadial = RadialPosition;
-                pqsCity.repositionRadiusOffset = RadiusOffset;
-                pqsCity.reorientInitialUp = Orientation;
-                pqsCity.reorientFinalAngle = RotationAngle;
-                pqsCity.transform.localScale = origScale * ModelScale;
 
-                switch (heighReference)
-                {
-                    case HeightReference.Sphere:
-                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-                        pqsCity.repositionToSphereSurfaceAddHeight = false;
-                        pqsCity.repositionToSphere = true;
-                        break;
-                    case HeightReference.Terrain:
-                        pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                        pqsCity.repositionToSphereSurfaceAddHeight = true;
-                        pqsCity.repositionToSphere = false;
-                        break;
-                }
+            //gameObject.transform.localScale = origScale * ModelScale;
 
-                pqsCity.Orientate();
-            }
+            //if (pqsCity != null)
+            //{
+            //    pqsCity.repositionRadial = RadialPosition;
+            //    pqsCity.repositionRadiusOffset = RadiusOffset;
+            //    pqsCity.reorientInitialUp = Orientation;
+            //    pqsCity.reorientFinalAngle = RotationAngle;
+
+            //    switch (heighReference)
+            //    {
+            //        case HeightReference.Sphere:
+            //            pqsCity.repositionToSphereSurface = false; //Snap to surface?
+            //            pqsCity.repositionToSphereSurfaceAddHeight = false;
+            //            pqsCity.repositionToSphere = true;
+            //            break;
+            //        case HeightReference.Terrain:
+            //            pqsCity.repositionToSphereSurface = true; //Snap to surface?
+            //            pqsCity.repositionToSphereSurfaceAddHeight = true;
+            //            pqsCity.repositionToSphere = false;
+            //            break;
+            //    }
+
+            //    pqsCity.Orientate();
+            //}
+            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y );
+            RadialPosition = radialPosition;
+
+
+            RelativePosition = gameObject.transform.localPosition;
+            Orientation = gameObject.transform.localEulerAngles;
+
             // Notify modules about update
             foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
             {
                 module.StaticObjectUpdate();
             }
+
+
+
         }
 
         internal void HighlightObject(Color highlightColor)
@@ -253,6 +266,7 @@ namespace KerbalKonstructs.Core
                 gameObject.transform.parent = groupCenter.gameObject.transform;
                 pqsCity.enabled = false;
                 pqsCity.sphere = null;
+                pqsCity = null;
 
                 RelativePosition = gameObject.transform.localPosition;
                 Orientation = gameObject.transform.localEulerAngles;
@@ -266,6 +280,13 @@ namespace KerbalKonstructs.Core
                 gameObject.transform.localEulerAngles = Orientation;
             }
 
+            //Scaling
+            origScale = gameObject.transform.localScale;             // save the original scale for later use
+            gameObject.transform.localScale *= ModelScale;
+
+            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
+            RadialPosition = radialPosition;
 
             foreach (StaticModule module in model.modules)
             {
@@ -342,8 +363,6 @@ namespace KerbalKonstructs.Core
             pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
             gameObject.transform.parent = CelestialBody.pqsController.transform;
             pqsCity.sphere = CelestialBody.pqsController;
-            origScale = pqsCity.transform.localScale;             // save the original scale for later use
-            pqsCity.transform.localScale *= ModelScale;
             pqsCity.order = 100;
             pqsCity.modEnabled = true;
             pqsCity.repositionToSphere = true; //enable repositioning
@@ -409,6 +428,26 @@ namespace KerbalKonstructs.Core
         {
             ConfigParser.SaveInstanceByCfg(configPath);
         }
+
+        /// <summary>
+        /// Returns the evelation of the surface under the object
+        /// </summary>
+        internal double surfaceHeight
+        {
+            get
+            {
+                return (CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius) - CelestialBody.pqsController.radius);
+            }
+        }
+
+        internal Vector3 radialPosition
+        {
+            get
+            {
+                return (CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius);
+            }
+        }
+
 
         internal string groupCenterName
         {

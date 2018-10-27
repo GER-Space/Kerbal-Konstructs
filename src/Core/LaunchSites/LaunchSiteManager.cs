@@ -180,7 +180,7 @@ namespace KerbalKonstructs.Core
             ksc2.body = ConfigUtil.GetCelestialBody("HomeWorld");
             ksc2.refLat = (float)ksc2Instance.RefLatitude;
             ksc2.refLon = (float)ksc2Instance.RefLongitude;
-            ksc2.refAlt = (float)(body.pqsController.GetSurfaceHeight(ksc2PQS.repositionRadial) - body.Radius );
+            ksc2.refAlt = (float)ksc2Instance.surfaceHeight;
             ksc2.LaunchSiteLength = 15f;
             ksc2.LaunchSiteWidth = 15f;
             ksc2.InitialCameraRotation = 135f;
@@ -304,43 +304,64 @@ namespace KerbalKonstructs.Core
 
                 if (facilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null )
                 {
-                    //Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
-                    PSystemSetup.SpaceCenterFacility newSpaceCenter = new PSystemSetup.SpaceCenterFacility();
-                    newSpaceCenter.name = "";
-                    newSpaceCenter.facilityName = site.LaunchSiteName;
-                    newSpaceCenter.facilityPQS = site.staticInstance.CelestialBody.pqsController;
-                    newSpaceCenter.facilityTransformName = site.staticInstance.gameObject.name;
-                    // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
+                    Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
+
+                    PSystemSetup.SpaceCenterFacility newSpaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
+
+
+                    newSpaceCenterFacility.name = site.LaunchSiteName;
+                    newSpaceCenterFacility.facilityName = site.LaunchSiteName;
+                    newSpaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
+                    if (site.staticInstance.groupCenter == null)
+                    {
+                        newSpaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
+                    }
+                    else
+                    {
+                        newSpaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name;
+                    }
+
                     //     newFacility.facilityTransformName = instance.gameObject.transform.name;
-                    newSpaceCenter.pqsName = site.body.pqsController.name;
+                    newSpaceCenterFacility.pqsName = site.body.pqsController.name;
+
+
                     PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
                     spawnPoint.name = site.LaunchSiteName;
                     spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-                    newSpaceCenter.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
-                    newSpaceCenter.spawnPoints[0] = spawnPoint;
 
-					facilities.Add(newSpaceCenter);
+                    newSpaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
+                    newSpaceCenterFacility.spawnPoints[0] = spawnPoint;
+
+
+                    newSpaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
+                    //SetupKSPFacilities();
+
+                    facilities.Add(newSpaceCenterFacility);
+
 					PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
-                    site.facility = newSpaceCenter;
-
+                    site.facility = newSpaceCenterFacility;
+                    //SetupKSPFacilities();
                     AddLaunchSite(site);
                 }
                 else
                 {
                     Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
                 }
-                MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (updateSitesMI == null)
+
+
+
+                if (PSystemSetup.Instance.SpaceCenterFacilities.ToList().Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
                 {
-                    Log.UserError("You are screwed. Failed to find SetupFacilities().");
+                    Log.Normal("LaunchSite registered: " + site.LaunchSiteName);
                 }
                 else
                 {
-                    updateSitesMI.Invoke(PSystemSetup.Instance, null);
+                    Log.Normal("LaunchSite registration failed: " + site.LaunchSiteName);
                 }
 
-                if (site.staticInstance.gameObject != null)
+
+                    if (site.staticInstance.gameObject != null)
                 {                    
                     CustomSpaceCenter.CreateFromLaunchsite(site);
                 }
@@ -439,6 +460,23 @@ namespace KerbalKonstructs.Core
                 }
 
 
+            }
+        }
+
+
+        internal static void SetupKSPFacilities()
+        {
+
+            // Log.Normal("SetupKSPFacilities Called");
+
+            MethodInfo updateSitesMI = PSystemSetup.Instance.GetType().GetMethod("SetupFacilities", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (updateSitesMI == null)
+            {
+                Log.UserError("You are screwed. Failed to find SetupFacilities().");
+            }
+            else
+            {
+                updateSitesMI.Invoke(PSystemSetup.Instance, null);
             }
         }
 

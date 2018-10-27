@@ -45,7 +45,10 @@ namespace KerbalKonstructs.Core
                 allMapDecalInstances = _allMapDecalInstances.ToArray();
                 Log.Debug("MapDecal instace " + instance.Name + " removed from Database");
 
-                System.IO.File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + instance.configPath); 
+                if (instance.configPath != null && System.IO.File.Exists(KSPUtil.ApplicationRootPath + "GameData/" + instance.configPath))
+                {
+                    System.IO.File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + instance.configPath);
+                }
 
             }
 

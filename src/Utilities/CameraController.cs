@@ -136,31 +136,25 @@ namespace KerbalKonstructs.Core
                     cam.ResetCamera();
                     
                 }
-            } else {
+            }
+            else
+            {
+                PQSCity sitePQS = currentSite.staticInstance.groupCenter.pqsCity;
 
-                    PQSCity sitePQS = currentSite.staticInstance.pqsCity;
-
-                    foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
+                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
+                {
+                    double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
+                    if (sitePQS.repositionToSphereSurface)
                     {
-                        if (sitePQS.repositionToSphere || sitePQS.repositionToSphereSurface)
-                        {
-
-                            double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
-                            if (sitePQS.repositionToSphereSurface)
-                            {
-                                nomHeight += sitePQS.repositionRadiusOffset;
-                            }
-                            cam.altitudeInitial = 0f - (float)nomHeight;
-                        }
-                        else
-                        {
-                            cam.altitudeInitial = 0f - (float)sitePQS.repositionRadiusOffset;
-                        }
-                        cam.ResetCamera();
-                        Log.Normal("fixed the Space Center camera.");
-
+                        nomHeight += sitePQS.repositionRadiusOffset;
                     }
+                    cam.altitudeInitial = 0f - (float)nomHeight;
+
+                    cam.ResetCamera();
+                    Log.Normal("fixed the Space Center camera.");
+
                 }
+            }
             SetNextMorningPoint(currentSite);
         }
 

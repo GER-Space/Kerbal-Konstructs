@@ -30,7 +30,7 @@ namespace KerbalKonstructs
         #region Holders
         internal StaticInstance selectedObject;
         internal StaticModel selectedModel;
-        internal CameraController camControl = new CameraController();
+        internal static CameraController camControl = new CameraController();
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
 
@@ -138,6 +138,7 @@ namespace KerbalKonstructs
         #endregion
 
         private List<StaticInstance> deletedInstances = new List<StaticInstance>();
+        internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
 
         /// <summary>
@@ -462,7 +463,7 @@ namespace KerbalKonstructs
                 {
                     LaunchSiteManager.DeleteLaunchSite(instance.launchSite);
                 }
-                DeleteObject(instance);
+                DeleteInstance(instance);
             }
             deletedInstances.Clear();
 
@@ -671,7 +672,7 @@ namespace KerbalKonstructs
                     }
                     else
                     {
-                        Log.UserError("Neither RelativePosition, RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
+                        Log.UserError("Neither RelativePosition, RadialPosition or RefLatitude+RefLongitude found: " + instance.configPath);
                         continue;
                     }
                 }
@@ -938,7 +939,7 @@ namespace KerbalKonstructs
         public void saveObjects()
         {
 
-            SaveGrouCenters();
+            SaveGroupCenters();
 
             HashSet<String> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
@@ -981,10 +982,20 @@ namespace KerbalKonstructs
                 processedInstances.Add(deletedInstance.configPath);
 
             }
+
         }
 
-        internal void SaveGrouCenters()
+        internal void SaveGroupCenters()
         {
+            foreach (GroupCenter center in deletedGroups)
+            {
+                if (File.Exists(KSPUtil.ApplicationRootPath + "GameData/" + center.configPath))
+                {
+                    File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + center.configPath);
+                }
+            }
+            deletedGroups.Clear();
+
             foreach (GroupCenter center in StaticDatabase.allCenters.Values)
             {
                 center.Save();
@@ -1078,10 +1089,12 @@ namespace KerbalKonstructs
             }
         }
 
-        public void DeleteObject(StaticInstance obj)
+        public void DeleteInstance(StaticInstance obj)
         {
             if (selectedObject == obj)
+            {
                 deselectObject(true, false);
+            }
 
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
@@ -1091,7 +1104,9 @@ namespace KerbalKonstructs
             if (camControl.active) camControl.disable();
 
             if ( StaticsEditorGUI.instance.snapTargetInstance == obj)
+            {
                 StaticsEditorGUI.instance.snapTargetInstance = null;
+            }
 
             Log.Debug("deleteObject");
 
@@ -1127,17 +1142,23 @@ namespace KerbalKonstructs
 
 
                 if (selectedObject != null)
+                {
                     deselectObject(true, true);
+                }
 
                 if (camControl.active)
+                {
                     camControl.disable();
+                }
 
                 camControl.enable(obj.gameObject);
             }
             else
             {
                 if (selectedObject != null)
+                {
                     deselectObject(true, true);
+                }
             }
 
             //obj.preview = bPreview;
@@ -1150,6 +1171,8 @@ namespace KerbalKonstructs
                 selectedObject.ToggleAllColliders(false);
             }
         }
+
+
 
         public void deselectObject(Boolean disableCam, Boolean enableColliders)
         {
@@ -1170,7 +1193,9 @@ namespace KerbalKonstructs
             InputLockManager.RemoveControlLock("KKCamModes");
 
             if (disableCam)
+            {
                 camControl.disable();
+            }
         }
 
         #endregion

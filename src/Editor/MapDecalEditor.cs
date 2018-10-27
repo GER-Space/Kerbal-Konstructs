@@ -119,6 +119,11 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
+            if (KerbalKonstructs.camControl.active)
+            {
+                KerbalKonstructs.camControl.disable();
+            }
+
             CloseVectors();
             base.Close();
             selectedDecal = null;
@@ -149,6 +154,10 @@ namespace KerbalKonstructs.UI
                 position = selectedDecal.gameObject.transform.position;
                 Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
                 SetupVectors();
+                if (!KerbalKonstructs.camControl.active)
+                {
+                    KerbalKonstructs.camControl.enable(selectedDecal.gameObject);
+                }
             }
 
             toolRect = GUI.Window(0xB00B1E3, toolRect, MapDecalEditorWindow, "", KKWindows);

@@ -59,9 +59,11 @@ namespace KerbalKonstructs.Core
 			String groupName = instance.Group;
 
 			if (!groupList.ContainsKey(bodyName))
-				groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+            {
+                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+            }
 
-			if (!groupList[bodyName].ContainsKey(groupName))
+            if (!groupList[bodyName].ContainsKey(groupName))
 			{
 				StaticGroup group = new StaticGroup(groupName, bodyName);			
 				groupList[bodyName].Add(groupName, group);
@@ -70,7 +72,9 @@ namespace KerbalKonstructs.Core
 
             SetNewName(instance);
 
-		}
+            instance.groupCenter.AddInstance(instance);
+
+        }
 
         /// <summary>
         /// Generate a UUID that is not already in the database
@@ -100,8 +104,17 @@ namespace KerbalKonstructs.Core
                 _allStaticInstances.Remove(instance);
                 allStaticInstances = _allStaticInstances.ToArray();
             }
+
+            if (instancedByUUID.ContainsKey(instance.UUID))
+            {
+                instancedByUUID.Remove(instance.UUID);
+            }
+
+            instance.groupCenter.RemoveInstance(instance);
+
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
+
 
             if (groupList.ContainsKey(bodyName))
             {
@@ -111,6 +124,7 @@ namespace KerbalKonstructs.Core
                     groupList[bodyName][groupName].DeleteObject(instance);
                 }
             }
+
         }
 
         /// <summary>
@@ -118,12 +132,13 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="newGroup"></param>
-        internal static void ChangeGroup(StaticInstance instance, string newGroup)
+        internal static void ChangeGroup(StaticInstance instance, GroupCenter newGroup)
         {
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
 
-            instance.Group = newGroup;
+
+            instance.groupCenter.RemoveInstance(instance);
 
             if (groupList.ContainsKey(bodyName))
             {
@@ -134,17 +149,33 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (!groupList.ContainsKey(bodyName))
-                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
 
-            if (!groupList[bodyName].ContainsKey(newGroup))
+
+            instance.Group = newGroup.Group;
+            instance.groupCenter = newGroup;
+
+
+            bodyName = instance.CelestialBody.bodyName;
+            groupName = instance.Group;
+
+            if (!groupList.ContainsKey(bodyName))
             {
-                StaticGroup group = new StaticGroup(newGroup, bodyName);
-                groupList[bodyName].Add(newGroup, group);
+                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
             }
-            groupList[bodyName][newGroup].AddStatic(instance);
+
+            if (!groupList[bodyName].ContainsKey(groupName))
+            {
+                StaticGroup group = new StaticGroup(groupName, bodyName);
+                groupList[bodyName].Add(groupName, group);
+            }
+            groupList[bodyName][groupName].AddStatic(instance);
 
             SetNewName(instance);
+
+            instance.groupCenter.AddInstance(instance);
+
+            instance.gameObject.transform.parent = instance.groupCenter.gameObject.transform;
+
         }
 
 

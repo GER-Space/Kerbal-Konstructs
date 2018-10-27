@@ -186,10 +186,10 @@ namespace KerbalKonstructs.Core
                     icon = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteIcon, false);
             }
 
-            refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);
-            refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
+            refLon = (float)Math.Round(staticInstance.RefLongitude, 2);
+            refLat = (float)Math.Round(staticInstance.RefLatitude, 2);
 
-            refAlt = staticInstance.RadiusOffset;
+            refAlt = (float)staticInstance.surfaceHeight;
             AttachSelector();
 
         }

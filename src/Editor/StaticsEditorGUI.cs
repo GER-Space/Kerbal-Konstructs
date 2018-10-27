@@ -69,9 +69,10 @@ namespace KerbalKonstructs.UI
         public StaticInstance snapTargetInstance = null;
         StaticInstance snapTargetInstancePrevious = null;
 
+        private GroupCenter activeGroup = null;
+
         public float fButtonWidth = 0f;
 
-        String customgroup = "";
         String categoryFilterString = "";
         String titlefilterString = "";
         String categoryfilter = "";
@@ -416,23 +417,23 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
-        void SetLocalsGroup(string sGroup, float fRange)
-        {
-            if (sGroup == "")
-                return;
+        //void SetLocalsGroup(string sGroup, float fRange)
+        //{
+        //    if (sGroup == "")
+        //        return;
 
-            foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
-            {
-                if (obj.CelestialBody == FlightGlobals.currentMainBody)
-                {
-                    var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-                    if (dist < fRange)
-                    {
-                        StaticDatabase.ChangeGroup(obj, sGroup);
-                    }
-                }
-            }
-        }
+        //    foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
+        //    {
+        //        if (obj.CelestialBody == FlightGlobals.currentMainBody)
+        //        {
+        //            var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
+        //            if (dist < fRange)
+        //            {
+        //                StaticDatabase.ChangeGroup(obj, sGroup);
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// wrapper for editorGUI spawnInstance
@@ -816,26 +817,8 @@ namespace KerbalKonstructs.UI
             }
             GUI.enabled = true;
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Group:");
-
-            // GUILayout.Space(5);
-            GUI.enabled = (mode == EditorMode.LOCAL);
-            customgroup = GUILayout.TextField(customgroup, 25, GUILayout.Width(125));
 
 
-            GUI.enabled = true;
-
-            GUI.enabled = (mode == EditorMode.LOCAL);
-
-
-
-
-            if (GUILayout.Button("Set as Group", GUILayout.Width(100)))
-            {
-                SetLocalsGroup(customgroup, localRange);
-                smessage = "Set group as " + customgroup;
-                MiscUtils.HUDMessage(smessage, 10, 2);
-            }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
@@ -872,7 +855,9 @@ namespace KerbalKonstructs.UI
                 MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 
                 if (MapDecalEditor.selectedDecal == null)
+                {
                     Log.UserError("No MapDecalInstance created");
+                }
 
                 MapDecalEditor.Instance.Open();
 
@@ -904,8 +889,10 @@ namespace KerbalKonstructs.UI
                 {
                     EditorGUI.CloseEditors();
                     MapDecalEditor.Instance.Close();
-                   // MapDecalEditor.selectedDecal = mapDecalInstance;
-                    MapDecalEditor.Instance.Open();
+                    GroupEditor.instance.Close();
+                    GroupEditor.selectedGroup = groupCenter;
+                    // MapDecalEditor.selectedDecal = mapDecalInstance;
+                    GroupEditor.instance.Open();
                 }
 
             }
@@ -914,29 +901,64 @@ namespace KerbalKonstructs.UI
         internal void ShowGroupFooter()
         {
             GUILayout.BeginHorizontal();
-
-            //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
-            //GUILayout.FlexibleSpace();
-            //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
-            if (GUILayout.Button("Spawn new Group", GUILayout.Width(170)))
             {
-                EditorGUI.instance.Close();
-                EditorGUI.selectedInstance = null;
 
-                MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
-
-                if (MapDecalEditor.selectedDecal == null)
+                //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
+                //GUILayout.FlexibleSpace();
+                //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
+                if (GUILayout.Button("Spawn new Group", GUILayout.Width(170)))
                 {
-                    Log.UserError("No Group created");
-                }
-                MapDecalEditor.Instance.Open();
+                    EditorGUI.instance.Close();
+                    MapDecalEditor.Instance.Close();
+                    EditorGUI.selectedInstance = null;
 
-                Log.Normal("MapDecal Editor spawned");
+                    GroupCenter groupCenter = new GroupCenter();
+                    groupCenter.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
+                    groupCenter.Group = "NewGroup";
+                    groupCenter.CelestialBody = FlightGlobals.currentMainBody;
+                    groupCenter.Spawn();
+
+                    GroupEditor.selectedGroup = groupCenter;
+
+                    if (GroupEditor.selectedGroup == null)
+                    {
+                        Log.UserError("No Group created");
+                    }
+                    GroupEditor.instance.Open();
+
+                    Log.Normal("Group Editor spawned");
+
+                }
+
+                GUILayout.FlexibleSpace();
+
+                GUILayout.Button("active Group:" + ((activeGroup != null) ? activeGroup.Group : " not set") + "  ", DeadButton3, GUILayout.Width(150), GUILayout.Height(23));
+
+                if (GUILayout.Button("Set Active Group", GUILayout.Width(170)))
+                {
+                    GroupSelectorUI.instance.Close();
+                    GroupSelectorUI.showOnlyLocal = true;
+                    GroupSelectorUI.callBack = SetActiveGroup;
+                    GroupSelectorUI.titleText = "Select active Group";
+                    GroupSelectorUI.instance.Open();
+                }
+
+
+                GUI.enabled = ((activeGroup != null)  && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < 25000 );
+                if (GUILayout.Button("clone group to active", GUILayout.Width(170)))
+                {
+                    GroupSelectorUI.instance.Close();
+                    GroupSelectorUI.showOnlyLocal = false;
+                    GroupSelectorUI.titleText = "Select Group to Clone";
+                    GroupSelectorUI.callBack = activeGroup.CopyGroup;
+                    GroupSelectorUI.instance.Open();
+
+                }
+
+                GUI.enabled = true;
 
             }
             GUILayout.EndHorizontal();
-
-
         }
 
 
@@ -989,6 +1011,15 @@ namespace KerbalKonstructs.UI
             }
 
         }
+
+
+
+        internal void SetActiveGroup(GroupCenter group)
+        {
+            activeGroup = group;
+        }
+
+
 
         /// <summary>
         /// tries to find a Static Object attached to a child GameObject.

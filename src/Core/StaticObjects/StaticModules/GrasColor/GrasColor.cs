@@ -20,7 +20,7 @@ namespace KerbalKonstructs
 
 
 
-        private bool usePQS = true;
+        private bool usePQS = false;
         private bool useNormalMap = false;
 
         private bool isInitialized = false;
@@ -120,7 +120,8 @@ namespace KerbalKonstructs
             PQS.VertexBuildData data = new PQS.VertexBuildData
             {
                 directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
-                vertHeight = body.pqsController.radius
+                vertHeight = ((body.pqsController.GetSurfaceHeight(body.GetRelSurfaceNVector(lat, lon).normalized * body.Radius)) )
+//            vertHeight = body.pqsController.radius
             };
 
             // Fetch all enabled Mods
