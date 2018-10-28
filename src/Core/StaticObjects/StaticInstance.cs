@@ -127,8 +127,6 @@ namespace KerbalKonstructs.Core
         /// </summary>
         public void Update()
         {
-
-
             RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
@@ -137,15 +135,14 @@ namespace KerbalKonstructs.Core
 
             RelativePosition = gameObject.transform.localPosition;
             Orientation = gameObject.transform.localEulerAngles;
+            RadiusOffset = (float)((surfaceHeight - groupCenter.surfaceHeight) + RelativePosition.y);
+
 
             // Notify modules about update
             foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
             {
                 module.StaticObjectUpdate();
             }
-
-
-
         }
 
         internal void HighlightObject(Color highlightColor)

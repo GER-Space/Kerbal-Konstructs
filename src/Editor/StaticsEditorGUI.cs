@@ -444,10 +444,7 @@ namespace KerbalKonstructs.UI
 		internal void SpawnInstance(StaticModel model)
         {
             GroupCenter center = GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
-
-            Vector3 relPosition = (center.gameObject.transform.position - FlightGlobals.ActiveVessel.transform.position);
-
-            EditorGUI.instance.SpawnInstance(model, center, relPosition, Vector3.zero);
+            EditorGUI.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
             if (!EditorGUI.instance.IsOpen())
             {
                 EditorGUI.instance.Open();
