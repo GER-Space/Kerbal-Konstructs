@@ -467,7 +467,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Destroy Group", GUILayout.Height(21)))
                 {
-                    DeleteInstance();
+                    DeleteGroupCenter();
                 }
 
             }
@@ -507,7 +507,7 @@ namespace KerbalKonstructs.UI
         #region Utility Functions
 
 
-        internal void DeleteInstance()
+        internal void DeleteGroupCenter()
         {
             if (selectedObjectPrevious == selectedGroup)
             {
@@ -529,6 +529,8 @@ namespace KerbalKonstructs.UI
             selectedGroup.DeleteGroupCenter();
 
             selectedGroup = null;
+
+            StaticsEditorGUI.ResetLocalGroupList();
             this.Close();
         }
 

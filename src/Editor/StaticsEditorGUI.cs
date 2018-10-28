@@ -70,6 +70,7 @@ namespace KerbalKonstructs.UI
         StaticInstance snapTargetInstancePrevious = null;
 
         private GroupCenter activeGroup = null;
+        private static GroupCenter[] localGroups;
 
         public float fButtonWidth = 0f;
 
@@ -136,6 +137,7 @@ namespace KerbalKonstructs.UI
         public override void Open()
         {
             allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
+            ResetLocalGroupList();
             base.Open();
         }
 
@@ -441,10 +443,11 @@ namespace KerbalKonstructs.UI
         /// <param name="model"></param>
 		internal void SpawnInstance(StaticModel model)
         {
-            EditorGUI.instance.SpawnInstance(model,
-                (float)FlightGlobals.ActiveVessel.altitude,
-                KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
-                0f);
+            GroupCenter center = GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
+
+            Vector3 relPosition = (center.gameObject.transform.position - FlightGlobals.ActiveVessel.transform.position);
+
+            EditorGUI.instance.SpawnInstance(model, center, relPosition, Vector3.zero);
             if (!EditorGUI.instance.IsOpen())
             {
                 EditorGUI.instance.Open();
@@ -473,7 +476,9 @@ namespace KerbalKonstructs.UI
             allStaticModels = tmpList.ToArray();
         }
 
-
+        /// <summary>
+        /// display all models
+        /// </summary>
         internal void ShowModelsScroll()
         {
 
@@ -519,14 +524,24 @@ namespace KerbalKonstructs.UI
                     //GUILayout.FlexibleSpace();
                     GUILayout.Space(5);
 
-
-                    if (GUILayout.Button(new GUIContent(model.title, "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
+                    if (localGroups.Length > 0)
                     {
-                        EditorGUI.CloseEditors();
-                        KerbalKonstructs.instance.DeletePreviewObject();
-                        SpawnInstance(model);
-                        smessage = "Spawned " + model.title;
-                        MiscUtils.HUDMessage(smessage, 10, 2);
+                        if (GUILayout.Button(new GUIContent(model.title, "Spawn an instance of this static."), DeadButton2, GUILayout.Height(23)))
+                        {
+                            EditorGUI.CloseEditors();
+                            KerbalKonstructs.instance.DeletePreviewObject();
+                            SpawnInstance(model);
+                            smessage = "Spawned " + model.title;
+                            MiscUtils.HUDMessage(smessage, 10, 2);
+                        }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button(new GUIContent(model.title, "first a Local Group Center"), DeadButton2, GUILayout.Height(23)))
+                        {
+                            Log.UserError("No Local Group found");
+                            MiscUtils.HUDMessage("Create and place a local Group, then try again!");
+                        }
                     }
 
 
@@ -546,6 +561,9 @@ namespace KerbalKonstructs.UI
 
         }
 
+        /// <summary>
+        /// footer of model view
+        /// </summary>
         internal void ShowModelsFooter()
         {
 
@@ -577,7 +595,9 @@ namespace KerbalKonstructs.UI
 
         }
 
-
+        /// <summary>
+        /// instances
+        /// </summary>
         internal void ShowInstancesScroll()
         {
 
@@ -707,7 +727,9 @@ namespace KerbalKonstructs.UI
 
         }
 
-
+        /// <summary>
+        /// Instances for all Selection: Deprecated
+        /// </summary>
         internal void ShowInstancesFootersAll()
         {
             GUILayout.BeginHorizontal();
@@ -788,7 +810,9 @@ namespace KerbalKonstructs.UI
 
         }
 
-
+        /// <summary>
+        /// Footer for local instances
+        /// </summary>
         internal void ShowInstancesFootersLocal()
         {
             GUILayout.BeginHorizontal();
@@ -825,6 +849,10 @@ namespace KerbalKonstructs.UI
 
         }
 
+
+        /// <summary>
+        /// Show Mapdecals
+        /// </summary>
         internal void ShowDecalsScroll()
         {
             foreach (var mapDecalInstance in DecalsDatabase.allMapDecalInstances)
@@ -840,6 +868,9 @@ namespace KerbalKonstructs.UI
             }
         }
 
+        /// <summary>
+        /// Footer for Mapdecals
+        /// </summary>
         internal void ShowDecalsFooter()
         {
             GUILayout.BeginHorizontal();
@@ -870,20 +901,13 @@ namespace KerbalKonstructs.UI
         }
 
 
-
+        /// <summary>
+        /// Show Groups
+        /// </summary>
         internal void ShowGroupScroll()
         {
-            foreach (var groupCenter in StaticDatabase.allCenters.Values)
+            foreach (var groupCenter in localGroups)
             {
-                if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
-                {
-                    continue;
-                }
-
-                if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > 25000)
-                {
-                    continue;
-                }
 
                 if (GUILayout.Button(new GUIContent(" " + groupCenter.Group, "Edit this Group."), GUILayout.Height(23)))
                 {
@@ -898,6 +922,9 @@ namespace KerbalKonstructs.UI
             }
         }
 
+        /// <summary>
+        /// Footer for Groups
+        /// </summary>
         internal void ShowGroupFooter()
         {
             GUILayout.BeginHorizontal();
@@ -923,10 +950,14 @@ namespace KerbalKonstructs.UI
                     if (GroupEditor.selectedGroup == null)
                     {
                         Log.UserError("No Group created");
-                    }
-                    GroupEditor.instance.Open();
 
-                    Log.Normal("Group Editor spawned");
+                    }
+                    else
+                    {
+                        GroupEditor.instance.Open();
+                        Log.Normal("Group Editor spawned");
+                    }
+                    ResetLocalGroupList();
 
                 }
 
@@ -944,7 +975,7 @@ namespace KerbalKonstructs.UI
                 }
 
 
-                GUI.enabled = ((activeGroup != null)  && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < 25000 );
+                GUI.enabled = ((activeGroup != null)  && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < KerbalKonstructs.localGroupRange);
                 if (GUILayout.Button("clone group to active", GUILayout.Width(170)))
                 {
                     GroupSelectorUI.instance.Close();
@@ -961,6 +992,50 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
         }
 
+        /// <summary>
+        /// Sets the localGroups
+        /// </summary>
+        internal static void ResetLocalGroupList()
+        {
+            List<GroupCenter> foundList = new List<GroupCenter>();
+            foreach (var groupCenter in StaticDatabase.allCenters.Values)
+            {
+                if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
+                {
+                    continue;
+                }
+
+                if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > KerbalKonstructs.localGroupRange)
+                {
+                    continue;
+                }
+
+                foundList.Add(groupCenter);
+            }
+
+            localGroups = foundList.ToArray();
+        }
+
+        
+        internal static GroupCenter GetCloesedCenter(Vector3 myPosition)
+        {
+            if (localGroups.Length == 0)
+            {
+                return null;
+            }
+            GroupCenter closest = localGroups[0];
+            float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
+            foreach (GroupCenter center in localGroups)
+            {
+                if (Vector3.Distance(myPosition, center.gameObject.transform.position)  < dist)
+                {
+                    dist = Vector3.Distance(myPosition, center.gameObject.transform.position);
+                    closest = center;
+                }
+            }
+
+            return closest;
+        }
 
 
         internal static void ResetInstancesList()

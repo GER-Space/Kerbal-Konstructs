@@ -178,7 +178,6 @@ namespace KerbalKonstructs.Core
 
         }
 
-
         /// <summary>
         /// Sets the PQSCity Name to Group_Modenlame_(index of the same models in group)
         /// </summary>

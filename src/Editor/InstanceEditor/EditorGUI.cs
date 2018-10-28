@@ -638,13 +638,9 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Duplicate", GUILayout.Width(130), GUILayout.Height(23)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
-                    StaticModel oModel = selectedInstance.model;
-                    float fOffset = selectedInstance.RadiusOffset;
-                    Vector3 vPosition = selectedInstance.RadialPosition;
-                    float fAngle = selectedInstance.RotationAngle;
+                    selectedInstance.SaveConfig();
                     KerbalKonstructs.instance.deselectObject(true, true);
-                    SpawnInstance(oModel, fOffset, vPosition, fAngle);
+                    SpawnInstance(selectedInstance.model, selectedInstance.groupCenter, selectedInstance.RelativePosition, selectedInstance.Orientation);
                     MiscUtils.HUDMessage("Spawned duplicate " + selectedInstance.model.title, 10, 2);
                 }
             }
@@ -778,22 +774,19 @@ namespace KerbalKonstructs.UI
         /// <param name="vPosition"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public void SpawnInstance(StaticModel model, float fOffset, Vector3 vPosition, float fAngle)
+        internal void SpawnInstance(StaticModel model, GroupCenter groupCenter, Vector3 relPosition, Vector3 rotation)
         {
             StaticInstance instance = new StaticInstance();
-            instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
-            instance.RadiusOffset = fOffset;
-            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
-            string newGroup = (selectedInstance != null) ? (string)selectedInstance.Group : "Ungrouped";
-            instance.Group = newGroup;
-            instance.RadialPosition = vPosition;
-            instance.RotationAngle = fAngle;
-            instance.Orientation = Vector3.up;
-            instance.VisibilityRange = 25000f;
-            instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-            instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
-
             instance.model = model;
+            instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
+            instance.CelestialBody = FlightGlobals.currentMainBody;
+
+            instance.groupCenter = groupCenter;
+            instance.Group = groupCenter.Group;
+
+            instance.RelativePosition = relPosition;
+            instance.Orientation = rotation;
+
             if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
             {
                 Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);

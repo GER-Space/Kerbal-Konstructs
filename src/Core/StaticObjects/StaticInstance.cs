@@ -54,7 +54,7 @@ namespace KerbalKonstructs.Core
 
         // Visibility and Grouping
         [CFGSetting]
-        public float VisibilityRange = 25000f;
+        public float VisibilityRange = KerbalKonstructs.localGroupRange;
         [CFGSetting]
         public string Group = "Ungrouped";
         [CFGSetting]
@@ -125,35 +125,12 @@ namespace KerbalKonstructs.Core
         public void Update()
         {
 
-            //gameObject.transform.localScale = origScale * ModelScale;
-
-            //if (pqsCity != null)
-            //{
-            //    pqsCity.repositionRadial = RadialPosition;
-            //    pqsCity.repositionRadiusOffset = RadiusOffset;
-            //    pqsCity.reorientInitialUp = Orientation;
-            //    pqsCity.reorientFinalAngle = RotationAngle;
-
-            //    switch (heighReference)
-            //    {
-            //        case HeightReference.Sphere:
-            //            pqsCity.repositionToSphereSurface = false; //Snap to surface?
-            //            pqsCity.repositionToSphereSurfaceAddHeight = false;
-            //            pqsCity.repositionToSphere = true;
-            //            break;
-            //        case HeightReference.Terrain:
-            //            pqsCity.repositionToSphereSurface = true; //Snap to surface?
-            //            pqsCity.repositionToSphereSurfaceAddHeight = true;
-            //            pqsCity.repositionToSphere = false;
-            //            break;
-            //    }
-
-            //    pqsCity.Orientate();
-            //}
+          
             RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y );
             RadialPosition = radialPosition;
 
+            gameObject.transform.localScale = origScale * ModelScale;
 
             RelativePosition = gameObject.transform.localPosition;
             Orientation = gameObject.transform.localEulerAngles;
@@ -233,30 +210,7 @@ namespace KerbalKonstructs.Core
                 KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
             }
 
-            float objvisibleRange = VisibilityRange;
-
-            if (objvisibleRange < 1)
-            {
-                objvisibleRange = 25000f;
-            }
-
-
-            if (!StaticDatabase.allCenters.ContainsKey(groupCenterName))
-            {
-                if (RadialPosition.Equals(Vector3.zero))
-                {
-                    Log.UserError("No Group Found and no position found to create a Group: " + configPath );
-                    return;
-                }
-
-                Log.Normal("Creating a new Group Center: " + groupCenterName);
-
-                GroupCenter center = new GroupCenter();
-                center.Group = Group;
-                center.RadialPosition = RadialPosition;
-                center.CelestialBody = CelestialBody;
-                center.Spawn();
-            }
+            InstanceUtil.CreateGroupCenterIfMissing(this);
 
             groupCenter = StaticDatabase.allCenters[groupCenterName];
 
@@ -328,7 +282,10 @@ namespace KerbalKonstructs.Core
             {
                 Log.Normal("Added " + gameObject.name + " to scanable Objects");
                 var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
-                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                if (!pqsObjectList.Contains((PQSSurfaceObject)groupCenter.pqsCity))
+                {
+                    pqsObjectList.Add(groupCenter.pqsCity as PQSSurfaceObject);
+                }
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
 
@@ -343,7 +300,7 @@ namespace KerbalKonstructs.Core
 
             if (objvisibleRange < 1)
             {
-                objvisibleRange = 25000f;
+                objvisibleRange = KerbalKonstructs.localGroupRange;
             }
 
             pqsCity = gameObject.AddComponent<PQSCity>();

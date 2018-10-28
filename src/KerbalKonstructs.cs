@@ -41,6 +41,8 @@ namespace KerbalKonstructs
 
         internal double recoveryExraRefund = 0;
 
+        internal static float localGroupRange = 25000f;
+
 
         #endregion
 
