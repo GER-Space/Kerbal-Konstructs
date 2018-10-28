@@ -73,6 +73,7 @@ namespace KerbalKonstructs.Core
         public UrlDir.UrlConfig configUrl;
         public String configPath;
 
+        internal bool isInSavegame = false;
 
         internal GroupCenter groupCenter = null;
 

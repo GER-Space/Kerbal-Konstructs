@@ -956,6 +956,11 @@ namespace KerbalKonstructs
             HashSet<String> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
+                if (instance.isInSavegame)
+                {
+                    continue;
+                }
+
                 // ignore allready processed cfg files
                 if (processedInstances.Contains(instance.configPath))
                 {
