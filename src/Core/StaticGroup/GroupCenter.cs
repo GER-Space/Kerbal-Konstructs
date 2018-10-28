@@ -51,6 +51,18 @@ namespace KerbalKonstructs.Core
 
         internal void Spawn()
         {
+
+            if (StaticDatabase.allCenters.ContainsKey(dbKey))
+            {
+                string oldName = Group;
+                int index = 0;
+                while (StaticDatabase.allCenters.ContainsKey(dbKey))
+                {
+                    Group = oldName + "_" + index.ToString();
+                    index++;
+                }
+            }
+
             gameObject = new GameObject();
             gameObject.name = Group + "_PQS";
 
