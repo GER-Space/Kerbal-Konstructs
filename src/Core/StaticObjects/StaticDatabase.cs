@@ -353,16 +353,10 @@ namespace KerbalKonstructs.Core
 			{
 				foreach (StaticGroup group in groupList[activeBodyName].Values)
 				{
-                    if (group.name == "Ungrouped")
-                    {
-                        group.CheckUngrouped(vPlayerPos);
-                    }
-                    else
-                    {
                         //Log.Normal("Checking Group: " + group.name  ); 
                         var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
                         bool isClose = (dist < group.visibilityRange);
-                        Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
+                       // Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
 
                         if (group.isActive == false && isClose == true)
                         {
@@ -374,7 +368,7 @@ namespace KerbalKonstructs.Core
                             group.DeactivateGroupMembers();
                         }
 
-                    }
+                    
 				}
 			}
 

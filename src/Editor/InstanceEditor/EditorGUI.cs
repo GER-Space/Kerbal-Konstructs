@@ -1051,13 +1051,13 @@ namespace KerbalKonstructs.UI
 
                     if (Input.GetKey(KeyCode.PageUp))
                     {
-                        selectedInstance.RadiusOffset += increment;
+                        SetTransform(Vector3.up * increment);
                         ApplySettings();
                     }
 
                     if (Input.GetKey(KeyCode.PageDown))
                     {
-                        selectedInstance.RadiusOffset -= increment;
+                        SetTransform(Vector3.down * increment);
                         ApplySettings();
                     }
                     if (Event.current.keyCode == KeyCode.Return)

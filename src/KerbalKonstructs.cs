@@ -45,6 +45,9 @@ namespace KerbalKonstructs
 
         internal static bool convertLegacyConfigs = false;
 
+        private List<StaticInstance> deletedInstances = new List<StaticInstance>();
+        internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
+
         #endregion
 
 
@@ -140,9 +143,6 @@ namespace KerbalKonstructs
 
         #endregion
 
-        private List<StaticInstance> deletedInstances = new List<StaticInstance>();
-        internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
-
 
         /// <summary>
         /// Unity GameObject Awake function
@@ -203,18 +203,13 @@ namespace KerbalKonstructs
             Log.UserInfo("Version is " + sKKVersion + " .");
 
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
+            
 
             Log.PerfStop("Awake Function");
             //Log.PerfStart("Model Test");
             //SDTest.GetModelStats();
             //Log.PerfStop("Model Test");
             //SDTest.GetShaderStats();
-
-            if (convertLegacyConfigs)
-            {
-                Log.UserWarning("KK converts your configs to a new format");
-                saveObjects();
-            }
 
         }
 
@@ -320,6 +315,13 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.SPACECENTER:
                     {
+
+                        if (convertLegacyConfigs)
+                        {
+                            Log.UserWarning("KK converts your configs to a new format");
+                            saveObjects();
+                            convertLegacyConfigs = false;
+                        }
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         LaunchSiteManager.KKSitesToKSP();
 

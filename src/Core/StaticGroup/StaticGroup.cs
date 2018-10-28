@@ -18,7 +18,7 @@ namespace KerbalKonstructs.Core
         internal GroupCenter groupCenter = null;
 
         public Vector3 centerPoint = Vector3.zero;
-		public float visibilityRange = 0;
+		public float visibilityRange = KerbalKonstructs.localGroupRange * 2;
         public bool isActive = false;
 
 		public StaticGroup(String name, String body)
@@ -80,81 +80,8 @@ namespace KerbalKonstructs.Core
             {
                 InstanceUtil.SetActiveRecursively(groupInstances[i], false);
 			}
-		}
-
-        /// <summary>
-        /// gets called every second, when in flight by KerbalKonsructs.updateCache (InvokeRepeating) and through StaticDatabase.UpdateCache
-        /// </summary>
-        /// <param name="playerPos"></param>
-		public void CheckUngrouped(Vector3 playerPos)
-		{
-            //Log.Normal("Check ungrouped assets");
-            foreach (StaticInstance instance in groupInstances)
-			{
-                float dist = Vector3.Distance(instance.gameObject.transform.position, playerPos);
-                bool visible = (dist < visibilityRange);
-                string sFacType = instance.FacilityType;
-
-				if (sFacType == "Hangar")
-				{
-                        HangarGUI.CacheHangaredCraft(instance);
-                }
-
-				if (sFacType == "LandingGuide")
-				{
-					if (visible)
-                    {
-                        LandingGuideUI.instance.drawLandingGuide(instance);
-                    }
-                    else
-                    {
-                        LandingGuideUI.instance.drawLandingGuide(null);
-                    }
-                }
-
-				if (sFacType == "TouchdownGuideL")
-				{
-					if (visible)
-                    {
-                        LandingGuideUI.instance.drawTouchDownGuideL(instance);
-                    }
-                    else
-                    {
-                        LandingGuideUI.instance.drawTouchDownGuideL(null);
-                    }
-                }
-
-				if (sFacType == "TouchdownGuideR")
-				{
-					if (visible)
-                    {
-                        LandingGuideUI.instance.drawTouchDownGuideR(instance);
-                    }
-                    else
-                    {
-                        LandingGuideUI.instance.drawTouchDownGuideR(null);
-                    }
-                }
-
-				if (sFacType == "CityLights")
-				{
-					if (dist < 65000f)
-					{
-                        InstanceUtil.SetActiveRecursively(instance, false);
-						return;
-					}
-				}
-			
-				if (visible)
-                {
-                    InstanceUtil.SetActiveRecursively(instance, true);
-                }
-                else
-                {
-                    InstanceUtil.SetActiveRecursively(instance, false);
-                }
-            }
-		}
+            groupCenter.gameObject.SetActive(false);
+        }
 
 
         /// <summary>
@@ -198,6 +125,7 @@ namespace KerbalKonstructs.Core
 
                 InstanceUtil.SetActiveRecursively(instance, true);
             }
+            groupCenter.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -239,6 +167,7 @@ namespace KerbalKonstructs.Core
 
                 InstanceUtil.SetActiveRecursively(instance, false);
             }
+            groupCenter.gameObject.SetActive(false);
         }
 
 

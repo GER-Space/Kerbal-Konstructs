@@ -174,7 +174,10 @@ namespace KerbalKonstructs.Core
             }
         }
 
-
+        /// <summary>
+        /// Creates a GroupCenter if needed
+        /// </summary>
+        /// <param name="instance"></param>
         internal static void CreateGroupCenterIfMissing(StaticInstance instance)
         {
             if (instance.Group == "Ungrouped")
