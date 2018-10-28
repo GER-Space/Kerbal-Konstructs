@@ -365,6 +365,8 @@ namespace KerbalKonstructs.Core
             }
             pqsCity.OnSetup();
             pqsCity.Orientate();
+
+            KerbalKonstructs.convertLegacyConfigs = true;
         }
 
 

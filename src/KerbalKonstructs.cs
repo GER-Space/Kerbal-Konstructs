@@ -43,6 +43,7 @@ namespace KerbalKonstructs
 
         internal static float localGroupRange = 25000f;
 
+        internal static bool convertLegacyConfigs = false;
 
         #endregion
 
@@ -208,6 +209,13 @@ namespace KerbalKonstructs
             //SDTest.GetModelStats();
             //Log.PerfStop("Model Test");
             //SDTest.GetShaderStats();
+
+            if (convertLegacyConfigs)
+            {
+                Log.UserWarning("KK converts your configs to a new format");
+                saveObjects();
+            }
+
         }
 
         #region Game Events

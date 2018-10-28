@@ -461,6 +461,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Save&Close", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     selectedGroup.Save();
+                    this.Close();
                 }
                 GUI.enabled = true;
                 GUILayout.FlexibleSpace();
@@ -525,11 +526,16 @@ namespace KerbalKonstructs.UI
             }
 
 
+            if (selectedGroup == StaticsEditorGUI.GetActiveGroup())
+            {
+                StaticsEditorGUI.SetActiveGroup(null);
+            }
 
             selectedGroup.DeleteGroupCenter();
 
             selectedGroup = null;
 
+            
             StaticsEditorGUI.ResetLocalGroupList();
             this.Close();
         }

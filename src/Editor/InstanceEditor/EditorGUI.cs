@@ -63,7 +63,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 330, 790);
+        internal Rect toolRect = new Rect(800, 120, 330, 700);
 
         #endregion
 
@@ -346,35 +346,35 @@ namespace KerbalKonstructs.UI
             GUI.enabled = true;
 
 
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Box("Latitude");
-                GUILayout.Box(selectedInstance.RefLatitude.ToString("#0.0000000"));
-                GUILayout.Box("Longitude");
-                GUILayout.Box(selectedInstance.RefLongitude.ToString("#0.0000000"));
-            }
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+            //{
+            //    GUILayout.Box("Latitude");
+            //    GUILayout.Box(selectedInstance.RefLatitude.ToString("#0.0000000"));
+            //    GUILayout.Box("Longitude");
+            //    GUILayout.Box(selectedInstance.RefLongitude.ToString("#0.0000000"));
+            //}
+            //GUILayout.EndHorizontal();
 
-            // 
-            // Altitude editing
-            //
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Alt.");
-                GUILayout.FlexibleSpace();
-                altStr = GUILayout.TextField(altStr, 25, GUILayout.Width(fTempWidth));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedInstance.gameObject.transform.localPosition -= new Vector3(0,increment, 0);
-                    ApplySettings();
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedInstance.gameObject.transform.localPosition += new Vector3(0, increment, 0);
-                    ApplySettings();
-                }
-            }
-            GUILayout.EndHorizontal();
+            //// 
+            //// Altitude editing
+            ////
+            //GUILayout.BeginHorizontal();
+            //{
+            //    GUILayout.Label("Alt.");
+            //    GUILayout.FlexibleSpace();
+            //    altStr = GUILayout.TextField(altStr, 25, GUILayout.Width(fTempWidth));
+            //    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+            //    {
+            //        selectedInstance.gameObject.transform.localPosition -= new Vector3(0,increment, 0);
+            //        ApplySettings();
+            //    }
+            //    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+            //    {
+            //        selectedInstance.gameObject.transform.localPosition += new Vector3(0, increment, 0);
+            //        ApplySettings();
+            //    }
+            //}
+            //GUILayout.EndHorizontal();
 
 
             if (GUILayout.Button("Snap to Terrain", GUILayout.Height(21)))
@@ -677,7 +677,7 @@ namespace KerbalKonstructs.UI
             {
                 LaunchSiteEditor.instance.Open();
             }
-
+            GUILayout.FlexibleSpace();
 
             GUI.enabled = true;
 
@@ -698,14 +698,15 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
 
+            GUILayout.Space(10);
 
-            GUILayout.FlexibleSpace();
+
 
             if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
             {
                 DeleteInstance();
             }
-            GUILayout.Space(15);
+            GUILayout.Space(5);
 
 
 
@@ -877,35 +878,19 @@ namespace KerbalKonstructs.UI
                 northVR.SetShow(false);
                 eastVR.SetShow(false);
 
-                fwdVR.Vector = selectedInstance.gameObject.transform.forward;
+                fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.draw();
 
-                upVR.Vector = selectedInstance.gameObject.transform.up;
+                upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.draw();
 
-                rightVR.Vector = selectedInstance.gameObject.transform.right;
+                rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.draw();
             }
-            if (referenceSystem == Space.World)
-            {
-                northVR.SetShow(true);
-                eastVR.SetShow(true);
 
-                fwdVR.SetShow(false);
-                upVR.SetShow(false);
-                rightVR.SetShow(false);
-
-                northVR.Vector = northVector;
-                northVR.Start = vectorDrawPosition;
-                northVR.draw();
-
-                eastVR.Vector = eastVector;
-                eastVR.Start = vectorDrawPosition;
-                eastVR.draw();
-            }
         }
 
         /// <summary>
@@ -915,7 +900,7 @@ namespace KerbalKonstructs.UI
         {
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
-            fwdVR.Vector = selectedInstance.gameObject.transform.forward;
+            fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
             fwdVR.Scale = 30d;
             fwdVR.Start = vectorDrawPosition;
             fwdVR.SetLabel("forward");
@@ -923,32 +908,19 @@ namespace KerbalKonstructs.UI
             fwdVR.SetLayer(5);
 
             upVR.Color = new Color(0, 1, 0);
-            upVR.Vector = selectedInstance.gameObject.transform.up;
+            upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
             upVR.Scale = 30d;
             upVR.Start = vectorDrawPosition;
             upVR.SetLabel("up");
             upVR.Width = 0.01d;
 
             rightVR.Color = new Color(1, 0, 0);
-            rightVR.Vector = selectedInstance.gameObject.transform.right;
+            rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
             rightVR.Scale = 30d;
             rightVR.Start = vectorDrawPosition;
             rightVR.SetLabel("right");
             rightVR.Width = 0.01d;
 
-            northVR.Color = new Color(0.9f, 0.3f, 0.3f);
-            northVR.Vector = northVector;
-            northVR.Scale = 30d;
-            northVR.Start = vectorDrawPosition;
-            northVR.SetLabel("north");
-            northVR.Width = 0.01d;
-
-            eastVR.Color = new Color(0.3f, 0.3f, 0.9f);
-            eastVR.Vector = eastVector;
-            eastVR.Scale = 30d;
-            eastVR.Start = vectorDrawPosition;
-            eastVR.SetLabel("east");
-            eastVR.Width = 0.01d;
         }
 
         /// <summary>
@@ -956,8 +928,6 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void CloseVectors()
         {
-            northVR.SetShow(false);
-            eastVR.SetShow(false);
             fwdVR.SetShow(false);
             upVR.SetShow(false);
             rightVR.SetShow(false);
@@ -1000,23 +970,6 @@ namespace KerbalKonstructs.UI
             ApplySettings();
         }
 
-        /// <summary>
-        /// sets the latitude and lognitude from the deltas of north and east and creates a new reference vector
-        /// </summary>
-        /// <param name="north"></param>
-        /// <param name="east"></param>
-        internal void Setlatlng(double north, double east)
-        {
-            body = Planetarium.fetch.CurrentMainBody;
-            double latOffset = north / (body.Radius * KKMath.deg2rad);
-            selectedInstance.RefLatitude += latOffset;
-            double lonOffset = east / (body.Radius * KKMath.deg2rad);
-            selectedInstance.RefLongitude += lonOffset * Math.Cos(Mathf.Deg2Rad * selectedInstance.RefLatitude);
-
-            selectedInstance.RadialPosition = body.GetRelSurfaceNVector(selectedInstance.RefLatitude, selectedInstance.RefLongitude).normalized * body.Radius;
-            ApplySettings();
-        }
-
 
 
 
@@ -1037,7 +990,9 @@ namespace KerbalKonstructs.UI
         /// <param name="direction"></param>
         internal void SetTransform(Vector3 direction)
         {
-            selectedInstance.gameObject.transform.Translate(direction);
+            //selectedInstance.gameObject.transform.Translate(direction, Space.Self);
+
+            selectedInstance.gameObject.transform.localPosition += direction;
             ApplySettings();
         }
 

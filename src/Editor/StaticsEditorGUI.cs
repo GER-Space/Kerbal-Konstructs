@@ -69,7 +69,7 @@ namespace KerbalKonstructs.UI
         public StaticInstance snapTargetInstance = null;
         StaticInstance snapTargetInstancePrevious = null;
 
-        private GroupCenter activeGroup = null;
+        private static GroupCenter activeGroup = null;
         private static GroupCenter[] localGroups;
 
         public float fButtonWidth = 0f;
@@ -1023,6 +1023,11 @@ namespace KerbalKonstructs.UI
             {
                 return null;
             }
+            if (activeGroup != null)
+            {
+                return activeGroup;
+            }
+            
             GroupCenter closest = localGroups[0];
             float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
             foreach (GroupCenter center in localGroups)
@@ -1089,12 +1094,15 @@ namespace KerbalKonstructs.UI
 
 
 
-        internal void SetActiveGroup(GroupCenter group)
+        internal static void SetActiveGroup(GroupCenter group)
         {
             activeGroup = group;
         }
 
-
+        internal static GroupCenter GetActiveGroup()
+        {
+            return activeGroup ;
+        }
 
         /// <summary>
         /// tries to find a Static Object attached to a child GameObject.
