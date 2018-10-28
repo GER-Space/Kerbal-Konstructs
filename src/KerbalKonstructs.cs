@@ -30,7 +30,7 @@ namespace KerbalKonstructs
         #region Holders
         internal StaticInstance selectedObject;
         internal StaticModel selectedModel;
-        internal CameraController camControl = new CameraController();
+        internal static CameraController camControl = new CameraController();
         private CelestialBody currentBody;
         internal static bool InitialisedFacilities = false;
 
@@ -41,6 +41,9 @@ namespace KerbalKonstructs
 
         internal double recoveryExraRefund = 0;
 
+
+        internal static float localGroupRange = 25000f;
+        internal static bool convertLegacyConfigs = false;
 
         #endregion
 
@@ -140,7 +143,7 @@ namespace KerbalKonstructs
         #endregion
 
         private List<StaticInstance> deletedInstances = new List<StaticInstance>();
-
+        internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
         /// <summary>
         /// Unity GameObject Awake function
@@ -182,6 +185,8 @@ namespace KerbalKonstructs
 
             // for Terrain Rescaling
             SDRescale.SetTerrainRescales();
+
+            ConfigParser.LoadAllGroupCenter();
 
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
@@ -358,6 +363,12 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.SPACECENTER:
                     {
+                        if (convertLegacyConfigs)
+                        {
+                            Log.UserWarning("KK converts your configs to a new format");
+                            saveObjects();
+                            convertLegacyConfigs = false;
+                        }
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         //SquadStatics.PimpLevel2Runway();
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
@@ -558,7 +569,7 @@ namespace KerbalKonstructs
                 {
                     LaunchSiteManager.DeleteLaunchSite(instance.launchSite);
                 }
-                DeleteObject(instance);
+                DeleteInstance(instance);
             }
             deletedInstances.Clear();
 
@@ -627,10 +638,10 @@ namespace KerbalKonstructs
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
 
-                //if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
-                //{
-                //    API.SpawnObject("KKflagDemo");
-                //}
+                if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+                {
+                    API.SpawnObject("KKflagDemo");
+                }
 
                 if (useLegacyCamera && camControl.active)
                 {
@@ -740,30 +751,31 @@ namespace KerbalKonstructs
                     model = model,
                     configUrl = configurl,
                     configPath = configurl.url.Substring(0, configurl.url.LastIndexOf('/')) + ".cfg",
-                    gameObject = Instantiate(model.prefab)
                 };
-                if (instance.gameObject == null)
-                {
-                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
-                    continue;
-                }
-
                 ConfigParser.ParseInstanceConfig(instance, instanceCfgNode);
 
                 if (instance.CelestialBody == null)
                 {
+                    instance = null;
                     continue;
                 }
 
-                if ( (!string.IsNullOrEmpty(instance.UUID)) && StaticDatabase.instancedByUUID.ContainsKey(instance.UUID))
+                if (instance.Group == null)
                 {
-                    Log.UserWarning("Duplicate UUID found. this should never happen: " + instance.UUID);
-                    Log.UserWarning("Check: " + StaticDatabase.instancedByUUID[instance.UUID].configPath + " and " + instance.configPath);
+                    instance = null;
+                    continue;
+                }
+
+                instance.gameObject = Instantiate(model.prefab);
+                if (instance.gameObject == null)
+                {
+                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    instance = null;
                     continue;
                 }
 
                 // create RadialPosition, If we don't have one.
-                if (instance.RadialPosition.Equals(Vector3.zero))
+                if (instance.RadialPosition.Equals(Vector3.zero) && instance.RelativePosition.Equals(Vector3.zero))
                 {
                     if (instance.RefLatitude != 361f && instance.RefLongitude != 361f)
                     {
@@ -772,19 +784,10 @@ namespace KerbalKonstructs
                     }
                     else
                     {
-                        Log.UserError("Neither RadialPosition or RefLatitude+RefLongitude found: " + instance.gameObject.name);
+                        Log.UserError("Neither RelativePosition, RadialPosition or RefLatitude+RefLongitude found: " + instance.configPath);
                         continue;
                     }
                 }
-                else
-                {
-                    // create LAT & LON out of Radialposition, when not changed by config
-                    if (instance.RefLatitude == 361f || instance.RefLongitude == 361f)
-                    {
-                        instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-                        instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
-                    }
-                }              
 
                 instance.SpawnObject();
 
@@ -799,7 +802,6 @@ namespace KerbalKonstructs
                 }
 
             }
-
         }
 
 
@@ -1070,15 +1072,12 @@ namespace KerbalKonstructs
         /// </summary>
         public void saveObjects()
         {
+
+            SaveGroupCenters();
+
             HashSet<String> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
-                if (instance.isInSavegame)
-                {
-                    continue;
-                }
-
-
                 // ignore allready processed cfg files
                 if (processedInstances.Contains(instance.configPath))
                 {
@@ -1101,11 +1100,6 @@ namespace KerbalKonstructs
             // check for orqhaned files
             foreach (StaticInstance deletedInstance in deletedInstances)
             {
-                if (deletedInstance.isInSavegame)
-                {
-                    continue;
-                }
-
                 if (!processedInstances.Contains(deletedInstance.configPath))
                 {
                     if (deletedInstance.configPath == deletedInstance.model.configPath)
@@ -1123,8 +1117,25 @@ namespace KerbalKonstructs
 
             }
 
-            deletedInstances.Clear();
         }
+
+        internal void SaveGroupCenters()
+        {
+            foreach (GroupCenter center in deletedGroups)
+            {
+                if (File.Exists(KSPUtil.ApplicationRootPath + "GameData/" + center.configPath))
+                {
+                    File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + center.configPath);
+                }
+            }
+            deletedGroups.Clear();
+
+            foreach (GroupCenter center in StaticDatabase.allCenters.Values)
+            {
+                center.Save();
+            }
+        }
+
 
         internal bool hasDeletedInstances
         {
@@ -1133,7 +1144,6 @@ namespace KerbalKonstructs
                 return (deletedInstances.Count > 0);
             }
         }
-
 
 
         public void exportMasters()
@@ -1167,7 +1177,8 @@ namespace KerbalKonstructs
                 activeBodyName = cBody.name;
                 Debug.Log("activeBodyName is " + cBody.name);
 
-                if (!groupList.ContainsKey(activeBodyName)) continue;
+                if (!groupList.ContainsKey(activeBodyName))
+                    continue;
 
                 foreach (StaticGroup group in groupList[activeBodyName].Values)
                 {
@@ -1187,16 +1198,18 @@ namespace KerbalKonstructs
                         foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
                         {
                             string sObjGroup = obj.Group;
-                            if (sObjGroup != sBase) continue;
+                            if (sObjGroup != sBase)
+                                continue;
 
                             ConfigNode inst = new ConfigNode("Instances");
 
-                            ConfigParser.WriteInstanceConfig(obj,inst);
+                            ConfigParser.WriteInstanceConfig(obj, inst);
                             modelConfig.nodes.Add(inst);
                             bNoInstances = false;
                         }
 
-                        if (bNoInstances) continue;
+                        if (bNoInstances)
+                            continue;
 
                         string sModelName = modelConfig.GetValue("name");
                         modelConfig.AddValue("pointername", sModelName);
@@ -1213,20 +1226,25 @@ namespace KerbalKonstructs
             }
         }
 
-        public void DeleteObject(StaticInstance obj)
+        public void DeleteInstance(StaticInstance obj)
         {
             if (selectedObject == obj)
+            {
                 deselectObject(true, false);
+            }
 
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
             InputLockManager.RemoveControlLock("KKCamModes");
 
 
-            if (camControl.active) camControl.disable();
+            if (camControl.active)
+                camControl.disable();
 
-            if ( StaticsEditorGUI.instance.snapTargetInstance == obj)
+            if (StaticsEditorGUI.instance.snapTargetInstance == obj)
+            {
                 StaticsEditorGUI.instance.snapTargetInstance = null;
+            }
 
             Log.Debug("deleteObject");
 
@@ -1235,6 +1253,7 @@ namespace KerbalKonstructs
 
             StaticDatabase.DeleteStatic(obj);
         }
+
 
 
         /// <summary>

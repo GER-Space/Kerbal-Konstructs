@@ -13,14 +13,13 @@ namespace KerbalKonstructs.Core
     public enum HeightReference
     {
         Unset = 0,
-        Sphere = 1 ,
+        Sphere = 1,
         Terrain = 2
     }
 
 
     public class StaticInstance
     {
-
         // UUID for later identification
         [CFGSetting]
         public string UUID;
@@ -30,6 +29,8 @@ namespace KerbalKonstructs.Core
         public CelestialBody CelestialBody = null;
         [CFGSetting]
         public Vector3 RadialPosition = Vector3.zero;
+        [CFGSetting]
+        public Vector3 RelativePosition = Vector3.zero;
         [CFGSetting]
         public Vector3 Orientation;
         [CFGSetting]
@@ -53,11 +54,9 @@ namespace KerbalKonstructs.Core
 
         // Visibility and Grouping
         [CFGSetting]
-        public float VisibilityRange = 25000f;
+        public float VisibilityRange = KerbalKonstructs.localGroupRange;
         [CFGSetting]
         public string Group = "Ungrouped";
-        [CFGSetting]
-        public string GroupCenter = "false";
         [CFGSetting]
         public int IsRelativeToTerrain = (int)HeightReference.Unset;
 
@@ -66,16 +65,19 @@ namespace KerbalKonstructs.Core
         public Color GrasColor = Color.clear;
 
 
-
-
-
         public GameObject gameObject;
-        public PQSCity pqsCity;
-      //  public PQSCity2 pqsCity2;
+        internal PQSCity pqsCity;
+        //public PQSCity2 pqsCity2;
         internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;
+
+
+        internal GroupCenter groupCenter = null;
+
+        internal bool isInSavegame = false;
+
 
         public bool hasFacilities
         {
@@ -115,8 +117,6 @@ namespace KerbalKonstructs.Core
         private Vector3 origScale;
         internal bool isActive;
 
-        internal bool isInSavegame = false;
-
         internal int indexInGroup = 0;
 
         private List<Renderer> _rendererComponents;
@@ -127,35 +127,25 @@ namespace KerbalKonstructs.Core
         /// </summary>
         public void Update()
         {
-            if (pqsCity != null)
-            {
-                pqsCity.repositionRadial = RadialPosition;
-                pqsCity.repositionRadiusOffset = RadiusOffset;
-                pqsCity.reorientInitialUp = Orientation;
-                pqsCity.reorientFinalAngle = RotationAngle;
-                pqsCity.transform.localScale = origScale * ModelScale;
 
-                switch (heighReference)
-                {
-                    case HeightReference.Sphere:
-                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-                        pqsCity.repositionToSphereSurfaceAddHeight = false;
-                        pqsCity.repositionToSphere = true;
-                        break;
-                    case HeightReference.Terrain:
-                        pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                        pqsCity.repositionToSphereSurfaceAddHeight = true;
-                        pqsCity.repositionToSphere = false;
-                        break;
-                }
-                pqsCity.ResetCelestialBody();
-                pqsCity.Orientate();
-            }
+
+            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
+            RadialPosition = radialPosition;
+
+            gameObject.transform.localScale = origScale * ModelScale;
+
+            RelativePosition = gameObject.transform.localPosition;
+            Orientation = gameObject.transform.localEulerAngles;
+
             // Notify modules about update
             foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
             {
                 module.StaticObjectUpdate();
             }
+
+
+
         }
 
         internal void HighlightObject(Color highlightColor)
@@ -180,6 +170,13 @@ namespace KerbalKonstructs.Core
             {
                 gocollider.GetComponent<Collider>().enabled = enable;
             }
+        }
+
+        internal float GetDistanceToObject(Vector3 vPosition)
+        {
+            float fDistance = 0f;
+            fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
+            return fDistance;
         }
 
         /// <summary>
@@ -207,7 +204,7 @@ namespace KerbalKonstructs.Core
             {
                 this.ToggleAllColliders(false);
             }
-                
+
 
             this.preview = bPreview;
 
@@ -216,102 +213,38 @@ namespace KerbalKonstructs.Core
                 KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
             }
 
-            float objvisibleRange = VisibilityRange;
+            InstanceUtil.CreateGroupCenterIfMissing(this);
 
-            if (objvisibleRange < 1)
+            groupCenter = StaticDatabase.allCenters[groupCenterName];
+
+            if (RelativePosition.Equals(Vector3.zero))
             {
-                objvisibleRange = 25000f;
+                Log.Normal("LegacySpawnInstance called for " + configPath );
+                LegacySpawnInstance();
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                pqsCity.enabled = false;
+                pqsCity.sphere = null;
+                pqsCity = null;
+
+                RelativePosition = gameObject.transform.localPosition;
+                Orientation = gameObject.transform.localEulerAngles;
+
+            }
+            else
+            {
+                gameObject.transform.position = groupCenter.gameObject.transform.position;
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                gameObject.transform.localPosition = RelativePosition;
+                gameObject.transform.localEulerAngles = Orientation;
             }
 
-            PQSCity.LODRange range = new PQSCity.LODRange
-            {
-                renderers = new GameObject[0],
-                objects = new GameObject[0],
-                visibleRange = objvisibleRange
-            };
+            //Scaling
+            origScale = gameObject.transform.localScale;             // save the original scale for later use
+            gameObject.transform.localScale *= ModelScale;
 
-            pqsCity = gameObject.AddComponent<PQSCity>();
-            pqsCity.lod = new[] { range };
-            pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
-            pqsCity.repositionRadial = RadialPosition; //position
-            pqsCity.repositionRadiusOffset = RadiusOffset; //height
-            pqsCity.reorientInitialUp = Orientation; //orientation
-            pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
-            pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-            pqsCity.sphere = CelestialBody.pqsController;
-            origScale = pqsCity.transform.localScale;             // save the original scale for later use
-            pqsCity.transform.localScale *= ModelScale;
-            pqsCity.order = 100;
-            pqsCity.modEnabled = true;
-            pqsCity.repositionToSphere = true; //enable repositioning
-            gameObject.transform.parent = CelestialBody.pqsController.transform;
-            pqsCity.transform.parent = CelestialBody.pqsController.transform;
-
-            switch (heighReference)
-            {
-                case HeightReference.Sphere:
-                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
-
-                    break;
-                case HeightReference.Terrain:
-
-                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                    pqsCity.repositionToSphereSurfaceAddHeight = true;
-                    pqsCity.repositionToSphere = false;
-                    break;
-                default:
-                    // we try to descide which one is the best to take
-                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
-                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
-
-                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
-                    {
-                        Log.Normal("Found a swimming object: " + this.gameObject.name);
-                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-                        heighReference = HeightReference.Sphere;
-                    }
-                    else
-                    {
-                        {
-                            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
-                            RadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
-                            pqsCity.repositionToSphereSurfaceAddHeight = true;
-                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphere = false;
-
-                            heighReference = HeightReference.Terrain;
-                        }
-                    }
-                    break;
-            }
-
-
-            //pqsCity.lat = RefLatitude ;
-            //pqsCity.lon = RefLongitude;
-            pqsCity.alt = RadiusOffset;
-            pqsCity.ResetCelestialBody();
-            pqsCity.OnSetup();
-            pqsCity.Orientate();
-
-
-            //PQSCity2.LodObject lodObject = new PQSCity2.LodObject();
-            //lodObject.visibleRange = VisibilityRange;
-            //lodObject.objects = new GameObject[] { };
-            //pqsCity2 = gameObject.AddComponent<PQSCity2>();
-            //pqsCity2.objects = new[] { lodObject };
-            //pqsCity2.objectName = "";
-            //pqsCity2.lat = RefLatitude;
-            //pqsCity2.lon = RefLongitude;
-            //pqsCity2.alt = RadiusOffset;
-            //pqsCity2.up = Orientation;
-            //pqsCity2.rotation = RotationAngle;
-            //pqsCity2.sphere = CelestialBody.pqsController;
-
-
-            //pqsCity2.OnSetup();
-            //pqsCity2.Orientate();
-
+            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
+            RadialPosition = radialPosition;
 
             foreach (StaticModule module in model.modules)
             {
@@ -353,12 +286,100 @@ namespace KerbalKonstructs.Core
             {
                 Log.Normal("Added " + gameObject.name + " to scanable Objects");
                 var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
-                pqsObjectList.Add(pqsCity as PQSSurfaceObject);
+                if (!pqsObjectList.Contains((PQSSurfaceObject)groupCenter.pqsCity))
+                {
+                    pqsObjectList.Add(groupCenter.pqsCity as PQSSurfaceObject);
+                }
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
+
+
         }
 
 
+        private void LegacySpawnInstance()
+        {
+
+            float objvisibleRange = VisibilityRange;
+
+            if (objvisibleRange < 1)
+            {
+                objvisibleRange = KerbalKonstructs.localGroupRange;
+            }
+
+            pqsCity = gameObject.AddComponent<PQSCity>();
+
+            PQSCity.LODRange range = new PQSCity.LODRange
+            {
+                renderers = new GameObject[0],
+                objects = new GameObject[0],
+                visibleRange = objvisibleRange
+            };
+            pqsCity.lod = new[] { range };
+            pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
+            pqsCity.repositionRadial = RadialPosition; //position
+            pqsCity.repositionRadiusOffset = RadiusOffset; //height
+            pqsCity.reorientInitialUp = Orientation; //orientation
+            pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
+            pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
+            gameObject.transform.parent = CelestialBody.pqsController.transform;
+            pqsCity.sphere = CelestialBody.pqsController;
+            pqsCity.order = 100;
+            pqsCity.modEnabled = true;
+            pqsCity.repositionToSphere = true; //enable repositioning
+
+
+            switch (heighReference)
+            {
+                case HeightReference.Sphere:
+                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
+
+                    break;
+                case HeightReference.Terrain:
+
+                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
+                    pqsCity.repositionToSphereSurfaceAddHeight = true;
+                    pqsCity.repositionToSphere = false;
+                    break;
+                default:
+                    // we try to descide which one is the best to take
+                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
+                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
+
+                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
+                    {
+                        Log.Normal("Found a swimming object: " + this.gameObject.name);
+                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
+                        heighReference = HeightReference.Sphere;
+                    }
+                    else
+                    {
+                        {
+                            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
+                            RadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
+                            pqsCity.repositionToSphereSurfaceAddHeight = true;
+                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
+                            pqsCity.repositionToSphere = false;
+
+                            heighReference = HeightReference.Terrain;
+                        }
+                    }
+                    break;
+            }
+            pqsCity.OnSetup();
+            pqsCity.Orientate();
+
+            KerbalKonstructs.convertLegacyConfigs = true;
+        }
+
+
+
+        /// <summary>
+        /// Geturns a Facility by its type
+        /// </summary>
+        /// <param name="facilityType"></param>
+        /// <returns></returns>
         internal KKFacility GetFacility(KKFacilityType facilityType)
         {
             foreach (KKFacility facility in myFacilities)
@@ -379,7 +400,8 @@ namespace KerbalKonstructs.Core
         internal void deselectObject(Boolean enableColliders)
         {
             this.editing = false;
-            if (enableColliders) this.ToggleAllColliders(true);
+            if (enableColliders)
+                this.ToggleAllColliders(true);
 
             Color highlightColor = new Color(0, 0, 0, 0);
             this.HighlightObject(highlightColor);
@@ -390,11 +412,34 @@ namespace KerbalKonstructs.Core
             ConfigParser.SaveInstanceByCfg(configPath);
         }
 
-        internal void Destroy()
+        /// <summary>
+        /// Returns the evelation of the surface under the object
+        /// </summary>
+        internal double surfaceHeight
         {
-  //          KerbalKonstructs.instance.DeleteObject(this);
-//            StaticDatabase.DeleteStatic(this);
+            get
+            {
+                return (CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius) - CelestialBody.pqsController.radius);
+            }
         }
 
-	}
+        internal Vector3 radialPosition
+        {
+            get
+            {
+                return (CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius);
+            }
+        }
+
+
+        internal string groupCenterName
+        {
+            get
+            {
+                return (CelestialBody.name + "_" + Group);
+            }
+        }
+
+
+    }
 }

@@ -546,14 +546,14 @@ namespace KerbalKonstructs.UI
                         currPreview = null;
                 }
 
-                KerbalKonstructs.instance.DeleteObject(soInstance);
+                KerbalKonstructs.instance.DeleteInstance(soInstance);
 
             }
             else
             {
                 if (currPreview != null)
                 {
-                    KerbalKonstructs.instance.DeleteObject(currPreview);
+                    KerbalKonstructs.instance.DeleteInstance(currPreview);
                     currPreview = null;
                 }
             }

@@ -93,6 +93,10 @@ namespace KerbalKonstructs.Modules
             instance.heighReference = HeightReference.Terrain;
             instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
 
+            instance.Group = "Career";
+
+            instance.RadialPosition = ConfigNode.ParseVector3(cfgNode.GetValue("Position"));
+
             instance.model = StaticDatabase.GetModelByName(cfgNode.GetValue("ModelName"));
 
             if (instance.model == null)
@@ -107,20 +111,24 @@ namespace KerbalKonstructs.Modules
 
             instance.CelestialBody = ConfigUtil.GetCelestialBody(cfgNode.GetValue("Body"));
 
-            instance.RadialPosition = ConfigNode.ParseVector3(cfgNode.GetValue("Position"));
             instance.RadiusOffset = float.Parse(cfgNode.GetValue("Altitude"));
             instance.RotationAngle = float.Parse(cfgNode.GetValue("Rotation"));
 
             instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
             instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
 
+            InstanceUtil.CreateGroupCenterIfMissing(instance);
+
             if (cfgNode.HasValue("IsScanable"))
             {
                 bool.TryParse(cfgNode.GetValue("IsScanable"), out instance.isScanable);
             }
 
+            bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
+
             instance.SpawnObject();
 
+            KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;
         }
 
     }

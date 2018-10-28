@@ -23,6 +23,8 @@ namespace KerbalKonstructs.Core
 
         internal static Dictionary<string, StaticInstance> instancedByUUID = new Dictionary<string, StaticInstance>();
 
+        internal static Dictionary<string, GroupCenter> allCenters = new Dictionary<string, GroupCenter>();
+
         internal static string activeBodyName = "";
 
         private static Vector3 vPlayerPos = Vector3.zero;
@@ -125,12 +127,13 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="newGroup"></param>
-        internal static void ChangeGroup(StaticInstance instance, string newGroup)
+        internal static void ChangeGroup(StaticInstance instance, GroupCenter newGroup)
         {
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
 
-            instance.Group = newGroup;
+
+            instance.groupCenter.RemoveInstance(instance);
 
             if (groupList.ContainsKey(bodyName))
             {
@@ -141,17 +144,33 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (!groupList.ContainsKey(bodyName))
-                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
 
-            if (!groupList[bodyName].ContainsKey(newGroup))
+
+            instance.Group = newGroup.Group;
+            instance.groupCenter = newGroup;
+
+
+            bodyName = instance.CelestialBody.bodyName;
+            groupName = instance.Group;
+
+            if (!groupList.ContainsKey(bodyName))
             {
-                StaticGroup group = new StaticGroup(newGroup, bodyName);
-                groupList[bodyName].Add(newGroup, group);
+                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
             }
-            groupList[bodyName][newGroup].AddStatic(instance);
+
+            if (!groupList[bodyName].ContainsKey(groupName))
+            {
+                StaticGroup group = new StaticGroup(groupName, bodyName);
+                groupList[bodyName].Add(groupName, group);
+            }
+            groupList[bodyName][groupName].AddStatic(instance);
 
             SetNewName(instance);
+
+            instance.groupCenter.AddInstance(instance);
+
+            instance.gameObject.transform.parent = instance.groupCenter.gameObject.transform;
+
         }
 
 
@@ -296,10 +315,10 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-        
+
 
         internal static void UpdateCache(Vector3 playerPos)
-		{
+        {
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
             if (playerPos == Vector3.zero)
             {
@@ -325,37 +344,31 @@ namespace KerbalKonstructs.Core
             {
                 vPlayerPos = playerPos;
             }
-			
-			if (groupList.ContainsKey(activeBodyName))
-			{
-				foreach (StaticGroup group in groupList[activeBodyName].Values)
-				{
-                    if (group.name == "Ungrouped")
+
+            if (groupList.ContainsKey(activeBodyName))
+            {
+                foreach (StaticGroup group in groupList[activeBodyName].Values)
+                {
+                    //Log.Normal("Checking Group: " + group.name  ); 
+                    var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
+                    bool isClose = (dist < group.visibilityRange);
+                    // Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
+
+                    if (group.isActive == false && isClose == true)
                     {
-                        group.CheckUngrouped(vPlayerPos);
+                        group.ActivateGroupMembers();
                     }
-                    else
+
+                    if (group.isActive == true && isClose == false)
                     {
-                        //Log.Normal("Checking Group: " + group.name  ); 
-                        var dist = Vector3.Distance(group.groupCenter.transform.position, vPlayerPos);
-                        bool isClose = (dist < group.visibilityRange);
-                        Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
-
-                        if (group.isActive == false && isClose == true)
-                        {
-                            group.ActivateGroupMembers();
-                        }
-
-                        if (group.isActive == true && isClose == false)
-                        {
-                            group.DeactivateGroupMembers();
-                        }
-
+                        group.DeactivateGroupMembers();
                     }
-				}
-			}
 
-		}
+
+                }
+            }
+
+        }
 
         public static StaticInstance[] GetAllStatics()
 		{

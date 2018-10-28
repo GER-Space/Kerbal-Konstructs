@@ -177,6 +177,76 @@ namespace KerbalKonstructs.Core
                 transforms[i].gameObject.layer = newLayerNumber;
             }
         }
+
+        /// <summary>
+        /// Creates a GroupCenter if needed
+        /// </summary>
+        /// <param name="instance"></param>
+        internal static void CreateGroupCenterIfMissing(StaticInstance instance)
+        {
+            if (instance.Group == "Ungrouped" ||instance.Group == "Career")
+            {
+                if (!StaticDatabase.allCenters.ContainsKey(instance.groupCenterName))
+                {
+                    if (instance.RadialPosition.Equals(Vector3.zero))
+                    {
+                        Log.UserError("No Group Found and no position found to create a Group: " + instance.configPath);
+                        return;
+                    }
+
+                    Log.Normal("Creating a new Group Center: " + instance.groupCenterName);
+
+                    GroupCenter center = new GroupCenter();
+                    center.Group = instance.Group;
+                    center.RadialPosition = instance.RadialPosition;
+                    center.CelestialBody = instance.CelestialBody;
+                    center.Spawn();
+                }
+                else
+                {
+                    // we have a GroupCenter and a legacy Object we might regroup now
+                    if ((instance.RelativePosition.Equals(Vector3.zero)) && (!instance.RadialPosition.Equals(Vector3.zero)))
+                    {
+                        Vector3 groupPostion = StaticDatabase.allCenters[instance.groupCenterName].gameObject.transform.position;
+                        Vector3 instancePosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
+
+                        if (Vector3.Distance(groupPostion, instancePosition) > KerbalKonstructs.localGroupRange)
+                        {
+                            Log.Normal("Creating a new local Group on: " + instance.CelestialBody.name + " for " + instance.Group);
+                            {
+                                GroupCenter center = new GroupCenter();
+                                center.Group = Guid.NewGuid().ToString();
+                                center.RadialPosition = instance.RadialPosition;
+                                center.CelestialBody = instance.CelestialBody;
+                                center.Spawn();
+                                instance.Group = center.Group;
+                                Log.Normal("New GroupCenter Created: " + instance.groupCenterName);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
+            if (!StaticDatabase.allCenters.ContainsKey(instance.groupCenterName))
+            {
+                if (instance.RadialPosition.Equals(Vector3.zero))
+                {
+                    Log.UserError("No Group Found and no position found to create a Group: " + instance.configPath);
+                    return;
+                }
+
+                Log.Normal("Creating a new Group Center: " + instance.groupCenterName);
+
+                GroupCenter center = new GroupCenter();
+                center.Group = instance.Group;
+                center.RadialPosition = instance.RadialPosition;
+                center.CelestialBody = instance.CelestialBody;
+                center.Spawn();
+            }
+
+        }
     }
 }
 

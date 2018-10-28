@@ -7,19 +7,19 @@ using System.Linq;
 using System.IO;
 using KerbalKonstructs.UI;
 
-namespace KerbalKonstructs.Modules
+namespace KerbalKonstructs.UI
 {
-    public class CareerEditor : KKWindow
+    public class GroupEditor : KKWindow
     {
 
-        private static CareerEditor _instance = null;
-        public static CareerEditor instance
+        private static GroupEditor _instance = null;
+        public static GroupEditor instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new CareerEditor();
+                    _instance = new GroupEditor();
 
                 }
                 return _instance;
@@ -29,6 +29,9 @@ namespace KerbalKonstructs.Modules
         #region Variable Declarations
         private List<Transform> transformList = new List<Transform>();
         private CelestialBody body;
+        private bool showNameField = false;
+
+        private string newGroupName = "";
 
         internal Boolean foldedIn = false;
         internal Boolean doneFold = false;
@@ -49,12 +52,6 @@ namespace KerbalKonstructs.Modules
         #endregion
 
         #region Switches
-        // Switches
-        //internal static bool isScanable = false;
-
-        //public static Boolean editingLaunchSite = false;
-
-        //   public static Boolean editingFacility = false;
 
 
         #endregion
@@ -69,8 +66,8 @@ namespace KerbalKonstructs.Modules
         #region Holders
         // Holders
 
-        internal static StaticInstance selectedObject = null;
-        internal StaticInstance selectedObjectPrevious = null;
+        internal static GroupCenter selectedGroup = null;
+        internal GroupCenter selectedObjectPrevious = null;
 
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";
@@ -92,7 +89,6 @@ namespace KerbalKonstructs.Modules
 
 
         private static Vector3 startPosition = Vector3.zero;
-        private static bool wasInRange = true;
 
         internal static float maxEditorRange = 250;
 
@@ -106,24 +102,22 @@ namespace KerbalKonstructs.Modules
             {
                 return;
             }
-            if (KerbalKonstructs.instance.selectedObject == null)
-            {
-                CloseEditors();
-                CloseVectors();
-                Close();
-            }
 
-            if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
+            if ((selectedGroup != null))
             {
-                drawEditor(KerbalKonstructs.instance.selectedObject);
-
-                DrawObject.DrawObjects(KerbalKonstructs.instance.selectedObject.gameObject);
+                drawEditor(selectedGroup);
             }
         }
 
 
         public override void Close()
         {
+
+            if (KerbalKonstructs.camControl.active)
+            {
+                KerbalKonstructs.camControl.disable();
+            }
+
             CloseVectors();
             CloseEditors();
             base.Close();
@@ -134,21 +128,26 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Wrapper to draw editors
         /// </summary>
-        /// <param name="obj"></param>
-        public void drawEditor(StaticInstance obj)
+        /// <param name="groupCenter"></param>
+        internal void drawEditor(GroupCenter groupCenter)
         {
-            if (obj == null)
+            if (groupCenter == null)
             {
                 return;
             }
 
-            if (selectedObjectPrevious != obj)
+            if (selectedObjectPrevious != groupCenter)
             {
-                selectedObjectPrevious = obj;
+                selectedObjectPrevious = groupCenter;
                 SetupVectors();
+                if (!KerbalKonstructs.camControl.active)
+                {
+                    KerbalKonstructs.camControl.enable(groupCenter.gameObject);
+                }
+
             }
 
-            toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
+            toolRect = GUI.Window(0xB00B1E3, toolRect, GroupEditorWindow, "", UIMain.KKWindow);
 
         }
 
@@ -162,7 +161,7 @@ namespace KerbalKonstructs.Modules
         /// Instance Editor window
         /// </summary>
         /// <param name="windowID"></param>
-        void InstanceEditorWindow(int windowID)
+        void GroupEditorWindow(int windowID)
         {
 
             UpdateVectors();
@@ -174,7 +173,7 @@ namespace KerbalKonstructs.Modules
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Button("Mod Editor", UIMain.DeadButton, GUILayout.Height(21));
+                GUILayout.Button("Group Editor", UIMain.DeadButton, GUILayout.Height(21));
 
                 GUILayout.FlexibleSpace();
 
@@ -183,7 +182,8 @@ namespace KerbalKonstructs.Modules
                 if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
                     //KerbalKonstructs.instance.saveObjects();
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    //KerbalKonstructs.instance.deselectObject(true, true);
+                    this.Close();
                 }
             }
             GUILayout.EndHorizontal();
@@ -195,29 +195,35 @@ namespace KerbalKonstructs.Modules
 
             GUILayout.BeginHorizontal();
 
-            if (isInRange)
+            if (GUILayout.Button(selectedGroup.Group, GUILayout.Height(23)))
             {
-                GUILayout.Button(selectedObject.model.title + " (" + selectedObject.indexInGroup.ToString() + ")", GUILayout.Height(23));
+                showNameField = true;
+                newGroupName = selectedGroup.Group;
             }
-            else
-            {
-                GUILayout.Button("Out of Range", UIMain.ButtonRed, GUILayout.Height(23));
-            }
-
-            if (wasInRange && !isInRange)
-            {
-                wasInRange = false;
-                selectedObject.HighlightObject(XKCDColors.Reddish);
-            }
-
-            if (!wasInRange && isInRange)
-            {
-                wasInRange = true;
-                selectedObject.HighlightObject(XKCDColors.FreshGreen);
-            }
-
-
             GUILayout.EndHorizontal();
+
+            if (showNameField)
+            {
+
+                GUILayout.Label("Enter new Name: ");
+
+                newGroupName = GUILayout.TextField(newGroupName, 15, GUILayout.Width(150));
+
+                GUILayout.BeginHorizontal();
+                {
+                    if (GUILayout.Button("OK", GUILayout.Height(23)))
+                    {
+                        selectedGroup.RenameGroup(newGroupName);
+                        showNameField = false;
+                    }
+                    if (GUILayout.Button("Cancel", GUILayout.Height(23)))
+                    {
+                        showNameField = false;
+                    }
+                }
+                GUILayout.EndHorizontal();
+
+            }
 
             GUILayout.BeginHorizontal();
             {
@@ -377,7 +383,7 @@ namespace KerbalKonstructs.Modules
 
             GUI.enabled = true;
 
-       
+
 
             // 
             // Altitude editing
@@ -386,15 +392,15 @@ namespace KerbalKonstructs.Modules
             {
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
-                selectedObject.RadiusOffset = float.Parse(GUILayout.TextField(selectedObject.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)));
+                selectedGroup.RadiusOffset = float.Parse(GUILayout.TextField(selectedGroup.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)));
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
-                    selectedObject.RadiusOffset -= increment;
+                    selectedGroup.RadiusOffset -= increment;
                     ApplySettings();
                 }
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                 {
-                    selectedObject.RadiusOffset += increment;
+                    selectedGroup.RadiusOffset += increment;
                     ApplySettings();
                 }
             }
@@ -406,18 +412,13 @@ namespace KerbalKonstructs.Modules
             GUILayout.Space(5);
 
 
-            fTempWidth = 80f;
-
-            GUI.enabled = true;
-
-
 
             //
             // Rotation
             //
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Heading:");
+                GUILayout.Label("Rotation:");
                 GUILayout.FlexibleSpace();
                 GUILayout.TextField(heading.ToString(), 9, GUILayout.Width(fTempWidth));
 
@@ -449,26 +450,25 @@ namespace KerbalKonstructs.Modules
 
             GUI.enabled = true;
 
-         
+
 
             GUI.enabled = true;
             GUILayout.FlexibleSpace();
 
             GUILayout.BeginHorizontal();
             {
-                GUI.enabled = isInRange;
+                GUI.enabled = true;
                 if (GUILayout.Button("Save&Close", GUILayout.Width(110), GUILayout.Height(23)))
                 {
-                    selectedObject.ToggleAllColliders(true);
-                    KerbalKonstructs.instance.deselectObject(true, true);
-                    selectedObject.HighlightObject(Color.clear);
+                    selectedGroup.Save();
+                    this.Close();
                 }
                 GUI.enabled = true;
                 GUILayout.FlexibleSpace();
 
-                if (GUILayout.Button("Destroy", GUILayout.Height(21)))
+                if (GUILayout.Button("Destroy Group", GUILayout.Height(21)))
                 {
-                    DeleteInstance();
+                    DeleteGroupCenter();
                 }
 
             }
@@ -508,77 +508,39 @@ namespace KerbalKonstructs.Modules
         #region Utility Functions
 
 
-        private bool isInRange
+        internal void DeleteGroupCenter()
         {
-            get
+            if (selectedObjectPrevious == selectedGroup)
             {
-                return ((selectedObject.gameObject.transform.position - startPosition).magnitude < maxEditorRange);
-            }
-        }
-
-        internal void DeleteInstance()
-        {
-            if (selectedObjectPrevious == selectedObject)
                 selectedObjectPrevious = null;
+            }
+
+            InputLockManager.RemoveControlLock("KKShipLock");
+            InputLockManager.RemoveControlLock("KKEVALock");
+            InputLockManager.RemoveControlLock("KKCamModes");
 
 
-            if (selectedObject.hasLauchSites)
+            if (KerbalKonstructs.camControl.active)
             {
-                LaunchSiteManager.DeleteLaunchSite(selectedObject.launchSite);
+                KerbalKonstructs.camControl.disable();
             }
 
 
-            KerbalKonstructs.instance.DeleteInstance(selectedObject);
-            selectedObject = null;
-            return;
+            if (selectedGroup == StaticsEditorGUI.GetActiveGroup())
+            {
+                StaticsEditorGUI.SetActiveGroup(null);
+            }
+
+            selectedGroup.DeleteGroupCenter();
+
+            selectedGroup = null;
+
+
+            StaticsEditorGUI.ResetLocalGroupList();
+            this.Close();
         }
 
 
-        /// <summary>
-        /// Spawns an Instance of an defined StaticModel 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="fOffset"></param>
-        /// <param name="vPosition"></param>
-        /// <param name="fAngle"></param>
-        /// <returns></returns>
-        public string SpawnInstance(StaticModel model, float fOffset, Vector3 vPosition)
-        {
-            StaticInstance instance = new StaticInstance();
-
-            instance.isInSavegame = true;
-
-            instance.heighReference = HeightReference.Terrain;
-
-            instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
-            instance.RadiusOffset = fOffset;
-            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
-            instance.Group = "Ungrouped";
-            instance.RadialPosition = vPosition;
-            instance.RotationAngle = 0;
-            instance.Orientation = Vector3.up;
-            instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
-            instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-            instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
-
-            instance.model = model;
-            instance.configPath = null;
-            instance.configUrl = null;
-
-            instance.SpawnObject(true);
-
-            KerbalKonstructs.instance.selectedObject = instance;
-
-            selectedObject = instance;
-            startPosition = selectedObject.gameObject.transform.position;
-
-            instance.HighlightObject(XKCDColors.FreshGreen);
-
-            this.Open();
-
-            return instance.UUID;
-
-        }
 
         /// <summary>
         /// the starting position of direction vectors (a bit right and up from the Objects position)
@@ -587,7 +549,7 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                return (selectedObject.gameObject.transform.position + 4 * selectedObject.gameObject.transform.up.normalized + 4 * selectedObject.gameObject.transform.right.normalized);
+                return (selectedGroup.gameObject.transform.position);
             }
         }
 
@@ -600,7 +562,7 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                Vector3 myForward = Vector3.ProjectOnPlane(selectedObject.gameObject.transform.forward, upVector);
+                Vector3 myForward = Vector3.ProjectOnPlane(selectedGroup.gameObject.transform.forward, upVector);
                 float myHeading;
 
                 if (Vector3.Dot(myForward, eastVector) > 0)
@@ -643,7 +605,7 @@ namespace KerbalKonstructs.Modules
             get
             {
                 body = FlightGlobals.ActiveVessel.mainBody;
-                return (Vector3)body.GetSurfaceNVector(selectedObject.RefLatitude, selectedObject.RefLongitude).normalized;
+                return (Vector3)body.GetSurfaceNVector(selectedGroup.RefLatitude, selectedGroup.RefLongitude).normalized;
             }
         }
 
@@ -652,7 +614,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         private void UpdateVectors()
         {
-            if (selectedObject == null)
+            if (selectedGroup == null)
             {
                 return;
             }
@@ -666,15 +628,15 @@ namespace KerbalKonstructs.Modules
                 northVR.SetShow(false);
                 eastVR.SetShow(false);
 
-                fwdVR.Vector = selectedObject.gameObject.transform.forward;
+                fwdVR.Vector = selectedGroup.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.draw();
 
-                upVR.Vector = selectedObject.gameObject.transform.up;
+                upVR.Vector = selectedGroup.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.draw();
 
-                rightVR.Vector = selectedObject.gameObject.transform.right;
+                rightVR.Vector = selectedGroup.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.draw();
             }
@@ -704,7 +666,7 @@ namespace KerbalKonstructs.Modules
         {
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
-            fwdVR.Vector = selectedObject.gameObject.transform.forward;
+            fwdVR.Vector = selectedGroup.gameObject.transform.forward;
             fwdVR.Scale = 30d;
             fwdVR.Start = vectorDrawPosition;
             fwdVR.SetLabel("forward");
@@ -712,14 +674,14 @@ namespace KerbalKonstructs.Modules
             fwdVR.SetLayer(5);
 
             upVR.Color = new Color(0, 1, 0);
-            upVR.Vector = selectedObject.gameObject.transform.up;
+            upVR.Vector = selectedGroup.gameObject.transform.up;
             upVR.Scale = 30d;
             upVR.Start = vectorDrawPosition;
             upVR.SetLabel("up");
             upVR.Width = 0.01d;
 
             rightVR.Color = new Color(1, 0, 0);
-            rightVR.Vector = selectedObject.gameObject.transform.right;
+            rightVR.Vector = selectedGroup.gameObject.transform.right;
             rightVR.Scale = 30d;
             rightVR.Start = vectorDrawPosition;
             rightVR.SetLabel("right");
@@ -761,11 +723,11 @@ namespace KerbalKonstructs.Modules
         {
             body = Planetarium.fetch.CurrentMainBody;
             double latOffset = north / (body.Radius * KKMath.deg2rad);
-            selectedObject.RefLatitude += latOffset;
+            selectedGroup.RefLatitude += latOffset;
             double lonOffset = east / (body.Radius * KKMath.deg2rad);
-            selectedObject.RefLongitude += lonOffset * Math.Cos(Mathf.Deg2Rad * selectedObject.RefLatitude);
+            selectedGroup.RefLongitude += lonOffset * Math.Cos(Mathf.Deg2Rad * selectedGroup.RefLatitude);
 
-            selectedObject.RadialPosition = body.GetRelSurfaceNVector(selectedObject.RefLatitude, selectedObject.RefLongitude).normalized * body.Radius;
+            selectedGroup.RadialPosition = body.GetRelSurfaceNVector(selectedGroup.RefLatitude, selectedGroup.RefLongitude).normalized * body.Radius;
             ApplySettings();
         }
 
@@ -779,8 +741,8 @@ namespace KerbalKonstructs.Modules
         /// <param name="increment"></param>
         internal void SetRotation(float increment)
         {
-            selectedObject.RotationAngle += (float)increment;
-            selectedObject.RotationAngle = (360f + selectedObject.RotationAngle) % 360f;
+            selectedGroup.RotationAngle += (float)increment;
+            selectedGroup.RotationAngle = (360f + selectedGroup.RotationAngle) % 360f;
             ApplySettings();
         }
 
@@ -791,27 +753,11 @@ namespace KerbalKonstructs.Modules
         /// <param name="direction"></param>
         internal void SetTransform(Vector3 direction)
         {
-            float oldTerrainHeight = 0f;
-            float newTerrainHeight = 0f;
-            if (selectedObject.heighReference == HeightReference.Terrain)
-            {
-                oldTerrainHeight = (float)(selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition));
-            }
             // adjust transform for scaled models
-            direction = direction / selectedObject.ModelScale;
-            direction = selectedObject.gameObject.transform.TransformVector(direction);
+            direction = direction / selectedGroup.ModelScale;
+            direction = selectedGroup.gameObject.transform.TransformVector(direction);
             double northInc = Vector3d.Dot(northVector, direction);
             double eastInc = Vector3d.Dot(eastVector, direction);
-            double upInc = Vector3d.Dot(upVector, direction);
-
-            if (selectedObject.heighReference == HeightReference.Terrain)
-            {
-                newTerrainHeight = (float)(selectedObject.CelestialBody.pqsController.GetSurfaceHeight(selectedObject.RadialPosition));
-            }
-
-            selectedObject.RadiusOffset += (float)upInc + (oldTerrainHeight - newTerrainHeight);
-
-
 
             Setlatlng(northInc, eastInc);
 
@@ -823,10 +769,10 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         internal void ApplySettings()
         {
-            selectedObject.Update();
+            selectedGroup.Update();
         }
 
-       
+
         #endregion
     }
 }
