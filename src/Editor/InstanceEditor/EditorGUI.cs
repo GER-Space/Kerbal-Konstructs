@@ -313,28 +313,28 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
 
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Rel. Position");
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("X", GUILayout.Height(18));
-                posXStr = (GUILayout.TextField(posXStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                GUILayout.Label("Y", GUILayout.Height(18));
-                posYStr = (GUILayout.TextField(posYStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                GUILayout.Label("Z", GUILayout.Height(18));
-                posZStr = (GUILayout.TextField(posZStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+            //GUILayout.BeginHorizontal();
+            //{
+            //    GUILayout.Label("Rel. Position");
+            //    GUILayout.FlexibleSpace();
+            //    GUILayout.Label("X", GUILayout.Height(18));
+            //    posXStr = (GUILayout.TextField(posXStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
+            //    GUILayout.Label("Y", GUILayout.Height(18));
+            //    posYStr = (GUILayout.TextField(posYStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
+            //    GUILayout.Label("Z", GUILayout.Height(18));
+            //    posZStr = (GUILayout.TextField(posZStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
 
-            }
-            GUILayout.EndHorizontal();
+            //}
+            //GUILayout.EndHorizontal();
             //
             // Position editing
             //
             GUILayout.BeginHorizontal();
 
 
-            GUILayout.Label("Back / Forward:");
+            GUILayout.Label("Back / Fwd:");
             GUILayout.FlexibleSpace();
-
+            posZStr = (GUILayout.TextField(posZStr, 11, GUILayout.Width(fTempWidth)));
 
             if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
             {
@@ -349,6 +349,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             GUILayout.Label("Left / Right:");
             GUILayout.FlexibleSpace();
+            posXStr = (GUILayout.TextField(posXStr, 11, GUILayout.Width(fTempWidth)));
             if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
             {
                 SetTransform(Vector3.left * increment);
@@ -362,6 +363,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             GUILayout.Label("Down / Up:");
             GUILayout.FlexibleSpace();
+            posYStr = (GUILayout.TextField(posYStr, 11, GUILayout.Width(fTempWidth)));
             if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
             {
                 SetTransform(Vector3.down * increment);
@@ -401,19 +403,19 @@ namespace KerbalKonstructs.UI
             GUILayout.Space(1);
             GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
             GUILayout.Space(2);
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Euler Rot.");
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("X", GUILayout.Height(18));
-                oriXStr = (GUILayout.TextField(oriXStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
-                GUILayout.Label("Y", GUILayout.Height(18));
-                oriYStr = (GUILayout.TextField(oriYStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
-                GUILayout.Label("Z", GUILayout.Height(18));
-                oriZStr = (GUILayout.TextField(oriZStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
+            //GUILayout.BeginHorizontal();
+            //{
+            //    GUILayout.Label("Euler Rot.");
+            //    GUILayout.FlexibleSpace();
+            //    GUILayout.Label("X", GUILayout.Height(18));
+            //    oriXStr = (GUILayout.TextField(oriXStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
+            //    GUILayout.Label("Y", GUILayout.Height(18));
+            //    oriYStr = (GUILayout.TextField(oriYStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
+            //    GUILayout.Label("Z", GUILayout.Height(18));
+            //    oriZStr = (GUILayout.TextField(oriZStr, 6, GUILayout.Width(48), GUILayout.Height(18)));
 
-            }
-            GUILayout.EndHorizontal();
+            //}
+            //GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             {
@@ -462,7 +464,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
 
                 fTempWidth = 80f;
-
+                oriXStr = (GUILayout.TextField(oriXStr, 8, GUILayout.Width(fTempWidth)));
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
                     SetRotation(Vector3.right, increment);
@@ -479,6 +481,7 @@ namespace KerbalKonstructs.UI
 
                 GUILayout.Label("Roll:");
                 GUILayout.FlexibleSpace();
+                oriZStr = (GUILayout.TextField(oriZStr, 8, GUILayout.Width(fTempWidth)));
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
                     SetRotation(Vector3.forward, increment);
@@ -501,7 +504,8 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 //                    rotStr = GUILayout.TextField(rotStr, 9, GUILayout.Width(fTempWidth));
                 //  GUILayout.Box(Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, selectedInstance.gameObject.transform.up), selectedInstance.gameObject.transform.parent.forward).ToString(),  GUILayout.Width(fTempWidth));
-                GUILayout.Box(GetHeading(), GUILayout.Width(fTempWidth));
+                //GUILayout.Box(GetHeading(), GUILayout.Width(fTempWidth));
+                oriYStr = (GUILayout.TextField(oriYStr, 8, GUILayout.Width(fTempWidth)));
 
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -939,13 +943,13 @@ namespace KerbalKonstructs.UI
             grasColorBStr = selectedInstance.GrasColor.b.ToString();
             grasColorAStr = selectedInstance.GrasColor.a.ToString();
 
-            oriXStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.x, 2).ToString();
-            oriYStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.y, 2).ToString();
-            oriZStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.z, 2).ToString();
+            oriXStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.x, 4).ToString();
+            oriYStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.y, 4).ToString();
+            oriZStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.z, 4).ToString();
 
-            posXStr = Math.Round(selectedInstance.gameObject.transform.localPosition.x, 2).ToString();
-            posYStr = Math.Round(selectedInstance.gameObject.transform.localPosition.y, 2).ToString();
-            posZStr = Math.Round(selectedInstance.gameObject.transform.localPosition.z, 2).ToString();
+            posXStr = Math.Round(selectedInstance.gameObject.transform.localPosition.x, 4).ToString();
+            posYStr = Math.Round(selectedInstance.gameObject.transform.localPosition.y, 4).ToString();
+            posZStr = Math.Round(selectedInstance.gameObject.transform.localPosition.z, 4).ToString();
 
         }
 
@@ -994,8 +998,23 @@ namespace KerbalKonstructs.UI
             }
             else
             {
+                if (direction.y == 0)
+                {
+                    float oldAltitude, newAltitude;
+                    oldAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
+                    selectedInstance.gameObject.transform.Translate(direction);
+                    newAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
 
-                selectedInstance.gameObject.transform.Translate(direction);
+                    float diff = newAltitude - oldAltitude;
+
+                    selectedInstance.gameObject.transform.localPosition -= new Vector3(0, diff, 0);
+
+                } else
+                {
+                    selectedInstance.gameObject.transform.localPosition += direction;
+                }
+                
+
             }
             ApplySettings();
         }

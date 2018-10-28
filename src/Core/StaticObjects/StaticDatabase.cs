@@ -73,7 +73,9 @@ namespace KerbalKonstructs.Core
 
             SetNewName(instance);
 
-		}
+            instance.groupCenter.AddInstance(instance);
+
+        }
 
         /// <summary>
         /// Generate a UUID that is not already in the database
@@ -108,6 +110,9 @@ namespace KerbalKonstructs.Core
                 _allStaticInstances.Remove(instance);
                 allStaticInstances = _allStaticInstances.ToArray();
             }
+
+            instance.groupCenter.RemoveInstance(instance);
+
             String bodyName = instance.CelestialBody.bodyName;
             String groupName = instance.Group;
 
