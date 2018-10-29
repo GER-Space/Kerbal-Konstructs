@@ -511,31 +511,48 @@ namespace KerbalKonstructs.Modules
         {
             StaticInstance instance = new StaticInstance();
 
-            instance.isInSavegame = true;
-
-            instance.heighReference = HeightReference.Terrain;
-
-            instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
-            instance.RadiusOffset = fOffset;
-            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
-            instance.Group = "Ungrouped";
-            instance.RadialPosition = vPosition;
-            instance.RotationAngle = 0;
             instance.Orientation = Vector3.up;
+            instance.heighReference = HeightReference.Terrain;
             instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
+
+            instance.Group = "Career";
+            instance.RadialPosition = vPosition;
+
+            instance.model = model;
+
+            if (instance.model == null)
+            {
+                Log.UserError("LoadFromSave: Canot find model named: " + model.name);
+                instance = null;
+            }
+            instance.gameObject = UnityEngine.Object.Instantiate(instance.model.prefab);
+
+
+            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
+
+            instance.RadiusOffset = fOffset;
+            instance.RotationAngle = 0;
+
             instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
             instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
 
-            instance.model = model;
-            instance.configPath = null;
-            instance.configUrl = null;
+            InstanceUtil.CreateGroupCenterIfMissing(instance);
+
+
+            bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
 
             instance.SpawnObject(true);
+
+            KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;
+
+
 
             KerbalKonstructs.instance.selectedObject = instance;
 
             selectedInstance = instance;
             startPosition = selectedInstance.gameObject.transform.position;
+
+            instance.Update();
 
             instance.HighlightObject(XKCDColors.FreshGreen);
 

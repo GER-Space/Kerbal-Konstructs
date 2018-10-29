@@ -1000,16 +1000,22 @@ namespace KerbalKonstructs.UI
             {
                 if (direction.y == 0)
                 {
-                    float oldAltitude, newAltitude;
-                    oldAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
+                    float oldY = selectedInstance.gameObject.transform.localPosition.y;
                     selectedInstance.gameObject.transform.Translate(direction);
-                    newAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
+                    Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
+                    selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
 
-                    float diff = newAltitude - oldAltitude;
+                    //float oldAltitude, newAltitude;
+                    //oldAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
+                    //selectedInstance.gameObject.transform.Translate(direction);
+                    //newAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
 
-                    selectedInstance.gameObject.transform.localPosition -= new Vector3(0, diff, 0);
+                    //float diff = newAltitude - oldAltitude;
 
-                } else
+                    //selectedInstance.gameObject.transform.localPosition -= new Vector3(0, diff, 0);
+
+                }
+                else
                 {
                     selectedInstance.gameObject.transform.localPosition += direction;
                 }
