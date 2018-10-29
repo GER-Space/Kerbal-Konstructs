@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using KerbalKonstructs.Core;
 
 
 namespace KerbalKonstructs.UI
@@ -210,7 +211,7 @@ namespace KerbalKonstructs.UI
         {
             if (lineObj != null) lineObj.layer = newVal;
             if (hatObj != null) hatObj.layer = newVal;
-            if (labelObj != null) labelObj.layer = newVal;
+          //  if (labelObj != null) labelObj.layer = newVal;
         }
 
         public void SetLabel(string newVal)

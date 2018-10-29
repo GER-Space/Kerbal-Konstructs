@@ -103,8 +103,7 @@ namespace KerbalKonstructs.UI
 
         private float fTempWidth = 80f;
 
-        internal static bool camInitialized = false;
-
+        private static double cameraDistance;
 
         #endregion
 
@@ -118,23 +117,10 @@ namespace KerbalKonstructs.UI
             }
             if (KerbalKonstructs.instance.selectedObject == null)
             {
-                if (moveGizmo != null)
-                {
-                    moveGizmo.Detach();
-                    moveGizmo = null;
-                }
                 CloseEditors();
                 CloseVectors();
+                CloseGizmo();
                 selectedInstance = null;
-            }
-
-            if (!camInitialized)
-            {
-                foreach (var cam in FlightCamera.fetch.cameras)
-                {
-                    cam.cullingMask += (1 << 11);
-                }
-                camInitialized = true;
             }
 
             if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
@@ -148,11 +134,7 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            if (moveGizmo != null)
-            {
-                moveGizmo.Detach();
-                moveGizmo = null;
-            }
+            CloseGizmo();
             CloseVectors();
             CloseEditors();
             base.Close();
@@ -169,11 +151,6 @@ namespace KerbalKonstructs.UI
         {
             if (instance == null)
             {
-                if (moveGizmo != null)
-                {
-                    moveGizmo.Detach();
-                    moveGizmo = null;
-                }
                 return;
             }
 
@@ -182,22 +159,8 @@ namespace KerbalKonstructs.UI
                 selectedInstance = instance;
                 SetupFields();
                 SetupVectors();
-                if (moveGizmo != null)
-                {
-                    moveGizmo.Detach();
-                    moveGizmo = null;
-                }
+                SetupGizmo();
 
-
-                moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
-                //moveGizmo.gameObject.SetActive(true);         
-                //moveGizmo.enabled = true;
-
-                moveGizmo.SetCoordSystem(Space.Self);
-
-                //moveGizmo.transform.parent = selectedInstance.gameObject.transform;
-
-                moveGizmo.transform.localScale *= 40;
 
             }
 
@@ -209,7 +172,7 @@ namespace KerbalKonstructs.UI
         internal void OnMoveCB(Vector3 vector)
         {
             // Log.Normal("OnMove: " + vector.ToString());
-
+            //moveGizmo.transform.position += 3* vector;
             selectedInstance.gameObject.transform.position = moveGizmo.transform.position;
 
 
@@ -926,6 +889,8 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
+            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
+
             if (referenceSystem == Reference.Center)
             {
                 fwdVR.SetShow(true);
@@ -934,14 +899,17 @@ namespace KerbalKonstructs.UI
 
                 fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
+                fwdVR.Scale = cameraDistance;
                 fwdVR.draw();
 
                 upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
+                upVR.Scale = cameraDistance;
                 upVR.draw();
 
                 rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
+                rightVR.Scale = cameraDistance;
                 rightVR.draw();
             }
             else
@@ -952,14 +920,17 @@ namespace KerbalKonstructs.UI
 
                 fwdVR.Vector = selectedInstance.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
+                fwdVR.Scale = cameraDistance ;
                 fwdVR.draw();
 
                 upVR.Vector = selectedInstance.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
+                upVR.Scale = cameraDistance ;
                 upVR.draw();
 
                 rightVR.Vector = selectedInstance.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
+                rightVR.Scale = cameraDistance;
                 rightVR.draw();
             }
 
@@ -970,28 +941,32 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void SetupVectors()
         {
+            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
+
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
             fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
-            fwdVR.Scale = 30d;
+            fwdVR.Scale = cameraDistance;
             fwdVR.Start = vectorDrawPosition;
             fwdVR.SetLabel("forward");
             fwdVR.Width = 0.01d;
-            fwdVR.SetLayer(5);
+            //fwdVR.SetLayer(11);
 
             upVR.Color = new Color(0, 1, 0);
             upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
-            upVR.Scale = 30d;
+            upVR.Scale = cameraDistance;
             upVR.Start = vectorDrawPosition;
             upVR.SetLabel("up");
             upVR.Width = 0.01d;
+            //upVR.SetLayer(11);
 
             rightVR.Color = new Color(1, 0, 0);
             rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
-            rightVR.Scale = 30d;
+            rightVR.Scale = cameraDistance;
             rightVR.Start = vectorDrawPosition;
             rightVR.SetLabel("right");
             rightVR.Width = 0.01d;
+            //rightVR.SetLayer(11);
 
         }
 
@@ -1005,7 +980,55 @@ namespace KerbalKonstructs.UI
             rightVR.SetShow(false);
         }
 
-        internal void SetupFields()
+        private void SetupGizmo()
+        {
+            if (moveGizmo != null)
+            {
+                moveGizmo.Detach();
+                moveGizmo = null;
+            }
+            moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
+            //moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, null, null, FlightCamera.fetch.mainCamera);
+            //moveGizmo.gameObject.SetActive(true);         
+            //moveGizmo.enabled = true;
+
+            moveGizmo.SetCoordSystem(Space.Self);
+
+            //moveGizmo.transform.parent = selectedInstance.gameObject.transform;
+
+            //moveGizmo.transform.localScale *= 40;
+
+            //moveGizmo.transform.position = FlightCamera.fetch.mainCamera.WorldToViewportPoint(selectedInstance.gameObject.transform.position);
+
+            var transforms = moveGizmo.gameObject.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                // don't set trigger collider 
+                if ((transforms[i].gameObject.GetComponent<Collider>() != null) && (transforms[i].gameObject.GetComponent<Collider>().isTrigger))
+                {
+                    continue;
+                }
+                transforms[i].gameObject.layer = 11;
+            }
+        }
+
+        private void CloseGizmo()
+        {
+            if (moveGizmo != null)
+            {
+                moveGizmo.Detach();
+                moveGizmo = null;
+            }
+        }
+
+        private void UpdateGizmo()
+        {
+            CloseGizmo();
+            SetupGizmo();
+        }
+
+
+    internal void SetupFields()
         {
             incrementStr = increment.ToString();
             altStr = selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position).ToString();
@@ -1115,6 +1138,7 @@ namespace KerbalKonstructs.UI
         {
             selectedInstance.Update();
             SetupFields();
+            UpdateGizmo();
         }
 
         internal void CheckEditorKeys()

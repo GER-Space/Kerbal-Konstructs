@@ -120,6 +120,12 @@ namespace KerbalKonstructs.Modules
             }
         }
 
+        public override void Open()
+        {
+            StaticsEditorGUI.SetupCam();
+            base.Open();
+        }
+
 
         public override void Close()
         {

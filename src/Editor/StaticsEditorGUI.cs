@@ -106,6 +106,13 @@ namespace KerbalKonstructs.UI
 
         private bool showStatic = false;
 
+
+        internal static bool camInitialized = false;
+        internal static GameObject KKCamObject;
+        internal static Camera KKCam;
+
+
+
         public void ToggleEditor()
         {
             if (KerbalKonstructs.instance.selectedObject != null)
@@ -136,6 +143,7 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
+            SetupCam();
             allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
             ResetLocalGroupList();
             base.Open();
@@ -1125,6 +1133,38 @@ namespace KerbalKonstructs.UI
             return null;
         }
 
+
+        internal static void SetupCam()
+        {
+
+            if (!camInitialized)
+            {
+                KKCamObject = new GameObject();
+                KKCam = KKCamObject.AddComponent<Camera>();
+                if (KKCam == null)
+                {
+                    Log.UserError("Cam Setup failed");
+                    camInitialized = true;
+                    return;
+                }
+
+                Log.UserError("Cam created");
+                KKCam.cullingMask = (1 << 11);
+                KKCam.clearFlags = CameraClearFlags.Depth;
+                KKCam.depth = 100;
+                KKCam.farClipPlane = 250000;
+
+                KKCamObject.transform.position = FlightCamera.fetch.gameObject.transform.position;
+                KKCamObject.transform.rotation = FlightCamera.fetch.gameObject.transform.rotation;
+                KKCamObject.transform.parent = FlightCamera.fetch.gameObject.transform;
+
+                List<Camera> cams = FlightCamera.fetch.cameras.ToList();
+                cams.Add(KKCam);
+                FlightCamera.fetch.cameras = cams.ToArray();
+
+                camInitialized = true;
+            }
+        }
 
     }
 }

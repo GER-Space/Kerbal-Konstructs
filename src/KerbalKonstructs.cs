@@ -309,7 +309,7 @@ namespace KerbalKonstructs
                 case GameScenes.FLIGHT:
                     {
 
-                        EditorGUI.camInitialized = false;
+                        //EditorGUI.camInitialized = false;
 
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         InputLockManager.RemoveControlLock("KKEditorLock2");
