@@ -219,6 +219,7 @@ namespace KerbalKonstructs
             //Log.PerfStop("Model Test");
             //SDTest.GetShaderStats();
             //SDTest.ScanParticles();
+
         }
 
         #region Game Events
@@ -307,6 +308,9 @@ namespace KerbalKonstructs
             {
                 case GameScenes.FLIGHT:
                     {
+
+                        EditorGUI.camInitialized = false;
+
                         InputLockManager.RemoveControlLock("KKEditorLock");
                         InputLockManager.RemoveControlLock("KKEditorLock2");
 

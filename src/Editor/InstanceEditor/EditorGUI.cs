@@ -38,7 +38,7 @@ namespace KerbalKonstructs.UI
         private CelestialBody body;
 
 
-
+        private EditorGizmos.GizmoOffset moveGizmo = null;
 
 
         #region Texture Definitions
@@ -71,7 +71,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(800, 120, 330, 730);
+        internal Rect toolRect = new Rect(1200, 60, 330, 730);
 
         #endregion
 
@@ -103,6 +103,8 @@ namespace KerbalKonstructs.UI
 
         private float fTempWidth = 80f;
 
+        internal static bool camInitialized = false;
+
 
         #endregion
 
@@ -116,8 +118,23 @@ namespace KerbalKonstructs.UI
             }
             if (KerbalKonstructs.instance.selectedObject == null)
             {
+                if (moveGizmo != null)
+                {
+                    moveGizmo.Detach();
+                    moveGizmo = null;
+                }
                 CloseEditors();
                 CloseVectors();
+                selectedInstance = null;
+            }
+
+            if (!camInitialized)
+            {
+                foreach (var cam in FlightCamera.fetch.cameras)
+                {
+                    cam.cullingMask += (1 << 11);
+                }
+                camInitialized = true;
             }
 
             if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
@@ -131,9 +148,15 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
+            if (moveGizmo != null)
+            {
+                moveGizmo.Detach();
+                moveGizmo = null;
+            }
             CloseVectors();
             CloseEditors();
             base.Close();
+            selectedInstance = null;
         }
 
         #region draw Methods
@@ -146,6 +169,11 @@ namespace KerbalKonstructs.UI
         {
             if (instance == null)
             {
+                if (moveGizmo != null)
+                {
+                    moveGizmo.Detach();
+                    moveGizmo = null;
+                }
                 return;
             }
 
@@ -154,10 +182,52 @@ namespace KerbalKonstructs.UI
                 selectedInstance = instance;
                 SetupFields();
                 SetupVectors();
+                if (moveGizmo != null)
+                {
+                    moveGizmo.Detach();
+                    moveGizmo = null;
+                }
+
+
+                moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
+                //moveGizmo.gameObject.SetActive(true);         
+                //moveGizmo.enabled = true;
+
+                moveGizmo.SetCoordSystem(Space.Self);
+
+                //moveGizmo.transform.parent = selectedInstance.gameObject.transform;
+
+                moveGizmo.transform.localScale *= 40;
+
             }
 
-            toolRect = GUI.Window(0x000B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
+            toolRect = GUI.Window(0x004B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
 
+        }
+
+
+        internal void OnMoveCB(Vector3 vector)
+        {
+            // Log.Normal("OnMove: " + vector.ToString());
+
+            selectedInstance.gameObject.transform.position = moveGizmo.transform.position;
+
+
+            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
+
+            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
+
+            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
+            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
+
+            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
+
+        }
+
+        internal void WhenMovedCB(Vector3 vector)
+        {
+            Log.Normal("WhenMoved: " + vector.ToString());
+            ApplySettings();
         }
 
         #endregion
@@ -192,6 +262,7 @@ namespace KerbalKonstructs.UI
                 {
                     //KerbalKonstructs.instance.saveObjects();
                     KerbalKonstructs.instance.deselectObject(true, true);
+                    //this.Close();
                 }
             }
             GUILayout.EndHorizontal();
