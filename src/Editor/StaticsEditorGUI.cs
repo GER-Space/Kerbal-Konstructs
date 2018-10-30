@@ -16,7 +16,6 @@ namespace KerbalKonstructs.UI
         private enum EditorMode
         {
             SPAWN,
-            ALL,
             LOCAL,
             PQS,
             GROUP
@@ -37,7 +36,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        Rect editorRect = new Rect(10, 25, 750, 540);
+        Rect editorRect = new Rect(10, 25, 690, 540);
 
         GUIStyle DeadButton;
         GUIStyle DeadButtonRed;
@@ -78,9 +77,6 @@ namespace KerbalKonstructs.UI
         String titlefilterString = "";
         String categoryfilter = "";
         String titleFilter = "";
-
-        String groupFilterString = "";
-        String groupFilter = "";
 
 
         float localRange = 10000f;
@@ -267,18 +263,6 @@ namespace KerbalKonstructs.UI
                     mode = EditorMode.SPAWN;
                 }
 
-                GUILayout.Space(5);
-
-                GUI.enabled = (mode != EditorMode.ALL);
-
-                if (GUILayout.Button("All Instances", GUILayout.Width(110), GUILayout.Height(23)))
-                {
-                    EditorGUI.CloseEditors();
-                    MapDecalEditor.Instance.Close();
-                    mode = EditorMode.ALL;
-                    KerbalKonstructs.instance.DeletePreviewObject();
-                }
-
                 GUI.enabled = true;
                 GUILayout.Space(2);
                 GUI.enabled = (mode != EditorMode.LOCAL);
@@ -363,7 +347,6 @@ namespace KerbalKonstructs.UI
                     case EditorMode.SPAWN:
                         ShowModelsScroll();
                         break;
-                    case EditorMode.ALL:
                     case EditorMode.LOCAL:
                         ShowInstancesScroll();
                         break;
@@ -387,9 +370,6 @@ namespace KerbalKonstructs.UI
             {
                 case EditorMode.SPAWN:
                     ShowModelsFooter();
-                    break;
-                case EditorMode.ALL:
-                    ShowInstancesFootersAll();
                     break;
                 case EditorMode.LOCAL:
                     ShowInstancesFootersLocal();
@@ -604,31 +584,16 @@ namespace KerbalKonstructs.UI
             {
                 bool isLocal = true;
 
-                if (mode == EditorMode.LOCAL)
+                if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
                 {
-                    if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
-                    {
-                        var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
-                        isLocal = dist < localRange;
-                    }
-                    else
-                    {
-                        isLocal = false;
-                    }
+                    var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
+                    isLocal = (dist < KerbalKonstructs.localGroupRange);
+                }
+                else
+                {
+                    isLocal = false;
                 }
 
-                string sGroupHolder = "";
-                if (mode != EditorMode.LOCAL)
-                {
-                    if (groupFilter != "")
-                    {
-                        sGroupHolder = allStaticInstances[ix].Group;
-                        if (!sGroupHolder.Contains(groupFilter))
-                        {
-                            isLocal = false;
-                        }
-                    }
-                }
 
 
                 if (isLocal)
@@ -698,112 +663,28 @@ namespace KerbalKonstructs.UI
                     }
                     //GUI.enabled = true;
 
-                    if (mode == EditorMode.LOCAL)
+
+                    GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
+                    if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
                     {
-                        GUI.enabled = (snapTargetInstance != allStaticInstances[ix] && allStaticInstances[ix] != selectedObject);
-                        if (GUILayout.Button(new GUIContent(tFocus, "Set as snap target."), GUILayout.Height(23), GUILayout.Width(23)))
+                        if (snapTargetInstance != null)
                         {
-                            if (snapTargetInstance != null)
-                            {
-                                snapTargetInstancePrevious = snapTargetInstance;
-                                Color highlightColor3 = new Color(0, 0, 0, 0);
-                                snapTargetInstance.HighlightObject(highlightColor3);
-                            }
-
-                            snapTargetInstance = allStaticInstances[ix];
-
-                            Color highlightColor4 = XKCDColors.RedPink;
-                            allStaticInstances[ix].HighlightObject(highlightColor4);
+                            snapTargetInstancePrevious = snapTargetInstance;
+                            Color highlightColor3 = new Color(0, 0, 0, 0);
+                            snapTargetInstance.HighlightObject(highlightColor3);
                         }
-                        GUI.enabled = true;
+
+                        snapTargetInstance = allStaticInstances[ix];
+
+                        Color highlightColor4 = XKCDColors.RedPink;
+                        allStaticInstances[ix].HighlightObject(highlightColor4);
                     }
+                    GUI.enabled = true;
+
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2);
                 }
             }
-
-        }
-
-        /// <summary>
-        /// Instances for all Selection: Deprecated
-        /// </summary>
-        internal void ShowInstancesFootersAll()
-        {
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Filter by Group:", GUILayout.Width(140));
-                //GUILayout.FlexibleSpace();
-                groupFilterString = GUILayout.TextField(groupFilterString, 40, GUILayout.Width(140));
-                if (GUILayout.Button(new GUIContent(tSearch, "Apply Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    groupFilter = groupFilterString;
-                }
-                if (GUILayout.Button(new GUIContent(tCancelSearch, "Remove Filter."), GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    groupFilterString = "";
-                    groupFilter = "";
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            // GUILayout.BeginHorizontal();
-            //{
-            //    GUILayout.Label("Pack Name: ", GUILayout.Width(140));
-            //    //GUILayout.FlexibleSpace();
-            //    sPackName = GUILayout.TextField(sPackName, 30, GUILayout.Width(140));
-            //    //GUILayout.FlexibleSpace();
-
-            //    GUI.enabled = (sPackName != "" && groupfilter != "");
-            //    if (GUILayout.Button("Export Group"))
-            //    {
-            //        //Validate the groupfilter to see if it is a Group name
-            //        bool bValidGroupName = false;
-
-            //        foreach (StaticObject instance in StaticDatabase.allStaticInstances)
-            //        {
-            //            if (instance.Group == groupfilter)
-            //            {
-            //                bValidGroupName = true;
-            //                break;
-            //            }
-            //        }
-
-            //        if (bValidGroupName)
-            //        {
-            //            KerbalKonstructs.instance.exportCustomInstances(sPackName, "", groupfilter);
-            //            smessage = "Exported custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/" + groupfilter;
-            //            MiscUtils.HUDMessage(smessage, 10, 2);
-            //        }
-            //        else
-            //        {
-            //            smessage = "Group filter is not a valid Group name. Please filter with a complete and valid Group name before exporting a group.";
-            //            MiscUtils.HUDMessage(smessage, 20, 2);
-            //        }
-            //    }
-            //    GUI.enabled = true;
-
-            //    GUI.enabled = (sPackName != "");
-            //    if (GUILayout.Button("Export All"))
-            //    {
-            //        KerbalKonstructs.instance.exportCustomInstances(sPackName, "All");
-            //        smessage = "Exported all custom instances to GameData/KerbalKonstructs/ExportedInstances/" + sPackName + "/";
-            //        MiscUtils.HUDMessage(smessage, 10, 2);
-            //    }
-            //    GUI.enabled = true;
-            //}
-            //GUILayout.EndHorizontal();
-
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Disable Camera Focus/Position Editing", GUILayout.Height(23)))
-            {
-
-                bDisableEditingSetting = true;
-            }
-
-            GUILayout.Button(tCross, DeadButton, GUILayout.Height(23), GUILayout.Width(23));
-            GUILayout.EndHorizontal();
-
 
         }
 
@@ -972,7 +853,7 @@ namespace KerbalKonstructs.UI
                 }
 
 
-                GUI.enabled = ((activeGroup != null)  && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < KerbalKonstructs.localGroupRange);
+                GUI.enabled = ((activeGroup != null) && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < KerbalKonstructs.localGroupRange);
                 if (GUILayout.Button("clone group to active", GUILayout.Width(170)))
                 {
                     GroupSelectorUI.instance.Close();
@@ -1013,7 +894,7 @@ namespace KerbalKonstructs.UI
             localGroups = foundList.ToArray();
         }
 
-        
+
         internal static GroupCenter GetCloesedCenter(Vector3 myPosition)
         {
             if (localGroups.Length == 0)
@@ -1024,12 +905,12 @@ namespace KerbalKonstructs.UI
             {
                 return activeGroup;
             }
-            
+
             GroupCenter closest = localGroups[0];
             float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
             foreach (GroupCenter center in localGroups)
             {
-                if (Vector3.Distance(myPosition, center.gameObject.transform.position)  < dist)
+                if (Vector3.Distance(myPosition, center.gameObject.transform.position) < dist)
                 {
                     dist = Vector3.Distance(myPosition, center.gameObject.transform.position);
                     closest = center;
@@ -1098,7 +979,7 @@ namespace KerbalKonstructs.UI
 
         internal static GroupCenter GetActiveGroup()
         {
-            return activeGroup ;
+            return activeGroup;
         }
 
         /// <summary>
@@ -1124,7 +1005,6 @@ namespace KerbalKonstructs.UI
             // we didn't find any root object, so we return null
             return null;
         }
-
 
     }
 }

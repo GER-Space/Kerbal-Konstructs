@@ -53,6 +53,10 @@ namespace KerbalKonstructs.Core
             _allStaticInstances.Add(instance);
             allStaticInstances = _allStaticInstances.ToArray();
 
+            if (instancedByUUID.ContainsKey(instance.UUID))
+            {
+                instance.UUID = GetNewUUID();
+            }
             instancedByUUID.Add(instance.UUID, instance);
 
             String bodyName = instance.CelestialBody.bodyName;

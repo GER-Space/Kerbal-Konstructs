@@ -131,6 +131,7 @@
     <Compile Include="Editor\MapDecalEditor.cs" />
     <Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
     <Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
+    <Compile Include="Editor\Shared\EditorGizmo.cs" />
     <Compile Include="Editor\Shared\VectorRenderer.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\Barracks\Barracks.cs" />

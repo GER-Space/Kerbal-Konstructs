@@ -167,7 +167,17 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                    sFacilityName = selectedInstance.model.title;
+                {
+                    if (selectedInstance.facilityType != KKFacilityType.None)
+                    {
+                        sFacilityName = selectedInstance.GetFacility(selectedInstance.facilityType).FacilityName;
+                    }
+                    else
+                    {
+                        sFacilityName = selectedInstance.model.title;
+                    }
+
+                }
 
                 GUILayout.Box("" + sFacilityName, Yellowtext);
                 GUILayout.Space(5);
@@ -178,7 +188,8 @@ namespace KerbalKonstructs.UI
                 disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
                 disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
 
-                if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
+                if (disObjectLon < 0)
+                    disObjectLon = disObjectLon + 360;
 
                 GUILayout.BeginHorizontal();
                 {
@@ -280,7 +291,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Space(2);
                     GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                     GUILayout.Space(2);
-                    StaffGUI.StaffingInterface(selectedInstance);             
+                    StaffGUI.StaffingInterface(selectedInstance);
                 }
             }
 

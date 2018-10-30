@@ -8,15 +8,15 @@ using System.Reflection;
 
 namespace KerbalKonstructs.UI
 {
-	public class ProductionGUI
-	{
-		public static GUIStyle Yellowtext;
-		public static GUIStyle KKWindow;
-		public static GUIStyle DeadButton;
-		public static GUIStyle DeadButtonRed;
-		public static GUIStyle BoxNoBorder;
-		public static GUIStyle LabelInfo;
-		public static GUIStyle ButtonSmallText;
+    public class ProductionGUI
+    {
+        public static GUIStyle Yellowtext;
+        public static GUIStyle KKWindow;
+        public static GUIStyle DeadButton;
+        public static GUIStyle DeadButtonRed;
+        public static GUIStyle BoxNoBorder;
+        public static GUIStyle LabelInfo;
+        public static GUIStyle ButtonSmallText;
 
         private static bool isInitialized = false;
 
@@ -27,6 +27,7 @@ namespace KerbalKonstructs.UI
         private static float currentStaff = 0;
         private static float currentProductionRate = 0;
         private static float lastCheckTime = 0;
+        private static FieldInfo checkTimeField;
 
         private static float defaultProductionRate;
 
@@ -39,7 +40,7 @@ namespace KerbalKonstructs.UI
 
 
 
-    internal static void InitializeLayout ()
+        internal static void InitializeLayout()
         {
             isInitialized = true;
 
@@ -91,11 +92,12 @@ namespace KerbalKonstructs.UI
 
 
 
-		public static void ProductionInterface(StaticInstance selectedFacility, string facilityType)
-		{
+        public static void ProductionInterface(StaticInstance selectedFacility, string facilityType)
+        {
             if (selectedFacility.myFacilities.Count == 0)
+            {
                 return;
-
+            }
 
             if (isInitialized == false)
             {
@@ -105,31 +107,36 @@ namespace KerbalKonstructs.UI
             if (facilityType == "Research")
             {
                 facField = typeof(Research);
-            }else
+            }
+            else
             {
                 facField = typeof(Business);
             }
+
+
             myResearch = selectedFacility.myFacilities[0] as Research;
             myBusiness = selectedFacility.myFacilities[0] as Business;
 
-            lastCheckTime = myBusiness.LastCheck;
+            checkTimeField = facField.GetField("LastCheck");
 
-			if (lastCheckTime == 0)
-			{
-				lastCheckTime = (float)Planetarium.GetUniversalTime();
-                myBusiness.LastCheck =  lastCheckTime;
-			}
+            lastCheckTime = (float)checkTimeField.GetValue(selectedFacility.myFacilities[0]);
+
+            if (lastCheckTime == 0)
+            {
+                lastCheckTime = (float)Planetarium.GetUniversalTime();
+                checkTimeField.SetValue(selectedFacility.myFacilities[0], lastCheckTime);
+            }
 
             if (facilityType == "Research" || facilityType == "Business")
-			{
-				produces = "";
-				maxProduced = 0f;
+            {
+                produces = "";
+                maxProduced = 0f;
                 defaultProductionRate = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]);
 
                 if (facilityType == "Research")
-				{
-					produces = "Science";
-					maxProduced = myResearch.ScienceOMax;
+                {
+                    produces = "Science";
+                    maxProduced = myResearch.ScienceOMax;
 
                     if (defaultProductionRate < 0.1f)
                     {
@@ -140,18 +147,18 @@ namespace KerbalKonstructs.UI
                     {
                         maxProduced = selectedFacility.model.DefaultScienceOMax;
 
-                        if (maxProduced < 1) maxProduced = 10f;
+                        if (maxProduced < 1)
+                            maxProduced = 10f;
                         {
                             myResearch.ScienceOMax = maxProduced;
                         }
                     }
                     maxProduced = myResearch.ScienceOMax;
                 }
-
-				if (facilityType == "Business")
-				{
-					produces = "Funds";
-					maxProduced = myBusiness.FundsOMax;
+                if (facilityType == "Business")
+                {
+                    produces = "Funds";
+                    maxProduced = myBusiness.FundsOMax;
 
                     if (defaultProductionRate < 10f)
                     {
@@ -159,76 +166,73 @@ namespace KerbalKonstructs.UI
                     }
 
                     if (maxProduced < 1)
-					{
-						maxProduced = selectedFacility.model.DefaultFundsOMax;
+                    {
+                        maxProduced = selectedFacility.model.DefaultFundsOMax;
 
                         if (maxProduced < 1)
                         {
                             myBusiness.FundsOMax = 10000f;
                         }
-					}
+                    }
                     maxProduced = myBusiness.FundsOMax;
                 }
-
                 facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0], defaultProductionRate);
 
-                currentStaff = myBusiness.StaffCurrent;
+                currentStaff = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
                 currentProductionRate = defaultProductionRate * currentStaff;
 
                 currentTime = (float)Planetarium.GetUniversalTime();
-             //   Log.Normal("Current time: " + currentTime);
+                //   Log.Normal("Current time: " + currentTime);
 
-				// Deal with revert exploits
-				if (lastCheckTime > currentTime)
-				{
-                    myBusiness.LastCheck = currentTime;
-				}
-
+                // Deal with revert exploits
+                if (lastCheckTime > currentTime)
+                {
+                    checkTimeField.SetValue(selectedFacility.myFacilities[0], currentTime);
+                }
                 daysPast = ((currentTime - lastCheckTime) / 21600f);
                 currentProduced = daysPast * currentProductionRate;
-                
+
                 if (currentProduced > maxProduced)
                 {
                     currentProduced = maxProduced;
 
                 }
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Produces: " + produces, LabelInfo);
-				GUILayout.FlexibleSpace();
-				GUILayout.Label("Current: " + currentProduced.ToString("#0") + " | Max: " + maxProduced.ToString("#0"), LabelInfo);
-				GUILayout.EndHorizontal();
-
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Produces: " + produces, LabelInfo);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Current: " + currentProduced.ToString("#0") + " | Max: " + maxProduced.ToString("#0"), LabelInfo);
+                GUILayout.EndHorizontal();
                 if (facilityType == "Research")
-				{
-					if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
-					{
-						ResearchAndDevelopment.Instance.AddScience(currentProduced, TransactionReasons.Cheating);
+                {
+                    if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
+                    {
+                        ResearchAndDevelopment.Instance.AddScience(currentProduced, TransactionReasons.Cheating);
                         myResearch.ScienceOCurrent = 0f;
                         myResearch.LastCheck = currentTime;
                     }
 
-				}
-				if (facilityType == "Business")
-				{
-					if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
-					{
-						Funding.Instance.AddFunds(currentProduced, TransactionReasons.Cheating);
+                }
+                if (facilityType == "Business")
+                {
+                    if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
+                    {
+                        Funding.Instance.AddFunds(currentProduced, TransactionReasons.Cheating);
                         myBusiness.FundsOCurrent = 0f;
                         myBusiness.LastCheck = currentTime;
                     }
-				}				
+                }
 
-				GUILayout.Space(5);
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.Label("Production Rate: Up to " + currentProductionRate.ToString("#0.00") + " a Kerbin day", LabelInfo);
-					GUILayout.FlexibleSpace();
-					//if (GUILayout.Button(" Upgrade ", ButtonSmallText, GUILayout.Height(20)))
-					//{ }
-				}
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Production Rate: Up to " + currentProductionRate.ToString("#0.00") + " a Kerbin day", LabelInfo);
+                    GUILayout.FlexibleSpace();
+                    //if (GUILayout.Button(" Upgrade ", ButtonSmallText, GUILayout.Height(20)))
+                    //{ }
+                }
                 GUILayout.EndHorizontal();
-				GUILayout.Space(3);
-			}
-		}
-	}
+                GUILayout.Space(3);
+            }
+        }
+    }
 }

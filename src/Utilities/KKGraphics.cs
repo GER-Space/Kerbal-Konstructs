@@ -123,7 +123,7 @@ namespace KerbalKonstructs
                     Log.UserError("AdvTexture: index out of range" + textureNameShort + " : " + index);
                     return null;
                 }
-                return foundTextures[index] as Texture2D;
+                foundTexture =  foundTextures[index] as Texture2D;
 
             }
             else
