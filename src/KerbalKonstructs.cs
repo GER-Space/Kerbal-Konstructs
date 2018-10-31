@@ -403,7 +403,7 @@ namespace KerbalKonstructs
                             CameraController.SetSpaceCenterCam(currentSite);
                         }
                         updateCache();
-                       // LaunchSiteManager.AlterMHSelector();
+                        // LaunchSiteManager.AlterMHSelector();
                     }
                     break;
                 case GameScenes.MAINMENU:
@@ -1076,6 +1076,7 @@ namespace KerbalKonstructs
         /// </summary>
         public void saveObjects()
         {
+            ConfigUtil.CreateNewInstanceDirIfNeeded();
 
             SaveGroupCenters();
 

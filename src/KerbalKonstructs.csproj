@@ -107,11 +107,14 @@
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrasColorUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrasColorPresetUI.cs" />
     <Compile Include="Editor\Shared\DrawObject.cs" />
     <Compile Include="Editor\Shared\DrawTools.cs" />
     <Compile Include="Editor\MapDecalEditor.cs" />
     <Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
     <Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
+    <Compile Include="Editor\Shared\EditorGizmo.cs" />
     <Compile Include="Editor\Shared\VectorRenderer.cs" />
     <Compile Include="ExternalAPI\API.cs" />
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />

@@ -33,7 +33,7 @@ namespace KerbalKonstructs.Modules
         internal Boolean foldedIn = false;
         internal Boolean doneFold = false;
 
-
+        private static double cameraDistance;
 
         #region Texture Definitions
         // Texture definitions
@@ -81,10 +81,7 @@ namespace KerbalKonstructs.Modules
         private VectorRenderer fwdVR = new VectorRenderer();
         private VectorRenderer rightVR = new VectorRenderer();
 
-        private VectorRenderer northVR = new VectorRenderer();
-        private VectorRenderer eastVR = new VectorRenderer();
-
-
+        private static Space referenceSystem = Space.Self;
 
         private static Vector3d position = Vector3d.zero;
         private Vector3d savedReferenceVector = Vector3d.zero;
@@ -109,6 +106,7 @@ namespace KerbalKonstructs.Modules
             {
                 CloseEditors();
                 CloseVectors();
+                CloseGizmo();
                 Close();
             }
 
@@ -122,7 +120,7 @@ namespace KerbalKonstructs.Modules
 
         public override void Open()
         {
-            StaticsEditorGUI.SetupCam();
+            EditorGizmo.SetupCam();
             base.Open();
         }
 
@@ -130,6 +128,7 @@ namespace KerbalKonstructs.Modules
         public override void Close()
         {
             CloseVectors();
+            CloseGizmo();
             CloseEditors();
             base.Close();
         }
@@ -151,6 +150,7 @@ namespace KerbalKonstructs.Modules
             {
                 selectedObjectPrevious = obj;
                 SetupVectors();
+                SetupGizmo();
             }
 
             toolRect = GUI.Window(0xB00B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
@@ -282,31 +282,34 @@ namespace KerbalKonstructs.Modules
             }
             GUILayout.EndHorizontal();
 
-            ////
-            //// Set reference butons
-            ////
-            //GUILayout.BeginHorizontal();
-            //GUILayout.Label("Reference System: ");
-            //GUILayout.FlexibleSpace();
-            //GUI.enabled = (referenceSystem == Space.World);
+            //
+            // Set reference butons
+            //
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Reference System: ");
+                GUILayout.FlexibleSpace();
+                GUI.enabled = (referenceSystem == Space.World);
 
-            //if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
-            //{
-            //    referenceSystem = Space.Self;
-            //    UpdateVectors();
-            //}
+                if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
+                {
+                    referenceSystem = Space.Self;
+                    UpdateGizmo();
+                    UpdateVectors();
+                }
 
-            //GUI.enabled = (referenceSystem == Space.Self);
-            //if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
-            //{
-            //    referenceSystem = Space.World;
-            //    UpdateVectors();
-            //}
-            //GUI.enabled = true;
+                GUI.enabled = (referenceSystem == Space.Self);
+                if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
+                {
+                    referenceSystem = Space.World;
+                    UpdateGizmo();
+                    UpdateVectors();
+                }
+                GUI.enabled = true;
 
-            //GUILayout.Label(referenceSystem.ToString());
-
-            //GUILayout.EndHorizontal();
+                GUILayout.Label(referenceSystem.ToString());
+            }
+            GUILayout.EndHorizontal();
             float fTempWidth = 80f;
             //
             // Position editing
@@ -575,7 +578,8 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                return (selectedInstance.gameObject.transform.position + 4 * selectedInstance.gameObject.transform.up.normalized + 4 * selectedInstance.gameObject.transform.right.normalized);
+                //return (selectedInstance.gameObject.transform.position + 4 * selectedInstance.gameObject.transform.up.normalized + 4 * selectedInstance.gameObject.transform.right.normalized);
+                return (selectedInstance.gameObject.transform.position);
             }
         }
 
@@ -645,21 +649,51 @@ namespace KerbalKonstructs.Modules
                 return;
             }
 
-            fwdVR.SetShow(true);
-            upVR.SetShow(true);
-            rightVR.SetShow(true);
+            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
 
-            fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
-            fwdVR.Start = vectorDrawPosition;
-            fwdVR.draw();
+            if (referenceSystem == Space.World)
+            {
+                fwdVR.SetShow(true);
+                upVR.SetShow(true);
+                rightVR.SetShow(true);
 
-            upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
-            upVR.Start = vectorDrawPosition;
-            upVR.draw();
+                fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
+                fwdVR.Start = vectorDrawPosition;
+                fwdVR.Scale = cameraDistance;
+                fwdVR.draw();
 
-            rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
-            rightVR.Start = vectorDrawPosition;
-            rightVR.draw();
+                upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
+                upVR.Start = vectorDrawPosition;
+                upVR.Scale = cameraDistance;
+                upVR.draw();
+
+                rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
+                rightVR.Start = vectorDrawPosition;
+                rightVR.Scale = cameraDistance;
+                rightVR.draw();
+            }
+            else
+            {
+                fwdVR.SetShow(true);
+                upVR.SetShow(true);
+                rightVR.SetShow(true);
+
+                fwdVR.Vector = selectedInstance.gameObject.transform.forward;
+                fwdVR.Start = vectorDrawPosition;
+                fwdVR.Scale = cameraDistance;
+                fwdVR.draw();
+
+                upVR.Vector = selectedInstance.gameObject.transform.up;
+                upVR.Start = vectorDrawPosition;
+                upVR.Scale = cameraDistance;
+                upVR.draw();
+
+                rightVR.Vector = selectedInstance.gameObject.transform.right;
+                rightVR.Start = vectorDrawPosition;
+                rightVR.Scale = cameraDistance;
+                rightVR.draw();
+            }
+
         }
 
         /// <summary>
@@ -696,8 +730,6 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         private void CloseVectors()
         {
-            northVR.SetShow(false);
-            eastVR.SetShow(false);
             fwdVR.SetShow(false);
             upVR.SetShow(false);
             rightVR.SetShow(false);
@@ -722,7 +754,27 @@ namespace KerbalKonstructs.Modules
         /// <param name="direction"></param>
         internal void SetTransform(Vector3 direction)
         {
-            selectedInstance.gameObject.transform.localPosition += direction;
+            direction = direction / selectedInstance.ModelScale;
+            if (referenceSystem == Space.World)
+            {
+                selectedInstance.gameObject.transform.localPosition += direction;
+            }
+            else
+            {
+                if (direction.y == 0)
+                {
+                    float oldY = selectedInstance.gameObject.transform.localPosition.y;
+                    selectedInstance.gameObject.transform.Translate(direction);
+                    Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
+                    selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
+                }
+                else
+                {
+                    selectedInstance.gameObject.transform.localPosition += direction;
+                }
+
+
+            }
             ApplySettings();
         }
 
@@ -733,9 +785,59 @@ namespace KerbalKonstructs.Modules
         internal void ApplySettings()
         {
             selectedInstance.Update();
+            UpdateGizmo();
         }
 
-       
+
+        private void SetupGizmo()
+        {
+
+            if (referenceSystem == Space.World)
+            {
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.gameObject.transform.localRotation, OnMoveCB, WhenMovedCB);
+            }
+            else
+            {
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, Quaternion.identity, OnMoveCB, WhenMovedCB);
+            }
+        }
+
+        private void CloseGizmo()
+        {
+            EditorGizmo.CloseGizmo();
+        }
+
+        private void UpdateGizmo()
+        {
+            EditorGizmo.CloseGizmo();
+            SetupGizmo();
+        }
+
+
+        internal void OnMoveCB(Vector3 vector)
+        {
+            // Log.Normal("OnMove: " + vector.ToString());
+            //moveGizmo.transform.position += 3* vector;
+            selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+
+
+            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
+
+            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
+
+            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
+            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
+
+            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
+
+        }
+
+        internal void WhenMovedCB(Vector3 vector)
+        {
+            //Log.Normal("WhenMoved: " + vector.ToString());
+            ApplySettings();
+        }
+
         #endregion
     }
 }

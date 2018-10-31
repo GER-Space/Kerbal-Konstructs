@@ -167,7 +167,17 @@ namespace KerbalKonstructs.UI
                     bHalfwindow = true;
                 }
                 else
-                    sFacilityName = selectedInstance.model.title;
+                {
+                    if (selectedInstance.facilityType != KKFacilityType.None)
+                    {
+                        sFacilityName = selectedInstance.GetFacility(selectedInstance.facilityType).FacilityName;
+                    }
+                    else
+                    {
+                        sFacilityName = selectedInstance.model.title;
+                    }
+                    
+                }
 
                 GUILayout.Box("" + sFacilityName, Yellowtext);
                 GUILayout.Space(5);

@@ -118,7 +118,12 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
+            if (KerbalKonstructs.camControl.active)
+            {
+                KerbalKonstructs.camControl.disable();
+            }
             CloseVectors();
+            EditorGizmo.CloseGizmo();
             base.Close();
             selectedDecal = null;
         }
@@ -148,6 +153,11 @@ namespace KerbalKonstructs.UI
                 position = selectedDecal.gameObject.transform.position;
                 Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
                 SetupVectors();
+                EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
+                if (!KerbalKonstructs.camControl.active)
+                {
+                    KerbalKonstructs.camControl.enable(selectedDecal.gameObject);
+                }
             }
 
             toolRect = GUI.Window(0xB00B1E3, toolRect, MapDecalEditorWindow, "", KKWindows);
@@ -1028,6 +1038,44 @@ namespace KerbalKonstructs.UI
             Setlatlng(northInc, eastInc);
         }
 
+        internal void OnMoveCallBack(Vector3 vector)
+        {
+            // Log.Normal("OnMove: " + vector.ToString());
+            //moveGizmo.transform.position += 3* vector;
+
+            selectedDecal.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            latitude = selectedDecal.Latitude;
+            longitude = selectedDecal.Longitude;
+
+            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
+
+            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
+
+            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
+            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
+
+            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
+
+        }
+
+        internal void WhenMovedCallBack(Vector3 vector)
+        {
+            //Log.Normal("WhenMoved: " + vector.ToString());
+            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+
+            double upInc = Vector3d.Dot(UpVector, vector);
+            selectedDecal.AbsolutOffset += (float)upInc;
+
+        }
+
+        internal void UpdateMoveGizmo()
+        {
+            EditorGizmo.CloseGizmo();
+            EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
+        }
 
         /// <summary>
         /// Saves the current instance settings to the object.

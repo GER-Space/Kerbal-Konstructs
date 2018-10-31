@@ -378,5 +378,15 @@ namespace KerbalKonstructs.Core
                 return null;
             }
         }
+
+        internal static void CreateNewInstanceDirIfNeeded()
+        {
+            if (!System.IO.Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
+            {
+                System.IO.Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
+            }
+        }
+
+
     }
 }

@@ -56,6 +56,7 @@ namespace KerbalKonstructs.UI
 
         public VectorRenderer()
         {
+            EditorGizmo.SetupCam();
             Vector = Vector3d.zero;
             Color = new Color(1, 1, 1);
             Start = Vector3d.zero;
@@ -145,6 +146,7 @@ namespace KerbalKonstructs.UI
 
         public void SetShow(bool newShowVal)
         {
+
             if (newShowVal)
             {
                 if (line == null || hat == null)

@@ -33,8 +33,10 @@ namespace KerbalKonstructs
         private string[] seperators = new string[] { " ", ",", ";" };
 
 
+
         public void Start()
         {
+            
             //Log.Normal("AdvTexture called on " + staticInstance.model.name);
 
             if (!int.TryParse(BuiltinIndex, out textureIndex))
@@ -45,11 +47,6 @@ namespace KerbalKonstructs
             targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 
-            //foreach (var bla in targetTransforms)
-            //{
-            //    Log.Normal("AdvancedTexture: Found Transform: " + bla);
-            //}
-
             foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
             {
                 if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
@@ -57,7 +54,7 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-               // Log.Normal("Processing Transform: " + renderer.transform.name);
+                // Log.Normal("Processing Transform: " + renderer.transform.name);
 
                 if (newMaterial != "")
                 {
@@ -65,29 +62,47 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-
                 if (!string.IsNullOrEmpty(newShader))
                 {
                     ReplaceShader(renderer, newShader);
                 }
-        
-                
 
-                var myFields = this.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                foreach (var texturemap in myFields)
-                {
-                    if (texturemap.Name.Contains("_") && (texturemap.GetValue(this) != null))
-                    {
-                     //   Log.Normal(" Advanced texture" + texturemap.Name + " : " + (string)texturemap.GetValue(this));
-                        Texture2D newTexture = KKGraphics.GetTexture((string)texturemap.GetValue(this), (texturemap.Name.Equals("_BumpMap", StringComparison.CurrentCultureIgnoreCase)), textureIndex);
-                        renderer.material.SetTexture(texturemap.Name, newTexture);
-                    }
-                }
             }
 
+            SetTexture(_MainTex, "_MainTex");
+            SetTexture(_ParallaxMap, "_ParallaxMap");
+            SetTexture(_Emissive, "_Emissive");
+            SetTexture(_EmissionMap, "_EmissionMap");
+            SetTexture(_MetallicGlossMap, "_MetallicGlossMap");
+            SetTexture(_OcclusionMap, "_OcclusionMap");
+            SetTexture(_SpecGlossMap, "_SpecGlossMap");
+            SetTexture(_BumpMap, "_BumpMap", true);
+
+           
+        }
 
 
+        private void SetTexture(string texturename, string targetname, bool isNormal = false)
+        {
+            if (!String.IsNullOrEmpty(texturename))
+            {
+                Texture2D newTexture = KKGraphics.GetTexture(_MainTex, isNormal, textureIndex);
+                if (newTexture != null)
+                {
+                    foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
+                    {
+                        if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
+                        {
+                            continue;
+                        }
+                        renderer.material.SetTexture(targetname, newTexture);
+                    }
+                }
+                else
+                {
+                    Log.UserWarning("cannot set Texture: " + texturename + " as "  + targetname + " on: " + staticInstance.model.name);
+                }
+            }
         }
 
 

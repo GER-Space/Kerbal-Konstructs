@@ -165,7 +165,7 @@ namespace KerbalKonstructs.Core
             ksc2Instance.gameObject = ksc2PQS.gameObject;
             //ksc2Instance.gameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().gameObject;
             ksc2Instance.hasLauchSites = true;
-            ksc2Instance.pqsCity = ksc2PQS;
+            //ksc2Instance.pqsCity = ksc2PQS;
             ksc2Instance.RadialPosition = ksc2PQS.repositionRadial;
             ksc2Instance.RefLatitude = KKMath.GetLatitudeInDeg(ksc2PQS.repositionRadial);
             ksc2Instance.RefLongitude = KKMath.GetLongitudeInDeg(ksc2PQS.repositionRadial);

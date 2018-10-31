@@ -38,9 +38,6 @@ namespace KerbalKonstructs.UI
         private CelestialBody body;
 
 
-        private EditorGizmos.GizmoOffset moveGizmo = null;
-
-
         #region Texture Definitions
         // Texture definitions
         internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
@@ -65,7 +62,8 @@ namespace KerbalKonstructs.UI
         //   public static Boolean editingFacility = false;
 
         internal Boolean SnapRotateMode = false;
-        internal bool grasColorModeIsAuto = true;
+        internal bool grasColorModeIsAuto = false;
+        internal static bool grasColorEnabled = false;
 
         #endregion
 
@@ -99,11 +97,16 @@ namespace KerbalKonstructs.UI
 
         private Vector3d savedRotation = Vector3d.zero;
 
-        private string incrementStr, altStr, grasColorRStr, grasColorGStr, grasColorBStr, grasColorAStr, oriXStr, oriYStr, oriZStr, posXStr, posYStr, posZStr;
+        private string incrementStr, altStr, oriXStr, oriYStr, oriZStr, posXStr, posYStr, posZStr;
 
         private float fTempWidth = 80f;
 
         private static double cameraDistance;
+
+        private static Vector3 origPosition, origRotation;
+        private static GroupCenter origCenter;
+        private static float origScale;
+
 
         #endregion
 
@@ -161,7 +164,13 @@ namespace KerbalKonstructs.UI
                 SetupVectors();
                 SetupGizmo();
 
+                grasColorModeIsAuto = (selectedInstance.GrasColor == Color.clear);
+                grasColorEnabled = (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0);
 
+                origCenter = selectedInstance.groupCenter;
+                origPosition = selectedInstance.gameObject.transform.localPosition;
+                origRotation = selectedInstance.gameObject.transform.localEulerAngles;
+                origScale = selectedInstance.ModelScale;
             }
 
             toolRect = GUI.Window(0x004B1E3, toolRect, InstanceEditorWindow, "", UIMain.KKWindow);
@@ -169,29 +178,6 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal void OnMoveCB(Vector3 vector)
-        {
-            // Log.Normal("OnMove: " + vector.ToString());
-            //moveGizmo.transform.position += 3* vector;
-            selectedInstance.gameObject.transform.position = moveGizmo.transform.position;
-
-
-            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
-
-            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
-
-            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
-            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
-
-            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
-
-        }
-
-        internal void WhenMovedCB(Vector3 vector)
-        {
-            Log.Normal("WhenMoved: " + vector.ToString());
-            ApplySettings();
-        }
 
         #endregion
 
@@ -333,6 +319,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
                 {
                     referenceSystem = Reference.Model;
+                    UpdateGizmo();
                     UpdateVectors();
                 }
 
@@ -340,6 +327,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "Group Center"), GUILayout.Height(23), GUILayout.Width(23)))
                 {
                     referenceSystem = Reference.Center;
+                    UpdateGizmo();
                     UpdateVectors();
                 }
                 GUI.enabled = true;
@@ -610,37 +598,20 @@ namespace KerbalKonstructs.UI
                 }
             }
 
-            if (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            GUILayout.BeginHorizontal();
             {
+                GUILayout.Label("Set GrasColor: ", GUILayout.Height(23));
+                GUILayout.FlexibleSpace();
 
-
-                grasColorModeIsAuto = GUILayout.Toggle(grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
-                if (!grasColorModeIsAuto)
+                GUI.enabled = (grasColorEnabled && !GrasColorUI.instance.IsOpen());
+                if (GUILayout.Button(selectedInstance.GrasColor.ToString(), GUILayout.Width(220), GUILayout.Height(23)))
                 {
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label("R", GUILayout.Height(18));
-                        grasColorRStr = (GUILayout.TextField(grasColorRStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("G", GUILayout.Height(18));
-                        grasColorGStr = (GUILayout.TextField(grasColorGStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("B", GUILayout.Height(18));
-                        grasColorBStr = (GUILayout.TextField(grasColorBStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("A", GUILayout.Height(18));
-                        grasColorAStr = (GUILayout.TextField(grasColorAStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-
-                        if (GUILayout.Button("Apply", GUILayout.Height(18)))
-                        {
-                            ApplyInputStrings();
-                        }
-
-                    }
-                    GUILayout.EndHorizontal();
+                    GrasColorUI.instance.Open();
                 }
+
+                GUI.enabled = true;
             }
-
-
-
-
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             {
@@ -740,11 +711,29 @@ namespace KerbalKonstructs.UI
             GUILayout.Space(10);
 
 
-
-            if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
+            GUILayout.BeginHorizontal();
             {
-                DeleteInstance();
+                if (GUILayout.Button("Revert changes", GUILayout.Height(21)))
+                {
+                    if (selectedInstance.groupCenter != origCenter)
+                    {
+                        StaticDatabase.ChangeGroup(selectedInstance, origCenter);
+                    }
+                    selectedInstance.RelativePosition = origPosition;
+                    selectedInstance.gameObject.transform.localPosition = origPosition;
+                    selectedInstance.gameObject.transform.localEulerAngles = origRotation;
+                    selectedInstance.Orientation = origRotation;
+                    selectedInstance.ModelScale = origScale;
+                    ApplySettings();
+
+                }
+                if (GUILayout.Button("Delete Instance", GUILayout.Height(21)))
+                {
+                    DeleteInstance();
+                }
+
             }
+            GUILayout.EndHorizontal();
             GUILayout.Space(5);
 
 
@@ -920,12 +909,12 @@ namespace KerbalKonstructs.UI
 
                 fwdVR.Vector = selectedInstance.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
-                fwdVR.Scale = cameraDistance ;
+                fwdVR.Scale = cameraDistance;
                 fwdVR.draw();
 
                 upVR.Vector = selectedInstance.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
-                upVR.Scale = cameraDistance ;
+                upVR.Scale = cameraDistance;
                 upVR.draw();
 
                 rightVR.Vector = selectedInstance.gameObject.transform.right;
@@ -982,60 +971,47 @@ namespace KerbalKonstructs.UI
 
         private void SetupGizmo()
         {
-            if (moveGizmo != null)
+
+            if (referenceSystem == Reference.Center)
             {
-                moveGizmo.Detach();
-                moveGizmo = null;
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.gameObject.transform.localRotation, OnMoveCB, WhenMovedCB);
             }
-            moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
-            //moveGizmo = EditorGizmos.GizmoOffset.Attach(selectedInstance.gameObject.transform, Quaternion.identity, null, null, FlightCamera.fetch.mainCamera);
-            //moveGizmo.gameObject.SetActive(true);         
-            //moveGizmo.enabled = true;
-
-            moveGizmo.SetCoordSystem(Space.Self);
-
-            //moveGizmo.transform.parent = selectedInstance.gameObject.transform;
-
-            //moveGizmo.transform.localScale *= 40;
-
-            //moveGizmo.transform.position = FlightCamera.fetch.mainCamera.WorldToViewportPoint(selectedInstance.gameObject.transform.position);
-
-            var transforms = moveGizmo.gameObject.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < transforms.Length; i++)
+            else
             {
-                // don't set trigger collider 
-                if ((transforms[i].gameObject.GetComponent<Collider>() != null) && (transforms[i].gameObject.GetComponent<Collider>().isTrigger))
-                {
-                    continue;
-                }
-                transforms[i].gameObject.layer = 11;
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, Quaternion.identity, OnMoveCB, WhenMovedCB);
             }
         }
 
         private void CloseGizmo()
         {
-            if (moveGizmo != null)
-            {
-                moveGizmo.Detach();
-                moveGizmo = null;
-            }
+            EditorGizmo.CloseGizmo();
         }
 
         private void UpdateGizmo()
         {
-            CloseGizmo();
+            EditorGizmo.CloseGizmo();
             SetupGizmo();
         }
 
 
-    internal void SetupFields()
+        internal void OnMoveCB(Vector3 vector)
+        {
+            // Log.Normal("OnMove: " + vector.ToString());
+            //moveGizmo.transform.position += 3* vector;
+            selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+        }
+
+        internal void WhenMovedCB(Vector3 vector)
+        {
+            //Log.Normal("WhenMoved: " + vector.ToString());
+            ApplySettings();
+        }
+
+
+        internal void SetupFields()
         {
             incrementStr = increment.ToString();
             altStr = selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position).ToString();
-            grasColorRStr = selectedInstance.GrasColor.r.ToString();
-            grasColorGStr = selectedInstance.GrasColor.g.ToString();
-            grasColorBStr = selectedInstance.GrasColor.b.ToString();
-            grasColorAStr = selectedInstance.GrasColor.a.ToString();
 
             oriXStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.x, 4).ToString();
             oriYStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.y, 4).ToString();
@@ -1050,12 +1026,6 @@ namespace KerbalKonstructs.UI
         internal void ApplyInputStrings()
         {
             increment = float.Parse(incrementStr);
-
-
-            selectedInstance.GrasColor.r = float.Parse(grasColorRStr);
-            selectedInstance.GrasColor.g = float.Parse(grasColorGStr);
-            selectedInstance.GrasColor.b = float.Parse(grasColorBStr);
-            selectedInstance.GrasColor.a = float.Parse(grasColorAStr);
 
             selectedInstance.gameObject.transform.localPosition = new Vector3(float.Parse(posXStr), float.Parse(posYStr), float.Parse(posZStr));
             selectedInstance.gameObject.transform.localEulerAngles = new Vector3(float.Parse(oriXStr), float.Parse(oriYStr), float.Parse(oriZStr));
@@ -1113,7 +1083,7 @@ namespace KerbalKonstructs.UI
                 {
                     selectedInstance.gameObject.transform.localPosition += direction;
                 }
-                
+
 
             }
             ApplySettings();
@@ -1175,14 +1145,11 @@ namespace KerbalKonstructs.UI
 
                     if (Input.GetKey(KeyCode.PageUp))
                     {
-                        selectedInstance.RadiusOffset += increment;
-                        ApplySettings();
+                        SetTransform(Vector3.up * increment);
                     }
-
                     if (Input.GetKey(KeyCode.PageDown))
                     {
-                        selectedInstance.RadiusOffset -= increment;
-                        ApplySettings();
+                        SetTransform(Vector3.down * increment);
                     }
                     if (Event.current.keyCode == KeyCode.Return)
                     {

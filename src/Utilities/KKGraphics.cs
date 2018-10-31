@@ -104,7 +104,7 @@ namespace KerbalKonstructs
             {
                 return cachedTextures[textureKey];
             }
-
+           // Log.Normal("Texture Cache miss: " + textureKey);
             List<Texture> foundTextures = null;
             Texture2D foundTexture = null;
             ;
@@ -123,7 +123,7 @@ namespace KerbalKonstructs
                     Log.UserError("AdvTexture: index out of range" + textureNameShort + " : " + index );
                     return null;
                 }
-                return foundTextures[index] as Texture2D;
+                foundTexture =  foundTextures[index] as Texture2D;
 
             }
             else

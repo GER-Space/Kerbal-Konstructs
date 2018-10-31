@@ -139,17 +139,11 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                PQSCity sitePQS = currentSite.staticInstance.groupCenter.pqsCity;
-
+                float nomHeight = (float)currentSite.staticInstance.surfaceHeight;
                 foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
                 {
-                    double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
-                    if (sitePQS.repositionToSphereSurface)
-                    {
-                        nomHeight += sitePQS.repositionRadiusOffset;
-                    }
-                    cam.altitudeInitial = 0f - (float)nomHeight;
-
+                    // cam.altitudeInitial = 0f - (float)nomHeight;
+                    cam.altitudeInitial = 45f - (float)currentSite.staticInstance.surfaceHeight;
                     cam.ResetCamera();
                     Log.Normal("fixed the Space Center camera.");
 

@@ -26,8 +26,11 @@ namespace KerbalKonstructs
         private bool isInitialized = false;
         private List<Material> grasMaterials = new List<Material>();
 
- 
+        private Color grasColor = Color.red;
+        private Texture2D grasTexture = null;
+        private string grasTextureName = "";
 
+        //private string defaultGrasTextureName = "BUILTIN:/terrain_grass00_new";
 
         public void Awake()
         {
@@ -58,9 +61,28 @@ namespace KerbalKonstructs
                 Initialize();
             }
 
+            grasColor = GetColor();
+
+            //Log.Normal("Texture Setting is: " + staticInstance.GrasTexture);
+            grasTextureName = staticInstance.GrasTexture;
+
+            if (string.IsNullOrEmpty(grasTextureName))
+            {
+                Log.Normal("String was emtpy");
+                grasTextureName = GrasTextureImage;
+            }
+            //Log.Normal("Texture Setting2 is: " + grasTextureName);
+
+            grasTexture = KKGraphics.GetTexture(grasTextureName);
+
             foreach (Material material in grasMaterials)
             {
-                material.SetColor("_Color", GetColor());
+                material.SetColor("_Color", grasColor);
+                if (grasTexture != null)
+                {
+                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                    material.mainTexture = grasTexture;
+                }
             }
         }
 
