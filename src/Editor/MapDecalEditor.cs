@@ -15,10 +15,11 @@ namespace KerbalKonstructs.UI
         public static MapDecalEditor Instance
         {
             get
-            { if   (_instance == null)
+            {
+                if (_instance == null)
                 {
                     _instance = new MapDecalEditor();
-                    
+
                 }
                 return _instance;
             }
@@ -32,9 +33,9 @@ namespace KerbalKonstructs.UI
 
         #region Texture Definitions
         // Texture definitions
-        internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);        
+        internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
         internal Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);                       
+        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
         internal Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
         internal Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
         internal Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
@@ -58,7 +59,7 @@ namespace KerbalKonstructs.UI
         internal GUIStyle KKWindows;
         internal GUIStyle BoxNoBorder;
 
-      
+
         // ComboBox siteTypeMenu;
         #endregion
         private Vector2 selectHeightMapScroll;
@@ -122,6 +123,7 @@ namespace KerbalKonstructs.UI
             {
                 KerbalKonstructs.camControl.disable();
             }
+
             CloseVectors();
             EditorGizmo.CloseGizmo();
             base.Close();
@@ -478,7 +480,7 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
-                    selectedDecal.Order = Math.Max(100000,selectedDecal.Order - 1);
+                    selectedDecal.Order = Math.Max(100000, selectedDecal.Order - 1);
                 }
                 if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -536,8 +538,9 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Snap Surface", GUILayout.Width(110), GUILayout.Height(21)))
                 {
-                    altitude = (selectedDecal.CelestialBody.pqsController.GetSurfaceHeight(selectedDecal.CelestialBody.GetRelSurfaceNVector(latitude,longitude)) - selectedDecal.CelestialBody.Radius + 1);
-                    selectedDecal.mapDecal.transform.position = selectedDecal.CelestialBody.GetWorldSurfacePosition(latitude, longitude, altitude); ;
+                    altitude = (selectedDecal.CelestialBody.pqsController.GetSurfaceHeight(selectedDecal.CelestialBody.GetRelSurfaceNVector(latitude, longitude)) - selectedDecal.CelestialBody.Radius + 1);
+                    selectedDecal.mapDecal.transform.position = selectedDecal.CelestialBody.GetWorldSurfacePosition(latitude, longitude, altitude);
+                    ;
                     selectedDecal.AbsolutOffset = (float)altitude;
                 }
 
@@ -738,7 +741,7 @@ namespace KerbalKonstructs.UI
         /// <summary>
         /// Deletes an selected MapDecalInstance
         /// </summary>
-        internal void DeleteInstance ()
+        internal void DeleteInstance()
         {
             if (selectedDecalPrevious == selectedDecal)
                 selectedDecalPrevious = null;
@@ -828,7 +831,10 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void UpdateVectors()
         {
-            if (selectedDecal == null) { return; }
+            if (selectedDecal == null)
+            {
+                return;
+            }
 
             if (referenceSystem == Space.Self)
             {
@@ -860,7 +866,7 @@ namespace KerbalKonstructs.UI
 
                 rightVR.Vector = selectedDecal.gameObject.transform.right;
                 rightVR.Start = VectorDrawPosition;
-                rightVR.Scale = Math.Max(1, selectedDecal.Radius); 
+                rightVR.Scale = Math.Max(1, selectedDecal.Radius);
                 rightVR.draw();
 
                 leftVR.Vector = -selectedDecal.gameObject.transform.right;
@@ -911,7 +917,7 @@ namespace KerbalKonstructs.UI
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
             fwdVR.Vector = selectedDecal.gameObject.transform.forward;
-            fwdVR.Scale = Math.Max(1,selectedDecal.Radius);
+            fwdVR.Scale = Math.Max(1, selectedDecal.Radius);
             fwdVR.Start = VectorDrawPosition;
             fwdVR.SetLabel("forward");
             fwdVR.Width = 0.01d;
@@ -1003,10 +1009,12 @@ namespace KerbalKonstructs.UI
             double lonOffset = east / (body.Radius * KKMath.deg2rad);
             longitude += lonOffset * Math.Cos(Mathf.Deg2Rad * latitude);
 
-            Vector3d newpos = body.GetWorldSurfacePosition(latitude,longitude, altitude);
+            Vector3d newpos = body.GetWorldSurfacePosition(latitude, longitude, altitude);
             selectedDecal.mapDecal.transform.position = newpos;
 
             referenceVector = body.GetRelSurfaceNVector(latitude, longitude).normalized * body.Radius;
+
+            UpdateMoveGizmo();
         }
 
 
@@ -1019,6 +1027,7 @@ namespace KerbalKonstructs.UI
             //selectedDecal.mapDecal.transform.Rotate(Vector3.up, (float)increment);
             selectedDecal.Angle += (float)increment;
             selectedDecal.Angle = (selectedDecal.Angle + 360) % 360;
+
         }
 
 
@@ -1044,10 +1053,13 @@ namespace KerbalKonstructs.UI
             //moveGizmo.transform.position += 3* vector;
 
             selectedDecal.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
-            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            latitude = selectedDecal.Latitude;
-            longitude = selectedDecal.Longitude;
+            position = EditorGizmo.moveGizmo.transform.position;
+            FlightGlobals.currentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+
+            //selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            //selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            //latitude = selectedDecal.Latitude;
+            //longitude = selectedDecal.Longitude;
 
             //float oldY = selectedInstance.gameObject.transform.localPosition.y;
 
@@ -1063,8 +1075,12 @@ namespace KerbalKonstructs.UI
         internal void WhenMovedCallBack(Vector3 vector)
         {
             //Log.Normal("WhenMoved: " + vector.ToString());
-            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            //            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            //            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
+            position = EditorGizmo.moveGizmo.transform.position;
+            FlightGlobals.currentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+            //      latitude = selectedDecal.Latitude;
+            //      longitude = selectedDecal.Longitude;
 
             double upInc = Vector3d.Dot(UpVector, vector);
             selectedDecal.AbsolutOffset += (float)upInc;
@@ -1076,6 +1092,7 @@ namespace KerbalKonstructs.UI
             EditorGizmo.CloseGizmo();
             EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
         }
+
 
         /// <summary>
         /// Saves the current instance settings to the object.

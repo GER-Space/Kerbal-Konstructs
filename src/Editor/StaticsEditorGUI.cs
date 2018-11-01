@@ -71,6 +71,13 @@ namespace KerbalKonstructs.UI
         private static GroupCenter activeGroup = null;
         private static GroupCenter[] localGroups;
 
+        internal static Color defaultGrasColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
+        internal static string defaultGrasTexture = "BUILTIN:/terrain_grass00_new";
+        private string grasColorRStr = "0.640";
+        private string grasColorGStr = "0.728";
+        private string grasColorBStr = "0.171";
+        private string grasColorAStr = "0.729"; 
+
         public float fButtonWidth = 0f;
 
         String categoryFilterString = "";
@@ -426,6 +433,14 @@ namespace KerbalKonstructs.UI
         {
             GroupCenter center = GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
             EditorGUI.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
+
+            if (KerbalKonstructs.instance.selectedObject.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            {
+                KerbalKonstructs.instance.selectedObject.GrasColor = defaultGrasColor;
+                KerbalKonstructs.instance.selectedObject.GrasTexture = defaultGrasTexture;
+                KerbalKonstructs.instance.selectedObject.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();              
+            }
+
             if (!EditorGUI.instance.IsOpen())
             {
                 EditorGUI.instance.Open();
@@ -570,8 +585,56 @@ namespace KerbalKonstructs.UI
                 titleFilter = "";
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Default Grass Color: ", GUILayout.Height(18));
+                if (GUILayout.Button("Load Preset", GUILayout.Width(90), GUILayout.Height(18)))
+                {
+                    GrasColorPresetUI.callBack = SetDefaultColorCallBack;
+                    GrasColorPresetUI.instance.Open();
+                }
+
+
+                GUILayout.Label("R", GUILayout.Height(18));
+                grasColorRStr = (GUILayout.TextField(grasColorRStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("G", GUILayout.Height(18));
+                grasColorGStr = (GUILayout.TextField(grasColorGStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("B", GUILayout.Height(18));
+                grasColorBStr = (GUILayout.TextField(grasColorBStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("A", GUILayout.Height(18));
+                grasColorAStr = (GUILayout.TextField(grasColorAStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+
+                GUILayout.Space(5);
+                if (GUILayout.Button("Apply", GUILayout.Height(18)))
+                {
+                    defaultGrasColor.r = float.Parse(grasColorRStr);
+                    defaultGrasColor.g = float.Parse(grasColorGStr);
+                    defaultGrasColor.b = float.Parse(grasColorBStr);
+                    defaultGrasColor.a = float.Parse(grasColorAStr);
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Default Grass Texture: ", GUILayout.Height(18));
+                GUILayout.Space(5);
+                defaultGrasTexture = (GUILayout.TextField(defaultGrasTexture, 200, GUILayout.Width(300), GUILayout.Height(18)));
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        internal void SetDefaultColorCallBack(Color newColor, string newTexture)
+        {
+            defaultGrasColor = newColor;
+            defaultGrasTexture = newTexture;
+            grasColorRStr = defaultGrasColor.r.ToString();
+            grasColorGStr = defaultGrasColor.g.ToString();
+            grasColorBStr = defaultGrasColor.b.ToString();
+            grasColorAStr = defaultGrasColor.a.ToString();
 
         }
+
 
         /// <summary>
         /// instances

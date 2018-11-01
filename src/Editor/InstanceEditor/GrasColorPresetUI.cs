@@ -61,7 +61,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.instance.IsOpen() || !EditorGUI.instance.IsOpen() || !EditorGUI.grasColorEnabled || EditorGUI.selectedInstance == null || !GrasColorUI.instance.IsOpen())
+            if (!StaticsEditorGUI.instance.IsOpen() )
             {
                 this.Close();
             }
@@ -121,6 +121,8 @@ namespace KerbalKonstructs.UI
                     if (GUILayout.Button(preset.name))
                     {
                         selectedPreset = preset;
+                        callBack.Invoke(selectedPreset.color, selectedPreset.texture);
+                        this.Close();
                     }
                 }
                 GUI.enabled = true;
@@ -129,11 +131,11 @@ namespace KerbalKonstructs.UI
             GUI.enabled = true;
             GUILayout.BeginHorizontal();
             {
-                if (GUILayout.Button("OK", GUILayout.Height(23)))
-                {
-                    callBack.Invoke(selectedPreset.color, selectedPreset.texture);
-                    this.Close();
-                }
+                //if (GUILayout.Button("OK", GUILayout.Height(23)))
+                //{
+                //    callBack.Invoke(selectedPreset.color, selectedPreset.texture);
+                //    this.Close();
+                //}
                 if (GUILayout.Button("Cancel", GUILayout.Height(23)))
                 {
                     this.Close();

@@ -14,7 +14,7 @@ namespace KerbalKonstructs.UI
         private static GrasColorUI _instance = null;
         private static Rect windowRect = new Rect(500, 600, 300, 340);
 
-        private StaticInstance selectedInstance;
+        internal static StaticInstance selectedInstance;
 
         private string grasColorRStr, grasColorGStr, grasColorBStr, grasColorAStr;
         string grasTextureName;
@@ -213,7 +213,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        private void SetupFields()
+        internal void SetupFields()
         {
             grasColorRStr = selectedInstance.GrasColor.r.ToString();
             grasColorGStr = selectedInstance.GrasColor.g.ToString();

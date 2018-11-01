@@ -63,7 +63,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public Color GrasColor = Color.clear;
         [CFGSetting]
-        public string GrasTexture = "";
+        public string GrasTexture;
 
         public GameObject gameObject;
         internal StaticModel model;

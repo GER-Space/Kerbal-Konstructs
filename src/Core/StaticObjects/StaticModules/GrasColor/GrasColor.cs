@@ -30,6 +30,8 @@ namespace KerbalKonstructs
         private Texture2D grasTexture = null;
         private string grasTextureName = "";
 
+        private static Color defaultColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
+
         //private string defaultGrasTextureName = "BUILTIN:/terrain_grass00_new";
 
         public void Awake()
@@ -55,6 +57,12 @@ namespace KerbalKonstructs
         /// </summary>
         internal void setTexture()
         {
+
+            if (staticInstance.GrasColor == Color.clear && !(StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
+            {
+                return;
+            } 
+
             //Log.Normal("FlagDeclal: setTexture called");
             if (!isInitialized)
             {
@@ -103,8 +111,8 @@ namespace KerbalKonstructs
 
         internal Color GetColor()
         {
-            Color underGroundColor = Color.clear;
-            if (staticInstance.GrasColor == Color.clear || (StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)  )
+            Color underGroundColor = defaultColor;
+            if ((StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)  )
             {
                 if (usePQS)
                 {
@@ -200,6 +208,7 @@ namespace KerbalKonstructs
             {
                 foreach (Material material in renderer.materials.Where(mat => mat.name.StartsWith("ksc_exterior_terrain_grass_02")))
                 {
+//                    defaultColor = material.GetColor("_Color");
                     //Log.Normal("Added material:" + material.name + " : " + material.mainTexture.name);
                     //material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
                     grasMaterials.Add(material);
