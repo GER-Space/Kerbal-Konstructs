@@ -1150,7 +1150,19 @@ namespace KerbalKonstructs.UI
                     {
                         SetRotation(Vector3.up, increment);
                     }
-
+                    if (Input.GetKeyDown(KeyCode.F))
+                    {
+                        if (referenceSystem == Reference.Center)
+                        {
+                            referenceSystem = Reference.Model;
+                        }
+                        else
+                        {
+                            referenceSystem = Reference.Center;
+                        }
+                        UpdateGizmo();
+                        UpdateVectors();
+                    }
                     if (Input.GetKey(KeyCode.PageUp))
                     {
                         SetTransform(Vector3.up * increment);

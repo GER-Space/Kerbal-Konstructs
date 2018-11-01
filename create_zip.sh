@@ -30,7 +30,7 @@ fi
 sed -i "s/MAJOR\":./MAJOR\":$MAJOR/" GameData/KerbalKonstructs/KerbalKonstructs.version
 sed -i "s/MINOR\":./MINOR\":$MINOR/" GameData/KerbalKonstructs/KerbalKonstructs.version
 sed -i "s/PATCH\":./PATCH\":$PATCH/" GameData/KerbalKonstructs/KerbalKonstructs.version
-sed -i "s/BUILD\":./BUILD\":$BUILD/" GameData/KerbalKonstructs/KerbalKonstructs.version
+sed -i "s/BUILD\":.+/BUILD\":$BUILD/" GameData/KerbalKonstructs/KerbalKonstructs.version
 
 
 /c/Program\ Files/7-Zip/7z.exe a -r  $FILENAME GameData
