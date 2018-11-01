@@ -192,7 +192,8 @@ namespace KerbalKonstructs.Core
             refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
-            refAlt = staticInstance.RadiusOffset;
+            refAlt = (float)staticInstance.CelestialBody.GetAltitude(staticInstance.gameObject.transform.position);
+            
             AttachSelector();
 
         }

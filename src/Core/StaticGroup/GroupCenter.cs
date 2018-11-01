@@ -97,6 +97,7 @@ namespace KerbalKonstructs.Core
             RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
 
             StaticDatabase.allCenters.Add(dbKey, this);
+
         }
 
         internal void RenameGroup(string newName)

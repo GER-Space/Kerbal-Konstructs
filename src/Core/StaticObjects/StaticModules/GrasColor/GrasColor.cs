@@ -76,7 +76,7 @@ namespace KerbalKonstructs
 
             if (string.IsNullOrEmpty(grasTextureName))
             {
-                Log.Normal("String was emtpy");
+                //Log.Normal("String was emtpy");
                 grasTextureName = GrasTextureImage;
             }
             //Log.Normal("Texture Setting2 is: " + grasTextureName);

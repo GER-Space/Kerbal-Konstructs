@@ -434,13 +434,6 @@ namespace KerbalKonstructs.UI
             GroupCenter center = GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
             EditorGUI.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
 
-            if (KerbalKonstructs.instance.selectedObject.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
-            {
-                KerbalKonstructs.instance.selectedObject.GrasColor = defaultGrasColor;
-                KerbalKonstructs.instance.selectedObject.GrasTexture = defaultGrasTexture;
-                KerbalKonstructs.instance.selectedObject.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();              
-            }
-
             if (!EditorGUI.instance.IsOpen())
             {
                 EditorGUI.instance.Open();

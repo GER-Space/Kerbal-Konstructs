@@ -836,7 +836,14 @@ namespace KerbalKonstructs.UI
 
             enableColliders = false;
             enableColliders2 = false;
+
             instance.SpawnObject(true);
+            if (instance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            {
+                instance.GrasColor = StaticsEditorGUI.defaultGrasColor;
+                instance.GrasTexture = StaticsEditorGUI.defaultGrasTexture;
+                KerbalKonstructs.instance.selectedObject.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();
+            }
         }
 
         /// <summary>

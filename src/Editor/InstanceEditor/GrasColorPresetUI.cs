@@ -73,6 +73,7 @@ namespace KerbalKonstructs.UI
         {
             callBack = delegate {
             };
+            selectedPreset = null;
             base.Close();
         }
 

@@ -183,11 +183,6 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
-            // for Terrain Rescaling
-            SDRescale.SetTerrainRescales();
-
-            ConfigParser.LoadAllGroupCenter();
-
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();
@@ -196,8 +191,13 @@ namespace KerbalKonstructs
             Log.PerfStop("loading MapDecals");
             // end PQSMapDecal
             Log.PerfStart("Object loading1");
+            Log.PerfStart("Module Creation");
+            Log.PerfPause("Module Creation");
 
             SquadStatics.LoadSquadModels();
+
+            // normal placement of statics
+            ConfigParser.LoadAllGroupCenter();
 
             LoadModels();
           //  SDTest.WriteTextures();
@@ -208,6 +208,7 @@ namespace KerbalKonstructs
             LoadModelInstances();
 
             Log.PerfStop("Object loading2");
+            Log.PerfStop("Module Creation");
 
             Log.UserInfo("Version is " + sKKVersion + " .");
 

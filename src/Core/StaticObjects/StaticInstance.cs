@@ -76,6 +76,8 @@ namespace KerbalKonstructs.Core
 
         internal bool isInSavegame = false;
 
+        private static Dictionary<string, Type> staticModules = new Dictionary<string, Type>();
+        private static string moduleKey;
 
         public bool hasFacilities
         {
@@ -237,9 +239,21 @@ namespace KerbalKonstructs.Core
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
 
+            Log.PerfContinue("Module Creation");
             foreach (StaticModule module in model.modules)
             {
-                Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                moduleKey = (module.moduleNamespace + "_" + module.moduleClassname);
+                Type moduleType;
+                if (staticModules.ContainsKey(moduleKey))
+                {
+                    moduleType = staticModules[moduleKey];
+                }
+                else
+                {
+                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                    staticModules.Add(moduleKey,moduleType);
+                }
+                
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
@@ -263,7 +277,7 @@ namespace KerbalKonstructs.Core
                     Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
                 }
             }
-
+            Log.PerfPause("Module Creation");
             foreach (GameObject gorenderer in rendererList)
             {
                 gorenderer.GetComponent<Renderer>().enabled = true;
@@ -365,6 +379,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
+                //return CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.pqsController.GetRelativePosition(gameObject.transform.position));
                 return (CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius) - CelestialBody.pqsController.radius);
             }
         }

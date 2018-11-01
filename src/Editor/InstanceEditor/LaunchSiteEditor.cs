@@ -403,7 +403,7 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
             selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
             selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
-            selectedObject.launchSite.refAlt = selectedObject.RadiusOffset;
+            selectedObject.launchSite.refAlt = (float)selectedObject.CelestialBody.GetAltitude(selectedObject.gameObject.transform.position);
             selectedObject.launchSite.sitecategory = category;
             selectedObject.launchSite.InitialCameraRotation = float.Parse(initialCameraRotation);
 

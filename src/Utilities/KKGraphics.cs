@@ -116,12 +116,12 @@ namespace KerbalKonstructs
                 if (foundTextures.Count == 0)
                 {
                     Log.UserError("AdvTexture: Could not find built-in texture " + textureNameShort);
-                    return null;
+                    foundTexture =  null;
                 }
                 if (foundTextures.Count < index+1)
                 {
                     Log.UserError("AdvTexture: index out of range" + textureNameShort + " : " + index );
-                    return null;
+                    foundTexture = null;
                 }
                 foundTexture =  foundTextures[index] as Texture2D;
 

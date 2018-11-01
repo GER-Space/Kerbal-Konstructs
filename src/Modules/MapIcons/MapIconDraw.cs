@@ -222,7 +222,7 @@ namespace KerbalKonstructs.Modules
                         continue;
                 }
 
-                launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
                 {
