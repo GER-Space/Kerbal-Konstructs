@@ -84,7 +84,7 @@ namespace KerbalKonstructs.UI
                 selectedObject = KerbalKonstructs.instance.selectedObject;
                 updateSelection();
             }
-            
+
             facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindows);
 
         }
@@ -178,7 +178,8 @@ namespace KerbalKonstructs.UI
                 ChangeFacility();
                 updateSelection();
             }
-            if (facType != "None") {
+            if (facType != "None")
+            {
                 OpenCloseFields();
             }
 
@@ -227,7 +228,7 @@ namespace KerbalKonstructs.UI
                 default:
                     break;
 
-            }        
+            }
 
             GUILayout.FlexibleSpace();
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
@@ -286,9 +287,9 @@ namespace KerbalKonstructs.UI
                     }
 
 
-                    foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions )
+                    foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions)
                     {
-                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null )
+                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null)
                         {
                             continue;
                         }
@@ -301,7 +302,9 @@ namespace KerbalKonstructs.UI
                     }
                 }
                 GUILayout.EndScrollView();
-            } else {
+            }
+            else
+            {
                 if (facMerchant.tradedResources.Count > 0)
                 {
                     merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
@@ -371,7 +374,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             GUILayout.Label("MaxVolume: ", LabelGreen);
             GUILayout.FlexibleSpace();
-            facStorage.maxVolume = Math.Max(0,float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
+            facStorage.maxVolume = Math.Max(0, float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
             GUILayout.Label(" m^3", LabelWhite);
             GUILayout.EndHorizontal();
         }
@@ -471,7 +474,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Default State: ");
-                GUILayout.Label(selectedObject.myFacilities.First().defaultState, LabelWhite , GUILayout.Height(23), GUILayout.Width(50));
+                GUILayout.Label(selectedObject.myFacilities.First().defaultState, LabelWhite, GUILayout.Height(23), GUILayout.Width(50));
 
                 isDefaultOpen = GUILayout.Toggle(isDefaultOpen, "", GUILayout.Height(18));
                 if (isDefaultOpen)
@@ -504,7 +507,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void BusinessFields()
         {
-        
+
             MaxStaffFields();
             ProductionRateFields();
 
@@ -624,7 +627,7 @@ namespace KerbalKonstructs.UI
             LabelWhite.padding.top = 1;
         }
 
-    
+
         /// <summary>
         /// Removes add previous facility settings from Static Object
         /// </summary>
@@ -707,6 +710,9 @@ namespace KerbalKonstructs.UI
                 case KKFacilityType.TouchdownGuideR:
                     selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<TouchdownGuideR>().ParseConfig(cfgNode));
                     break;
+                case KKFacilityType.RecoveryBase:
+                    selectedObject.myFacilities.Add(selectedObject.gameObject.AddComponent<RecoveryBase>().ParseConfig(cfgNode));
+                    break;
             }
             Log.Normal("FacEditor: Change Finished");
             foreach (var facility in selectedObject.myFacilities)
@@ -727,38 +733,47 @@ namespace KerbalKonstructs.UI
             }
 
             if (facType != "")
-                selectedObject.FacilityType =  facType;
+                selectedObject.FacilityType = facType;
 
             switch (facType)
             {
                 case "None":
                     break;
-                case "GroundStation":                   
+                case "GroundStation":
                     ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
                     break;
                 case "Hangar":
-                    if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity =  float.Parse(infFacMassCap);
-                    if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity =  int.Parse(infFacCraftCap);
+                    if (infFacMassCap != "")
+                        ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity = float.Parse(infFacMassCap);
+                    if (infFacCraftCap != "")
+                        ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity = int.Parse(infFacCraftCap);
                     break;
                 case "Barracks":
-                    if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infStaffMax != "")
+                        ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     break;
                 case "Research":
-                    if (infStaffMax != "") ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
-                    if (infProdRateMax != "") ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
-                    if (infScienceMax != "") ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
+                    if (infStaffMax != "")
+                        ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "")
+                        ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infScienceMax != "")
+                        ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
                     break;
                 case "Business":
-                    if (infStaffMax != "") ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
-                    if (infProdRateMax != "") ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
-                    if (infFundsMax != "") ((Business)selectedObject.myFacilities[0]).FundsOMax = float.Parse(infFundsMax);
+                    if (infStaffMax != "")
+                        ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "")
+                        ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infFundsMax != "")
+                        ((Business)selectedObject.myFacilities[0]).FundsOMax = float.Parse(infFundsMax);
                     break;
 
                 default:
                     break;
             }
 
-            if (facType != "None" )
+            if (facType != "None")
             {
                 selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
                 selectedObject.myFacilities[0].CloseValue = (float)Math.Round((selectedObject.myFacilities[0].OpenCost / 4), 0);
@@ -776,10 +791,11 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void updateSelection()
         {
-            if (selectedObject.hasFacilities )
+            if (selectedObject.hasFacilities)
             {
                 facType = selectedObject.myFacilities[0].FacilityType;
-            } else
+            }
+            else
             {
                 facType = "None";
             }
@@ -797,7 +813,8 @@ namespace KerbalKonstructs.UI
             if (facType != "None" && selectedObject.myFacilities[0].defaultState == "Open")
             {
                 isDefaultOpen = true;
-            } else
+            }
+            else
             {
                 isDefaultOpen = false;
             }
@@ -859,11 +876,12 @@ namespace KerbalKonstructs.UI
                 {
                     infOpenCost = selectedObject.model.cost.ToString();
                 }
-            } else
+            }
+            else
             {
                 infOpenCost = "0";
             }
-            
+
             //selectedObject.update();
             facType = selectedObject.FacilityType;
         }

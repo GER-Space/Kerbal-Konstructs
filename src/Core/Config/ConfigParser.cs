@@ -276,7 +276,10 @@ namespace KerbalKonstructs.Core
         /// <param name="instance"></param>
         internal static void SaveMapDecalInstance(MapDecalInstance instance)
         {
-
+            if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
+            {
+                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
+            }
             if (instance.configPath == null)
             {
                 instance.configPath = KerbalKonstructs.newInstancePath + "/KK_MapDecal_" + instance.Name + ".cfg";
@@ -343,6 +346,12 @@ namespace KerbalKonstructs.Core
         /// <param name="pathname"></param>
         internal static void SaveInstanceByCfg(string pathname)
         {
+            if (string.IsNullOrEmpty(pathname))
+            {
+                Log.UserWarning("Trying to save a static insance with null configpath. ");
+                return;
+            }
+
             Log.Normal("Saving File: " + pathname);
             StaticInstance[] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();
             StaticInstance firstInstance = allInstances.First();

@@ -39,11 +39,16 @@ namespace KerbalKonstructs.Modules
         private static List<StaticInstance> groundStations;
         private static KKLaunchSite[] lauchSites;
 
+        private static CustomSpaceCenter[] spaceCenters;
+
         private KKLaunchSite launchSite;
         private CelestialBody body;
         private StaticInstance groundStation;
         private bool display2 = false;
         private bool isOpen = false;
+
+        private bool cscIsOpen = false;
+        private bool cscDisplay = false;
 
         Vector3 launchSitePosition;
         Vector3 lsPosition;
@@ -55,13 +60,14 @@ namespace KerbalKonstructs.Modules
             {
                 drawTrackingStations();
                 DrawLaunchsites();
+                DrawSpaceCenters();
             }
         }
 
         public override void Open()
         {
             CacheGroundStations();
-            CacheLaunchSites();
+            CacheObjects();
             base.Open();
         }
 
@@ -79,8 +85,8 @@ namespace KerbalKonstructs.Modules
             {
                 if (instance.facilityType != KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
                 {
-                    continue;                  
-                }                   
+                    continue;
+                }
 
                 if (instance.Group == "KSCUpgrades")
                     continue;
@@ -95,9 +101,11 @@ namespace KerbalKonstructs.Modules
         /// <summary>
         /// Caches the launchsites for later use
         /// </summary>
-        private void CacheLaunchSites()
+        private void CacheObjects()
         {
             lauchSites = LaunchSiteManager.allLaunchSites;
+            spaceCenters = SpaceCenterManager.spaceCenters.ToArray();
+
         }
 
 
@@ -112,7 +120,7 @@ namespace KerbalKonstructs.Modules
                 KerbalKonstructs.instance.mapShowClosed = true;
                 KerbalKonstructs.instance.mapShowOpen = true;
             }
-                
+
             if (!KerbalKonstructs.instance.mapShowOpenT)
                 return;
 
@@ -150,7 +158,8 @@ namespace KerbalKonstructs.Modules
                 float fPosZ = pos.z;
                 float fRadarRadius = 12800 / fPosZ;
 
-                if (fRadarRadius > 15) GUI.DrawTexture(screenRect6, UIMain.TrackingStationIcon, ScaleMode.ScaleToFit, true);
+                if (fRadarRadius > 15)
+                    GUI.DrawTexture(screenRect6, UIMain.TrackingStationIcon, ScaleMode.ScaleToFit, true);
 
 
                 if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
@@ -162,13 +171,14 @@ namespace KerbalKonstructs.Modules
                     var disObjectLat2 = KKMath.GetLatitudeInDeg(objectpos2);
                     var disObjectLon2 = KKMath.GetLongitudeInDeg(objectpos2);
 
-                    if (disObjectLon2 < 0) disObjectLon2 = disObjectLon2 + 360;
+                    if (disObjectLon2 < 0)
+                        disObjectLon2 = disObjectLon2 + 360;
 
                     //Only display one tooltip at a time
                     DisplayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
 
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
-                    {                    
+                    {
                         selectedFacility = groundStation;
                         FacilityManager.selectedInstance = groundStation;
                         FacilityManager.instance.Open();
@@ -210,11 +220,11 @@ namespace KerbalKonstructs.Modules
                     if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
                         continue;
                     // don't show hidden bases when closed
-                    if (launchSite.LaunchSiteIsHidden && !isOpen )
+                    if (launchSite.LaunchSiteIsHidden && !isOpen)
                         continue;
                 }
 
-                launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
                 {
@@ -267,8 +277,10 @@ namespace KerbalKonstructs.Modules
                     //Only display one tooltip at a time
                     string sToolTip = "";
                     sToolTip = launchSite.LaunchSiteName;
-                    if (launchSite.LaunchSiteName == "Runway") sToolTip = "KSC Runway";
-                    if (launchSite.LaunchSiteName == "LaunchPad") sToolTip = "KSC LaunchPad";
+                    if (launchSite.LaunchSiteName == "Runway")
+                        sToolTip = "KSC Runway";
+                    if (launchSite.LaunchSiteName == "LaunchPad")
+                        sToolTip = "KSC LaunchPad";
                     DisplayMapIconToolTip(sToolTip, lsPosition);
 
                     // Select a base by clicking on the icon
@@ -282,6 +294,91 @@ namespace KerbalKonstructs.Modules
                     }
                 }
             }
+        }
+
+
+        private void DrawSpaceCenters()
+        {
+            if (!KerbalKonstructs.instance.mapShowRecovery)
+                return;
+
+            body = PlanetariumCamera.fetch.target.GetReferenceBody();
+
+            displayingTooltip2 = false;
+
+            // Do tracking stations first
+            foreach (CustomSpaceCenter customSpaceCenter in spaceCenters)
+            {
+                if ((mapHideIconsBehindBody) && (IsOccluded(customSpaceCenter.gameObject.transform.position, body)))
+                {
+                    continue;
+                }
+
+                cscIsOpen = customSpaceCenter.isOpen;
+
+
+
+                if (KerbalKonstructs.instance.mapShowRecovery)
+                    cscDisplay = true;
+                if (!KerbalKonstructs.instance.mapShowClosed && !cscIsOpen)
+                    cscDisplay = false;
+                if (!KerbalKonstructs.instance.mapShowOpen && cscIsOpen)
+                    cscDisplay = false;
+
+                if (!cscDisplay)
+                    continue;
+
+                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(customSpaceCenter.gameObject.transform.position));
+
+                Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
+                // Distance between camera and spawnpoint sort of
+                float fPosZ = pos.z;
+                float fRadarRadius = 12800 / fPosZ;
+
+                if (fRadarRadius > 15)
+                {
+                    GUI.DrawTexture(screenRect6, UIMain.iconRecoveryBase, ScaleMode.ScaleToFit, true);
+                }
+
+                if (screenRect6.Contains(Event.current.mousePosition) && !displayingTooltip2)
+                {
+
+
+                    var objectpos2 = customSpaceCenter.staticInstance.CelestialBody.transform.InverseTransformPoint(customSpaceCenter.gameObject.transform.position);
+
+                    var disObjectLat2 = KKMath.GetLatitudeInDeg(objectpos2);
+                    var disObjectLon2 = KKMath.GetLongitudeInDeg(objectpos2);
+
+                    if (disObjectLon2 < 0)
+                        disObjectLon2 = disObjectLon2 + 360;
+
+                    //Only display one tooltip at a time
+                    if (customSpaceCenter.isFromFacility)
+                    {
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.GetFacility(KKFacilityType.RecoveryBase).FacilityName + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    }
+                    else
+                    {
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.launchSite.LaunchSiteName + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                    }
+
+                    if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
+                    {
+                        if (customSpaceCenter.isFromFacility)
+                        {
+                            //# = customSpaceCenter.staticInstance;
+                            FacilityManager.selectedInstance = customSpaceCenter.staticInstance;
+                            FacilityManager.instance.Open();
+                        }
+                        else
+                        {
+                            BaseManager.setSelectedSite(customSpaceCenter.staticInstance.launchSite);
+                            BaseManager.instance.Open();
+                        }
+                    }
+                }
+            }
+
         }
 
 

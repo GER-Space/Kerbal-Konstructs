@@ -135,6 +135,8 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean mapShowOther = false;
         [KSPField]
+        public Boolean mapShowRecovery = false;
+        [KSPField]
         public  string defaultVABlaunchsite = "LaunchPad";
         [KSPField]
         public string defaultSPHlaunchsite = "Runway";
@@ -386,7 +388,6 @@ namespace KerbalKonstructs
         {
             if (!disableRemoteRecovery && CareerUtils.isCareerGame && (vessel != null))
             {
-
                 Log.Normal("OnProcessRecovery");
 
                 SpaceCenter closestSpaceCenter = SpaceCenterManager.KSC;
@@ -397,7 +398,7 @@ namespace KerbalKonstructs
 
                 foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
                 {
-                    if (csc.staticInstance.launchSite.isOpen == false )
+                    if (csc.staticInstance.launchSite.isOpen == false)
                     {
                         continue;
                     }
@@ -429,8 +430,8 @@ namespace KerbalKonstructs
                     {
                         recovery = (float)Math.Max(0, (0.98 - ((smallestDist / 1000) / 2150)));
                         dialog.fundsEarned = shipvalue * recovery;
-                        dialog.recoveryFactor =  Math.Round(recovery,1).ToString() + "%";
-                        dialog.recoveryLocation = Math.Round(smallestDist/1000, 1) + "km from " + customSC.SpaceCenterName;
+                        dialog.recoveryFactor = Math.Round(recovery, 1).ToString() + "%";
+                        dialog.recoveryLocation = Math.Round(smallestDist / 1000, 1) + "km from " + customSC.SpaceCenterName;
                     }
 
                     foreach (var part in dialog.GetComponentsInChildren<KSP.UI.Screens.SpaceCenter.MissionSummaryDialog.PartWidget>(true))
@@ -447,7 +448,7 @@ namespace KerbalKonstructs
                         resource.totalValue = resource.totalValue / oldRecovery * recovery;
                     }
 
-                    Funding.Instance.AddFunds(missingvalue,TransactionReasons.VesselRecovery);
+                    Funding.Instance.AddFunds(missingvalue, TransactionReasons.VesselRecovery);
                 }
             }
         }

@@ -18,10 +18,12 @@ namespace KerbalKonstructs
 
         private string[] seperators = new string[] { " ", ",", ";" };
 
+        GameObject baseObject;
+
 
         public void Start()
         {
-
+            baseObject = gameObject;
             emitterTransforms = smokeEmittersNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             Transform receiverTransform = gameObject.transform.FindRecursive(smokeReceiverName);
@@ -33,7 +35,11 @@ namespace KerbalKonstructs
                 //receiverCollider.gameObject.layer = (1 << 30);
 
                 KKPadFX padfx = receiverCollider.gameObject.AddComponent<KKPadFX>();
-                padfx.Setup(emitterTransforms);
+                padfx.Setup(emitterTransforms, gameObject);
+            }
+            else
+            {
+                Log.Warning("PadFX: Collider not found " + smokeReceiverName);
             }
         }
     }
@@ -48,7 +54,7 @@ namespace KerbalKonstructs
 
 
 
-        public void Setup(List<string> emitterTransformNames)
+        public void Setup(List<string> emitterTransformNames, GameObject baseObject)
         {
             GetSquadPsystem();
 
@@ -56,12 +62,12 @@ namespace KerbalKonstructs
 
             foreach (string emName in emitterTransformNames)
             {
-                foreach (Transform emTransform in gameObject.transform.FindAllRecursive(emName))
+                foreach (Transform emTransform in baseObject.transform.FindAllRecursive(emName))
                 {
                     //ParticleSystem emPsystem  = emTransform.gameObject.AddComponent<ParticleSystem>();
                     //ParticleSystemRenderer emPsystemRenderer = emTransform.gameObject.AddComponent<ParticleSystemRenderer>();
-                    ParticleSystem emPsystem = (ParticleSystem)Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
-                    ParticleSystemRenderer emPsystemRenderer = (ParticleSystemRenderer)Instantiate(pSystemRenderer, emTransform.position, emTransform.rotation, emTransform);
+                    ParticleSystem emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
+                    ParticleSystemRenderer emPsystemRenderer = Instantiate(pSystemRenderer, emTransform.position, emTransform.rotation, emTransform);
 
                     emitters.Add(emPsystem);
                     FloatingOrigin.RegisterParticleSystem(emPsystem);

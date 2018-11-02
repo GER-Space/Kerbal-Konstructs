@@ -45,6 +45,8 @@ namespace KerbalKonstructs.UI
         internal static Texture iconCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
         internal static Texture iconTerrain = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/terrain", false);
 
+        internal static Texture iconRecoveryBase = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/recoveryBase", false);
+
         public static Texture tIconClosed;
 		public static Texture tIconOpen;
 		public static Texture tLeftOn;

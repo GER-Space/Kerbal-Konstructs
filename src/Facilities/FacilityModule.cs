@@ -25,6 +25,7 @@ namespace KerbalKonstructs.Modules
         LandingGuide,
         TouchdownGuideL,
         TouchdownGuideR,
+        RecoveryBase
     }
 
 
@@ -155,7 +156,7 @@ namespace KerbalKonstructs.Modules
                     ConfigUtil.ReadCFGNode(this, field, cfgNode);
                 }
                 if (field.Name == "OpenCloseState")
-                {                   
+                {
                     defaultState = openString;
                 }
             }
@@ -163,9 +164,18 @@ namespace KerbalKonstructs.Modules
             FacilityType = this.GetType().Name;
             facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), FacilityType, true);
             AttachSelector();
+
+            OnPostSetup();
+
+
             return this;
         }
 
+
+        internal virtual void OnPostSetup()
+        {
+
+        }
 
         internal virtual void WriteConfig(ConfigNode cfgNode)
         {
@@ -295,7 +305,7 @@ namespace KerbalKonstructs.Modules
         internal void AttachSelector()
         {
             Type myType = this.GetType();
-            if (myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR")
+            if (myType.Name == "LandingGuide" || myType.Name == "TouchdownGuideL" || myType.Name == "TouchdownGuideR" | myType.Name == "RecoveryBase")
             {
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
