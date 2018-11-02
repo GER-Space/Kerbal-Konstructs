@@ -103,8 +103,9 @@ namespace KerbalKonstructs
 			}
 			if (animationComponent == null)
             {
-			    Log.UserError ("[StaticLight] no anim found, destroying now");
+			    Log.UserError ("AnimateOnSunRise: no anim found, destroying now");
 				Destroy (this);
+                return;
 			}
 
 			animLength = animationComponent [animationName].length * animationComponent [animationName].normalizedSpeed;

@@ -76,7 +76,7 @@ namespace KerbalKonstructs.UI
         private string grasColorRStr = "0.640";
         private string grasColorGStr = "0.728";
         private string grasColorBStr = "0.171";
-        private string grasColorAStr = "0.729"; 
+        private string grasColorAStr = "0.729";
 
         public float fButtonWidth = 0f;
 
@@ -317,7 +317,7 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextYellow : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
+                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.saveObjects();
                     smessage = "Saved all changes to all objects.";
@@ -532,12 +532,23 @@ namespace KerbalKonstructs.UI
 
 
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                    if (localGroups.Length > 0)
                     {
-                        KerbalKonstructs.instance.selectedModel = model;
-                        ModelInfo.instance.Open();
-                    }
 
+                        if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                        {
+                            KerbalKonstructs.instance.selectedModel = model;
+                            ModelInfo.instance.Open();
+                        }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "first a Local Group Center"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                        {
+                            Log.UserError("No Local Group found");
+                            MiscUtils.HUDMessage("Create and place a local Group, then try again!");
+                        }
+                    }
 
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2);

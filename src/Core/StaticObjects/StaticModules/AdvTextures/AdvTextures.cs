@@ -76,9 +76,7 @@ namespace KerbalKonstructs
             SetTexture(_MetallicGlossMap, "_MetallicGlossMap");
             SetTexture(_OcclusionMap, "_OcclusionMap");
             SetTexture(_SpecGlossMap, "_SpecGlossMap");
-            SetTexture(_BumpMap, "_BumpMap", true);
-
-           
+            SetTexture(_BumpMap, "_BumpMap", true);          
         }
 
 
@@ -86,7 +84,7 @@ namespace KerbalKonstructs
         {
             if (!String.IsNullOrEmpty(texturename))
             {
-                Texture2D newTexture = KKGraphics.GetTexture(_MainTex, isNormal, textureIndex);
+                Texture2D newTexture = KKGraphics.GetTexture(texturename, isNormal, textureIndex);
                 if (newTexture != null)
                 {
                     foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))

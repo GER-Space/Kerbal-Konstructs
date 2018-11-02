@@ -142,7 +142,7 @@ namespace KerbalKonstructs
 
         #endregion
 
-        private List<StaticInstance> deletedInstances = new List<StaticInstance>();
+        internal static  List<StaticInstance> deletedInstances = new List<StaticInstance>();
         internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
         /// <summary>
@@ -368,6 +368,7 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.SPACECENTER:
                     {
+                        Log.PerfStart("SC Scene");
                         if (convertLegacyConfigs)
                         {
                             Log.UserWarning("KK converts your configs to a new format");
@@ -398,12 +399,13 @@ namespace KerbalKonstructs
                         //}
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
-                        updateCache();
+                        //updateCache();
                         if (scCamWasAltered || focusLastLaunchSite)
                         {
                             CameraController.SetSpaceCenterCam(currentSite);
                         }
                         updateCache();
+                        Log.PerfStop("SC Scene");
                         // LaunchSiteManager.AlterMHSelector();
                     }
                     break;
@@ -1127,7 +1129,7 @@ namespace KerbalKonstructs
                 processedInstances.Add(deletedInstance.configPath);
 
             }
-
+            deletedInstances.Clear();
         }
 
         internal void SaveGroupCenters()
@@ -1152,7 +1154,7 @@ namespace KerbalKonstructs
         {
             get
             {
-                return (deletedInstances.Count > 0);
+                return (deletedInstances.Count > 0 || deletedGroups.Count > 0);
             }
         }
 

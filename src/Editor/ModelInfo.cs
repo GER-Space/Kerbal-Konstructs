@@ -107,7 +107,8 @@ namespace KerbalKonstructs.UI
 
         public void drawStaticInfoWindow(int WindowID)
         {
-            if (mModel == null) return;
+            if (mModel == null)
+                return;
 
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
@@ -209,7 +210,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
             GUILayout.Space(1);
 
-            if (! string.IsNullOrEmpty(infLaunchTransform))
+            if (!string.IsNullOrEmpty(infLaunchTransform))
             {
                 GUILayout.Box("DefaultLaunchPadTransform", BoxNoBorder, GUILayout.Height(19));
                 GUILayout.Box("" + infLaunchTransform, BoxNoBorder2);
@@ -495,19 +496,28 @@ namespace KerbalKonstructs.UI
             mModel.title = infTitle;
             mModel.category = infCategory;
 
-            if (infFacType != "") mModel.DefaultFacilityType = infFacType;
+            if (infFacType != "")
+                mModel.DefaultFacilityType = infFacType;
 
-            if (infLaunchLength != "") mModel.DefaultLaunchSiteLength =  float.Parse(infLaunchLength);
-            if (infLaunchWidth != "") mModel.DefaultLaunchSiteWidth = float.Parse(infLaunchWidth);
-            if (infFacMassCap != "") mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
-            if (infFacCraftCap != "") mModel.DefaultFacilityCraftCapacity = int.Parse(infFacCraftCap);
-            if (infStaffMax != "") mModel.DefaultStaffMax = int.Parse(infStaffMax);
+            if (infLaunchLength != "")
+                mModel.DefaultLaunchSiteLength = float.Parse(infLaunchLength);
+            if (infLaunchWidth != "")
+                mModel.DefaultLaunchSiteWidth = float.Parse(infLaunchWidth);
+            if (infFacMassCap != "")
+                mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
+            if (infFacCraftCap != "")
+                mModel.DefaultFacilityCraftCapacity = int.Parse(infFacCraftCap);
+            if (infStaffMax != "")
+                mModel.DefaultStaffMax = int.Parse(infStaffMax);
             //	if (infECMax != "") mModel.setSetting("ECMax", float.Parse(infECMax));
             //	if (infOreMax != "") mModel.setSetting("OreMax", float.Parse(infOreMax));
             //	if (infPrOreMax != "") mModel.setSetting("PrOreMax", float.Parse(infPrOreMax));
-            if (infProdRateMax != "") mModel.DefaultProductionRateMax = float.Parse(infProdRateMax);
-            if (infScienceMax != "") mModel.DefaultScienceOMax = float.Parse(infScienceMax);
-            if (infFundsMax != "") mModel.DefaultFundsOMax = float.Parse(infFundsMax);
+            if (infProdRateMax != "")
+                mModel.DefaultProductionRateMax = float.Parse(infProdRateMax);
+            if (infScienceMax != "")
+                mModel.DefaultScienceOMax = float.Parse(infScienceMax);
+            if (infFundsMax != "")
+                mModel.DefaultFundsOMax = float.Parse(infFundsMax);
         }
 
         public void updateSelection(StaticModel obj)
@@ -547,13 +557,20 @@ namespace KerbalKonstructs.UI
                 }
 
                 KerbalKonstructs.instance.DeleteInstance(soInstance);
-
+                if (KerbalKonstructs.deletedInstances.Contains(soInstance))
+                {
+                    KerbalKonstructs.deletedInstances.Remove(soInstance);
+                }
             }
             else
             {
                 if (currPreview != null)
                 {
                     KerbalKonstructs.instance.DeleteInstance(currPreview);
+                    if (KerbalKonstructs.deletedInstances.Contains(currPreview))
+                    {
+                        KerbalKonstructs.deletedInstances.Remove(currPreview);
+                    }
                     currPreview = null;
                 }
             }
@@ -562,14 +579,22 @@ namespace KerbalKonstructs.UI
         public void CreatePreviewInstance(StaticModel model)
         {
             StaticInstance instance = new StaticInstance();
+
+            GroupCenter groupCenter = StaticsEditorGUI.GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
+            if (groupCenter == null)
+            {
+                MiscUtils.HUDMessage("No Local GroupCenter found. Create one, then try again");
+            }
             instance.gameObject = GameObject.Instantiate(model.prefab);
             instance.RadiusOffset = (float)FlightGlobals.ActiveVessel.altitude;
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
-            instance.Group = "Ungrouped";
+            instance.Group = groupCenter.Group;
             instance.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
             instance.RotationAngle = 0f;
-            instance.Orientation= Vector3.up;
+            instance.Orientation = Vector3.up;
             instance.VisibilityRange = 25000f;
+            instance.configPath = KerbalKonstructs.newInstancePath + "/" + model.name + "-instances.cfg";
+            instance.configUrl = null;
 
             instance.model = model;
 
@@ -580,7 +605,8 @@ namespace KerbalKonstructs.UI
 
         public void SpinPreview(StaticInstance soObject)
         {
-            if (soObject == null || currPreview == null) return;
+            if (soObject == null || currPreview == null)
+                return;
 
 
             soObject.gameObject.transform.Rotate(Vector3.up, 0.1f);
