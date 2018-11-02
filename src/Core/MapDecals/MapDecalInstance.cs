@@ -70,7 +70,6 @@ namespace KerbalKonstructs.Core
 
         internal PQSMod_MapDecal mapDecal = null;
 
-        internal Vector3 position = Vector3.zero;
 
 
 

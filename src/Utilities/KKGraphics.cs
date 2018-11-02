@@ -19,8 +19,8 @@ namespace KerbalKonstructs
 
         private static List<string> imageExtentions = new List<string> { ".png", ".tga", ".jpg" };
 
-
-
+        private static Dictionary<string, Texture> builtinTextures = new Dictionary<string, Texture>();
+        private static bool texturesAreCached = false;
 
         /// <summary>
         /// Load all shaders into the system and fill our shader database.
@@ -104,27 +104,11 @@ namespace KerbalKonstructs
             {
                 return cachedTextures[textureKey];
             }
-
-            List<Texture> foundTextures = null;
             Texture2D foundTexture = null;
-            ;
+
             if (textureName.StartsWith("BUILTIN:"))
             {
-                string textureNameShort = Regex.Replace(textureName, "BUILTIN:/", "");
-                foundTextures = Resources.FindObjectsOfTypeAll<Texture>().Where(tex => tex.name == textureNameShort).ToList() as List<Texture>;
-
-                if (foundTextures.Count == 0)
-                {
-                    Log.UserError("AdvTexture: Could not find built-in texture " + textureNameShort);
-                    return null;
-                }
-                if (foundTextures.Count < index + 1)
-                {
-                    Log.UserError("AdvTexture: index out of range" + textureNameShort + " : " + index);
-                    return null;
-                }
-                foundTexture =  foundTextures[index] as Texture2D;
-
+                foundTexture = GetBuiltinTexture(textureName, index);
             }
             else
             {
@@ -157,6 +141,44 @@ namespace KerbalKonstructs
             cachedTextures.Add(textureKey, foundTexture);
             return foundTexture;
         }
+
+        internal static Texture2D GetBuiltinTexture(string textureName, int index)
+        {
+            Texture2D foundTexture = null;
+            string textureNameShort = Regex.Replace(textureName, "BUILTIN:/", "");
+
+            string texkey = textureNameShort + "_" + index;
+
+
+            if (!texturesAreCached)
+            {
+                Texture[] foundTextures = Resources.FindObjectsOfTypeAll<Texture>();
+                int counter = 0;
+                foreach (Texture texture in foundTextures)
+                {
+                    counter = 0;
+                    while (builtinTextures.ContainsKey(texture.name + "_" + counter))
+                    {
+                        counter++;
+                    }
+                    builtinTextures.Add(texture.name + "_" + counter, texture);
+                }
+                texturesAreCached = true;
+            }
+
+            if (builtinTextures.ContainsKey(texkey))
+            {
+                foundTexture = builtinTextures[texkey] as Texture2D;
+            }
+            else
+            {
+                Log.UserError("AdvTexture: Could not find built-in texture " + textureNameShort + " index: " + index);
+                foundTexture = null;
+            }
+
+            return foundTexture;
+        }
+
 
         internal static Material GetMaterial(string materialName)
         {

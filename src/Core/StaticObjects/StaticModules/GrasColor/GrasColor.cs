@@ -20,14 +20,19 @@ namespace KerbalKonstructs
 
 
 
-        private bool usePQS = false;
+        private bool usePQS = true;
         private bool useNormalMap = false;
 
         private bool isInitialized = false;
         private List<Material> grasMaterials = new List<Material>();
 
- 
+        private Color grasColor = Color.red;
+        private Texture2D grasTexture = null;
+        private string grasTextureName = "";
 
+        private static Color defaultColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
+
+        //private string defaultGrasTextureName = "BUILTIN:/terrain_grass00_new";
 
         public void Awake()
         {
@@ -52,15 +57,40 @@ namespace KerbalKonstructs
         /// </summary>
         internal void setTexture()
         {
+
+            if (staticInstance.GrasColor == Color.clear && !(StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
+            {
+                return;
+            }
+
             //Log.Normal("FlagDeclal: setTexture called");
             if (!isInitialized)
             {
                 Initialize();
             }
 
+            grasColor = GetColor();
+
+            //Log.Normal("Texture Setting is: " + staticInstance.GrasTexture);
+            grasTextureName = staticInstance.GrasTexture;
+
+            if (string.IsNullOrEmpty(grasTextureName))
+            {
+                //Log.Normal("String was emtpy");
+                grasTextureName = GrasTextureImage;
+            }
+            //Log.Normal("Texture Setting2 is: " + grasTextureName);
+
+            grasTexture = KKGraphics.GetTexture(grasTextureName);
+
             foreach (Material material in grasMaterials)
             {
-                material.SetColor("_Color", GetColor());
+                material.SetColor("_Color", grasColor);
+                if (grasTexture != null)
+                {
+                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                    material.mainTexture = grasTexture;
+                }
             }
         }
 
@@ -70,7 +100,8 @@ namespace KerbalKonstructs
             if (staticInstance.model.isSquad)
             {
                 findSquadGrasMaterial();
-            } else
+            }
+            else
             {
                 findModelGrasMaterials();
             }
@@ -81,8 +112,8 @@ namespace KerbalKonstructs
 
         internal Color GetColor()
         {
-            Color underGroundColor = Color.clear;
-            if (staticInstance.GrasColor == Color.clear || (StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)  )
+            Color underGroundColor = defaultColor;
+            if ((StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
             {
                 if (usePQS)
                 {
@@ -120,8 +151,7 @@ namespace KerbalKonstructs
             PQS.VertexBuildData data = new PQS.VertexBuildData
             {
                 directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
-                vertHeight = ((body.pqsController.GetSurfaceHeight(body.GetRelSurfaceNVector(lat, lon).normalized * body.Radius)) )
-//            vertHeight = body.pqsController.radius
+                vertHeight = body.pqsController.radius
             };
 
             // Fetch all enabled Mods
@@ -179,6 +209,7 @@ namespace KerbalKonstructs
             {
                 foreach (Material material in renderer.materials.Where(mat => mat.name.StartsWith("ksc_exterior_terrain_grass_02")))
                 {
+                    //                    defaultColor = material.GetColor("_Color");
                     //Log.Normal("Added material:" + material.name + " : " + material.mainTexture.name);
                     //material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
                     grasMaterials.Add(material);

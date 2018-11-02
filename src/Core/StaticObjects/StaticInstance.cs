@@ -13,10 +13,9 @@ namespace KerbalKonstructs.Core
     public enum HeightReference
     {
         Unset = 0,
-        Sphere = 1 ,
+        Sphere = 1,
         Terrain = 2
     }
-
 
     public class StaticInstance
     {
@@ -63,19 +62,22 @@ namespace KerbalKonstructs.Core
         // Special Effects
         [CFGSetting]
         public Color GrasColor = Color.clear;
-
+        [CFGSetting]
+        public string GrasTexture;
 
         public GameObject gameObject;
-        internal PQSCity pqsCity;
-        //public PQSCity2 pqsCity2;
         internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;
 
-        internal bool isInSavegame = false;
 
         internal GroupCenter groupCenter = null;
+
+        internal bool isInSavegame = false;
+
+        private static Dictionary<string, Type> staticModules = new Dictionary<string, Type>();
+        private static string moduleKey;
 
         public bool hasFacilities
         {
@@ -125,25 +127,22 @@ namespace KerbalKonstructs.Core
         /// </summary>
         public void Update()
         {
-
-          
             RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
-            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y );
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
 
             gameObject.transform.localScale = origScale * ModelScale;
 
             RelativePosition = gameObject.transform.localPosition;
             Orientation = gameObject.transform.localEulerAngles;
+            RadiusOffset = (float)((surfaceHeight - groupCenter.surfaceHeight) + RelativePosition.y);
+
 
             // Notify modules about update
             foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
             {
                 module.StaticObjectUpdate();
             }
-
-
-
         }
 
         internal void HighlightObject(Color highlightColor)
@@ -202,27 +201,24 @@ namespace KerbalKonstructs.Core
             {
                 this.ToggleAllColliders(false);
             }
-                
+
 
             this.preview = bPreview;
 
-            if (editing)
-            {
-                KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
-            }
-
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
+            if (!StaticDatabase.allCenters.ContainsKey(groupCenterName))
+            {
+                Log.UserWarning("cannot load " + configPath);
+                return;
+            }
             groupCenter = StaticDatabase.allCenters[groupCenterName];
 
             if (RelativePosition.Equals(Vector3.zero))
             {
+                Log.Normal("LegacySpawnInstance called for " + configPath);
                 LegacySpawnInstance();
                 gameObject.transform.parent = groupCenter.gameObject.transform;
-                pqsCity.enabled = false;
-                pqsCity.sphere = null;
-                pqsCity = null;
-
                 RelativePosition = gameObject.transform.localPosition;
                 Orientation = gameObject.transform.localEulerAngles;
 
@@ -243,9 +239,21 @@ namespace KerbalKonstructs.Core
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
 
+            Log.PerfContinue("Module Creation");
             foreach (StaticModule module in model.modules)
             {
-                Type moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                moduleKey = (module.moduleNamespace + "_" + module.moduleClassname);
+                Type moduleType;
+                if (staticModules.ContainsKey(moduleKey))
+                {
+                    moduleType = staticModules[moduleKey];
+                }
+                else
+                {
+                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                    staticModules.Add(moduleKey, moduleType);
+                }
+
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
@@ -269,7 +277,7 @@ namespace KerbalKonstructs.Core
                     Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
                 }
             }
-
+            Log.PerfPause("Module Creation");
             foreach (GameObject gorenderer in rendererList)
             {
                 gorenderer.GetComponent<Renderer>().enabled = true;
@@ -290,6 +298,10 @@ namespace KerbalKonstructs.Core
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
 
+            if (editing)
+            {
+                KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+            }
 
         }
 
@@ -304,68 +316,19 @@ namespace KerbalKonstructs.Core
                 objvisibleRange = KerbalKonstructs.localGroupRange;
             }
 
-            pqsCity = gameObject.AddComponent<PQSCity>();
+            RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
+            RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
 
-            PQSCity.LODRange range = new PQSCity.LODRange
+            double alt = RadiusOffset;
+
+            if (heighReference == HeightReference.Terrain)
             {
-                renderers = new GameObject[0],
-                objects = new GameObject[0],
-                visibleRange = objvisibleRange
-            };
-            pqsCity.lod = new[] { range };
-            pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
-            pqsCity.repositionRadial = RadialPosition; //position
-            pqsCity.repositionRadiusOffset = RadiusOffset; //height
-            pqsCity.reorientInitialUp = Orientation; //orientation
-            pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
-            pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
-            gameObject.transform.parent = CelestialBody.pqsController.transform;
-            pqsCity.sphere = CelestialBody.pqsController;
-            pqsCity.order = 100;
-            pqsCity.modEnabled = true;
-            pqsCity.repositionToSphere = true; //enable repositioning
-
-
-            switch (heighReference)
-            {
-                case HeightReference.Sphere:
-                    pqsCity.repositionToSphereSurface = false; //Snap to surface?
-
-                    break;
-                case HeightReference.Terrain:
-
-                    pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                    pqsCity.repositionToSphereSurfaceAddHeight = true;
-                    pqsCity.repositionToSphere = false;
-                    break;
-                default:
-                    // we try to descide which one is the best to take
-                    string biome = ScienceUtil.GetExperimentBiome(CelestialBody, RefLatitude, RefLongitude);
-                    float heightAboveTerrain = SDRescale.GetSurfaceRefereceHeight(this);
-
-                    if ((biome == "Water" || biome == "Shores") && ((Math.Abs(RadiusOffset) < 5) && heightAboveTerrain > 5)) // most likely at ocean surface 
-                    {
-                        Log.Normal("Found a swimming object: " + this.gameObject.name);
-                        pqsCity.repositionToSphereSurface = false; //Snap to surface?
-                        heighReference = HeightReference.Sphere;
-                    }
-                    else
-                    {
-                        {
-                            //    Log.Normal("found new Radiusffset: " + heightAboveTerrain);
-                            RadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphereSurface = true; //Snap to surface?#
-                            pqsCity.repositionToSphereSurfaceAddHeight = true;
-                            pqsCity.repositionRadiusOffset = heightAboveTerrain;
-                            pqsCity.repositionToSphere = false;
-
-                            heighReference = HeightReference.Terrain;
-                        }
-                    }
-                    break;
+                alt += surfaceHeight;
             }
-            pqsCity.OnSetup();
-            pqsCity.Orientate();
+            gameObject.transform.parent = CelestialBody.gameObject.transform;
+
+            gameObject.transform.localPosition = RadialPosition.normalized * (float)(CelestialBody.Radius + alt);
+            gameObject.transform.localRotation = Quaternion.FromToRotation(Orientation, gameObject.transform.localPosition.normalized) * Quaternion.AngleAxis(RotationAngle, Vector3.up);
 
             KerbalKonstructs.convertLegacyConfigs = true;
         }
@@ -397,7 +360,8 @@ namespace KerbalKonstructs.Core
         internal void deselectObject(Boolean enableColliders)
         {
             this.editing = false;
-            if (enableColliders) this.ToggleAllColliders(true);
+            if (enableColliders)
+                this.ToggleAllColliders(true);
 
             Color highlightColor = new Color(0, 0, 0, 0);
             this.HighlightObject(highlightColor);
@@ -415,6 +379,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
+                //return CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.pqsController.GetRelativePosition(gameObject.transform.position));
                 return (CelestialBody.pqsController.GetSurfaceHeight(CelestialBody.GetRelSurfaceNVector(RefLatitude, RefLongitude).normalized * CelestialBody.Radius) - CelestialBody.pqsController.radius);
             }
         }
@@ -437,5 +402,5 @@ namespace KerbalKonstructs.Core
         }
 
 
-	}
+    }
 }

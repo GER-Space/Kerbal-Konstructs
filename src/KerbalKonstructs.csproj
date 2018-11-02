@@ -97,7 +97,6 @@
     <Compile Include="Addons\Addons.cs" />
     <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
     <Compile Include="Addons\SDTest.cs" />
-    <Compile Include="Addons\SigmaDimensions\SDRescale.cs" />
     <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
     <Compile Include="Core\Config\ConfigParser.cs" />
     <Compile Include="Core\Config\ConfigUtil.cs" />
@@ -125,6 +124,8 @@
     <Compile Include="Core\StaticObjects\StaticModules\Water\KKWaterFloating.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrasColorPresetUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrasColorUI.cs" />
     <Compile Include="Editor\Shared\DrawObject.cs" />
     <Compile Include="Editor\Shared\DrawTools.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />

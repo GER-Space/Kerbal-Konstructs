@@ -62,7 +62,8 @@ namespace KerbalKonstructs.UI
         //   public static Boolean editingFacility = false;
 
         internal Boolean SnapRotateMode = false;
-        internal bool grasColorModeIsAuto = true;
+        internal bool grasColorModeIsAuto = false;
+        internal static bool grasColorEnabled = false;
 
         #endregion
 
@@ -96,7 +97,7 @@ namespace KerbalKonstructs.UI
 
         private Vector3d savedRotation = Vector3d.zero;
 
-        private string incrementStr, altStr, grasColorRStr, grasColorGStr, grasColorBStr, grasColorAStr, oriXStr, oriYStr, oriZStr, posXStr, posYStr, posZStr;
+        private string incrementStr, altStr, oriXStr, oriYStr, oriZStr, posXStr, posYStr, posZStr;
 
         private float fTempWidth = 80f;
 
@@ -162,6 +163,9 @@ namespace KerbalKonstructs.UI
                 SetupFields();
                 SetupVectors();
                 SetupGizmo();
+
+                grasColorModeIsAuto = false;
+                grasColorEnabled = (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0);
 
                 origCenter = selectedInstance.groupCenter;
                 origPosition = selectedInstance.gameObject.transform.localPosition;
@@ -594,37 +598,28 @@ namespace KerbalKonstructs.UI
                 }
             }
 
-            if (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            GUILayout.BeginHorizontal();
             {
+                GUILayout.Label("GrasColor: ", GUILayout.Height(23));
+                GUILayout.FlexibleSpace();
 
-
-                grasColorModeIsAuto = GUILayout.Toggle(grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
-                if (!grasColorModeIsAuto)
+                GUI.enabled = (grasColorEnabled && !GrasColorUI.instance.IsOpen());
+                if (GUILayout.Button("Preset", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label("R", GUILayout.Height(18));
-                        grasColorRStr = (GUILayout.TextField(grasColorRStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("G", GUILayout.Height(18));
-                        grasColorGStr = (GUILayout.TextField(grasColorGStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("B", GUILayout.Height(18));
-                        grasColorBStr = (GUILayout.TextField(grasColorBStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-                        GUILayout.Label("A", GUILayout.Height(18));
-                        grasColorAStr = (GUILayout.TextField(grasColorAStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
-
-                        if (GUILayout.Button("Apply", GUILayout.Height(18)))
-                        {
-                            ApplyInputStrings();
-                        }
-
-                    }
-                    GUILayout.EndHorizontal();
+                    GrasColorPresetUI.callBack = GrasColorUI.instance.UpdateCallBack;
+                    GrasColorUI.selectedInstance = selectedInstance;
+                    GrasColorUI.instance.SetupFields();
+                    GrasColorPresetUI.instance.Open();
                 }
+
+                if (GUILayout.Button("Edit", GUILayout.Width(90), GUILayout.Height(23)))
+                {
+                    GrasColorUI.instance.Open();
+                }
+
+                GUI.enabled = true;
             }
-
-
-
-
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             {
@@ -841,7 +836,14 @@ namespace KerbalKonstructs.UI
 
             enableColliders = false;
             enableColliders2 = false;
+
             instance.SpawnObject(true);
+            if (instance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            {
+                instance.GrasColor = StaticsEditorGUI.defaultGrasColor;
+                instance.GrasTexture = StaticsEditorGUI.defaultGrasTexture;
+                KerbalKonstructs.instance.selectedObject.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();
+            }
         }
 
         /// <summary>
@@ -1012,17 +1014,6 @@ namespace KerbalKonstructs.UI
             // Log.Normal("OnMove: " + vector.ToString());
             //moveGizmo.transform.position += 3* vector;
             selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
-
-
-            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
-
-            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
-
-            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
-            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
-
-            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
-
         }
 
         internal void WhenMovedCB(Vector3 vector)
@@ -1036,10 +1027,6 @@ namespace KerbalKonstructs.UI
         {
             incrementStr = increment.ToString();
             altStr = selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position).ToString();
-            grasColorRStr = selectedInstance.GrasColor.r.ToString();
-            grasColorGStr = selectedInstance.GrasColor.g.ToString();
-            grasColorBStr = selectedInstance.GrasColor.b.ToString();
-            grasColorAStr = selectedInstance.GrasColor.a.ToString();
 
             oriXStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.x, 4).ToString();
             oriYStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.y, 4).ToString();
@@ -1054,12 +1041,6 @@ namespace KerbalKonstructs.UI
         internal void ApplyInputStrings()
         {
             increment = float.Parse(incrementStr);
-
-
-            selectedInstance.GrasColor.r = float.Parse(grasColorRStr);
-            selectedInstance.GrasColor.g = float.Parse(grasColorGStr);
-            selectedInstance.GrasColor.b = float.Parse(grasColorBStr);
-            selectedInstance.GrasColor.a = float.Parse(grasColorAStr);
 
             selectedInstance.gameObject.transform.localPosition = new Vector3(float.Parse(posXStr), float.Parse(posYStr), float.Parse(posZStr));
             selectedInstance.gameObject.transform.localEulerAngles = new Vector3(float.Parse(oriXStr), float.Parse(oriYStr), float.Parse(oriZStr));
@@ -1176,7 +1157,19 @@ namespace KerbalKonstructs.UI
                     {
                         SetRotation(Vector3.up, increment);
                     }
-
+                    if (Input.GetKeyDown(KeyCode.F))
+                    {
+                        if (referenceSystem == Reference.Center)
+                        {
+                            referenceSystem = Reference.Model;
+                        }
+                        else
+                        {
+                            referenceSystem = Reference.Center;
+                        }
+                        UpdateGizmo();
+                        UpdateVectors();
+                    }
                     if (Input.GetKey(KeyCode.PageUp))
                     {
                         SetTransform(Vector3.up * increment);

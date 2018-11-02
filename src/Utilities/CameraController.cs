@@ -98,6 +98,7 @@ namespace KerbalKonstructs.Core
         /// <param name="currentSite"></param>
         internal static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
+            float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
             if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
@@ -108,6 +109,7 @@ namespace KerbalKonstructs.Core
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
                     scCam.pqsName = currentSite.body.name;
                     scCam.rotationInitial = currentSite.InitialCameraRotation;
+                    scCam.altitudeInitial = nomHeight;
                     scCam.ResetCamera();
                     KerbalKonstructs.scCamWasAltered = true;
                 }
@@ -122,39 +124,13 @@ namespace KerbalKonstructs.Core
                     scCam.transform.position = kscRnD.gameObject.transform.transform.position;
                     scCam.initialPositionTransformName = kscRnD.gameObject.transform.name;
                     scCam.pqsName = ConfigUtil.GetCelestialBody("HomeWorld").name;
+                    scCam.altitudeInitial = nomHeight;
                     scCam.rotationInitial = -60;
                     scCam.ResetCamera();
                     KerbalKonstructs.scCamWasAltered = false;
                 }
             }
 
-            if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad" || currentSite.body.name != ConfigUtil.GetCelestialBody("HomeWorld").name)
-            {
-                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-                {
-                    cam.altitudeInitial = 45f;
-                    cam.ResetCamera();
-                    
-                }
-            }
-            else
-            {
-                PQSCity sitePQS = currentSite.staticInstance.groupCenter.pqsCity;
-
-                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-                {
-                    double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
-                    if (sitePQS.repositionToSphereSurface)
-                    {
-                        nomHeight += sitePQS.repositionRadiusOffset;
-                    }
-                    cam.altitudeInitial = 0f - (float)nomHeight;
-
-                    cam.ResetCamera();
-                    Log.Normal("fixed the Space Center camera.");
-
-                }
-            }
             SetNextMorningPoint(currentSite);
         }
 

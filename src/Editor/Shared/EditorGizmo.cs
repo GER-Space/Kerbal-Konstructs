@@ -16,6 +16,8 @@ namespace KerbalKonstructs.UI
 
         internal static EditorGizmos.GizmoOffset moveGizmo;
 
+        internal static GameObject targetObject; 
+
 
         internal static void SetupCam()
         {
@@ -57,7 +59,9 @@ namespace KerbalKonstructs.UI
                 moveGizmo = null;
             }
 
-            moveGizmo = EditorGizmos.GizmoOffset.Attach(target.transform, sourceRotation, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
+            targetObject = target;
+
+            moveGizmo = EditorGizmos.GizmoOffset.Attach(targetObject.transform, sourceRotation, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
             moveGizmo.SetCoordSystem(Space.Self);
 
             var transforms = moveGizmo.gameObject.GetComponentsInChildren<Transform>(true);
@@ -78,7 +82,10 @@ namespace KerbalKonstructs.UI
             {
                 moveGizmo.Detach();
                 moveGizmo = null;
+                targetObject = null;
             }
         }
+
+
     }
 }

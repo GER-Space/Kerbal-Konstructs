@@ -71,6 +71,13 @@ namespace KerbalKonstructs.UI
         private static GroupCenter activeGroup = null;
         private static GroupCenter[] localGroups;
 
+        internal static Color defaultGrasColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
+        internal static string defaultGrasTexture = "BUILTIN:/terrain_grass00_new";
+        private string grasColorRStr = "0.640";
+        private string grasColorGStr = "0.728";
+        private string grasColorBStr = "0.171";
+        private string grasColorAStr = "0.729";
+
         public float fButtonWidth = 0f;
 
         String categoryFilterString = "";
@@ -79,7 +86,7 @@ namespace KerbalKonstructs.UI
         String titleFilter = "";
 
 
-        float localRange = 10000f;
+        //float localRange = 10000f;
 
         Vector2 scrollPos;
 
@@ -133,6 +140,7 @@ namespace KerbalKonstructs.UI
         public override void Open()
         {
             allStaticModels = StaticDatabase.allStaticModels.Where(model => model.isHidden == false).ToArray();
+            ConfigUtil.CreateNewInstanceDirIfNeeded();
             ResetLocalGroupList();
             base.Open();
         }
@@ -309,7 +317,7 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextYellow : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
+                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.saveObjects();
                     smessage = "Saved all changes to all objects.";
@@ -425,6 +433,7 @@ namespace KerbalKonstructs.UI
         {
             GroupCenter center = GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
             EditorGUI.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
+
             if (!EditorGUI.instance.IsOpen())
             {
                 EditorGUI.instance.Open();
@@ -523,12 +532,23 @@ namespace KerbalKonstructs.UI
 
 
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                    if (localGroups.Length > 0)
                     {
-                        KerbalKonstructs.instance.selectedModel = model;
-                        ModelInfo.instance.Open();
-                    }
 
+                        if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "Edit Model Config"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                        {
+                            KerbalKonstructs.instance.selectedModel = model;
+                            ModelInfo.instance.Open();
+                        }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button(new GUIContent(" " + model.mesh + " ", "first a Local Group Center"), DeadButton, GUILayout.Width(200), GUILayout.Height(23)))
+                        {
+                            Log.UserError("No Local Group found");
+                            MiscUtils.HUDMessage("Create and place a local Group, then try again!");
+                        }
+                    }
 
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2);
@@ -569,8 +589,56 @@ namespace KerbalKonstructs.UI
                 titleFilter = "";
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Default Grass Color: ", GUILayout.Height(18));
+                if (GUILayout.Button("Load Preset", GUILayout.Width(90), GUILayout.Height(18)))
+                {
+                    GrasColorPresetUI.callBack = SetDefaultColorCallBack;
+                    GrasColorPresetUI.instance.Open();
+                }
+
+
+                GUILayout.Label("R", GUILayout.Height(18));
+                grasColorRStr = (GUILayout.TextField(grasColorRStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("G", GUILayout.Height(18));
+                grasColorGStr = (GUILayout.TextField(grasColorGStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("B", GUILayout.Height(18));
+                grasColorBStr = (GUILayout.TextField(grasColorBStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+                GUILayout.Label("A", GUILayout.Height(18));
+                grasColorAStr = (GUILayout.TextField(grasColorAStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
+
+                GUILayout.Space(5);
+                if (GUILayout.Button("Apply", GUILayout.Height(18)))
+                {
+                    defaultGrasColor.r = float.Parse(grasColorRStr);
+                    defaultGrasColor.g = float.Parse(grasColorGStr);
+                    defaultGrasColor.b = float.Parse(grasColorBStr);
+                    defaultGrasColor.a = float.Parse(grasColorAStr);
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Default Grass Texture: ", GUILayout.Height(18));
+                GUILayout.Space(5);
+                defaultGrasTexture = (GUILayout.TextField(defaultGrasTexture, 200, GUILayout.Width(300), GUILayout.Height(18)));
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        internal void SetDefaultColorCallBack(Color newColor, string newTexture)
+        {
+            defaultGrasColor = newColor;
+            defaultGrasTexture = newTexture;
+            grasColorRStr = defaultGrasColor.r.ToString();
+            grasColorGStr = defaultGrasColor.g.ToString();
+            grasColorBStr = defaultGrasColor.b.ToString();
+            grasColorAStr = defaultGrasColor.a.ToString();
 
         }
+
 
         /// <summary>
         /// instances
@@ -694,37 +762,7 @@ namespace KerbalKonstructs.UI
         internal void ShowInstancesFootersLocal()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Local:");
-
-            GUI.enabled = false;
-            GUILayout.Label(localRange.ToString("0") + " m", GUILayout.Width(50));
-            GUI.enabled = (mode == EditorMode.LOCAL);
-            if (GUILayout.Button("-", GUILayout.Width(25)))
-            {
-                if (localRange < 5000)
-                {
-
-                }
-                else
-                    localRange = localRange / 2;
-            }
-            if (GUILayout.Button("+", GUILayout.Width(25)))
-            {
-                if (localRange > 79999)
-                {
-
-                }
-                else
-                    localRange = localRange * 2;
-            }
-            GUI.enabled = true;
-            GUILayout.FlexibleSpace();
-
-
-            GUI.enabled = true;
             GUILayout.EndHorizontal();
-
-
         }
 
 

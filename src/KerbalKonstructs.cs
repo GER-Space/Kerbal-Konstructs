@@ -45,7 +45,7 @@ namespace KerbalKonstructs
 
         internal static bool convertLegacyConfigs = false;
 
-        private List<StaticInstance> deletedInstances = new List<StaticInstance>();
+        internal static List<StaticInstance> deletedInstances = new List<StaticInstance>();
         internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
         #endregion
@@ -174,10 +174,6 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
-            // for Terrain Rescaling
-            SDRescale.SetTerrainRescales();
-
-            ConfigParser.LoadAllGroupCenter();
 
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
@@ -189,6 +185,8 @@ namespace KerbalKonstructs
             Log.PerfStart("Object loading1");
 
             SquadStatics.LoadSquadModels();
+
+            ConfigParser.LoadAllGroupCenter();
 
             LoadModels();
           //  SDTest.WriteTextures();
@@ -752,6 +750,13 @@ namespace KerbalKonstructs
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
                 //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
 
+                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
+
+                if (model.prefab == null)
+                {
+                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    continue;
+                }
 
                 foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
                 {
@@ -771,20 +776,46 @@ namespace KerbalKonstructs
                                 break;
                         }
                     }
+
+                    // check for unused AdvTexture Modules
+                    if (module.moduleClassname == "AdvancedTextures")
+                    {
+                        bool transformFound = false;
+                        string transforms = "";
+                        string[] seperators = new string[] { " ", ",", ";" };
+                        List<string> targetTransforms = new List<string> { "Any" };
+
+                        if (module.moduleFields.ContainsKey("transforms"))
+                        {
+                            transforms = module.moduleFields["transforms"];
+                            targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+                            foreach (MeshRenderer renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                            {
+                                if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
+                                {
+                                    continue;
+                                }
+                                transformFound = true;
+                            }
+                        }
+                        else
+                        {
+                            transformFound = true;
+                        }
+                        if (!transformFound)
+                        {
+                            //Log.Normal("Adv Texture Preload: transforms not found: " + transforms + " on model: " + model.name);
+                            continue;
+                        }
+                    }
+
                     if (model.modules == null)
                     {
                         model.modules = new List<StaticModule>();
                     }
-
                     model.modules.Add(module);
                 }
-                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
 
-                if (model.prefab == null)
-                {
-                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
-                    continue;
-                }
                 if (model.keepConvex != true)
                 {
                     foreach (MeshCollider collider in model.prefab.GetComponentsInChildren<MeshCollider>(true))
@@ -951,6 +982,8 @@ namespace KerbalKonstructs
         public void saveObjects()
         {
 
+            ConfigUtil.CreateNewInstanceDirIfNeeded();
+
             SaveGroupCenters();
 
             HashSet<String> processedInstances = new HashSet<string>();
@@ -999,7 +1032,7 @@ namespace KerbalKonstructs
                 processedInstances.Add(deletedInstance.configPath);
 
             }
-
+            deletedInstances.Clear();
         }
 
         internal void SaveGroupCenters()
@@ -1024,7 +1057,7 @@ namespace KerbalKonstructs
         {
             get
             {
-                return (deletedInstances.Count > 0);
+                return (deletedInstances.Count > 0 || deletedGroups.Count > 0);
             }
         }
 

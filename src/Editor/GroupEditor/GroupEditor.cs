@@ -120,6 +120,7 @@ namespace KerbalKonstructs.UI
 
             CloseVectors();
             CloseEditors();
+            EditorGizmo.CloseGizmo();
             base.Close();
         }
 
@@ -140,6 +141,7 @@ namespace KerbalKonstructs.UI
             {
                 selectedObjectPrevious = groupCenter;
                 SetupVectors();
+                EditorGizmo.SetupMoveGizmo(groupCenter.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
                 if (!KerbalKonstructs.camControl.active)
                 {
                     KerbalKonstructs.camControl.enable(groupCenter.gameObject);
@@ -763,6 +765,34 @@ namespace KerbalKonstructs.UI
 
         }
 
+        internal void OnMoveCallBack(Vector3 vector)
+        {
+            // Log.Normal("OnMove: " + vector.ToString());
+            //moveGizmo.transform.position += 3* vector;
+
+            selectedGroup.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+            selectedGroup.RadialPosition = selectedGroup.gameObject.transform.localPosition;
+
+            double alt; 
+            selectedGroup.CelestialBody.GetLatLonAlt(EditorGizmo.moveGizmo.transform.position, out selectedGroup.RefLatitude, out selectedGroup.RefLongitude, out alt);
+
+            selectedGroup.RadiusOffset = (float)(alt - selectedGroup.surfaceHeight);
+            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
+
+        }
+
+        internal void WhenMovedCallBack(Vector3 vector)
+        {
+            ApplySettings();
+            //Log.Normal("WhenMoved: " + vector.ToString());
+        }
+
+        internal void UpdateMoveGizmo()
+        {
+            EditorGizmo.CloseGizmo();
+            EditorGizmo.SetupMoveGizmo(selectedGroup.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
+        }
+
 
         /// <summary>
         /// Saves the current instance settings to the object.
@@ -770,6 +800,7 @@ namespace KerbalKonstructs.UI
         internal void ApplySettings()
         {
             selectedGroup.Update();
+            UpdateMoveGizmo();
         }
 
 

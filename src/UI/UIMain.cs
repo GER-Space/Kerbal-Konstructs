@@ -64,6 +64,7 @@ namespace KerbalKonstructs.UI
         public static GUIStyle DeadButton;
         public static GUIStyle LabelInfo;
         public static GUIStyle ButtonTextYellow;
+        public static GUIStyle ButtonTextOrange;
         public static GUIStyle ButtonDefault;
 
         public static GUIStyle KKWindow;
@@ -157,6 +158,12 @@ namespace KerbalKonstructs.UI
             ButtonTextYellow.active.textColor = XKCDColors.YellowGreen;
             ButtonTextYellow.focused.textColor = XKCDColors.YellowGreen;
             ButtonTextYellow.hover.textColor = XKCDColors.YellowGreen;
+
+            ButtonTextOrange = new GUIStyle(GUI.skin.button);
+            ButtonTextOrange.normal.textColor = XKCDColors.PumpkinOrange;
+            ButtonTextOrange.active.textColor = XKCDColors.PumpkinOrange;
+            ButtonTextOrange.focused.textColor = XKCDColors.PumpkinOrange;
+            ButtonTextOrange.hover.textColor = XKCDColors.PumpkinOrange;
 
             ButtonDefault = new GUIStyle(GUI.skin.button);
 
