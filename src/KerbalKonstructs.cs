@@ -42,7 +42,7 @@ namespace KerbalKonstructs
         internal double recoveryExraRefund = 0;
 
         internal static float localGroupRange = 25000f;
-        internal static int vectorLayer = 7;
+        internal static int vectorLayer = 11;
 
         internal static bool convertLegacyConfigs = false;
 
