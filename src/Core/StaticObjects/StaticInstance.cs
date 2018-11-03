@@ -115,12 +115,12 @@ namespace KerbalKonstructs.Core
         internal Boolean preview;
 
         private Vector3 origScale;
-        internal bool isActive;
+        internal bool isActive = false;
 
         internal int indexInGroup = 0;
 
         private List<Renderer> _rendererComponents;
-
+        internal List<StaticModule> myStaticModules = new List<StaticModule>();
 
         /// <summary>
         /// Updates the static instance with new settings
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Core
 
 
             // Notify modules about update
-            foreach (StaticModule module in gameObject.GetComponents<StaticModule>())
+            foreach (StaticModule module in myStaticModules)
             {
                 module.StaticObjectUpdate();
             }
@@ -207,12 +207,12 @@ namespace KerbalKonstructs.Core
 
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
-            if (!StaticDatabase.allCenters.ContainsKey(groupCenterName))
+            if (!StaticDatabase.HasGroupCenter(groupCenterName))
             {
                 Log.UserWarning("cannot load " + configPath);
                 return;
             }
-            groupCenter = StaticDatabase.allCenters[groupCenterName];
+            groupCenter = StaticDatabase.GetGroupCenter(groupCenterName);
 
             if (RelativePosition.Equals(Vector3.zero))
             {
@@ -271,6 +271,7 @@ namespace KerbalKonstructs.Core
                             Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
                         }
                     }
+                    myStaticModules.Add(mod);
                 }
                 else
                 {

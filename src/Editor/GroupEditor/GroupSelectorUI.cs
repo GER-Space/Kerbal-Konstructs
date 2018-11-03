@@ -61,7 +61,8 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            callBack = delegate {};
+            callBack = delegate {
+            };
             selectedCenter = null;
             titleText = "unset";
             base.Close();
@@ -141,7 +142,7 @@ namespace KerbalKonstructs.UI
         private void SetGroupList()
         {
             centers2Display.Clear();
-            foreach (GroupCenter center in StaticDatabase.allCenters.Values)
+            foreach (GroupCenter center in StaticDatabase.allGroupCenters)
             {
                 if (showOnlyLocal)
                 {
@@ -150,7 +151,7 @@ namespace KerbalKonstructs.UI
                     {
                         continue;
                     }
-                    if (Vector3.Distance(center.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position ) > 25000)
+                    if (Vector3.Distance(center.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) > 25000)
                     {
                         continue;
                     }

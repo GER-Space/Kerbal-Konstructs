@@ -8,6 +8,7 @@ using KerbalKonstructs.Utilities;
 using KerbalKonstructs.Career;
 using UnityEngine;
 using System.IO;
+using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
@@ -46,17 +47,17 @@ namespace KerbalKonstructs.Core
         private Vector3 origScale = new Vector3(1, 1, 1);
 
         internal List<StaticInstance> childInstances = new List<StaticInstance>();
-
+        internal bool isActive = true;
 
 
         internal void Spawn()
         {
 
-            if (StaticDatabase.allCenters.ContainsKey(dbKey))
+            if (StaticDatabase.HasGroupCenter(dbKey))
             {
                 string oldName = Group;
                 int index = 0;
-                while (StaticDatabase.allCenters.ContainsKey(dbKey))
+                while (StaticDatabase.HasGroupCenter(dbKey))
                 {
                     Group = oldName + "_" + index.ToString();
                     index++;
@@ -96,16 +97,17 @@ namespace KerbalKonstructs.Core
             RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
             RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
 
-            StaticDatabase.allCenters.Add(dbKey, this);
+            StaticDatabase.AddGroupCenter(this);
+
+
+
         }
 
         internal void RenameGroup(string newName)
         {
-            StaticDatabase.allCenters.Remove(dbKey);
-
+            StaticDatabase.RemoveGroupCenter(this);
             Group = newName;
-
-            StaticDatabase.allCenters.Add(dbKey, this);
+            StaticDatabase.AddGroupCenter(this);
 
             StaticInstance[] staticInstances = childInstances.ToArray();
 
@@ -122,7 +124,7 @@ namespace KerbalKonstructs.Core
             {
                 childInstances.Add(instance);
             }
-            
+
         }
 
 
@@ -132,7 +134,68 @@ namespace KerbalKonstructs.Core
             {
                 childInstances.Remove(instance);
             }
+        }
 
+        internal void SetInstancesEnabled(bool newState)
+        {
+            if (newState == isActive)
+            {
+                return;
+            }
+            isActive = newState;
+
+            Log.Normal("Setting Group " + Group + " to: " + newState);
+
+            foreach (StaticInstance instance in childInstances)
+            {
+                if (isActive)
+                {
+                    ActivateInstance(instance);
+                }
+                else
+                {
+                    DeActivateInstance(instance);
+                }
+                InstanceUtil.SetActiveRecursively(instance, newState);
+            }
+        }
+
+        internal static void ActivateInstance(StaticInstance instance)
+        {
+            switch (instance.FacilityType)
+            {
+                case "Hangar":
+                    HangarGUI.CacheHangaredCraft(instance);
+                    break;
+                case "LandingGuide":
+                    LandingGuideUI.instance.drawLandingGuide(instance);
+                    break;
+                case "TouchdownGuideL":
+                    LandingGuideUI.instance.drawTouchDownGuideL(instance);
+                    break;
+                case "TouchdownGuideR":
+                    LandingGuideUI.instance.drawTouchDownGuideR(instance);
+                    break;
+            }
+        }
+
+        internal static void DeActivateInstance(StaticInstance instance)
+        {
+            switch (instance.FacilityType)
+            {
+                case "Hangar":
+                    HangarGUI.CacheHangaredCraft(instance);
+                    break;
+                case "LandingGuide":
+                    LandingGuideUI.instance.drawLandingGuide(null);
+                    break;
+                case "TouchdownGuideL":
+                    LandingGuideUI.instance.drawTouchDownGuideL(null);
+                    break;
+                case "TouchdownGuideR":
+                    LandingGuideUI.instance.drawTouchDownGuideR(null);
+                    break;
+            }
         }
 
 
@@ -252,7 +315,7 @@ namespace KerbalKonstructs.Core
                 KerbalKonstructs.instance.DeleteInstance(child);
             }
 
-            StaticDatabase.allCenters.Remove(dbKey);
+            StaticDatabase.RemoveGroupCenter(this);
             // check later when saving if this file is empty
 
             GameObject.Destroy(gameObject);
