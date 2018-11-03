@@ -51,7 +51,7 @@ namespace KerbalKonstructs.UI
         private bool prevIsOnMap;
         //private const int MAP_LAYER = 10; // found through trial-and-error
         //private const int FLIGHT_LAYER = 15; // Supposedly the layer for UI effects in flight camera.
-        private const int FLIGHT_LAYER = 11; // Supposedly the layer for UI effects in flight camera.
+        private int FLIGHT_LAYER = KerbalKonstructs.vectorLayer; // Supposedly the layer for UI effects in flight camera.
 
         public VectorRenderer()
         {

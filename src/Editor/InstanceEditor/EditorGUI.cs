@@ -85,10 +85,10 @@ namespace KerbalKonstructs.UI
         //internal static String sGroup = "Ungrouped";
         private float increment = 1f;
 
-
-        private VectorRenderer upVR = new VectorRenderer();
-        private VectorRenderer fwdVR = new VectorRenderer();
-        private VectorRenderer rightVR = new VectorRenderer();
+        private bool vectorsNotInitialized = true;
+        private VectorRenderer upVR;
+        private VectorRenderer fwdVR;
+        private VectorRenderer rightVR;
 
         private Vector3d savedPosition;
         private bool savedpos = false;
@@ -947,6 +947,13 @@ namespace KerbalKonstructs.UI
         {
             cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
 
+            if (vectorsNotInitialized)
+            {
+                fwdVR = new VectorRenderer();
+                upVR = new VectorRenderer();
+                rightVR = new VectorRenderer();
+                vectorsNotInitialized = true;
+            }
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
             fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;

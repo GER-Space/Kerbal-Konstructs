@@ -66,8 +66,8 @@ namespace KerbalKonstructs
                 {
                     //ParticleSystem emPsystem  = emTransform.gameObject.AddComponent<ParticleSystem>();
                     //ParticleSystemRenderer emPsystemRenderer = emTransform.gameObject.AddComponent<ParticleSystemRenderer>();
-                    ParticleSystem emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
-                    ParticleSystemRenderer emPsystemRenderer = Instantiate(pSystemRenderer, emTransform.position, emTransform.rotation, emTransform);
+                    ParticleSystem emPsystem = (ParticleSystem)Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
+                    ParticleSystemRenderer emPsystemRenderer = (ParticleSystemRenderer)Instantiate(pSystemRenderer, emTransform.position, emTransform.rotation, emTransform);
 
                     emitters.Add(emPsystem);
                     FloatingOrigin.RegisterParticleSystem(emPsystem);

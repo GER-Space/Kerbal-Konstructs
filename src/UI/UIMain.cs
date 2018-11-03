@@ -60,7 +60,8 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle BoxNoBorderW;
 		public static GUIStyle ButtonKK;
 		public static GUIStyle ButtonRed;
-		public static GUIStyle DeadButtonRed;
+        public static GUIStyle ButtonInactive;
+        public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
         public static GUIStyle DeadButton;
@@ -107,7 +108,17 @@ namespace KerbalKonstructs.UI
 			ButtonKK.normal.background = tNormalButton;
 			ButtonKK.hover.background = tHoverButton;
 
-			Yellowtext = new GUIStyle(GUI.skin.box);
+            ButtonInactive = new GUIStyle(GUI.skin.button);
+            ButtonInactive.padding.left = 0;
+            ButtonInactive.padding.right = 0;
+            ButtonInactive.normal.background = tNormalButton;
+            ButtonInactive.hover.background = tHoverButton;
+            ButtonInactive.normal.textColor = XKCDColors.Grey;
+            ButtonInactive.active.textColor = XKCDColors.Grey;
+            ButtonInactive.focused.textColor = XKCDColors.Grey;
+            ButtonInactive.hover.textColor = XKCDColors.Grey;
+
+            Yellowtext = new GUIStyle(GUI.skin.box);
 			Yellowtext.normal.textColor = Color.yellow;
 			Yellowtext.normal.background = null;
 

@@ -67,34 +67,28 @@ namespace KerbalKonstructs
                     ReplaceShader(renderer, newShader);
                 }
 
+                SetTexture(renderer, _MainTex, "_MainTex");
+                SetTexture(renderer, _ParallaxMap, "_ParallaxMap");
+                SetTexture(renderer, _Emissive, "_Emissive");
+                SetTexture(renderer, _EmissionMap, "_EmissionMap");
+                SetTexture(renderer, _MetallicGlossMap, "_MetallicGlossMap");
+                SetTexture(renderer, _OcclusionMap, "_OcclusionMap");
+                SetTexture(renderer, _SpecGlossMap, "_SpecGlossMap");
+                SetTexture(renderer, _BumpMap, "_BumpMap", true);
             }
-
-            SetTexture(_MainTex, "_MainTex");
-            SetTexture(_ParallaxMap, "_ParallaxMap");
-            SetTexture(_Emissive, "_Emissive");
-            SetTexture(_EmissionMap, "_EmissionMap");
-            SetTexture(_MetallicGlossMap, "_MetallicGlossMap");
-            SetTexture(_OcclusionMap, "_OcclusionMap");
-            SetTexture(_SpecGlossMap, "_SpecGlossMap");
-            SetTexture(_BumpMap, "_BumpMap", true);
         }
 
 
-        private void SetTexture(string texturename, string targetname, bool isNormal = false)
+        private void SetTexture(MeshRenderer renderer, string texturename, string targetname, bool isNormal = false)
         {
             if (!String.IsNullOrEmpty(texturename))
             {
                 Texture2D newTexture = KKGraphics.GetTexture(texturename, isNormal, textureIndex);
                 if (newTexture != null)
                 {
-                    foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
-                    {
-                        if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
-                        {
-                            continue;
-                        }
-                        renderer.material.SetTexture(targetname, newTexture);
-                    }
+
+                    renderer.material.SetTexture(targetname, newTexture);
+
                 }
                 else
                 {

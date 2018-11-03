@@ -16,12 +16,9 @@ namespace KerbalKonstructs.UI
 
         internal static EditorGizmos.GizmoOffset moveGizmo;
 
-        internal static GameObject targetObject; 
-
 
         internal static void SetupCam()
         {
-
             if (!camInitialized)
             {
                 KKCamObject = new GameObject();
@@ -33,11 +30,11 @@ namespace KerbalKonstructs.UI
                     return;
                 }
 
-                Log.UserError("Cam created");
-                KKCam.cullingMask = (1 << 11);
-                KKCam.clearFlags = CameraClearFlags.Depth;
-                KKCam.depth = 100;
+                KKCam.CopyFrom(FlightCamera.fetch.mainCamera);
+                KKCam.cullingMask = (1 << KerbalKonstructs.vectorLayer);
+                KKCam.depth = 1;
                 KKCam.farClipPlane = 250000;
+                KKCam.depthTextureMode = DepthTextureMode.None;
 
                 KKCamObject.transform.position = FlightCamera.fetch.gameObject.transform.position;
                 KKCamObject.transform.rotation = FlightCamera.fetch.gameObject.transform.rotation;
@@ -59,9 +56,7 @@ namespace KerbalKonstructs.UI
                 moveGizmo = null;
             }
 
-            targetObject = target;
-
-            moveGizmo = EditorGizmos.GizmoOffset.Attach(targetObject.transform, sourceRotation, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
+            moveGizmo = EditorGizmos.GizmoOffset.Attach(target.transform, sourceRotation, OnMoveCB, WhenMovedCB, FlightCamera.fetch.mainCamera);
             moveGizmo.SetCoordSystem(Space.Self);
 
             var transforms = moveGizmo.gameObject.GetComponentsInChildren<Transform>(true);
@@ -72,7 +67,7 @@ namespace KerbalKonstructs.UI
                 {
                     continue;
                 }
-                transforms[i].gameObject.layer = 11;
+                transforms[i].gameObject.layer = KerbalKonstructs.vectorLayer;
             }
         }
 
@@ -82,10 +77,7 @@ namespace KerbalKonstructs.UI
             {
                 moveGizmo.Detach();
                 moveGizmo = null;
-                targetObject = null;
             }
         }
-
-
     }
 }
