@@ -10,7 +10,7 @@ namespace KerbalKonstructs.Core
 	{
 		//Groups are stored by name within the body name
 	
-        private static Dictionary<string, Dictionary<string, GroupCenter>> groupsByPlanets = new Dictionary<string, Dictionary<string, GroupCenter>>();
+        internal static Dictionary<string, Dictionary<string, GroupCenter>> centersByPlanet = new Dictionary<string, Dictionary<string, GroupCenter>>();
 
         private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
         internal static List<StaticModel> allStaticModels = new List<StaticModel>();
@@ -37,7 +37,7 @@ namespace KerbalKonstructs.Core
             allStaticModels = new List<StaticModel>();
             _allStaticInstances = new List<StaticInstance>();
             allStaticInstances = new StaticInstance[0];
-            groupsByPlanets = new Dictionary<string, Dictionary<string, GroupCenter>>();
+            centersByPlanet = new Dictionary<string, Dictionary<string, GroupCenter>>();
         }
 
         /// <summary>
@@ -166,18 +166,18 @@ namespace KerbalKonstructs.Core
             {
                 allCenters.Add(center.dbKey, center);
             }
-            if (!groupsByPlanets.ContainsKey(center.CelestialBody.name))
+            if (!centersByPlanet.ContainsKey(center.CelestialBody.name))
             {
-                groupsByPlanets.Add(center.CelestialBody.name, new Dictionary<string, GroupCenter>());
+                centersByPlanet.Add(center.CelestialBody.name, new Dictionary<string, GroupCenter>());
             }
-            groupsByPlanets[center.CelestialBody.name].Add(center.dbKey, center);
+            centersByPlanet[center.CelestialBody.name].Add(center.dbKey, center);
         }
 
         internal static void RemoveGroupCenter(GroupCenter center)
         {
-            if (groupsByPlanets.ContainsKey(center.CelestialBody.name))
+            if (centersByPlanet.ContainsKey(center.CelestialBody.name))
             {
-                groupsByPlanets[center.CelestialBody.name].Remove(center.dbKey);
+                centersByPlanet[center.CelestialBody.name].Remove(center.dbKey);
             }
             if (HasGroupCenter(center.dbKey))
             {
@@ -203,6 +203,18 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal static GroupCenter[] GetGroupsForPlanet(string bodyName)
+        {
+            if (centersByPlanet.ContainsKey(bodyName))
+            {
+                return centersByPlanet[bodyName].Values.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         internal static GroupCenter[] allGroupCenters
         {
             get
@@ -212,13 +224,15 @@ namespace KerbalKonstructs.Core
         }
 
 
+
+
         internal static void DeactivateAllOnPlanet(CelestialBody body)
 		{
-            if (body == null || !groupsByPlanets.ContainsKey(body.name))
+            if (body == null || !centersByPlanet.ContainsKey(body.name))
             {
                 return;
             }
-            foreach (GroupCenter center in groupsByPlanets[body.name].Values)
+            foreach (GroupCenter center in centersByPlanet[body.name].Values)
             {
                 center.SetInstancesEnabled(false);
             }
@@ -282,9 +296,9 @@ namespace KerbalKonstructs.Core
                 vPlayerPos = playerPos;
             }
 
-            if (groupsByPlanets.ContainsKey(lastActiveBody.name))
+            if (centersByPlanet.ContainsKey(lastActiveBody.name))
             {
-                foreach (GroupCenter center in groupsByPlanets[lastActiveBody.name].Values)
+                foreach (GroupCenter center in centersByPlanet[lastActiveBody.name].Values)
                 {
                     //Log.Normal("Checking Group: " + group.name  ); 
                     isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);

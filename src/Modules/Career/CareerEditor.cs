@@ -562,6 +562,7 @@ namespace KerbalKonstructs.Modules
             startPosition = selectedInstance.gameObject.transform.position;
 
             instance.Update();
+            instance.isInSavegame = true;
 
             instance.HighlightObject(XKCDColors.FreshGreen);
 

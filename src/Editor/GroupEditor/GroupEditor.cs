@@ -149,7 +149,7 @@ namespace KerbalKonstructs.UI
 
             }
 
-            toolRect = GUI.Window(0xB00B1E3, toolRect, GroupEditorWindow, "", UIMain.KKWindow);
+            toolRect = GUI.Window(0xB07B1E3, toolRect, GroupEditorWindow, "", UIMain.KKWindow);
 
         }
 
