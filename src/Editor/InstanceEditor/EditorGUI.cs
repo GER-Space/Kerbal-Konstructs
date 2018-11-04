@@ -999,9 +999,12 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void CloseVectors()
         {
-            fwdVR.SetShow(false);
-            upVR.SetShow(false);
-            rightVR.SetShow(false);
+            if (!vectorsNotInitialized)
+            {
+                fwdVR.SetShow(false);
+                upVR.SetShow(false);
+                rightVR.SetShow(false);
+            }
         }
 
         private void SetupGizmo()

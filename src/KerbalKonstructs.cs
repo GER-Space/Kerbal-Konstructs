@@ -307,8 +307,8 @@ namespace KerbalKonstructs
             }
             CancelInvoke("updateCache");
 
-            FlightCamera.fetch.cameras[0].farClipPlane = 400f;
-            FlightCamera.fetch.cameras[1].nearClipPlane = 397f;
+            //FlightCamera.fetch.cameras[0].farClipPlane = 400f;
+            //FlightCamera.fetch.cameras[1].nearClipPlane = 397f;
 
             switch (data)
             {
@@ -407,10 +407,9 @@ namespace KerbalKonstructs
                         //updateCache();
                         if (scCamWasAltered || focusLastLaunchSite)
                         {
+                            //FlightCamera.fetch.cameras[0].farClipPlane = 9f;
+                            //FlightCamera.fetch.cameras[1].nearClipPlane = 10f;
                             CameraController.SetSpaceCenterCam(currentSite);
-
-                            FlightCamera.fetch.cameras[0].farClipPlane = 9.99f;
-                            FlightCamera.fetch.cameras[1].nearClipPlane = 10f;
                         }
                         updateCache();
                         Log.PerfStop("SC Scene");

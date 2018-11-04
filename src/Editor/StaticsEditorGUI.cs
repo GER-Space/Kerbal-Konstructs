@@ -856,7 +856,7 @@ namespace KerbalKonstructs.UI
                     EditorGUI.selectedInstance = null;
 
                     GroupCenter groupCenter = new GroupCenter();
-                    groupCenter.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
+                    groupCenter.RadialPosition = FlightGlobals.currentMainBody.transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
                     groupCenter.Group = "NewGroup";
                     groupCenter.CelestialBody = FlightGlobals.currentMainBody;
                     groupCenter.Spawn();
