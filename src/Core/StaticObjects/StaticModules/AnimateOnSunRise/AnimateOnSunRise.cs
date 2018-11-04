@@ -130,12 +130,12 @@ namespace KerbalKonstructs
 		{
 			// run after the editor has closed
 
-			SetGroup ();
+			SetGroup();
 
 			if (isMaster)
             {
-				boundsCenter = GetBoundsCenter ();
-				horizonAngle = GetHorizonAngle ();
+				boundsCenter = GetBoundsCenter();
+				horizonAngle = GetHorizonAngle();
 				centerToStatic = FlightGlobals.getUpAxis (FlightGlobals.currentMainBody, boundsCenter);
 			}
 		}
@@ -206,40 +206,31 @@ namespace KerbalKonstructs
 		{
 			slaveList = new List<AnimateOnSunRise> ();
 
-			if (staticInstance.Group == "Ungrouped")
-            {
-				master = this;
-				isMaster = true;
-				return;
-			}
+			bool masterFound = false;
 
-			bool findMaster = false;
-
-			foreach (StaticInstance sInstance in StaticDatabase.GetAllStatics ())
+			foreach (StaticInstance sInstance in staticInstance.groupCenter.childInstances)
             {
-				if (sInstance != staticInstance)
+                if (sInstance == staticInstance)
                 {
-					if (sInstance.Group == staticInstance.Group)
+                    continue;
+                }
+                foreach (var module in sInstance.gameObject.GetComponentsInChildren<AnimateOnSunRise>())
+                {
+                    if (module.isMaster)
                     {
-                        foreach (var module in sInstance.gameObject.GetComponentsInChildren<AnimateOnSunRise>())
-                        {
-                            if (module.isMaster)
-                            {
-                                master = module;
-                                findMaster = true;
-                                isMaster = false;
-                                break;
-                            }
-                            else
-                            {
-                                slaveList.Add(module);
-                            }
-                        }
-					}
-				}
-			}
+                        master = module;
+                        masterFound = true;
+                        isMaster = false;
+                        break;
+                    }
+                    else
+                    {
+                        slaveList.Add(module);
+                    }
+                }
+            }
 
-			if (!findMaster)
+            if (!masterFound)
             {
 				master = this;
 				isMaster = true;
@@ -249,10 +240,20 @@ namespace KerbalKonstructs
 		private Vector3 GetBoundsCenter ()
 		{
 			Bounds groupBounds = new Bounds ();
-			foreach (AnimateOnSunRise module in slaveList)
+			foreach (AnimateOnSunRise slaveModule in slaveList)
             {
+                //Log.Normal("Proceccing Slave: " + slaveModule.staticInstance.gameObject.name);
+                //Log.Trace();
+                try
+                {
+                    groupBounds.Encapsulate(GetBounds(slaveModule.gameObject));
+                } 
+                catch
+                {
+                    Log.Normal("GetBoulds Failed on: " + slaveModule.staticInstance.gameObject.name) ;
+                    Log.Normal("Master Was: " + master.staticInstance.gameObject.name);
+                }
 				
-				groupBounds.Encapsulate (GetBounds (module.gameObject));
 			}
 			groupBounds.Encapsulate (GetBounds (gameObject));
 			groupBounds.Expand (1f);
@@ -262,12 +263,12 @@ namespace KerbalKonstructs
 
 		private Bounds GetBounds (GameObject staticObject)
 		{
-			Bounds meshBounds = staticObject.GetComponentInChildren<MeshFilter> ().mesh.bounds;
+			Bounds meshBounds = staticObject.GetComponentInChildren<MeshFilter>(true).mesh.bounds;
 			Bounds colliderBounds = new Bounds ();
 
-			if (staticObject.GetComponentInChildren<Collider> () != null)
+			if (staticObject.GetComponentInChildren<Collider>(true) != null)
             {
-				colliderBounds = staticObject.GetComponentInChildren<Collider> ().bounds;
+				colliderBounds = staticObject.GetComponentInChildren<Collider>(true).bounds;
 			}
 
 			if (meshBounds.size.y > colliderBounds.size.y)

@@ -28,7 +28,7 @@ namespace KerbalKonstructs
         internal static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
         #region Holders
-        internal StaticInstance selectedObject;
+        internal StaticInstance selectedObject = null;
         internal StaticModel selectedModel;
         internal static CameraController camControl = new CameraController();
         private CelestialBody currentBody;
@@ -44,6 +44,8 @@ namespace KerbalKonstructs
 
         internal static float localGroupRange = 25000f;
         internal static bool convertLegacyConfigs = false;
+
+        internal static int vectorLayer = 11;
 
         #endregion
 
@@ -305,6 +307,9 @@ namespace KerbalKonstructs
             }
             CancelInvoke("updateCache");
 
+            FlightCamera.fetch.cameras[0].farClipPlane = 400f;
+            FlightCamera.fetch.cameras[1].nearClipPlane = 397f;
+
             switch (data)
             {
                 case GameScenes.FLIGHT:
@@ -320,7 +325,7 @@ namespace KerbalKonstructs
                         {
                             //StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
                             currentBody = FlightGlobals.ActiveVessel.mainBody;
-                            StaticDatabase.OnBodyChanged(FlightGlobals.ActiveVessel.mainBody);
+                            StaticDatabase.OnBodyChanged(FlightGlobals.currentMainBody);
                             updateCache();
                             Hangar.DoHangaredCraftCheck();
                         }
@@ -367,7 +372,7 @@ namespace KerbalKonstructs
                     }
                     break;
                 case GameScenes.SPACECENTER:
-                    {
+                    {                        
                         Log.PerfStart("SC Scene");
                         if (convertLegacyConfigs)
                         {
@@ -403,6 +408,9 @@ namespace KerbalKonstructs
                         if (scCamWasAltered || focusLastLaunchSite)
                         {
                             CameraController.SetSpaceCenterCam(currentSite);
+
+                            FlightCamera.fetch.cameras[0].farClipPlane = 9.99f;
+                            FlightCamera.fetch.cameras[1].nearClipPlane = 10f;
                         }
                         updateCache();
                         Log.PerfStop("SC Scene");
@@ -437,6 +445,10 @@ namespace KerbalKonstructs
 
         public void OnSelectorLoaded(GameEvents.VesselSpawnInfo info)
         {
+            if (!HighLogic.CurrentGame.Parameters.Difficulty.AllowOtherLaunchSites)
+            {
+                return;
+            }
             Log.Normal("Reseting LaunchSite Lists on Selector spawn");
             IEnumerator coroutine = WaitAndReset(info);
             StartCoroutine(coroutine);
@@ -445,7 +457,7 @@ namespace KerbalKonstructs
 
         public IEnumerator WaitAndReset(GameEvents.VesselSpawnInfo info)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
             //LaunchSiteManager.ResetLaunchSites();
             LaunchSiteManager.RegisterMHLaunchSites(info.callingFacility.facilityType);
 
@@ -463,7 +475,7 @@ namespace KerbalKonstructs
         public void OnEditorRestart()
         {
             Log.Normal("On Editor Restart");
-            LaunchSiteManager.AlterMHSelector();
+            LaunchSiteManager.AlterMHSelector(false);
         }
 
         //public void OnGameSceneLoadRequested(GameScenes scene)
@@ -859,6 +871,13 @@ namespace KerbalKonstructs
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
                 //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
 
+                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
+
+                if (model.prefab == null)
+                {
+                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    continue;
+                }
 
                 foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
                 {
@@ -878,20 +897,45 @@ namespace KerbalKonstructs
                                 break;
                         }
                     }
+                   
+                    // check for unused AdvTexture Modules
+                    if (module.moduleClassname == "AdvancedTextures")
+                    {
+                        bool transformFound = false;
+                        string transforms = "";
+                        string[] seperators = new string[] { " ", ",", ";" };
+                        List<string> targetTransforms = new List<string> { "Any" };
+
+                        if (module.moduleFields.ContainsKey("transforms"))
+                        {
+                            transforms = module.moduleFields["transforms"];
+                            targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+                            foreach (MeshRenderer renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                            {
+                                if (!transforms.Equals("Any", StringComparison.CurrentCultureIgnoreCase) && !targetTransforms.Contains(renderer.transform.name))
+                                {
+                                    continue;
+                                }
+                                transformFound = true;
+                            }
+                        }
+                        else
+                        {
+                            transformFound = true;
+                        }
+                        if (!transformFound)
+                        {
+                            //Log.Normal("Adv Texture Preload: transforms not found: " + transforms + " on model: " + model.name);
+                            continue;
+                        }
+                    }
                     if (model.modules == null)
                     {
                         model.modules = new List<StaticModule>();
                     }
-
                     model.modules.Add(module);
                 }
-                model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
 
-                if (model.prefab == null)
-                {
-                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
-                    continue;
-                }
                 if (model.keepConvex != true)
                 {
                     foreach (MeshCollider collider in model.prefab.GetComponentsInChildren<MeshCollider>(true))
@@ -1143,7 +1187,7 @@ namespace KerbalKonstructs
             }
             deletedGroups.Clear();
 
-            foreach (GroupCenter center in StaticDatabase.allCenters.Values)
+            foreach (GroupCenter center in StaticDatabase.allGroupCenters)
             {
                 center.Save();
             }
@@ -1159,85 +1203,85 @@ namespace KerbalKonstructs
         }
 
 
-        public void exportMasters()
-        {
-            string sBase = "";
-            string activeBodyName = "";
+        //public void exportMasters()
+        //{
+        //    string sBase = "";
+        //    string activeBodyName = "";
 
-            Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
+        //    Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
 
-            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
-            {
-                String bodyName = instance.CelestialBody.bodyName;
-                String groupName = instance.Group;
+        //    foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+        //    {
+        //        String bodyName = instance.CelestialBody.bodyName;
+        //        String groupName = instance.Group;
 
-                if (!groupList.ContainsKey(bodyName))
-                {
-                    groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
-                    Debug.Log("Added " + bodyName);
-                }
+        //        if (!groupList.ContainsKey(bodyName))
+        //        {
+        //            groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
+        //            Debug.Log("Added " + bodyName);
+        //        }
 
-                if (!groupList[bodyName].ContainsKey(groupName))
-                {
-                    StaticGroup group = new StaticGroup(groupName, bodyName);
-                    groupList[bodyName].Add(groupName, group);
-                    Debug.Log("Added " + groupName);
-                }
-            }
+        //        if (!groupList[bodyName].ContainsKey(groupName))
+        //        {
+        //            StaticGroup group = new StaticGroup(groupName, bodyName);
+        //            groupList[bodyName].Add(groupName, group);
+        //            Debug.Log("Added " + groupName);
+        //        }
+        //    }
 
-            foreach (CelestialBody cBody in FlightGlobals.Bodies)
-            {
-                activeBodyName = cBody.name;
-                Debug.Log("activeBodyName is " + cBody.name);
+        //    foreach (CelestialBody cBody in FlightGlobals.Bodies)
+        //    {
+        //        activeBodyName = cBody.name;
+        //        Debug.Log("activeBodyName is " + cBody.name);
 
-                if (!groupList.ContainsKey(activeBodyName))
-                    continue;
+        //        if (!groupList.ContainsKey(activeBodyName))
+        //            continue;
 
-                foreach (StaticGroup group in groupList[activeBodyName].Values)
-                {
-                    sBase = group.name;
-                    Debug.Log("sBase is " + sBase);
+        //        foreach (StaticGroup group in groupList[activeBodyName].Values)
+        //        {
+        //            sBase = group.name;
+        //            Debug.Log("sBase is " + sBase);
 
-                    foreach (StaticModel model in StaticDatabase.allStaticModels)
-                    {
-                        ConfigNode staticNode = new ConfigNode("STATIC");
-                        ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
+        //            foreach (StaticModel model in StaticDatabase.allStaticModels)
+        //            {
+        //                ConfigNode staticNode = new ConfigNode("STATIC");
+        //                ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
 
-                        //Debug.Log("Model is " + model.getSetting("name"));
+        //                //Debug.Log("Model is " + model.getSetting("name"));
 
-                        modelConfig.RemoveNodes("Instances");
-                        bool bNoInstances = true;
+        //                modelConfig.RemoveNodes("Instances");
+        //                bool bNoInstances = true;
 
-                        foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
-                        {
-                            string sObjGroup = obj.Group;
-                            if (sObjGroup != sBase)
-                                continue;
+        //                foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
+        //                {
+        //                    string sObjGroup = obj.Group;
+        //                    if (sObjGroup != sBase)
+        //                        continue;
 
-                            ConfigNode inst = new ConfigNode("Instances");
+        //                    ConfigNode inst = new ConfigNode("Instances");
 
-                            ConfigParser.WriteInstanceConfig(obj, inst);
-                            modelConfig.nodes.Add(inst);
-                            bNoInstances = false;
-                        }
+        //                    ConfigParser.WriteInstanceConfig(obj, inst);
+        //                    modelConfig.nodes.Add(inst);
+        //                    bNoInstances = false;
+        //                }
 
-                        if (bNoInstances)
-                            continue;
+        //                if (bNoInstances)
+        //                    continue;
 
-                        string sModelName = modelConfig.GetValue("name");
-                        modelConfig.AddValue("pointername", sModelName);
+        //                string sModelName = modelConfig.GetValue("name");
+        //                modelConfig.AddValue("pointername", sModelName);
 
-                        modelConfig.RemoveValue("name");
-                        modelConfig.AddValue("name", "Master" + "_" + sBase + "_" + sModelName);
+        //                modelConfig.RemoveValue("name");
+        //                modelConfig.AddValue("name", "Master" + "_" + sBase + "_" + sModelName);
 
-                        staticNode.AddNode(modelConfig);
+        //                staticNode.AddNode(modelConfig);
 
-                        Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/");
-                        staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/" + sModelName + ".cfg", "Exported master instances by Kerbal Konstructs");
-                    }
-                }
-            }
-        }
+        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/");
+        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/" + sModelName + ".cfg", "Exported master instances by Kerbal Konstructs");
+        //            }
+        //        }
+        //    }
+        //}
 
         public void DeleteInstance(StaticInstance obj)
         {

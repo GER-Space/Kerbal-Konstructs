@@ -68,12 +68,12 @@ namespace BWStatics
         private void setTextures() {
 
             heading = GetHeading ();
-            Debug.Log ("AutoKourseModule: heading = " + heading);
+           // Log.Normal ("AutoKourseModule: heading = " + heading + " " + staticInstance.gameObject.name);
 
 			dg0 = heading / 10 % 10;
 			dg1 = heading / 100 % 10;
 
-			Debug.Log ("AutoKourseModule: setting course " + dg1 + dg0);
+            //Log.Normal ("AutoKourseModule: setting course " + dg1 + dg0);
 			dg0renderer.material.SetTextureOffset("_MainTex",  new Vector2(dg0 * 0.1f,0));
 			dg1renderer.material.SetTextureOffset("_MainTex",  new Vector2(dg1 * 0.1f,0));
 		}

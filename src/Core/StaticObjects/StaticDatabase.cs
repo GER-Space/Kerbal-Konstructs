@@ -9,10 +9,10 @@ namespace KerbalKonstructs.Core
 	public static class StaticDatabase
 	{
 		//Groups are stored by name within the body name
-		private static Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string,Dictionary<string,StaticGroup>>();
+	
+        private static Dictionary<string, Dictionary<string, GroupCenter>> groupsByPlanets = new Dictionary<string, Dictionary<string, GroupCenter>>();
 
         private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
-
         internal static List<StaticModel> allStaticModels = new List<StaticModel>();
 
         //make the list private, so nobody does easily add or remove from it. the array is updated in the Add and Remove functions
@@ -23,20 +23,21 @@ namespace KerbalKonstructs.Core
 
         internal static Dictionary<string, StaticInstance> instancedByUUID = new Dictionary<string, StaticInstance>();
 
-        internal static Dictionary<string, GroupCenter> allCenters = new Dictionary<string, GroupCenter>();
+        private static Dictionary<string, GroupCenter> allCenters = new Dictionary<string, GroupCenter>();
 
-        internal static string activeBodyName = "";
+        internal static CelestialBody lastActiveBody = null;
 
         private static Vector3 vPlayerPos = Vector3.zero;
 
 
         internal static void Reset()
         {
-            groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
+
             modelList = new Dictionary<string, StaticModel>();
             allStaticModels = new List<StaticModel>();
             _allStaticInstances = new List<StaticInstance>();
             allStaticInstances = new StaticInstance[0];
+            groupsByPlanets = new Dictionary<string, Dictionary<string, GroupCenter>>();
         }
 
         /// <summary>
@@ -60,25 +61,9 @@ namespace KerbalKonstructs.Core
             }
             instancedByUUID.Add(instance.UUID, instance);
 
-            String bodyName = instance.CelestialBody.bodyName;
-			String groupName = instance.Group;
-
-			if (!groupList.ContainsKey(bodyName))
-            {
-                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
-            }
-
-            if (!groupList[bodyName].ContainsKey(groupName))
-			{
-				StaticGroup group = new StaticGroup(groupName, bodyName);			
-				groupList[bodyName].Add(groupName, group);
-			}
-			groupList[bodyName][groupName].AddStatic(instance);
-
-            SetNewName(instance);
-
             instance.groupCenter.AddInstance(instance);
 
+            SetNewName(instance);
         }
 
         /// <summary>
@@ -116,19 +101,7 @@ namespace KerbalKonstructs.Core
             }
 
             instance.groupCenter.RemoveInstance(instance);
-
-            String bodyName = instance.CelestialBody.bodyName;
-            String groupName = instance.Group;
-
-            if (groupList.ContainsKey(bodyName))
-            {
-                if (groupList[bodyName].ContainsKey(groupName))
-                {
-                    Log.Normal("StaticDatabase deleteObject");
-                    groupList[bodyName][groupName].DeleteObject(instance);
-                }
-            }
-            instance.gameObject.DestroyGameObject();
+            GameObject.Destroy(instance.gameObject);
         }
 
         /// <summary>
@@ -138,48 +111,16 @@ namespace KerbalKonstructs.Core
         /// <param name="newGroup"></param>
         internal static void ChangeGroup(StaticInstance instance, GroupCenter newGroup)
         {
-            String bodyName = instance.CelestialBody.bodyName;
-            String groupName = instance.Group;
-
-
             instance.groupCenter.RemoveInstance(instance);
 
-            if (groupList.ContainsKey(bodyName))
-            {
-                if (groupList[bodyName].ContainsKey(groupName))
-                {
-                    Log.Normal("StaticDatabase deleteObject");
-                    groupList[bodyName][groupName].RemoveStatic(instance);
-                }
-            }
-
-
-
-            instance.Group = newGroup.Group;
             instance.groupCenter = newGroup;
+            instance.Group = newGroup.Group;
 
-
-            bodyName = instance.CelestialBody.bodyName;
-            groupName = instance.Group;
-
-            if (!groupList.ContainsKey(bodyName))
-            {
-                groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
-            }
-
-            if (!groupList[bodyName].ContainsKey(groupName))
-            {
-                StaticGroup group = new StaticGroup(groupName, bodyName);
-                groupList[bodyName].Add(groupName, group);
-            }
-            groupList[bodyName][groupName].AddStatic(instance);
+            instance.gameObject.transform.parent = newGroup.gameObject.transform;            
 
             SetNewName(instance);
-
-            instance.groupCenter.AddInstance(instance);
-
-            instance.gameObject.transform.parent = instance.groupCenter.gameObject.transform;
-
+            newGroup.AddInstance(instance);            
+            instance.Update();
         }
 
 
@@ -192,7 +133,7 @@ namespace KerbalKonstructs.Core
             string modelName = instance.model.name;
             string groupName = instance.Group; 
 
-            int modelCount = (from obj in groupList[instance.CelestialBody.name][groupName].GetStatics() where obj.model.name == instance.model.name select obj).Count();
+            int modelCount = (from obj in instance.groupCenter.childInstances where obj.model.name == instance.model.name select obj).Count();
             if (modelCount == 0)
             {
                 Log.Warning("Shock and Horror! We cannot find at least ourself in our own group");
@@ -213,114 +154,97 @@ namespace KerbalKonstructs.Core
 		{
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
-            foreach (var groupList in groupList.Values)
+            foreach (GroupCenter center in allCenters.Values)
             {
-                foreach (StaticGroup group in groupList.Values)
-                {
-                    if (activate)
-                    {
-                        group.ActivateGroupMembers();
-                    }
-                    else
-                    {
-                        group.DeactivateGroupMembers();
-                    }
-                }
+                center.SetInstancesEnabled(activate);
             }
 		}
 
-  //      /// <summary>
-  //      /// toggles the visiblility of all statics on a planet
-  //      /// </summary>
-  //      /// <param name="cBody"></param>
-  //      /// <param name="bActive"></param>
-  //      /// <param name="bOpposite"></param>
-  //      internal static void ToggleActiveStaticsOnPlanet(CelestialBody cBody, bool bActive = true, bool bOpposite = false)
-		//{
-  //          Log.Debug("StaticDatabase.ToggleActiveStaticsOnPlanet " + cBody.bodyName);
+        internal static void AddGroupCenter(GroupCenter center)
+        {
+            if (!HasGroupCenter(center.dbKey))
+            {
+                allCenters.Add(center.dbKey, center);
+            }
+            if (!groupsByPlanets.ContainsKey(center.CelestialBody.name))
+            {
+                groupsByPlanets.Add(center.CelestialBody.name, new Dictionary<string, GroupCenter>());
+            }
+            groupsByPlanets[center.CelestialBody.name].Add(center.dbKey, center);
+        }
 
-		//	foreach (StaticInstance instance in allStaticInstances)
-		//	{
-  //              if (instance.CelestialBody == cBody)
-  //              {
-  //                  InstanceUtil.SetActiveRecursively(instance, bActive);
-  //              }
-  //              else
-  //              {
-  //                  if (bOpposite)
-  //                  {
-  //                      InstanceUtil.SetActiveRecursively(instance, !bActive);
-  //                  }
-  //              }
-  //          }
-		//}
+        internal static void RemoveGroupCenter(GroupCenter center)
+        {
+            if (groupsByPlanets.ContainsKey(center.CelestialBody.name))
+            {
+                groupsByPlanets[center.CelestialBody.name].Remove(center.dbKey);
+            }
+            if (HasGroupCenter(center.dbKey))
+            {
+                allCenters.Remove(center.dbKey);
+            }
+        }
 
-  //      /// <summary>
-  //      /// toggles the visiblility of all statics in a group
-  //      /// </summary>
-  //      /// <param name="sGroup"></param>
-  //      /// <param name="bActive"></param>
-  //      /// <param name="bOpposite"></param>
-  //      internal static void ToggleActiveStaticsInGroup(string sGroup, bool bActive = true, bool bOpposite = false)
-		//{
-  //          Log.Debug("StaticDatabase.ToggleActiveStaticsInGroup");
+        internal static bool HasGroupCenter(string centerKey)
+        {
+            return (allCenters.ContainsKey(centerKey));
+        }
 
-		//	foreach (StaticInstance instance in allStaticInstances)
-		//	{
-		//		if (instance.Group == sGroup)
-		//			InstanceUtil.SetActiveRecursively(instance, bActive);
-		//		else
-		//			if (bOpposite)
-		//				InstanceUtil.SetActiveRecursively(instance, !bActive);
-		//	}
-		//}
 
-        /// <summary>
-        /// Disables all Statics on the current active planet
-        /// </summary>
-        internal static void DeactivateAllOnPlanet()
+        internal static GroupCenter GetGroupCenter(string centerKey)
+        {
+            if (HasGroupCenter(centerKey))
+            {
+                return allCenters[centerKey];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        internal static GroupCenter[] allGroupCenters
+        {
+            get
+            {
+                return allCenters.Values.ToArray();
+            }
+        }
+
+
+        internal static void DeactivateAllOnPlanet(CelestialBody body)
 		{
-			if (activeBodyName == "")
-			{
-                Log.UserWarning("StaticDatabase.cacheAll() skipped. No activeBodyName.");
-				
-				return;
-			}
-
-			if (groupList.ContainsKey(activeBodyName))
-			{
-				foreach (StaticGroup group in groupList[activeBodyName].Values)
-				{
-                    Log.Debug("StaticDatabase.cacheAll(): cacheAll() " + group.name);
-
-                    if (group.isActive)
-                    {
-                        group.Deactivate();
-                    }
-				}
-			}
-		}
+            if (body == null || !groupsByPlanets.ContainsKey(body.name))
+            {
+                return;
+            }
+            foreach (GroupCenter center in groupsByPlanets[body.name].Values)
+            {
+                center.SetInstancesEnabled(false);
+            }
+        }
 
 
 
         /// <summary>
         /// Handles on what to do when a body changes
         /// </summary>
-        /// <param name="body"></param>
-        internal static void OnBodyChanged(CelestialBody body)
+        /// <param name="newBody"></param>
+        internal static void OnBodyChanged(CelestialBody newBody)
 		{
-            DeactivateAllOnPlanet();
-            if (body != null)
+            if (newBody != null)
 			{
-                if (body.bodyName != activeBodyName)
+                if (newBody != lastActiveBody)
 				{
-					activeBodyName = body.name;
+                    DeactivateAllOnPlanet(lastActiveBody);
+                    lastActiveBody = newBody;
 				}
 			}
 			else
 			{
-                Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + activeBodyName);
-				activeBodyName = "";
+                Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + lastActiveBody.name);
+                DeactivateAllOnPlanet(lastActiveBody);
+                lastActiveBody = null;
 			}
 		}
 
@@ -328,6 +252,10 @@ namespace KerbalKonstructs.Core
 
         internal static void UpdateCache(Vector3 playerPos)
         {
+
+            float maxDistance = (float)(PhysicsGlobals.Instance.VesselRangesDefault.flying.load + (KerbalKonstructs.localGroupRange * 1.5));
+            bool isInRange = false;
+
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
             if (playerPos == Vector3.zero)
             {
@@ -354,29 +282,16 @@ namespace KerbalKonstructs.Core
                 vPlayerPos = playerPos;
             }
 
-            if (groupList.ContainsKey(activeBodyName))
+            if (groupsByPlanets.ContainsKey(lastActiveBody.name))
             {
-                foreach (StaticGroup group in groupList[activeBodyName].Values)
+                foreach (GroupCenter center in groupsByPlanets[lastActiveBody.name].Values)
                 {
                     //Log.Normal("Checking Group: " + group.name  ); 
-                    var dist = Vector3.Distance(group.groupCenter.gameObject.transform.position, vPlayerPos);
-                    bool isClose = (dist < group.visibilityRange);
+                    isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
                     // Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
-
-                    if (group.isActive == false && isClose == true)
-                    {
-                        group.ActivateGroupMembers();
-                    }
-
-                    if (group.isActive == true && isClose == false)
-                    {
-                        group.DeactivateGroupMembers();
-                    }
-
-
+                    center.SetInstancesEnabled(isInRange);
                 }
             }
-
         }
 
         public static StaticInstance[] GetAllStatics()

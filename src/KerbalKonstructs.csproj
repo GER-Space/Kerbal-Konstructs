@@ -102,7 +102,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\GrasColor\GrasColor.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\SunEvent\AnimateOnSunRise.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
@@ -174,7 +174,6 @@
     <Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
     <Compile Include="Core\StaticObjects\StaticInstance.cs" />
     <Compile Include="Core\StaticObjects\StaticDatabase.cs" />
-    <Compile Include="Core\StaticGroup\StaticGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
     <Compile Include="Modules\MapIcons\MapIconManager.cs" />

@@ -142,7 +142,7 @@ namespace KerbalKonstructs.UI
         private void SetGroupList()
         {
             centers2Display.Clear();
-            foreach (GroupCenter center in StaticDatabase.allCenters.Values)
+            foreach (GroupCenter center in StaticDatabase.allGroupCenters)
             {
                 if (showOnlyLocal)
                 {

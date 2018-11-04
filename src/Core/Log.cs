@@ -21,7 +21,7 @@ namespace KerbalKonstructs.Core
         internal static void Debug(string message)
         {
             if (KerbalKonstructs.instance.DebugMode)
-                UnityEngine.Debug.Log("KK: " + message);
+                UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserWarning(string message)
         {
-            UnityEngine.Debug.LogWarning("KK: " + message);
+            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": "+ message);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserError(string message)
         {
-            UnityEngine.Debug.LogError("KK: " + message);
+            UnityEngine.Debug.LogError("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace KerbalKonstructs.Core
         internal static void Normal (string message)
         {
 #if DEBUG
-            UnityEngine.Debug.Log("KK: " + message);
+            UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
 #endif
         }
 
@@ -69,7 +69,7 @@ namespace KerbalKonstructs.Core
         internal static void Warning(string message)
         {
 #if DEBUG
-            UnityEngine.Debug.LogWarning("KK: " + message);
+            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
 #endif
         }
 
@@ -80,7 +80,7 @@ namespace KerbalKonstructs.Core
         internal static void Error(string message)
         {
 #if DEBUG
-            UnityEngine.Debug.LogError("KK: " + message);
+            UnityEngine.Debug.LogError("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
 #endif
         }
 

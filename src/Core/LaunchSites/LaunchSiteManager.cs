@@ -363,8 +363,12 @@ namespace KerbalKonstructs.Core
         }
 
 
-        public static void AlterMHSelector()
+        public static void AlterMHSelector(bool triggerRestart = false)
         {
+            if (!HighLogic.CurrentGame.Parameters.Difficulty.AllowOtherLaunchSites)
+            {
+                return;
+            }
             ResetLaunchSiteFacilityName();
             //Log.Normal("AMH: Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
             //Log.Normal("AMH: Current site: " + currentLaunchSite);
@@ -375,10 +379,29 @@ namespace KerbalKonstructs.Core
                 Log.UserWarning("UILaunchsiteController not found");
                 return;
             }
-            else
+            if (triggerRestart)
             {
-                uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+                GameEvents.onEditorRestart.Fire();
             }
+            //else
+            //{
+            //    var bla = uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic);
+            //    if (bla == null)
+            //    {
+            //        Log.UserError("UILaunchsiteController.resetItems not found");
+            //        return;
+            //    }
+            //    try
+            //    {
+
+            //        bla.Invoke(uILaunchsiteController, null);
+            //    }
+            //    catch
+            //    {
+            //        Log.UserError("ResetItems failed...");
+            //    }
+            //}
+            Log.Normal("continue");
 
             var launchPadItems = (System.Collections.IList)uILaunchsiteController.GetType().GetField("launchPadItems", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(uILaunchsiteController);
             if (launchPadItems == null)

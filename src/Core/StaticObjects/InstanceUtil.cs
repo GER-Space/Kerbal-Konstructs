@@ -139,15 +139,16 @@ namespace KerbalKonstructs.Core
         internal static void SetActiveRecursively(StaticInstance instance, bool active)
         {
             
-            if (instance.isActive != active)
+            //if (instance.isActive != active)
             {
                 instance.isActive = active;
-
-                foreach (StaticModule module in instance.gameObject.GetComponents<StaticModule>())
+                if (active)
                 {
-                    module.StaticObjectUpdate();
+                    foreach (StaticModule module in instance.myStaticModules)
+                    {
+                        module.StaticObjectUpdate();
+                    }
                 }
-
                 instance.gameObject.SetActive(active);
                 
                 var transforms = instance.gameObject.GetComponentsInChildren<Transform>(true);
@@ -155,6 +156,12 @@ namespace KerbalKonstructs.Core
                 {
                     transforms[i].gameObject.SetActive(active);
                 }
+
+                foreach (StaticModule module in instance.myStaticModules)
+                {
+                    module.enabled = active;
+                }
+
             }
         }
 
@@ -186,7 +193,7 @@ namespace KerbalKonstructs.Core
         {
             if (instance.Group == "Ungrouped" ||instance.Group == "Career")
             {
-                if (!StaticDatabase.allCenters.ContainsKey(instance.groupCenterName))
+                if (!StaticDatabase.HasGroupCenter(instance.groupCenterName))
                 {
                     if (instance.RadialPosition.Equals(Vector3.zero))
                     {
@@ -207,7 +214,7 @@ namespace KerbalKonstructs.Core
                     // we have a GroupCenter and a legacy Object we might regroup now
                     if ((instance.RelativePosition.Equals(Vector3.zero)) && (!instance.RadialPosition.Equals(Vector3.zero)))
                     {
-                        Vector3 groupPostion = StaticDatabase.allCenters[instance.groupCenterName].gameObject.transform.position;
+                        Vector3 groupPostion = StaticDatabase.GetGroupCenter(instance.groupCenterName).gameObject.transform.position;
                         Vector3 instancePosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
 
                         if (Vector3.Distance(groupPostion, instancePosition) > KerbalKonstructs.localGroupRange)
@@ -229,7 +236,7 @@ namespace KerbalKonstructs.Core
             }
 
 
-            if (!StaticDatabase.allCenters.ContainsKey(instance.groupCenterName))
+            if (!StaticDatabase.HasGroupCenter(instance.groupCenterName))
             {
                 if (instance.RadialPosition.Equals(Vector3.zero))
                 {

@@ -19,7 +19,6 @@ namespace KerbalKonstructs.UI
 
         internal static void SetupCam()
         {
-
             if (!camInitialized)
             {
                 KKCamObject = new GameObject();
@@ -31,11 +30,11 @@ namespace KerbalKonstructs.UI
                     return;
                 }
 
-                Log.UserError("Cam created");
-                KKCam.cullingMask = (1 << 11);
-                KKCam.clearFlags = CameraClearFlags.Depth;
-                KKCam.depth = 100;
+                KKCam.CopyFrom(FlightCamera.fetch.mainCamera);
+                KKCam.cullingMask = (1 << KerbalKonstructs.vectorLayer);
+                KKCam.depth = 1;
                 KKCam.farClipPlane = 250000;
+                KKCam.depthTextureMode = DepthTextureMode.None;
 
                 KKCamObject.transform.position = FlightCamera.fetch.gameObject.transform.position;
                 KKCamObject.transform.rotation = FlightCamera.fetch.gameObject.transform.rotation;
@@ -49,7 +48,7 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        internal static void SetupMoveGizmo(GameObject target, Quaternion sourceRotation , Callback<Vector3> OnMoveCB, Callback<Vector3> WhenMovedCB)
+        internal static void SetupMoveGizmo(GameObject target, Quaternion sourceRotation, Callback<Vector3> OnMoveCB, Callback<Vector3> WhenMovedCB)
         {
             if (moveGizmo != null)
             {
@@ -68,7 +67,7 @@ namespace KerbalKonstructs.UI
                 {
                     continue;
                 }
-                transforms[i].gameObject.layer = 11;
+                transforms[i].gameObject.layer = KerbalKonstructs.vectorLayer;
             }
         }
 

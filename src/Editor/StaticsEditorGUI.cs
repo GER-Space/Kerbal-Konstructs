@@ -914,7 +914,7 @@ namespace KerbalKonstructs.UI
         internal static void ResetLocalGroupList()
         {
             List<GroupCenter> foundList = new List<GroupCenter>();
-            foreach (var groupCenter in StaticDatabase.allCenters.Values)
+            foreach (var groupCenter in StaticDatabase.allGroupCenters)
             {
                 if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
                 {

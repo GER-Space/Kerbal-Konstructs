@@ -100,10 +100,10 @@ namespace KerbalKonstructs.Core
         {
             float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
             if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
-            {
+            {              
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    Log.Normal("Restting to: " + currentSite.LaunchSiteName);
+                    Log.Normal("Resetting to: " + currentSite.LaunchSiteName);
                     scCam.transform.parent = currentSite.lsGameObject.transform;
                     scCam.transform.position = currentSite.lsGameObject.transform.position;
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
@@ -118,7 +118,7 @@ namespace KerbalKonstructs.Core
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    Log.Normal("Restting to KSC");
+                    Log.Normal("Resetting to KSC");
                     Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
                     scCam.transform.parent = kscRnD.gameObject.transform;
                     scCam.transform.position = kscRnD.gameObject.transform.transform.position;
@@ -130,27 +130,6 @@ namespace KerbalKonstructs.Core
                     KerbalKonstructs.scCamWasAltered = false;
                 }
             }
-
-            //if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad" || currentSite.body.name != ConfigUtil.GetCelestialBody("HomeWorld").name)
-            //{
-            //    foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-            //    {
-            //        currentSite.body.pqsController.GetClampedWorldSurfaceHeight
-            //        cam.altitudeInitial = 45f;
-            //        cam.ResetCamera();
-
-            //    }
-            //}
-            //else
-
-            //float nomHeight = 45f- (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
-            //foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-            //{
-            //    cam.altitudeInitial = 45f - nomHeight;
-            //    // cam.altitudeInitial = 45f - (float)currentSite.body.pqsController.GetSurfaceHeight(currentSite.body.pqsController.GetRelativePosition(currentSite.lsGameObject.transform.position));
-            //    cam.ResetCamera();
-            //    Log.Normal("fixed the Space Center camera.");
-            //}
 
             SetNextMorningPoint(currentSite);
         }
