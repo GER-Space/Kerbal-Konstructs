@@ -85,10 +85,9 @@ namespace KerbalKonstructs.UI
         //internal static String sGroup = "Ungrouped";
         private float increment = 1f;
 
-        private bool vectorsNotInitialized = true;
-        private VectorRenderer upVR;
-        private VectorRenderer fwdVR;
-        private VectorRenderer rightVR;
+        private VectorRenderer upVR = new VectorRenderer();
+        private VectorRenderer fwdVR = new VectorRenderer();
+        private VectorRenderer rightVR = new VectorRenderer();
 
         private Vector3d savedPosition;
         private bool savedpos = false;
@@ -107,6 +106,9 @@ namespace KerbalKonstructs.UI
         private static GroupCenter origCenter;
         private static float origScale;
 
+        private static Vector3 northVector;
+        private static Vector3 eastVector;
+        private static Vector3 forwardVector;
 
         #endregion
 
@@ -522,7 +524,7 @@ namespace KerbalKonstructs.UI
             //
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Heading:");
+                GUILayout.Label("Yaw:");
                 GUILayout.FlexibleSpace();
                 //                    rotStr = GUILayout.TextField(rotStr, 9, GUILayout.Width(fTempWidth));
                 //  GUILayout.Box(Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, selectedInstance.gameObject.transform.up), selectedInstance.gameObject.transform.parent.forward).ToString(),  GUILayout.Width(fTempWidth));
@@ -547,6 +549,16 @@ namespace KerbalKonstructs.UI
                 }
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Heading: ", GUILayout.Height(23));
+                GUILayout.Space(5);
+                GUILayout.Button(instanceHeading.ToString(), UIMain.DeadButton, GUILayout.Height(23));
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
+
 
             GUILayout.Space(1);
             GUILayout.Box(tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
@@ -947,13 +959,6 @@ namespace KerbalKonstructs.UI
         {
             cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
 
-            if (vectorsNotInitialized)
-            {
-                fwdVR = new VectorRenderer();
-                upVR = new VectorRenderer();
-                rightVR = new VectorRenderer();
-                vectorsNotInitialized = true;
-            }
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
             fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
@@ -986,9 +991,11 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void CloseVectors()
         {
+
             fwdVR.SetShow(false);
             upVR.SetShow(false);
             rightVR.SetShow(false);
+
         }
 
         private void SetupGizmo()
@@ -1014,7 +1021,6 @@ namespace KerbalKonstructs.UI
             EditorGizmo.CloseGizmo();
             SetupGizmo();
         }
-
 
         internal void OnMoveCB(Vector3 vector)
         {
@@ -1133,6 +1139,26 @@ namespace KerbalKonstructs.UI
             UpdateGizmo();
         }
 
+        internal double instanceHeading
+        {
+            get
+            {
+                body = selectedInstance.CelestialBody;
+
+                northVector = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
+                eastVector = Vector3.Cross(upVector, northVector).normalized;
+                forwardVector = Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, upVector);
+
+                double heading = Vector3.Angle(forwardVector, northVector);
+
+                if (Vector3.Dot(forwardVector, eastVector) < 0)
+                {
+                    heading = 360 - heading;
+                }
+
+                return Math.Round(heading, 2);
+            }
+        }
         internal void CheckEditorKeys()
         {
             if (selectedInstance != null)

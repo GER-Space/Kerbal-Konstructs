@@ -263,10 +263,10 @@ namespace KerbalKonstructs.Core
         {
             if (configPath == null)
             {
-                configPath = KerbalKonstructs.newInstancePath + "/KK_GroupCenter_" + Group + ".cfg";
-                if (System.IO.File.Exists(configPath))
+                configPath = KerbalKonstructs.newInstancePath + "/KK_GroupCenter_" + dbKey + ".cfg";
+                if (System.IO.File.Exists(KSPUtil.ApplicationRootPath + "GameData/" + configPath))
                 {
-                    configPath = KerbalKonstructs.newInstancePath + "/KK_GroupCenter_" + Group + "_" + Guid.NewGuid() + ".cfg";
+                    configPath = KerbalKonstructs.newInstancePath + "/KK_GroupCenter_" + dbKey + "_" + Guid.NewGuid().ToString() + ".cfg";
                 }
             }
 

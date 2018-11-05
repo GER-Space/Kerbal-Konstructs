@@ -191,51 +191,6 @@ namespace KerbalKonstructs.Core
         /// <param name="instance"></param>
         internal static void CreateGroupCenterIfMissing(StaticInstance instance)
         {
-            if (instance.Group == "Ungrouped" || instance.Group == "Career")
-            {
-                if (!StaticDatabase.HasGroupCenter(instance.groupCenterName))
-                {
-                    if (instance.RadialPosition.Equals(Vector3.zero))
-                    {
-                        Log.UserError("No Group Found and no position found to create a Group: " + instance.configPath);
-                        return;
-                    }
-
-                    Log.Normal("Creating a new Group Center: " + instance.groupCenterName);
-
-                    GroupCenter center = new GroupCenter();
-                    center.Group = instance.Group;
-                    center.RadialPosition = instance.RadialPosition;
-                    center.CelestialBody = instance.CelestialBody;
-                    center.Spawn();
-                }
-                else
-                {
-                    // we have a GroupCenter and a legacy Object we might regroup now
-                    if ((instance.RelativePosition.Equals(Vector3.zero)) && (!instance.RadialPosition.Equals(Vector3.zero)))
-                    {
-                        Vector3 groupPostion = StaticDatabase.GetGroupCenter(instance.groupCenterName).gameObject.transform.position;
-                        Vector3 instancePosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
-
-                        if (Vector3.Distance(groupPostion, instancePosition) > KerbalKonstructs.localGroupRange)
-                        {
-                            Log.Normal("Creating a new local Group on: " + instance.CelestialBody.name + " for " + instance.Group);
-                            {
-                                GroupCenter center = new GroupCenter();
-                                center.Group = Guid.NewGuid().ToString();
-                                center.RadialPosition = instance.RadialPosition;
-                                center.CelestialBody = instance.CelestialBody;
-                                center.Spawn();
-                                instance.Group = center.Group;
-                                Log.Normal("New GroupCenter Created: " + instance.groupCenterName);
-                            }
-                        }
-
-                    }
-                }
-            }
-
-
             if (!StaticDatabase.HasGroupCenter(instance.groupCenterName))
             {
                 if (instance.RadialPosition.Equals(Vector3.zero))
@@ -252,7 +207,107 @@ namespace KerbalKonstructs.Core
                 center.CelestialBody = instance.CelestialBody;
                 center.Spawn();
             }
+            else
+            {
+                // we have a GroupCenter and a legacy Object we might regroup now
+                if ((instance.RelativePosition.Equals(Vector3.zero)) && (!instance.RadialPosition.Equals(Vector3.zero)))
+                {
+                    Vector3 groupPostion = StaticDatabase.GetGroupCenter(instance.groupCenterName).gameObject.transform.position;
+                    Vector3 instancePosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
 
+                    if (Vector3.Distance(groupPostion, instancePosition) > KerbalKonstructs.localGroupRange)
+                    {
+                        // Check if we have a similar named GC somewhere
+                        GroupCenter closestCenter = CheckForClosesCenter(instance);
+                        if (closestCenter != null)
+                        {
+                            instance.Group = closestCenter.Group;
+                        }
+                        else
+                        {
+                            Log.Normal("Creating a new local GroupCenter on: " + instance.CelestialBody.name + " for " + instance.Group);
+
+                            GroupCenter center = new GroupCenter();
+                            // we use index keys for new Group Names
+                            center.Group = instance.Group;
+                            center.RadialPosition = instance.RadialPosition;
+                            center.CelestialBody = instance.CelestialBody;
+                            center.Spawn();
+                            instance.Group = center.Group;
+                            Log.Normal("New GroupCenter Created: " + instance.groupCenterName);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static GroupCenter CheckForClosesCenter(StaticInstance instance)
+        {
+
+            //if (instance.Group == "Career")
+            //{
+            //    return null;
+            //}
+
+            //if (!StaticDatabase.centersByPlanet.ContainsKey(instance.CelestialBody.name))
+            //{
+            //    return null;
+            //}
+
+            //GroupCenter[] localGroups = StaticDatabase.centersByPlanet[instance.CelestialBody.name].Values.ToArray();
+            //if (localGroups.Length == 0)
+            //{
+            //    return null;
+            //}
+
+            //Vector3 myPosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
+            //GroupCenter closest = localGroups[0];
+            //float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
+
+            //foreach (GroupCenter center in localGroups)
+            //{
+            //    if (Vector3.Distance(myPosition, center.gameObject.transform.position) < dist)
+            //    {
+            //        dist = Vector3.Distance(myPosition, center.gameObject.transform.position);
+            //        closest = center;
+            //    }
+            //}
+
+            //return closest;
+
+            GroupCenter closestCenter = null;
+
+            Vector3 groupPostion = StaticDatabase.GetGroupCenter(instance.groupCenterName).gameObject.transform.position;
+            Vector3 instancePosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
+            float distance = Vector3.Distance(groupPostion, instancePosition);
+            float oldDistance = KerbalKonstructs.localGroupRange * 2;
+
+
+            if (distance > KerbalKonstructs.localGroupRange)
+            {
+                // Check if we have a similar named GC somewhere
+                int index = 0;
+                while (StaticDatabase.HasGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString()))
+                {
+                    groupPostion = StaticDatabase.GetGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString()).gameObject.transform.position;
+                    distance = Vector3.Distance(groupPostion, instancePosition);
+
+                    if (distance < KerbalKonstructs.localGroupRange)
+                    {
+                        if (closestCenter == null || distance < oldDistance)
+                        {
+                            oldDistance = distance;
+                            closestCenter = StaticDatabase.GetGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString());
+                        }
+                    }
+                    index++;
+                }
+            }
+            else
+            {
+                closestCenter = StaticDatabase.GetGroupCenter(instance.groupCenterName);
+            }
+            return closestCenter;
         }
     }
 }
