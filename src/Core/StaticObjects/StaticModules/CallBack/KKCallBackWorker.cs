@@ -37,6 +37,11 @@ namespace KerbalKonstructs.Core
 
         internal void OnTriggerEnter(Collider partCollider)
         {
+            if (partCollider == null)
+            {
+                return;
+            }
+
             if (includedParts.ContainsKey(partCollider))
             {
                 onEnterAction.Invoke(includedParts[partCollider]);
@@ -52,6 +57,10 @@ namespace KerbalKonstructs.Core
 
         internal void OnTriggerStay(Collider partCollider)
         {
+            if (partCollider == null)
+            {
+                return;
+            }
             if (includedParts.ContainsKey(partCollider))
             {
                 onStayAction.Invoke(includedParts[partCollider]);
@@ -65,6 +74,10 @@ namespace KerbalKonstructs.Core
 
         internal void OnTriggerExit(Collider partCollider)
         {
+            if (partCollider == null)
+            {
+                return;
+            }
             if (includedParts.ContainsKey(partCollider))
             {
                 onExitAction.Invoke(includedParts[partCollider]);
@@ -85,7 +98,7 @@ namespace KerbalKonstructs.Core
             {
                 if (part.collider == collider)
                 {
-                    Log.Normal("Found part for collider: " + part.name);
+               //     Log.Normal("Found part for collider: " + part.name);
                     return part;
                 }
             }

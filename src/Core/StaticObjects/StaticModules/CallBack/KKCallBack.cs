@@ -30,18 +30,19 @@ namespace KerbalKonstructs
                     return;
                 }
 
-                AddColliderworkers();
+                AddColliderWorkers();
                 isSetup = true;
             }
         }
 
 
-        private void AddColliderworkers()
+        private void AddColliderWorkers()
         {
             foreach (Collider col in gameObject.GetComponentsInChildren<Collider>(true))
             {
                 if (colNames.Contains(col.name))
                 {
+                    //Log.Normal("Adding worker to " + col.name);
                     KKCallBackWorker callBack = col.gameObject.AddComponent<KKCallBackWorker>();
                     allCallBacks.Add(callBack);
                 }

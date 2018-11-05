@@ -28,37 +28,36 @@ namespace KerbalKonstructs
         private Animation exitAnim;
 
         private List<string> colNames = new List<string>();
-        private List<Collider> colliders = new List<Collider>();
 
         private string[] seperators = new string[] { " ", ",", ";" };
 
 
-        private bool isPlaying = false;
-
-        private List<KKCallBackWorker> workers = new List<KKCallBackWorker>();
-
-
         internal void Start()
         {
-
-            enterAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                         where animationList != null
-                         from AnimationState animationState in animationList
-                         where animationState.name == AnimOnEnter
-                         select animationList).FirstOrDefault();
-
-            stayAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                        where animationList != null
-                        from AnimationState animationState in animationList
-                        where animationState.name == AnimOnStay
-                        select animationList).FirstOrDefault();
-
-            exitAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                        where animationList != null
-                        from AnimationState animationState in animationList
-                        where animationState.name == AnimOnExit
-                        select animationList).FirstOrDefault();
-
+            if (!String.IsNullOrEmpty(AnimOnEnter))
+            {
+                enterAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
+                             where animationList != null
+                             from AnimationState animationState in animationList
+                             where animationState.name == AnimOnEnter
+                             select animationList).FirstOrDefault();
+            }
+            if (!String.IsNullOrEmpty(AnimOnStay))
+            {
+                stayAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
+                            where animationList != null
+                            from AnimationState animationState in animationList
+                            where animationState.name == AnimOnStay
+                            select animationList).FirstOrDefault();
+            }
+            if (!String.IsNullOrEmpty(AnimOnExit))
+            {
+                exitAnim = (from animationList in gameObject.GetComponentsInChildren<Animation>()
+                            where animationList != null
+                            from AnimationState animationState in animationList
+                            where animationState.name == AnimOnExit
+                            select animationList).FirstOrDefault();
+            }
 
             colNames = ColliderNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (colNames.Count == 0)
@@ -75,7 +74,6 @@ namespace KerbalKonstructs
         {
 
             //KKCallBack kkCall = gameObject.GetComponentInChildren<KKCallBack>(true);
-            Log.Normal("AniMateOnTrigger: Adding KKCallBack to GameObject");
             KKCallBack kkCall = gameObject.AddComponent<KKCallBack>();
             kkCall.ColliderNames = ColliderNames;
 
@@ -86,10 +84,12 @@ namespace KerbalKonstructs
 
             foreach (KKCallBackWorker worker in gameObject.GetComponentsInChildren<KKCallBackWorker>(true))
             {
-                workers.Add(worker);
                 worker.onEnterAction = PlayOnEnter;
                 worker.onExitAction = PlayOnExit;
-                worker.onStayAction = PlayOnStay;
+                if (stayAnim != null)
+                {
+                    worker.onStayAction = PlayOnStay;
+                }
             }
         }
 
@@ -97,10 +97,16 @@ namespace KerbalKonstructs
         // called by OnTriggerEnter
         internal void PlayOnEnter(Part myPart)
         {
+            if (myPart == null)
+            {
+                return;
+            }
+
             if (myPart != myPart.vessel.rootPart)
             {
                 return;
             }
+
 
             if (!vesselIsInside.ContainsKey(myPart.vessel))
             {
@@ -112,15 +118,16 @@ namespace KerbalKonstructs
                 return;
             }
 
-            if (!isPlaying)
-            {
-                vesselIsInside[myPart.vessel] = true;
-                PlayAnim(enterAnim, AnimOnEnter);
-            }
+            vesselIsInside[myPart.vessel] = true;
+            PlayAnim(enterAnim, AnimOnEnter);
         }
 
         internal void PlayOnExit(Part myPart)
         {
+            if (myPart == null)
+            {
+                return;
+            }
             if (myPart != myPart.vessel.rootPart)
             {
                 return;
@@ -135,15 +142,18 @@ namespace KerbalKonstructs
                 return;
             }
 
-            if (!isPlaying)
-            {
-                vesselIsInside[myPart.vessel] = true;
-                PlayAnim(exitAnim, AnimOnExit);
-            }
+
+            vesselIsInside[myPart.vessel] = false;
+            PlayAnim(exitAnim, AnimOnExit);
+
         }
 
         internal void PlayOnStay(Part myPart)
         {
+            if (myPart == null)
+            {
+                return;
+            }
             if (myPart != myPart.vessel.rootPart)
             {
                 return;
@@ -158,21 +168,31 @@ namespace KerbalKonstructs
                 return;
             }
 
-            if (!isPlaying)
-            {
-                vesselIsInside[myPart.vessel] = true;
-                PlayAnim(stayAnim, AnimOnStay);
-            }
+
+            vesselIsInside[myPart.vessel] = true;
+            PlayAnim(stayAnim, AnimOnStay);
+
         }
 
 
         internal void PlayAnim(Animation anim, string animationName)
         {
-            isPlaying = true;
-            anim[animationName].speed = 1f;
-            anim[animationName].normalizedTime = 0f;
-            anim.Play();
-            isPlaying = false;
+            if (anim == null || String.IsNullOrEmpty(animationName))
+            {
+                return;
+            }
+
+            if (!anim.IsPlaying(animationName))
+            {
+                anim.Rewind(animationName);
+                anim[animationName].speed = 1f;
+                anim[animationName].normalizedTime = 0f;
+                anim.Play();
+            }
+            else
+            {
+                //Log.Normal("Animation still playing: " + animationName);
+            }
         }
     }
 
