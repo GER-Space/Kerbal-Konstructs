@@ -9,19 +9,13 @@ namespace KerbalKonstructs
 {
     class AnimateOnTrigger : StaticModule
     {
-        internal enum VesselState
-        {
-            outside,
-            inside
-        }
-
-        private Dictionary<Vessel, bool> vesselIsInside = new Dictionary<Vessel, bool>();
 
         public string ColliderNames = "";
         public string AnimOnEnter = "";
         public string AnimOnStay = "";
         public string AnimOnExit = "";
 
+        private Dictionary<Vessel, bool> vesselIsInside = new Dictionary<Vessel, bool>();
 
         private Animation enterAnim;
         private Animation stayAnim;
