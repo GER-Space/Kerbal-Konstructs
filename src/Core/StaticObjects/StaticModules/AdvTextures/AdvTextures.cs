@@ -16,9 +16,9 @@ namespace KerbalKonstructs
         public string transforms = "Any";
 
         public string newMaterial = "";
+        public string BuiltinIndex = "0";
 
         public string _MainTex = null;          // texture
-        public string BuiltinIndex = "0";
         public string _BumpMap = null;          // normal map
         public string _ParallaxMap = null;      // height map
         public string _Emissive = null;         // legacy shader  U4 name for emissive map
@@ -32,6 +32,8 @@ namespace KerbalKonstructs
 
         private string[] seperators = new string[] { " ", ",", ";" };
 
+
+        private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
 
         public void Start()
@@ -75,7 +77,42 @@ namespace KerbalKonstructs
                 SetTexture(renderer, _OcclusionMap, "_OcclusionMap");
                 SetTexture(renderer, _SpecGlossMap, "_SpecGlossMap");
                 SetTexture(renderer, _BumpMap, "_BumpMap", true);
+
+           //     KKGraphics.ReplaceShader(renderer);
+                CheckForExistingMaterial(renderer);
+
             }
+        }
+
+
+        internal static void CheckForExistingMaterial(Renderer renderer)
+        {            
+            string transformName = renderer.gameObject.name;
+            string textureName = renderer.material.mainTexture.GetHashCode().ToString();
+            string ColorValue = "";
+            string tiling = renderer.material.GetTextureScale("_MainTex").ToString();
+            string shader = renderer.material.shader.name;
+
+
+            if (renderer.material.HasProperty("_Color"))
+            {
+                ColorValue = (renderer.material.color.r.ToString() + "_" + renderer.material.color.g.ToString() + "_" + renderer.material.color.b.ToString() + "_" + renderer.material.color.a.ToString());
+                //Log.Normal("ColorValueOrig : " + ColorValue);
+                //Log.Normal("ColorValue: " + renderer.material.color.ToString());
+            }
+
+            string key = (shader + "_"+ textureName + "_" + tiling + "_" + ColorValue);
+
+            if (!cachedMaterials.ContainsKey(key))
+            {
+           //     Log.Normal("creating new: " + key);
+                cachedMaterials.Add(key, renderer.material);
+            }
+            else
+            {
+           //     Log.Normal("setting to: " + key);
+                renderer.material = cachedMaterials[key];
+            } 
         }
 
 
@@ -104,14 +141,14 @@ namespace KerbalKonstructs
             Material foundMaterial = KKGraphics.GetMaterial(materialName);
             if (foundMaterial != null)
             {
-                Log.Normal("Material replaced: " + foundMaterial.name);
+               // Log.Normal("Material replaced: " + foundMaterial.name);
                 renderer.material = Instantiate(foundMaterial);  
             }
 
         }
 
 
-        private void ReplaceShader(MeshRenderer renderer, string newShaderName)
+        internal void ReplaceShader(MeshRenderer renderer, string newShaderName)
         {
             if (!KKGraphics.HasShader(newShaderName))
             {

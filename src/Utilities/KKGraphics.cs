@@ -22,6 +22,15 @@ namespace KerbalKonstructs
         private static Dictionary<string, Texture> builtinTextures = new Dictionary<string, Texture>();
         private static bool texturesAreCached = false;
 
+        //private static Dictionary<string, string> shaderSubstitutions = new Dictionary<string, string> {
+        //    { "KSP/Diffuse", "KSP/Scenery/Diffuse" },
+        //    { "KSP/Bumped", "KSP/Scenery/Bumped" },
+        //    { "KSP/Emissive/Diffuse", "KSP/Scenery/Emissive/Diffuse" },
+        //    { "KSP/Alpha/Translucent", "KSP/Scenery/Alpha/Translucent" },
+        //    { "KSP/Specular", "KSP/Scenery/Specular" },
+        //};
+
+
         /// <summary>
         /// Load all shaders into the system and fill our shader database.
         /// </summary>
@@ -78,6 +87,26 @@ namespace KerbalKonstructs
                 }
             }
         }
+
+        //internal static void ReplaceShader (Renderer renderer)
+        //{
+        //    if (shaderSubstitutions.ContainsKey(renderer.material.shader.name))
+        //    {
+        //        Shader newShader = GetShader(shaderSubstitutions[renderer.material.shader.name]);
+        //        if (newShader != null)
+        //        {
+        //            renderer.material.shader = newShader;
+        //            if (renderer.material.mainTexture != null)
+        //            {
+        //                AdvancedTextures.CheckForExistingMaterial(renderer);
+        //            }
+                    
+        //        }
+        //    }           
+        //}
+
+
+
 
         /// <summary>
         /// return a buildin or GameDatabase Texture

@@ -61,7 +61,8 @@ namespace KerbalKonstructs.UI
 		public static GUIStyle ButtonKK;
         public static GUIStyle ButtonInactive;
         public static GUIStyle ButtonRed;
-		public static GUIStyle DeadButtonRed;
+        public static GUIStyle DeadButton3;
+        public static GUIStyle DeadButtonRed;
 		public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
         public static GUIStyle DeadButton;
@@ -164,6 +165,20 @@ namespace KerbalKonstructs.UI
             DeadButton.focused.textColor = Color.white;
             DeadButton.fontSize = 14;
             DeadButton.fontStyle = FontStyle.Bold;
+
+            DeadButton3 = new GUIStyle(GUI.skin.button);
+            DeadButton3.normal.background = null;
+            DeadButton3.hover.background = null;
+            DeadButton3.active.background = null;
+            DeadButton3.focused.background = null;
+            DeadButton3.normal.textColor = Color.white;
+            DeadButton3.hover.textColor = Color.white;
+            DeadButton3.active.textColor = Color.white;
+            DeadButton3.focused.textColor = Color.white;
+            DeadButton3.fontSize = 13;
+            DeadButton3.fontStyle = FontStyle.Bold;
+
+
 
             KKWindow = new GUIStyle(GUI.skin.window);
             KKWindow.padding = new RectOffset(8, 8, 3, 3);

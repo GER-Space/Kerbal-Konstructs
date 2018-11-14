@@ -112,10 +112,12 @@ namespace KerbalKonstructs
         }
         internal bool spawnPreviewModels { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels = value; } }
         internal static string newInstancePath { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath = value; } }
-        internal static bool useLegacyCamera { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera; } }
+        internal static bool useLegacyCamera => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera;
+        internal static bool enableInflightHighlight => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().enableInflightHighlight;
 
         internal static bool focusLastLaunchSite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().focusLastLaunchSite; } }
         internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
+
         // map icon settings. These are saved manually
         [KSPField]
         public Boolean mapShowOpen = true;
@@ -167,6 +169,7 @@ namespace KerbalKonstructs
             GameEvents.OnMapExited.Add(MapIconDraw.instance.Close);
             GameEvents.OnGameDatabaseLoaded.Add(OnGameDatabaseLoaded);
             GameEvents.onVesselGoOffRails.Add(FixWaterLaunch);
+            GameEvents.onGameSceneSwitchRequested.Add(OnSceneSwitchRequested);
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
             {
 
@@ -212,6 +215,8 @@ namespace KerbalKonstructs
             Log.PerfStop("Object loading2");
             Log.PerfStop("Module Creation");
 
+            ScExtention.TuneFacilities();
+
             Log.UserInfo("Version is " + sKKVersion + " .");
 
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
@@ -244,6 +249,80 @@ namespace KerbalKonstructs
             }           
         }
 
+
+        internal void OnSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> fromTo)
+        {
+            GameScenes targetScene = fromTo.to;
+
+            if (targetScene == GameScenes.SPACECENTER && fromTo.from != GameScenes.MAINMENU)
+            {
+                Log.Normal("Requested scene is SpaceCenter");
+                FuckUpKSP();
+            }
+
+        }
+
+        internal void FuckUpKSP()
+        {
+
+            Log.Normal("mayham");
+
+            KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
+            if (currentSite == null)
+            {
+                currentSite = LaunchSiteManager.GetLaunchSiteByName("LaunchPad");
+            }
+            currentBody = currentSite.body;
+
+            if (FlightGlobals.currentMainBody != currentBody)
+            {
+                FlightGlobals.currentMainBody = currentBody;
+                PQSMod_CelestialBodyTransform bodyPQS = currentBody.GetComponentInChildren<PQSMod_CelestialBodyTransform>(true);
+
+                if (bodyPQS == null)
+                {
+                    Log.Normal("cannot find CB PQS: " + currentBody.name);
+                    return;
+                }
+
+                Log.Normal("switching to: " + currentBody.name);
+
+                PSystemSetup.Instance.GetType().GetField("pqs", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, currentBody.pqsController);
+                PSystemSetup.Instance.GetType().GetField("cb", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, bodyPQS);
+                PSystemSetup.Instance.GetType().GetField("scTransform", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, currentSite.lsGameObject.transform);
+            //    currentBody.pqsController.target = currentSite.lsGameObject.transform;
+            //    currentBody.pqsController.StartUpSphere();
+                //currentBody.pqsController.ForceStart();
+
+              //  currentBody.pqsController.EnableSphere();
+
+            //    PSystemSetup.Instance.GetType().GetMethod("SetSpaceCentre", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(PSystemSetup.Instance, null);
+
+
+                ConfigUtil.GetCelestialBody("HomeWorld").isHomeWorld = false;
+                ConfigUtil.bodiesInitialized = false;
+                currentBody.isHomeWorld = true;
+                Planetarium.fetch.Home = currentBody;
+
+            }
+
+                StaticDatabase.lastActiveBody = currentSite.body;
+
+            
+                foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                {
+                    scCam.GetType().GetField("pqs", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(scCam, currentBody.pqsController);
+                }
+
+            
+
+            if (!currentSite.isSquad)
+            {
+                currentSite.staticInstance.groupCenter.SetInstancesEnabled(true);
+            }
+            
+
+        }
 
         /// <summary>
         /// Updates the mission log and processes the launch refund.
@@ -296,6 +375,9 @@ namespace KerbalKonstructs
         /// <param name="data"></param>
         void OnLevelWasLoad(GameScenes data)
         {
+
+            CameraController.ResetNearCam();
+
             DeletePreviewObject();
 
             StaticDatabase.ToggleActiveAllStatics(false);
@@ -655,6 +737,10 @@ namespace KerbalKonstructs
                 {
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
+                //if (Input.GetMouseButtonDown(0)&& StaticsEditorGUI.instance.IsOpen())
+                //{
+                //    StaticsEditorGUI.instance.SelectMouseObject();
+                //}
 
                 if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
                 {
@@ -878,6 +964,13 @@ namespace KerbalKonstructs
                     continue;
                 }
 
+                //foreach (MeshRenderer renderer in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                //{
+                //    renderer.sharedMaterial.shader = KKGraphics.GetShader("Standard");
+                //}
+                //model.prefab.isStatic = true;
+                //StaticBatchingUtility.Combine(model.prefab);
+
                 foreach (ConfigNode ins in conf.config.GetNodes("MODULE"))
                 {
                     StaticModule module = new StaticModule();
@@ -943,24 +1036,6 @@ namespace KerbalKonstructs
                         collider.convex = false;
                     }
                 }
-
-                //foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
-                //{
-                //    foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
-                //    {
-                //        //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
-                //        if (material.HasProperty("_SpecColor"))
-                //        {
-                //            material.SetColor("_SpecColor", new Color(0.5f, 0.5f, 0.5f, 0.5f));
-                //        }
-
-                //        if (material.HasProperty("_Shininess"))
-                //        {
-                //            material.SetFloat("_Shininess", 0.08f);
-                //        }
-
-                //    }
-                //}
 
                 StaticDatabase.RegisterModel(model, modelName);
                 // most mods will not load without beeing loaded here
@@ -1165,8 +1240,11 @@ namespace KerbalKonstructs
                     }
                     else
                     {
-                        // remove the file
-                        File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + deletedInstance.configPath);
+                        if (!String.IsNullOrEmpty(deletedInstance.configPath))
+                        {
+                            // remove the file
+                            File.Delete(KSPUtil.ApplicationRootPath + "GameData/" + deletedInstance.configPath);
+                        }
                     }
                 }
                 processedInstances.Add(deletedInstance.configPath);

@@ -49,7 +49,8 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                KSCManager.instance.Open();
+                //KSCManager.instance.Open();
+                KSCManager.CreatePopUp();
                 return;
             }
         }
@@ -77,7 +78,11 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                KSCManager.instance.Close();
+                //KSCManager.instance.Close();
+                if (KSCManager.dialog != null)
+                {
+                    KSCManager.dialog.Dismiss();
+                }
                 return;
             }
         }

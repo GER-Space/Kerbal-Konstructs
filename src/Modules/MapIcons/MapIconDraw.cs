@@ -31,7 +31,6 @@ namespace KerbalKonstructs.Modules
         private Boolean displayingTooltip = false;
         private Boolean displayingTooltip2 = false;
 
-        static KKLaunchSite selectedSite = null;
         static StaticInstance selectedFacility = null;
 
         internal static bool mapHideIconsBehindBody = true;
@@ -222,7 +221,8 @@ namespace KerbalKonstructs.Modules
                         continue;
                 }
 
-                launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
+             //   launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
                 {
@@ -282,11 +282,11 @@ namespace KerbalKonstructs.Modules
                     // Select a base by clicking on the icon
                     if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
                     {
-                        MiscUtils.HUDMessage("Selected base is " + sToolTip + ".", 5f, 3);
-                        BaseManager.setSelectedSite(launchSite);
-                        selectedSite = launchSite;
-                        NavGuidanceSystem.setTargetSite(selectedSite);
-                        BaseManager.instance.Open();
+                        MapIconSelector.Close();
+                        MapIconSelector.selectedSite = launchSite;
+                        MapIconSelector.useLaunchSite = true;
+                        MapIconSelector.Open();
+                        NavGuidanceSystem.setTargetSite(launchSite);
                     }
                 }
             }
@@ -362,14 +362,19 @@ namespace KerbalKonstructs.Modules
                     {
                         if (customSpaceCenter.isFromFacility)
                         {
-                            //# = customSpaceCenter.staticInstance;
-                            FacilityManager.selectedInstance = customSpaceCenter.staticInstance;
-                            FacilityManager.instance.Open();
+                            MapIconSelector.Close();
+                            MapIconSelector.useLaunchSite = false;
+                            MapIconSelector.staticInstance = customSpaceCenter.staticInstance;
+                            MapIconSelector.Open();
+
                         }
                         else
                         {
-                            BaseManager.setSelectedSite(customSpaceCenter.staticInstance.launchSite);
-                            BaseManager.instance.Open();
+                            MapIconSelector.Close();
+                            MapIconSelector.selectedSite = customSpaceCenter.staticInstance.launchSite;
+                            MapIconSelector.useLaunchSite = true;
+                            MapIconSelector.Open();
+
                         }
                     }
                 }
@@ -388,11 +393,6 @@ namespace KerbalKonstructs.Modules
             return true;
         }
 
-        public static KKLaunchSite getSelectedSite()
-        {
-            KKLaunchSite thisSite = selectedSite;
-            return thisSite;
-        }
 
         public void DisplayMapIconToolTip(string sitename, Vector3 pos)
         {

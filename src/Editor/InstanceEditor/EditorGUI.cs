@@ -110,6 +110,11 @@ namespace KerbalKonstructs.UI
         private static Vector3 eastVector;
         private static Vector3 forwardVector;
 
+        private static Vector3 movement;
+        private static Vector3 localMovement;
+        private static Vector3 origLocalPosition;
+
+
         #endregion
 
         #endregion
@@ -1000,7 +1005,7 @@ namespace KerbalKonstructs.UI
 
         private void SetupGizmo()
         {
-
+            origLocalPosition = selectedInstance.gameObject.transform.localPosition;
             if (referenceSystem == Reference.Center)
             {
                 EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.gameObject.transform.localRotation, OnMoveCB, WhenMovedCB);
@@ -1027,11 +1032,13 @@ namespace KerbalKonstructs.UI
             // Log.Normal("OnMove: " + vector.ToString());
             //moveGizmo.transform.position += 3* vector;
             selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+            //selectedInstance.gameObject.transform.localPosition += selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(vector);
         }
 
         internal void WhenMovedCB(Vector3 vector)
         {
             //Log.Normal("WhenMoved: " + vector.ToString());
+            selectedInstance.gameObject.transform.localPosition = origLocalPosition + selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(vector);
             ApplySettings();
         }
 
@@ -1090,33 +1097,28 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-                if (direction.y == 0)
+               
+                if (direction.x != 0)
                 {
-                    float oldY = selectedInstance.gameObject.transform.localPosition.y;
-                    selectedInstance.gameObject.transform.Translate(direction);
-                    Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
-                    selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
-
-                    //float oldAltitude, newAltitude;
-                    //oldAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
-                    //selectedInstance.gameObject.transform.Translate(direction);
-                    //newAltitude = (float)selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position);
-
-                    //float diff = newAltitude - oldAltitude;
-
-                    //selectedInstance.gameObject.transform.localPosition -= new Vector3(0, diff, 0);
-
+                    movement = selectedInstance.gameObject.transform.right * direction.x;
+                    localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);                   
+                    selectedInstance.gameObject.transform.localPosition += localMovement;
                 }
-                else
+                if (direction.y != 0)
                 {
-                    selectedInstance.gameObject.transform.localPosition += direction;
+                    movement = selectedInstance.gameObject.transform.up * direction.y;
+                    localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);
+                    selectedInstance.gameObject.transform.localPosition += localMovement;
                 }
-
-
+                if (direction.z != 0)
+                {
+                    movement = selectedInstance.gameObject.transform.forward * direction.z;
+                    localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);
+                    selectedInstance.gameObject.transform.localPosition += localMovement;
+                }
             }
             ApplySettings();
         }
-
         /// <summary>
         /// CallBack Functions for Group Selection
         /// </summary>

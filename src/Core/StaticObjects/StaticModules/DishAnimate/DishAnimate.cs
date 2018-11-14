@@ -40,13 +40,15 @@ namespace KerbalKonstructs
             if (rotTransform == null)
             {
                 Log.Normal("DishAnimate: Rotations Transform not found");
-                Destroy(this);
+                //DestroyImmediate(this);
+                return;
             }
 
             if (elTransform == null)
             {
                 Log.Normal("DishAnimate: Elevation Transform not found");
-                Destroy(this);
+                //DestroyImmediate(this);
+                return;
             }
 
             if (!float.TryParse(MaxSpeed, out speedMax))

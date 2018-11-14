@@ -120,7 +120,7 @@ namespace KerbalKonstructs.Core
         internal int indexInGroup = 0;
 
         private List<Renderer> _rendererComponents;
-        internal List<StaticModule> myStaticModules = new List<StaticModule>();
+        //internal List<StaticModule> myStaticModules = new List<StaticModule>();
 
         /// <summary>
         /// Updates the static instance with new settings
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Core
 
 
             // Notify modules about update
-            foreach (StaticModule module in myStaticModules)
+            foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>(true))
             {
                 module.StaticObjectUpdate();
             }
@@ -191,10 +191,6 @@ namespace KerbalKonstructs.Core
 
             // Objects spawned at runtime should be active, ones spawned at loading not
             InstanceUtil.SetActiveRecursively(this, editing);
-
-            Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
-            List<GameObject> rendererList = (from t in gameObjectList where t.gameObject.GetComponent<Renderer>() != null select t.gameObject).ToList();
-
             InstanceUtil.SetLayerRecursively(this, 15);
 
             if (bPreview && editing)
@@ -271,7 +267,7 @@ namespace KerbalKonstructs.Core
                             Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
                         }
                     }
-                    myStaticModules.Add(mod);
+                    //myStaticModules.Add(mod);
                 }
                 else
                 {
@@ -279,9 +275,12 @@ namespace KerbalKonstructs.Core
                 }
             }
             Log.PerfPause("Module Creation");
-            foreach (GameObject gorenderer in rendererList)
+
+
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
-                gorenderer.GetComponent<Renderer>().enabled = true;
+                renderer.enabled = true;
+                //KKGraphics.ReplaceShader(renderer);
             }
 
             StaticDatabase.AddStatic(this);
@@ -290,20 +289,27 @@ namespace KerbalKonstructs.Core
             // After we got a new Name from StaticDatabase.AddStatic()
             if (isScanable)
             {
-                Log.Normal("Added " + gameObject.name + " to scanable Objects");
                 var pqsObjectList = CelestialBody.pqsSurfaceObjects.ToList();
                 if (!pqsObjectList.Contains((PQSSurfaceObject)groupCenter.pqsCity))
                 {
+                    Log.Normal("Added " + groupCenter.Group + " to scanable Objects");
                     pqsObjectList.Add(groupCenter.pqsCity as PQSSurfaceObject);
                 }
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
 
+            //if (!model.isSquad)
+            //{
+            //    Destructable.MakeDestructable(this);
+            //}
+
+
+            gameObject.isStatic = true;
+
             if (editing)
             {
                 KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
             }
-
         }
 
 

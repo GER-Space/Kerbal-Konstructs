@@ -99,8 +99,6 @@ namespace KerbalKonstructs.Core
 
             StaticDatabase.AddGroupCenter(this);
 
-
-
         }
 
         internal void RenameGroup(string newName)

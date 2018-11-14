@@ -32,8 +32,7 @@ namespace KerbalKonstructs
             if (receiverCollider != null)
             {
                 receiverCollider.tag = "LaunchpadFX";
-                //receiverCollider.gameObject.layer = (1 << 30);
-
+                receiverCollider.gameObject.layer = 15;
                 KKPadFX padfx = receiverCollider.gameObject.AddComponent<KKPadFX>();
                 padfx.Setup(emitterTransforms, gameObject);
             }

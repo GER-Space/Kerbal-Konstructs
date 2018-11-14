@@ -125,7 +125,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public override string Title { get { return "Editor Settings"; } }
+        public override string Title { get { return "Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
 	#if !KSP12
@@ -136,11 +136,11 @@ namespace KerbalKonstructs.Core
 
 
 
-        [GameParameters.CustomStringParameterUI("", title = "Editor Settings", lines = 1)]
+        [GameParameters.CustomStringParameterUI("", title = "Misc Settings", lines = 1)]
         public string blank1 = "";
         // editor settings
-        [GameParameters.CustomFloatParameterUI("Maximum editor local range", minValue = 5000, maxValue = 200000, stepCount = 100, autoPersistance = true)]
-        public float maxEditorVisRange = 100000;
+        [GameParameters.CustomFloatParameterUI("Visiblility Range", minValue = 5000, maxValue = 200000, stepCount = 2500, autoPersistance = true)]
+        public float maxEditorVisRange = 25000;
         [GameParameters.CustomParameterUI("Spawn preview models", toolTip = "just leave this to true", autoPersistance = true)]
         public bool spawnPreviewModels = true;
         [GameParameters.CustomParameterUI("Use alterative editor camera", toolTip = "Use the legacy KK editor camera, which can go under the surface", autoPersistance = true)]
@@ -172,6 +172,9 @@ namespace KerbalKonstructs.Core
 
             return true;
         }
+
+        [GameParameters.CustomParameterUI("Enable inflight highlighting", toolTip = "Facilities will glow when you move the curser over them", autoPersistance = true)]
+        public bool enableInflightHighlight = false;
 
 
     }

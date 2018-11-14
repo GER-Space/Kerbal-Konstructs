@@ -31,9 +31,9 @@ namespace KerbalKonstructs.Core
         public static float rangeNearestBase = 0f;
         public static string nearestBase = "";
 
-        internal static KKLaunchSite runway = new KKLaunchSite();
-        internal static KKLaunchSite launchpad = new KKLaunchSite();
-        internal static KKLaunchSite ksc2 = new KKLaunchSite();
+        internal static KKLaunchSite runway = new KKLaunchSite { isSquad = true};
+        internal static KKLaunchSite launchpad = new KKLaunchSite { isSquad = true };
+        internal static KKLaunchSite ksc2 = new KKLaunchSite { isSquad = true };
 
         private static List<PSystemSetup.SpaceCenterFacility> KKFacilities = null;
 
@@ -100,7 +100,25 @@ namespace KerbalKonstructs.Core
         /// </summary>
         private static void AddKSC()
         {
+            StaticInstance rwInstance = new StaticInstance();
+            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            rwInstance.RefLatitude = getKSCLat;
+            rwInstance.RefLongitude = getKSCLon;
+            rwInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
+            rwInstance.RadialPosition = rwInstance.radialPosition;
+            rwInstance.hasLauchSites = true;
+            rwInstance.launchSite = runway;
 
+            StaticInstance padInstance = new StaticInstance();
+            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            padInstance.RefLatitude = getKSCLat;
+            padInstance.RefLongitude = getKSCLon;
+            padInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
+            padInstance.RadialPosition = rwInstance.radialPosition;
+            padInstance.hasLauchSites = true;
+            padInstance.launchSite = launchpad;
+
+            runway.staticInstance = rwInstance;
             runway.LaunchSiteName = "Runway";
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
@@ -108,15 +126,16 @@ namespace KerbalKonstructs.Core
             runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
-            runway.refLat = getKSCLat;
-            runway.refLon = getKSCLon;
+            runway.refLat = (float)rwInstance.RefLatitude;
+            runway.refLon = (float)rwInstance.RefLongitude;
             runway.refAlt = 69f;
             runway.LaunchSiteLength = 2500f;
             runway.LaunchSiteWidth = 75f;
             runway.InitialCameraRotation = -60f;
-            runway.lsGameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            runway.lsGameObject = rwInstance.gameObject;
             runway.SetOpen();
 
+            launchpad.staticInstance = padInstance;
             launchpad.LaunchSiteName = "LaunchPad";
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
@@ -188,7 +207,6 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchSiteLength = 15f;
             ksc2.LaunchSiteWidth = 15f;
             ksc2.InitialCameraRotation = 135f;
-            //            ksc2.lsGameObject = ksc2PQS.gameObject.GetComponentsInChildren<Transform>(true).Where(x => x.name.Equals("launchpad", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().gameObject;
             ksc2.lsGameObject = ksc2PQS.gameObject;
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
@@ -331,7 +349,7 @@ namespace KerbalKonstructs.Core
 
                     site.spaceCenterFacility = spaceCenterFacility;
 
-
+                    
 
                     AddLaunchSite(site);
                 }
@@ -363,94 +381,20 @@ namespace KerbalKonstructs.Core
         }
 
 
-        public static void AlterMHSelector(bool triggerRestart = false)
+        public static void AlterMHSelector(bool triggerRestart = true)
         {
             if (!HighLogic.CurrentGame.Parameters.Difficulty.AllowOtherLaunchSites)
             {
                 return;
             }
-            ResetLaunchSiteFacilityName();
-            //Log.Normal("AMH: Reseting LaunchSite to: " + EditorDriver.editorFacility.ToString());
-            //Log.Normal("AMH: Current site: " + currentLaunchSite);
+
             RegisterMHLaunchSites(EditorDriver.editorFacility);
-            KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
-            if (uILaunchsiteController == null)
-            {
-                Log.UserWarning("UILaunchsiteController not found");
-                return;
-            }
+
             if (triggerRestart)
             {
                 GameEvents.onEditorRestart.Fire();
             }
-            //else
-            //{
-            //    var bla = uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic);
-            //    if (bla == null)
-            //    {
-            //        Log.UserError("UILaunchsiteController.resetItems not found");
-            //        return;
-            //    }
-            //    try
-            //    {
 
-            //        bla.Invoke(uILaunchsiteController, null);
-            //    }
-            //    catch
-            //    {
-            //        Log.UserError("ResetItems failed...");
-            //    }
-            //}
-            Log.Normal("continue");
-
-            var launchPadItems = (System.Collections.IList)uILaunchsiteController.GetType().GetField("launchPadItems", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(uILaunchsiteController);
-            if (launchPadItems == null)
-            {
-                Log.Normal("No launchPadItems found ");
-            }
-            else
-            {
-                //Log.Normal("launchPadItems found ");
-                foreach (var item in launchPadItems)
-                {
-                    var type = item.GetType();
-                    if (type == null)
-                    {
-                        Log.Warning("Cound not retrieve type");
-                    }
-                    else
-                    {
-                        string siteName = (string)item.GetType().GetField("siteName").GetValue(item);
-                        //Log.Normal(" altering button for siteName: " + siteName);
-
-                        Button button = (Button)item.GetType().GetField("buttonLaunch").GetValue(item);
-                        Toggle toggleSetDefault = (Toggle)item.GetType().GetField("toggleSetDefault").GetValue(item);
-                        GameObject gameObj = (GameObject)item.GetType().GetProperty("gameObject").GetValue(item, null);
-
-                        LaunchSiteButton buttonFixer = gameObj.AddComponent<LaunchSiteButton>();
-
-                        buttonFixer.siteName = siteName;
-
-                        if (siteName == currentLaunchSite)
-                        {
-                            toggleSetDefault.isOn = true;
-                        }
-                        else
-                        {
-                            toggleSetDefault.isOn = false;
-                        }
-
-                        if (launchSiteNames.Contains(siteName))
-                        {
-                            toggleSetDefault.onValueChanged.AddListener(buttonFixer.SetDefault);
-                            button.onClick.RemoveAllListeners();
-                            button.onClick.AddListener(buttonFixer.LauchVessel);
-                        }
-
-                    }
-                }
-
-            }
         }
 
 
@@ -858,54 +802,16 @@ namespace KerbalKonstructs.Core
             lSite2 = lLastSite;
         }
 
-        public static void ResetLaunchSiteFacilityName()
-        {
-            if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
-            {
-                return;
-            }
-            // reset the name to the site, so it can be fetched again
-            KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
-            if (lastSite != null)
-            {
-                lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
-            }
-            else
-            {
-                // do nothing
-            }
-        }
-
 
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
         public static void setLaunchSite(KKLaunchSite site)
         {
-            // set the facilityname of the old site to its original value, so it can be found later
-            ResetLaunchSiteFacilityName();
-
-            //Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
-            // without detouring some internal functions we have to fake the facility name... which is pretty bad
-            if (site.spaceCenterFacility != null)
-            {
-                if (EditorDriver.editorFacility == EditorFacility.SPH)
-                {
-                    site.spaceCenterFacility.name = "Runway";
-                }
-                else
-                {
-                    site.spaceCenterFacility.name = "LaunchPad";
-                }
-
-                //var field = typeof(EditorDriver).GetField("selectedlaunchSiteName", BindingFlags.Static | BindingFlags.NonPublic);
-                //field.SetValue(null, site.LaunchSiteName);
-            }
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
 
             EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
-            //Log.Normal("EditorDriver still thinks this is: " + EditorDriver.SelectedLaunchSiteName);
         }
 
 

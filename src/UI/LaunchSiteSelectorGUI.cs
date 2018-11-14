@@ -289,7 +289,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.BeginHorizontal();
                     {
                         ShowOpenStatus(site);
-
+                        ShowCategory(site);
                         launchButtonName = site.LaunchSiteName;
                         if (site.LaunchSiteName == "Runway")
                         {
@@ -403,6 +403,32 @@ namespace KerbalKonstructs.UI
             }
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+
+
+        internal static void ShowCategory(KKLaunchSite site)
+        {
+            switch (site.sitecategory)
+            {
+                case LaunchSiteCategory.Runway:
+                    GUILayout.Button(UIMain.runWayIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Helipad:
+                    GUILayout.Button(UIMain.heliPadIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.RocketPad:
+                    GUILayout.Button(UIMain.VABIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Waterlaunch:
+                    GUILayout.Button(UIMain.waterLaunchIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Other:
+                    GUILayout.Button(UIMain.ANYIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                default:
+                    GUILayout.Button("", UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+            }
         }
 
 

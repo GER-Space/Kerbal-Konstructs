@@ -118,10 +118,12 @@ namespace KerbalKonstructs.Core
                 openState = value;
                 if (openState == true)
                 {
+                    //LaunchSiteManager.OpenLaunchSite(this);
                     OpenCloseState = "Open";
                 }
                 else
                 {
+                    //LaunchSiteManager.CloseLaunchSite(this);
                     OpenCloseState = "Closed";
                 }
             }
@@ -156,6 +158,9 @@ namespace KerbalKonstructs.Core
 
         private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
 
+        internal bool isSquad = false;
+
+        internal FinePrint.Waypoint wayPoint = null;
 
         internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
@@ -281,7 +286,6 @@ namespace KerbalKonstructs.Core
             {
                 try
                 {
-
                     if (this.gameObject == null)
                     {
                         Destroy(this);
@@ -316,10 +320,10 @@ namespace KerbalKonstructs.Core
 
         void OnMouseExit()
         {
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
-            {
+            //if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            //{
                 staticInstance.HighlightObject(Color.clear);
-            }
+            //}
         }
         #endregion
 

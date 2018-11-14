@@ -224,8 +224,6 @@ namespace KerbalKonstructs.Core
         }
 
 
-
-
         internal static void DeactivateAllOnPlanet(CelestialBody body)
 		{
             if (body == null || !centersByPlanet.ContainsKey(body.name))
@@ -268,6 +266,7 @@ namespace KerbalKonstructs.Core
         {
 
             float maxDistance = (float)(PhysicsGlobals.Instance.VesselRangesDefault.flying.load + (KerbalKonstructs.localGroupRange * 1.5));
+           // Log.Normal("MaxDistance: " + maxDistance);
             bool isInRange = false;
 
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
@@ -300,7 +299,7 @@ namespace KerbalKonstructs.Core
             {
                 foreach (GroupCenter center in centersByPlanet[lastActiveBody.name].Values)
                 {
-                    //Log.Normal("Checking Group: " + group.name  ); 
+                //    Log.Normal("Checking Group: " + center.Group  ); 
                     isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
                     // Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
                     center.SetInstancesEnabled(isInRange);

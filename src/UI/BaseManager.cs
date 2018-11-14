@@ -308,16 +308,16 @@ namespace KerbalKonstructs.UI
 
 				GUILayout.FlexibleSpace();
 
-				if (HighLogic.LoadedScene == GameScenes.EDITOR)
-				{
-					GUILayout.BeginHorizontal();
-					{
-						if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName)
+                if (HighLogic.LoadedScene == GameScenes.EDITOR)
+                {
+                    GUILayout.BeginHorizontal();
+                    {
+                        if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName)
                         {
                             tStatusLaunchsite = tSetLaunchsite;
                         }
                         else
-							if (selectedSite.isOpen)
+                            if (selectedSite.isOpen)
                         {
                             tStatusLaunchsite = tOpenedLaunchsite;
                         }
@@ -327,22 +327,53 @@ namespace KerbalKonstructs.UI
                         }
 
                         GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
-						
-						GUI.enabled = (selectedSite.isOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
-						if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
-						{
-							LaunchSiteManager.setLaunchSite(selectedSite);
-							string smessage = sButtonName + " has been set as the launchsite";
-							MiscUtils.HUDMessage(smessage, 10, 0);
-						}
-						GUI.enabled = true;
 
-					}
-					GUILayout.EndHorizontal();
-				}
+                        GUI.enabled = (selectedSite.isOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
+                        if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
+                        {
+                            LaunchSiteManager.setLaunchSite(selectedSite);
+                            string smessage = sButtonName + " has been set as the launchsite";
+                            MiscUtils.HUDMessage(smessage, 10, 0);
+                        }
+                        GUI.enabled = true;
+
+                    }
+                    GUILayout.EndHorizontal();
+                }
+                
 			}
 
-			GUILayout.Space(3);
+            if (HighLogic.LoadedScene != GameScenes.EDITOR)
+            {
+                GUILayout.BeginHorizontal();
+                {
+                    if (selectedSite.wayPoint == null )
+                    {
+                        if (GUILayout.Button("Create Waypoint", GUILayout.Height(30)))
+                        {
+                            MapIconSelector.CreateWPForLaunchSite(selectedSite);
+                        }
+                    }
+                    else
+                    {
+                        if (FinePrint.WaypointManager.FindWaypoint(selectedSite.wayPoint.navigationId) == null)
+                        {
+                            selectedSite.wayPoint = null;
+                            GUI.enabled = false;
+                        }
+                        if (GUILayout.Button("Delete Waypoint", GUILayout.Height(30)))
+                        {
+                            FinePrint.WaypointManager.RemoveWaypoint(selectedSite.wayPoint);
+                            selectedSite.wayPoint = null;
+                        }
+                        GUI.enabled = true;
+                    }
+
+                }
+                GUILayout.EndHorizontal();
+            }
+
+            GUILayout.Space(3);
 			GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
 			GUILayout.Space(1);
 

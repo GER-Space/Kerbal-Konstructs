@@ -47,7 +47,7 @@ namespace KerbalKonstructs.Core
 
 
         // global stuff
-        private static bool bodiesInitialized = false;
+        internal static bool bodiesInitialized = false;
         private static Dictionary<string, CelestialBody> knownBodies = new Dictionary<string, CelestialBody>();
 
         /// <summary>
@@ -354,7 +354,8 @@ namespace KerbalKonstructs.Core
         {
             if (!bodiesInitialized)
             {
-                CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
+                CelestialBody[] bodies = FlightGlobals.Bodies.ToArray();
+                knownBodies = new Dictionary<string, CelestialBody>();
                 foreach (CelestialBody body in bodies)
                 {
                     knownBodies.Add(body.name, body);

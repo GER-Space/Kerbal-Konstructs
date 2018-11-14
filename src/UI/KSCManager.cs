@@ -56,6 +56,8 @@ namespace KerbalKonstructs.UI
         public String sFacilityUseRange = "";
 
 
+        internal static PopupDialog dialog;
+
         public bool bDetermined = false;
 
         public static float fFacLvl = 0f;
@@ -69,9 +71,21 @@ namespace KerbalKonstructs.UI
         }
 
         public override void Close()
-        {           
+        {
+            Log.Normal("Close Called");
+            //dialog.Dismiss();
+            //dialog = null;
             base.Close();
         }
+
+        public override void Open()
+        {
+            Log.Normal("Called Finished");
+            base.Open();
+            //CreatePopUp();
+            //Log.Normal("Open Finished");
+        }
+
 
         public void drawKSCManager()
         {
@@ -181,6 +195,43 @@ namespace KerbalKonstructs.UI
             GUILayout.FlexibleSpace();
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+
+        internal static void CreatePopUp()
+        {
+            dialog = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
+                   new Vector2(0.5f, 0.5f),
+                   new MultiOptionDialog("Name",
+                       "Press the button to repair all Buildings",
+                       "Kerbal Konstructs",
+                       HighLogic.UISkin,
+                       new Rect(0.5f, 0.5f, 150f, 60f),
+                       new DialogGUIFlexibleSpace(),
+                       new DialogGUIVerticalLayout(
+                           new DialogGUIFlexibleSpace(),
+                           new DialogGUIButton("Repair All Buildings", RepairAllBuildings, 140.0f, 30.0f, false),
+                           new DialogGUIButton("Close", () =>
+                           {
+                           }, 140.0f, 30.0f, true)
+                           )),
+                   false,
+                   HighLogic.UISkin,false);
+        }
+
+        internal static void RepairAllBuildings()
+        {
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+            {
+                foreach (DestructibleBuilding building in instance.gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
+                {
+                    if (building.IsDestroyed)
+                    {
+                        //building.RepairCost = 0;
+                        //building.Repair();
+                        building.Reset();
+                    }
+                }
+            }
         }
     }
 }

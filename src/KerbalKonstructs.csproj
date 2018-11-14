@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -45,6 +47,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -83,12 +86,12 @@
     <Compile Include="Core\Config\ConfigUtil.cs" />
     <Compile Include="Core\Config\KKCustomParameters.cs" />
     <Compile Include="Core\KKMath.cs" />
-    <Compile Include="Core\LaunchSites\LaunchSiteButton.cs" />
     <Compile Include="Core\LaunchSites\LaunchSiteParser.cs" />
     <Compile Include="Core\MapDecals\DecalsDatabase.cs" />
     <Compile Include="Core\MapDecals\MapDecalInstance.cs" />
     <Compile Include="Core\MapDecals\MapDecalsMap.cs" />
     <Compile Include="Core\MapDecals\MapDecalUtils.cs" />
+    <Compile Include="Core\SpaceCenters\ScExtention.cs" />
     <Compile Include="Core\SquadStatics.cs" />
     <Compile Include="Core\StaticGroup\GroupCenter.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBack.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBackWorker.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\Destructable\Destructable.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\DishAnimate\DishAnimate.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\GrasColor\GrasColor.cs" />
@@ -139,6 +143,7 @@
     <Compile Include="Modules\Career\CareerScenario.cs" />
     <Compile Include="Modules\Career\CareerState.cs" />
     <Compile Include="Modules\Career\CareerUtils.cs" />
+    <Compile Include="Modules\MapIcons\MapIconSelector.cs" />
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
     <Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
     <Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
@@ -157,6 +162,7 @@
     <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
     <Compile Include="Core\StaticObjects\StaticModel.cs" />
     <Compile Include="Core\StaticObjects\StaticModule.cs" />
+    <Compile Include="Utilities\AsmUtils.cs" />
     <Compile Include="Utilities\CameraController.cs" />
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />
