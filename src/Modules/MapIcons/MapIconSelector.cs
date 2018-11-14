@@ -55,8 +55,11 @@ namespace KerbalKonstructs.UI
 
         internal static void CreateMultiOptionDialog()
         {
-            //optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, HighLogic.UISkin, windowRect, content.ToArray());
+#if KSP12
             optionDialog = new MultiOptionDialog(windowMessage, windowTitle, HighLogic.UISkin, windowRect, content.ToArray());
+#else
+            optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, HighLogic.UISkin, windowRect, content.ToArray());
+#endif
         }
 
 

@@ -128,11 +128,15 @@ namespace KerbalKonstructs.Core
                 controller.enabled = true;
             }
 
-
-            //if (instance.model.name == "KSC_Runway_level_2")
-            //{
-            //    SquadStatics.PimpLv2Runway(instance.gameObject);
-            //}
+            if (instance.model.name == "KSC_FuelTank")
+            {
+                //Log.Normal("Fixing KSC Fuel Tank");
+                GameObject oldGameObject = instance.gameObject;
+                GameObject newBaseObject = new GameObject(instance.model.name);
+                oldGameObject.transform.parent = newBaseObject.transform;
+                oldGameObject.transform.localEulerAngles = new Vector3(270, 0, 0);
+                instance.gameObject = newBaseObject;
+            }
 
         }
 
