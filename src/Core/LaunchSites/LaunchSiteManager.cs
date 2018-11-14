@@ -29,10 +29,9 @@ namespace KerbalKonstructs.Core
         public static float rangeNearestBase = 0f;
         public static string nearestBase = "";
 
-        internal static KKLaunchSite runway = new KKLaunchSite();
-        internal static KKLaunchSite launchpad = new KKLaunchSite();
-
-        internal static KKLaunchSite ksc2 = new KKLaunchSite();
+        internal static KKLaunchSite runway = new KKLaunchSite { isSquad = true };
+        internal static KKLaunchSite launchpad = new KKLaunchSite { isSquad = true };
+        internal static KKLaunchSite ksc2 = new KKLaunchSite { isSquad = true };
 
 
 
@@ -339,7 +338,7 @@ namespace KerbalKonstructs.Core
 
 					PSystemSetup.Instance.SpaceCenterFacilities = facilities.ToArray();
 
-                    site.facility = newSpaceCenterFacility;
+                    site.spaceCenterFacility = newSpaceCenterFacility;
                     //SetupKSPFacilities();
                     AddLaunchSite(site);
                 }
@@ -757,22 +756,10 @@ namespace KerbalKonstructs.Core
         // Original author: medsouz
         public static void setLaunchSite(KKLaunchSite site)
         {
-            if (site.facility != null)
-            {
-                if (EditorDriver.editorFacility == EditorFacility.SPH)
-                {
-                    site.facility.name = "Runway";
-                }
-                else
-                {
-                    site.facility.name = "LaunchPad";
-                }
-            }
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
-            EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
 
-            KerbalKonstructs.instance.lastLaunchSiteUsed = site.LaunchSiteName;
+            EditorLogic.fetch.launchSiteName = site.LaunchSiteName;
         }
 
 

@@ -28,65 +28,73 @@ namespace KerbalKonstructs.Core
 
             foreach (var modelsetting in ConfigUtil.modelFields)
             {
-                if (modelsetting.Value.GetValue(model) == null)
+                try
                 {
-                    continue;
-                }
 
-                if (modelsetting.Key == "mesh")
+                    if (modelsetting.Value.GetValue(model) == null)
+                    {
+                        continue;
+                    }
+
+                    if (modelsetting.Key == "mesh")
+                    {
+                        continue;
+                    }
+
+                    if (cfgNode.HasValue(modelsetting.Key))
+                    {
+                        cfgNode.RemoveValue(modelsetting.Key);
+                    }
+
+                    switch (modelsetting.Value.FieldType.ToString())
+                    {
+                        case "System.String":
+                            if (string.IsNullOrEmpty((string)modelsetting.Value.GetValue(model)))
+                            {
+                                continue;
+                            }
+                            cfgNode.AddValue(modelsetting.Key, (string)modelsetting.Value.GetValue(model));
+                            break;
+                        case "System.Int32":
+                            if ((int)modelsetting.Value.GetValue(model) == 0)
+                            {
+                                continue;
+                            }
+                            cfgNode.AddValue(modelsetting.Key, (int)modelsetting.Value.GetValue(model));
+                            break;
+                        case "System.Single":
+                            if ((float)modelsetting.Value.GetValue(model) == 0)
+                            {
+                                continue;
+                            }
+                            cfgNode.AddValue(modelsetting.Key, (float)modelsetting.Value.GetValue(model));
+                            break;
+                        case "System.Double":
+                            if ((double)modelsetting.Value.GetValue(model) == 0)
+                            {
+                                continue;
+                            }
+                            cfgNode.AddValue(modelsetting.Key, (double)modelsetting.Value.GetValue(model));
+                            break;
+                        case "System.Boolean":
+                            cfgNode.AddValue(modelsetting.Key, (bool)modelsetting.Value.GetValue(model));
+                            break;
+                        case "UnityEngine.Vector3":
+                            cfgNode.AddValue(modelsetting.Key, (Vector3)modelsetting.Value.GetValue(model));
+                            break;
+                        case "UnityEngine.Vector3d":
+                            cfgNode.AddValue(modelsetting.Key, (Vector3d)modelsetting.Value.GetValue(model));
+                            break;
+                        case "CelestialBody":
+                            cfgNode.AddValue(modelsetting.Key, ((CelestialBody)modelsetting.Value.GetValue(model)).name);
+                            break;
+                    }
+
+                }
+                catch
                 {
-                    continue;
+                    Log.UserError("error in writing modelconfig: " + model.name + " key: " + modelsetting.Key);
                 }
-
-                if (cfgNode.HasValue(modelsetting.Key))
-                {
-                    cfgNode.RemoveValue(modelsetting.Key);
-                }
-
-                switch (modelsetting.Value.FieldType.ToString())
-                {
-                    case "System.String":
-                        if (string.IsNullOrEmpty((string)modelsetting.Value.GetValue(model)))
-                        {
-                            continue;
-                        }
-                        cfgNode.AddValue(modelsetting.Key, (string)modelsetting.Value.GetValue(model));
-                        break;
-                    case "System.Int32":
-                        if ((int)modelsetting.Value.GetValue(model) == 0)
-                        {
-                            continue;
-                        }
-                        cfgNode.AddValue(modelsetting.Key, (int)modelsetting.Value.GetValue(model));
-                        break;
-                    case "System.Single":
-                        if ((float)modelsetting.Value.GetValue(model) == 0)
-                        {
-                            continue;
-                        }
-                        cfgNode.AddValue(modelsetting.Key, (float)modelsetting.Value.GetValue(model));
-                        break;
-                    case "System.Double":
-                        if ((double)modelsetting.Value.GetValue(model) == 0)
-                        {
-                            continue;
-                        }
-                        cfgNode.AddValue(modelsetting.Key, (double)modelsetting.Value.GetValue(model));
-                        break;
-                    case "System.Boolean":
-                        cfgNode.AddValue(modelsetting.Key, (bool)modelsetting.Value.GetValue(model));
-                        break;
-                    case "UnityEngine.Vector3":
-                        cfgNode.AddValue(modelsetting.Key, (Vector3)modelsetting.Value.GetValue(model));
-                        break;
-                    case "UnityEngine.Vector3d":
-                        cfgNode.AddValue(modelsetting.Key, (Vector3d)modelsetting.Value.GetValue(model));
-                        break;
-                    case "CelestialBody":
-                        cfgNode.AddValue(modelsetting.Key, ((CelestialBody)modelsetting.Value.GetValue(model)).name);
-                        break;
-                }
-
             }
         }
 
@@ -160,6 +168,7 @@ namespace KerbalKonstructs.Core
 
         }
 
+
         /// <summary>
         /// Parser for MapDecalInstance Objects
         /// </summary>
@@ -168,9 +177,7 @@ namespace KerbalKonstructs.Core
         internal static void ParseMapDecalConfig(MapDecalInstance target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
-            {
                 ConfigUtil.InitTypes();
-            }
 
             foreach (var field in ConfigUtil.mapDecalFields.Values)
             {
@@ -186,9 +193,7 @@ namespace KerbalKonstructs.Core
         internal static void ParseDecalsMapConfig(MapDecalsMap target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
-            {
                 ConfigUtil.InitTypes();
-            }
 
             foreach (var field in ConfigUtil.mapDecalsMapFields.Values)
             {
@@ -207,9 +212,7 @@ namespace KerbalKonstructs.Core
             foreach (var mapDecalSetting in ConfigUtil.mapDecalFields)
             {
                 if (mapDecalSetting.Value.GetValue(mapDecalInstance) == null)
-                {
                     continue;
-                }
 
                 ConfigUtil.Write2CfgNode(mapDecalInstance, mapDecalSetting.Value, cfgNode);
 
@@ -246,7 +249,7 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                   // Log.Normal("Loaded MapDecal instance " + instance.Name);
+                    //Log.Normal("Loaded MapDecal instance " + instance.Name);
                     if (!bodies2Update.Contains(instance.CelestialBody))
                     {
                         bodies2Update.Add(instance.CelestialBody);
@@ -269,17 +272,18 @@ namespace KerbalKonstructs.Core
 
         }
 
-
         /// <summary>
         /// Writes out a mapdecal config
         /// </summary>
         /// <param name="instance"></param>
         internal static void SaveMapDecalInstance(MapDecalInstance instance)
         {
+
             if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
             {
                 Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
             }
+
             if (instance.configPath == null)
             {
                 instance.configPath = KerbalKonstructs.newInstancePath + "/KK_MapDecal_" + instance.Name + ".cfg";
@@ -314,7 +318,6 @@ namespace KerbalKonstructs.Core
                 ParseDecalsMapConfig(newMapDecalInstance, conf.config);
 
                 newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-                //newMapDecalInstance.mapTexture = GameDatabase.Instance.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
                 newMapDecalInstance.mapTexture = KKGraphics.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
 
                 if (newMapDecalInstance.mapTexture == null)
@@ -332,7 +335,7 @@ namespace KerbalKonstructs.Core
                 {
                     newMapDecalInstance.CreateMap(MapSO.MapDepth.RGBA, newMapDecalInstance.mapTexture);
                 }
-                Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + (newMapDecalInstance.isHeightMap? "as HeighMap" : "as ColorMap"));
+                //Log.Normal("DecalsMap " + newMapDecalInstance.Name + " imported: " + (newMapDecalInstance.isHeightMap? "as HeighMap" : "as ColorMap"));
 
                 newMapDecalInstance.map = newMapDecalInstance as MapSO;
                 DecalsDatabase.RegisterMap(newMapDecalInstance);
@@ -346,6 +349,7 @@ namespace KerbalKonstructs.Core
         /// <param name="pathname"></param>
         internal static void SaveInstanceByCfg(string pathname)
         {
+
             if (string.IsNullOrEmpty(pathname))
             {
                 Log.UserWarning("Trying to save a static insance with null configpath. ");
@@ -377,13 +381,12 @@ namespace KerbalKonstructs.Core
             staticNode.AddNode(instanceConfig);
             foreach (StaticInstance instance in allInstances)
             {
-                ConfigNode instNode = new ConfigNode("Instances");
-                ConfigParser.WriteInstanceConfig(instance, instNode);
-                instanceConfig.nodes.Add(instNode);
+                ConfigNode inst = new ConfigNode("Instances");
+                ConfigParser.WriteInstanceConfig(instance, inst);
+                instanceConfig.nodes.Add(inst);
             }
-            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + firstInstance.configPath, "Generated by Kerbal Konstructs");
+            staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + pathname, "Generated by Kerbal Konstructs");
         }
-
 
         /// <summary>
         /// Loads all Group Centers from the Files

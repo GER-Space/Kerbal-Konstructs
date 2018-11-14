@@ -10,7 +10,7 @@ using KerbalKonstructs.Modules;
 namespace KerbalKonstructs.Core
 {
 
-        /// <summary>
+    /// <summary>
     /// Settings that are read from the Instance Config file
     /// </summary>
     internal class CFGSetting : Attribute
@@ -43,12 +43,11 @@ namespace KerbalKonstructs.Core
 
         internal static Dictionary<string, FieldInfo> groupCenterFields = new Dictionary<string, FieldInfo>();
 
-
         internal static HashSet<string> facilitiyTypes = new HashSet<string>();
 
 
         // global stuff
-        private static bool bodiesInitialized = false;
+        internal static bool bodiesInitialized = false;
         private static Dictionary<string, CelestialBody> knownBodies = new Dictionary<string, CelestialBody>();
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace KerbalKonstructs.Core
                 if (Attribute.IsDefined(field, typeof(CFGSetting)))
                 {
                     instanceFields.Add(field.Name, field);
-                   // Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
+                    //Log.Normal("Parser Instance: " + field.Name + ": " + field.FieldType.ToString());
                 }
             }
 
@@ -154,8 +153,9 @@ namespace KerbalKonstructs.Core
                         try
                         {
                             value = (SiteType)Enum.Parse(typeof(SiteType), cfgNode.GetValue(field.Name));
-                            
-                        } catch
+
+                        }
+                        catch
                         {
                             value = SiteType.Any;
                         }
@@ -264,7 +264,7 @@ namespace KerbalKonstructs.Core
         internal static void Write2CfgNode(object source, FieldInfo field, ConfigNode cfgNode)
         {
 
-                switch (field.FieldType.ToString())
+            switch (field.FieldType.ToString())
             {
                 case "System.String":
                     cfgNode.SetValue(field.Name, (string)field.GetValue(source), true);
@@ -294,7 +294,7 @@ namespace KerbalKonstructs.Core
                     cfgNode.SetValue(field.Name, ((CelestialBody)field.GetValue(source)).name, true);
                     break;
                 case "KerbalKonstructs.Core.SiteType":
-                    cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString() , true);
+                    cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString(), true);
                     break;
                 case "KerbalKonstructs.Core.LaunchSiteCategory":
                     cfgNode.SetValue(field.Name, ((LaunchSiteCategory)field.GetValue(source)).ToString(), true);
@@ -334,7 +334,7 @@ namespace KerbalKonstructs.Core
                     cfgNode.SetValue(property.Name, (Vector3d)property.GetValue(source, null), true);
                     break;
                 case "UnityEngine.Color":
-                    cfgNode.SetValue(property.Name, (Color)property.GetValue(source, null), true);                    
+                    cfgNode.SetValue(property.Name, (Color)property.GetValue(source, null), true);
                     break;
                 case "CelestialBody":
                     cfgNode.SetValue(property.Name, ((CelestialBody)property.GetValue(source, null)).name, true);
@@ -355,7 +355,8 @@ namespace KerbalKonstructs.Core
         {
             if (!bodiesInitialized)
             {
-                CelestialBody[] bodies = GameObject.FindObjectsOfType(typeof(CelestialBody)) as CelestialBody[];
+                CelestialBody[] bodies = FlightGlobals.Bodies.ToArray();
+                knownBodies = new Dictionary<string, CelestialBody>();
                 foreach (CelestialBody body in bodies)
                 {
                     knownBodies.Add(body.name, body);
@@ -387,5 +388,7 @@ namespace KerbalKonstructs.Core
                 System.IO.Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath);
             }
         }
+
+
     }
 }

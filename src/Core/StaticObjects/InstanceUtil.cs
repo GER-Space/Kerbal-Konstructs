@@ -144,7 +144,7 @@ namespace KerbalKonstructs.Core
                 instance.isActive = active;
                 if (active)
                 {
-                    foreach (StaticModule module in instance.myStaticModules)
+                    foreach (StaticModule module in instance.gameObject.GetComponentsInChildren<StaticModule>(true))
                     {
                         module.StaticObjectUpdate();
                     }
@@ -157,7 +157,7 @@ namespace KerbalKonstructs.Core
                     transforms[i].gameObject.SetActive(active);
                 }
 
-                foreach (StaticModule module in instance.myStaticModules)
+                foreach (StaticModule module in instance.gameObject.GetComponentsInChildren<StaticModule>(true))
                 {
                     module.enabled = active;
                 }

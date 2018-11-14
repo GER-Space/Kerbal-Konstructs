@@ -9,6 +9,9 @@ using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
+
+
+
     public class KKLaunchSite
     {
         [CFGSetting]
@@ -110,15 +113,17 @@ namespace KerbalKonstructs.Core
                     return false;
                 }
             }
-            private set
+            set
             {
                 openState = value;
                 if (openState == true)
                 {
+                    //LaunchSiteManager.OpenLaunchSite(this);
                     OpenCloseState = "Open";
                 }
                 else
                 {
+                    //LaunchSiteManager.CloseLaunchSite(this);
                     OpenCloseState = "Closed";
                 }
             }
@@ -149,16 +154,19 @@ namespace KerbalKonstructs.Core
         internal CelestialBody body;
 
         internal GameObject lsGameObject;
-        internal PSystemSetup.SpaceCenterFacility facility = null;
+        internal PSystemSetup.SpaceCenterFacility spaceCenterFacility = null;
 
         private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
 
+        internal bool isSquad = false;
+
+        internal FinePrint.Waypoint wayPoint = null;
 
         internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
             if (cfgNode != null)
             {
-               LaunchSiteParser.ParseConfig(this,cfgNode);
+                LaunchSiteParser.ParseConfig(this, cfgNode);
             }
 
             lsGameObject = instance.gameObject;
@@ -186,10 +194,11 @@ namespace KerbalKonstructs.Core
                     icon = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteIcon, false);
             }
 
-            refLon = (float)Math.Round(staticInstance.RefLongitude, 2);
-            refLat = (float)Math.Round(staticInstance.RefLatitude, 2);
+            refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);
+            refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
             refAlt = (float)staticInstance.CelestialBody.GetAltitude(staticInstance.gameObject.transform.position);
+
             AttachSelector();
 
         }
@@ -201,7 +210,6 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal void SetOpen()
         {
-            LaunchSiteManager.OpenLaunchSite(this);
             isOpen = true;
         }
 
@@ -210,12 +218,11 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal void SetClosed()
         {
-            LaunchSiteManager.CloseLaunchSite(this);
             isOpen = false;
         }
 
         // Resets the facility/LaunchSite to its default state
-        internal  void ResetToDefaultState()
+        internal void ResetToDefaultState()
         {
             if (OpenCloseState != defaultState)
             {
@@ -257,6 +264,7 @@ namespace KerbalKonstructs.Core
             {
                 EditorFacility facility;
                 staticInstance.HighlightObject(Color.clear);
+
                 if (staticInstance.launchSite.LaunchSiteType == SiteType.VAB)
                 {
                     facility = EditorFacility.VAB;
@@ -265,7 +273,7 @@ namespace KerbalKonstructs.Core
                 {
                     facility = EditorFacility.SPH;
                 }
-                
+
 
                 EditorDriver.StartupBehaviour = EditorDriver.StartupBehaviours.START_CLEAN;
                 EditorDriver.StartEditor(facility);
@@ -278,7 +286,6 @@ namespace KerbalKonstructs.Core
             {
                 try
                 {
-
                     if (this.gameObject == null)
                     {
                         Destroy(this);
@@ -313,10 +320,10 @@ namespace KerbalKonstructs.Core
 
         void OnMouseExit()
         {
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
-            {
-                staticInstance.HighlightObject(Color.clear);
-            }
+            //if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            //{
+            staticInstance.HighlightObject(Color.clear);
+            //}
         }
         #endregion
 

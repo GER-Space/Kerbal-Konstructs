@@ -10,6 +10,8 @@ namespace KerbalKonstructs.Core
 {
     public class CameraController
     {
+        private static Camera nearCam = null;
+
         public FlightCamera cam;
         public bool active = false;
 
@@ -28,7 +30,7 @@ namespace KerbalKonstructs.Core
                 active = true;
                 if (KerbalKonstructs.useLegacyCamera)
                 {
-                    
+
                     InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "KKCamControls");
 
                     cam.DeactivateUpdate();
@@ -70,7 +72,7 @@ namespace KerbalKonstructs.Core
 
         public void updateCamera()
         {
-            bool needUpdate = false; 
+            bool needUpdate = false;
             if (Input.GetMouseButton(1))
             {
                 x += Input.GetAxis("Mouse X") * cam.orbitSensitivity * 50.0f;
@@ -98,12 +100,16 @@ namespace KerbalKonstructs.Core
         /// <param name="currentSite"></param>
         internal static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
-            float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
-            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
+
+            //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
+            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
             {
+                float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
+                KerbalKonstructs.instance.FuckUpKSP();
+
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    Log.Normal("Restting to: " + currentSite.LaunchSiteName);
+                    Log.Normal("Resetting to: " + currentSite.LaunchSiteName);
                     scCam.transform.parent = currentSite.lsGameObject.transform;
                     scCam.transform.position = currentSite.lsGameObject.transform.position;
                     scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
@@ -118,8 +124,10 @@ namespace KerbalKonstructs.Core
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                    Log.Normal("Restting to KSC");
+
+                    Log.Normal("Resetting to KSC");
                     Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
+                    float nomHeight = 45f - (float)ConfigUtil.GetCelestialBody("HomeWorld").GetAltitude(kscRnD.gameObject.transform.position);
                     scCam.transform.parent = kscRnD.gameObject.transform;
                     scCam.transform.position = kscRnD.gameObject.transform.transform.position;
                     scCam.initialPositionTransformName = kscRnD.gameObject.transform.name;
@@ -132,82 +140,53 @@ namespace KerbalKonstructs.Core
             }
 
             SetNextMorningPoint(currentSite);
+
+            TuneSCCam();
+
+        }
+
+        internal static void TuneSCCam()
+        {
+            if (nearCam != null)
+            {
+                nearCam.nearClipPlane = 4f;
+            }
+            else
+            {
+                foreach (Camera cam in Resources.FindObjectsOfTypeAll<Camera>())
+                {
+                    if (cam.enabled)
+                    {
+
+                        if (cam.nearClipPlane < 1 && cam.farClipPlane > 200 && cam.nearClipPlane > 0.15 && cam.farClipPlane < 900)
+                        {
+                            nearCam = cam;
+                            cam.nearClipPlane = 15f;
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static void ResetNearCam()
+        {
+            if (nearCam != null)
+            {
+                nearCam.nearClipPlane = 0.21f;
+            }
         }
 
 
-        //internal static void SetSpaceCenterCam2(KKLaunchSite currentSite)
-        //{
-        //    if (KerbalKonstructs.focusLastLaunchSite)
-        //    {
-        //        foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-        //        {
-        //            scCam.transform.parent = currentSite.lsGameObject.transform;
-        //            scCam.transform.position = currentSite.lsGameObject.transform.position + Vector3.up * 100;
-        //            scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
-        //            FieldInfo pqsField = scCam.GetType().GetField("pqs", BindingFlags.Instance | BindingFlags.NonPublic);
-        //            pqsField.SetValue(scCam, currentSite.body.pqsController);
-        //            scCam.pqsName = currentSite.body.name;
-        //            scCam.ResetCamera();
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
-        //        {
-        //            scCam.transform.parent = SpaceCenter.Instance.transform;
-        //            scCam.transform.position = SpaceCenter.Instance.transform.position;
-        //            scCam.initialPositionTransformName = "KSC/SpaceCenter/SpaceCenterCameraPosition";
-        //            scCam.pqsName = "Kerbin";
-        //            scCam.ResetCamera();
-        //        }
-        //    }
-        //    if (currentSite.LaunchSiteName == "Runway" || currentSite.LaunchSiteName == "LaunchPad")
-        //    {
-        //        foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-        //        {
-        //            cam.altitudeInitial = 45f;
-        //            cam.ResetCamera();
-
-        //        }
-        //    }
-        //    else
-        //    {
-        //        PQSCity sitePQS = currentSite.staticInstance.pqsCity;
-
-        //        foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll(typeof(SpaceCenterCamera2)))
-        //        {
-        //            if (sitePQS.repositionToSphere || sitePQS.repositionToSphereSurface)
-        //            {
-        //                double nomHeight = currentSite.body.pqsController.GetSurfaceHeight((Vector3d)sitePQS.repositionRadial.normalized) - currentSite.body.Radius;
-        //                if (sitePQS.repositionToSphereSurface)
-        //                {
-        //                    nomHeight += sitePQS.repositionRadiusOffset;
-        //                }
-        //                cam.altitudeInitial = 0f - (float)nomHeight;
-        //            }
-        //            else
-        //            {
-        //                cam.altitudeInitial = 0f - (float)sitePQS.repositionRadiusOffset;
-        //            }
-        //            cam.ResetCamera();
-        //            Log.Normal("fixed the Space Center camera.");
-        //        }
-        //    }
-
-        //    SetNextMorningPoint(currentSite);
-        //}
 
         static void SetNextMorningPoint(KKLaunchSite launchSite)
         {
-
-            //double timeOfDawn = ((launchSite.refLon) / 360) * -1;
-            double timeOfDawn = ((0.95 * (0.25 - launchSite.body.initialRotation / 360 ) - ((launchSite.refLon) / 360) +1) %1 );
+            double timeOfDawn = ((0.95 * (0.25 - launchSite.body.initialRotation / 360) - ((launchSite.refLon) / 360) + 1) % 1);
 
             KSP.UI.UIWarpToNextMorning.timeOfDawn = (timeOfDawn + 0.05);
-            
+
             Log.Normal("Fixed the \"warp to next morning\" button: " + KSP.UI.UIWarpToNextMorning.timeOfDawn.ToString());
         }
+
 
     }
 }

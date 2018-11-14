@@ -7,9 +7,6 @@ using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
-
-
-
     class LaunchSiteSelectorGUI : KKWindow
     {
         private static LaunchSiteSelectorGUI _instance = null;
@@ -43,7 +40,7 @@ namespace KerbalKonstructs.UI
         public bool showFavOnly = false;
 
         private static KKLaunchSite defaultSite = null;
-        internal static KKLaunchSite selectedSite ;
+        internal static KKLaunchSite selectedSite;
 
         private string launchButtonName = "";
 
@@ -79,7 +76,8 @@ namespace KerbalKonstructs.UI
                     selectedSite = LaunchSiteManager.GetDefaultSite();
                     defaultSite = selectedSite;
                 }
-            } catch
+            }
+            catch
             {
                 selectedSite = LaunchSiteManager.GetDefaultSite();
             }
@@ -184,7 +182,7 @@ namespace KerbalKonstructs.UI
                 }
 
                 isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
-                if (GUILayout.Button(new GUIContent(isSelected? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
                     category = LaunchSiteCategory.RocketPad;
                     showAllcategorys = false;
@@ -212,7 +210,7 @@ namespace KerbalKonstructs.UI
                     GUI.enabled = false;
                 }
                 isSelected = (showAllcategorys || (category == LaunchSiteCategory.Helipad));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn: UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn : UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
                     category = LaunchSiteCategory.Helipad;
                     showAllcategorys = false;
@@ -289,7 +287,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.BeginHorizontal();
                     {
                         ShowOpenStatus(site);
-
+                        ShowCategory(site);
                         launchButtonName = site.LaunchSiteName;
                         if (site.LaunchSiteName == "Runway")
                         {
@@ -339,7 +337,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Box("Current Launchsite: " + sCurrentSite);
                     break;
             }
-            
+
             GUI.enabled = (selectedSite.isOpen && (selectedSite.LaunchSiteName != sCurrentSite));
             if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
             {
@@ -351,7 +349,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUI.enabled = false;
-                if ( (selectedSite.isOpen) &&  (EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != selectedSite.LaunchSiteName))
+                if ((selectedSite.isOpen) && (EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != selectedSite.LaunchSiteName))
                 {
                     GUI.enabled = true;
                 }
@@ -403,6 +401,32 @@ namespace KerbalKonstructs.UI
             }
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+
+
+        internal static void ShowCategory(KKLaunchSite site)
+        {
+            switch (site.sitecategory)
+            {
+                case LaunchSiteCategory.Runway:
+                    GUILayout.Button(UIMain.runWayIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Helipad:
+                    GUILayout.Button(UIMain.heliPadIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.RocketPad:
+                    GUILayout.Button(UIMain.VABIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Waterlaunch:
+                    GUILayout.Button(UIMain.waterLaunchIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                case LaunchSiteCategory.Other:
+                    GUILayout.Button(UIMain.ANYIcon, UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+                default:
+                    GUILayout.Button("", UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                    break;
+            }
         }
 
 

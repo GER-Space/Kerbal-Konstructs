@@ -41,7 +41,6 @@ namespace KerbalKonstructs.UI
         GUIStyle DeadButton;
         GUIStyle DeadButtonRed;
         GUIStyle DeadButton2;
-        GUIStyle DeadButton3;
         GUIStyle KKWindow;
         GUIStyle BoxNoBorder;
 
@@ -96,8 +95,6 @@ namespace KerbalKonstructs.UI
         public Boolean bSortTitle = false;
         private string smessage = "";
 
-
-        LaunchSiteCategory launchsiteCategory;
 
         // models change only once
         private static StaticModel[] allStaticModels;
@@ -194,18 +191,6 @@ namespace KerbalKonstructs.UI
             DeadButton2.focused.textColor = Color.white;
             DeadButton2.fontSize = 14;
             DeadButton2.fontStyle = FontStyle.Bold;
-
-            DeadButton3 = new GUIStyle(GUI.skin.button);
-            DeadButton3.normal.background = null;
-            DeadButton3.hover.background = null;
-            DeadButton3.active.background = null;
-            DeadButton3.focused.background = null;
-            DeadButton3.normal.textColor = Color.white;
-            DeadButton3.hover.textColor = Color.white;
-            DeadButton3.active.textColor = Color.white;
-            DeadButton3.focused.textColor = Color.white;
-            DeadButton3.fontSize = 13;
-            DeadButton3.fontStyle = FontStyle.Bold;
 
             DeadButtonRed = new GUIStyle(GUI.skin.button);
             DeadButtonRed.normal.background = null;
@@ -407,23 +392,6 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
-        //void SetLocalsGroup(string sGroup, float fRange)
-        //{
-        //    if (sGroup == "")
-        //        return;
-
-        //    foreach (StaticInstance obj in StaticDatabase.GetAllStatics())
-        //    {
-        //        if (obj.CelestialBody == FlightGlobals.currentMainBody)
-        //        {
-        //            var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, obj.gameObject.transform.position);
-        //            if (dist < fRange)
-        //            {
-        //                StaticDatabase.ChangeGroup(obj, sGroup);
-        //            }
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// wrapper for editorGUI spawnInstance
@@ -668,36 +636,14 @@ namespace KerbalKonstructs.UI
                 {
                     GUILayout.BeginHorizontal();
 
-                    GUILayout.Button("" + allStaticInstances[ix].Group, DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
+                    GUILayout.Button("" + allStaticInstances[ix].Group, UIMain.DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
                     if (allStaticInstances[ix].hasLauchSites)
                     {
-                        launchsiteCategory = allStaticInstances[ix].launchSite.sitecategory;
-
-                        switch (launchsiteCategory)
-                        {
-                            case LaunchSiteCategory.Runway:
-                                GUILayout.Button(UIMain.runWayIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                            case LaunchSiteCategory.Helipad:
-                                GUILayout.Button(UIMain.heliPadIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                            case LaunchSiteCategory.RocketPad:
-                                GUILayout.Button(UIMain.VABIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                            case LaunchSiteCategory.Waterlaunch:
-                                GUILayout.Button(UIMain.waterLaunchIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                            case LaunchSiteCategory.Other:
-                                GUILayout.Button(UIMain.ANYIcon, DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                            default:
-                                GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
-                                break;
-                        }
+                        LaunchSiteSelectorGUI.ShowCategory(allStaticInstances[ix].launchSite);
                     }
                     else
                     {
-                        GUILayout.Button("", DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
+                        GUILayout.Button("", UIMain.DeadButton3, GUILayout.Width(23), GUILayout.Height(23));
                     }
 
                     //GUI.enabled = (obj != selectedObject);
@@ -856,7 +802,7 @@ namespace KerbalKonstructs.UI
                     EditorGUI.selectedInstance = null;
 
                     GroupCenter groupCenter = new GroupCenter();
-                    groupCenter.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
+                    groupCenter.RadialPosition = FlightGlobals.currentMainBody.transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
                     groupCenter.Group = "NewGroup";
                     groupCenter.CelestialBody = FlightGlobals.currentMainBody;
                     groupCenter.Spawn();
@@ -879,7 +825,7 @@ namespace KerbalKonstructs.UI
 
                 GUILayout.FlexibleSpace();
 
-                GUILayout.Button("active Group:" + ((activeGroup != null) ? activeGroup.Group : " not set") + "  ", DeadButton3, GUILayout.Width(150), GUILayout.Height(23));
+                GUILayout.Button("active Group:" + ((activeGroup != null) ? activeGroup.Group : " not set") + "  ", UIMain.DeadButton3, GUILayout.Width(150), GUILayout.Height(23));
 
                 if (GUILayout.Button("Set Active Group", GUILayout.Width(170)))
                 {

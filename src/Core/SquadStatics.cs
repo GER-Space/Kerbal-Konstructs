@@ -124,6 +124,14 @@ namespace KerbalKonstructs
 
                     StaticDatabase.RegisterModel(model, modelName);
 
+                    if (modelName == "KSC_SpaceplaneHangar_level_3")
+                    {
+                        CreateModelFromGameObject(model.prefab.transform.FindRecursive("Tank").gameObject, "KSC_FuelTank", "Tanks");
+                        CreateModelFromGameObject(model.prefab.transform.FindRecursive("ksp_pad_cylTank").gameObject, "KSC_FuelTanks", "Tanks");
+                        CreateModelFromGameObject(model.prefab.transform.FindRecursive("ksp_pad_waterTower").gameObject, "KSC_WaterTower", "Tanks");
+                    }
+
+
                     // try to extract the wrecks from the facilities
                     var transforms = model.prefab.transform.GetComponentsInChildren<Transform>(true);
                     int wreckCount = 0;
@@ -157,8 +165,28 @@ namespace KerbalKonstructs
                     }
                 }
             }
-
         }
+
+
+        private static void CreateModelFromGameObject(GameObject prefab, string modelName, string category)
+        {
+            StaticModel model = new StaticModel();
+            model.isSquad = true;
+            model.name = modelName;
+            model.prefab = prefab;
+            // Fill in FakeNews errr values
+            model.path = "KerbalKonstructs/" + modelName;
+            model.configPath = model.path + ".cfg";
+            model.keepConvex = true;
+            model.title = modelName;
+            model.mesh = modelName;
+            model.category = category;
+            model.author = "Squad";
+            model.manufacturer = "Squad";
+            model.description = "Squad original " + modelName;
+            StaticDatabase.RegisterModel(model, modelName);
+        }
+
 
         /// <summary>
         /// Loads all non KSC models into the ModelDatabase
