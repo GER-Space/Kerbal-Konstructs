@@ -87,6 +87,7 @@
     <Compile Include="Core\Config\KKCustomParameters.cs" />
     <Compile Include="Core\KKMath.cs" />
     <Compile Include="Core\LaunchSites\LaunchSiteParser.cs" />
+    <Compile Include="Core\LaunchSites\LaunchSiteChecks.cs" />
     <Compile Include="Core\MapDecals\DecalsDatabase.cs" />
     <Compile Include="Core\MapDecals\MapDecalInstance.cs" />
     <Compile Include="Core\MapDecals\MapDecalsMap.cs" />

@@ -28,7 +28,7 @@ namespace KerbalKonstructs.UI
 
         public double dUpdater = 0;
 
-        Rect StaticInfoRect = new Rect(300, 50, 320, 620);
+        Rect StaticInfoRect = new Rect(300, 50, 320, 660);
 
         public Boolean displayingInfo = false;
         public Boolean bCycle = true;
@@ -56,6 +56,9 @@ namespace KerbalKonstructs.UI
 
         String infLaunchLength = "";
         String infLaunchWidth = "";
+        String infLaunchHeight = "";
+        String infLaunchMaxMass = "";
+        String infLaunchMaxParts = "";
         String infFacType = "";
         String infFacMassCap = "";
         String infFacCraftCap = "";
@@ -227,6 +230,27 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 infLaunchWidth = GUILayout.TextField(infLaunchWidth, 5, GUILayout.Width(130), GUILayout.Height(18));
                 GUILayout.Label("m", LabelWhite, GUILayout.Width(20));
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Height: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infLaunchHeight = GUILayout.TextField(infLaunchHeight, 5, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("m", LabelWhite, GUILayout.Width(20));
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("MaxMass: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infLaunchMaxMass = GUILayout.TextField(infLaunchMaxMass, 5, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("t", LabelWhite, GUILayout.Width(20));
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("MaxParts: ", LabelGreen);
+                GUILayout.FlexibleSpace();
+                infLaunchMaxParts = GUILayout.TextField(infLaunchMaxParts, 5, GUILayout.Width(130), GUILayout.Height(18));
+                GUILayout.Label("", LabelWhite, GUILayout.Width(20));
                 GUILayout.EndHorizontal();
 
                 GUILayout.Space(1);
@@ -503,6 +527,12 @@ namespace KerbalKonstructs.UI
                 mModel.DefaultLaunchSiteLength = float.Parse(infLaunchLength);
             if (infLaunchWidth != "")
                 mModel.DefaultLaunchSiteWidth = float.Parse(infLaunchWidth);
+            if (infLaunchHeight != "")
+                mModel.DefaultLaunchSiteHeight = float.Parse(infLaunchHeight);
+            if (infLaunchMaxMass != "")
+                mModel.DefaultLaunchSiteMaxMass = float.Parse(infLaunchMaxMass);
+            if (infLaunchMaxParts != "")
+                mModel.DefaultLaunchSiteMaxParts = int.Parse(infLaunchMaxParts);
             if (infFacMassCap != "")
                 mModel.DefaultFacilityMassCapacity = float.Parse(infFacMassCap);
             if (infFacCraftCap != "")
@@ -533,6 +563,9 @@ namespace KerbalKonstructs.UI
 
             infLaunchLength = obj.DefaultLaunchSiteLength.ToString();
             infLaunchWidth = obj.DefaultLaunchSiteWidth.ToString();
+            infLaunchHeight = obj.DefaultLaunchSiteHeight.ToString();
+            infLaunchMaxMass = obj.DefaultLaunchSiteMaxMass.ToString();
+            infLaunchMaxParts = obj.DefaultLaunchSiteMaxParts.ToString();
             infFacType = obj.DefaultFacilityType;
             infFacMassCap = obj.DefaultFacilityMassCapacity.ToString();
             infFacCraftCap = obj.DefaultFacilityCraftCapacity.ToString();
@@ -609,7 +642,7 @@ namespace KerbalKonstructs.UI
                 return;
 
 
-            soObject.gameObject.transform.Rotate(Vector3.up, 0.1f);
+            soObject.transform.Rotate(Vector3.up, 0.1f);
 
         }
     }

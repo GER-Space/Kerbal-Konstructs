@@ -206,7 +206,7 @@ namespace KerbalKonstructs.UI
 				if (vVessel.situation != Vessel.Situations.LANDED) continue;
 				if (vVessel.GetCrewCount() > 0) continue;
 
-				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, selectedFacility.gameObject.transform.position);
+				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, selectedFacility.position);
 				if (vDistToCraft > 250) continue;
 
 				bNearbyCraft = true;
@@ -256,7 +256,7 @@ namespace KerbalKonstructs.UI
 				if (vVessel.vesselType == VesselType.Flag) continue;
 				if (vVessel.situation != Vessel.Situations.LANDED) continue;
 
-				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, instance.gameObject.transform.position);
+				var vDistToCraft = Vector3.Distance(vVessel.gameObject.transform.position, instance.position);
 				if (vDistToCraft > 260) continue;
 				else
 					bIsClear = false;

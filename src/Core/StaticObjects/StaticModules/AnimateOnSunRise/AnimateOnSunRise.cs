@@ -246,7 +246,7 @@ namespace KerbalKonstructs
                 //Log.Trace();
                 try
                 {
-                    groupBounds.Encapsulate(GetBounds(slaveModule.gameObject));
+                    groupBounds.Encapsulate(slaveModule.gameObject.GetRendererBounds());
                 } 
                 catch
                 {
@@ -255,30 +255,12 @@ namespace KerbalKonstructs
                 }
 				
 			}
-			groupBounds.Encapsulate (GetBounds (gameObject));
+			groupBounds.Encapsulate (gameObject.GetRendererBounds());
 			groupBounds.Expand (1f);
 
-			return (groupBounds.center + (FlightGlobals.getUpAxis (FlightGlobals.currentMainBody, groupBounds.center) * (groupBounds.size.y / 2f)));
+			return (groupBounds.center + (FlightGlobals.getUpAxis(FlightGlobals.currentMainBody, groupBounds.center) * (groupBounds.size.y / 2f)));
 		}
 
-		private Bounds GetBounds (GameObject staticObject)
-		{
-			Bounds meshBounds = staticObject.GetComponentInChildren<MeshFilter>(true).mesh.bounds;
-			Bounds colliderBounds = new Bounds ();
-
-			if (staticObject.GetComponentInChildren<Collider>(true) != null)
-            {
-				colliderBounds = staticObject.GetComponentInChildren<Collider>(true).bounds;
-			}
-
-			if (meshBounds.size.y > colliderBounds.size.y)
-            {
-				return meshBounds;
-			} else
-            {
-				return colliderBounds;
-			}
-		}
 
 		private float GetHorizonAngle ()
 		{

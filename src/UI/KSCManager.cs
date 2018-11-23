@@ -222,7 +222,7 @@ namespace KerbalKonstructs.UI
         {
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
-                foreach (DestructibleBuilding building in instance.gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
+                foreach (DestructibleBuilding building in instance.transform.gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
                 {
                     if (building.IsDestroyed)
                     {

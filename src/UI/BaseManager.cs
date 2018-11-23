@@ -24,7 +24,7 @@ namespace KerbalKonstructs.UI
         }
 
 
-        public static Rect BaseManagerRect = new Rect(250, 60, 185, 650);
+        public static Rect BaseManagerRect = new Rect(250, 60, 185, 610);
 
 		public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
 		public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);
@@ -247,10 +247,13 @@ namespace KerbalKonstructs.UI
 				GUILayout.Label("Longitude: " + selectedSite.refLon.ToString("#0.000"), LabelInfo);
 				GUILayout.Label("Latitude: " + selectedSite.refLat.ToString("#0.000"), LabelInfo);
 				GUILayout.Space(3);
-				GUILayout.Label("Length: " + selectedSite.LaunchSiteLength.ToString("#0" + " m"), LabelInfo);
-				GUILayout.Label("Width: " + selectedSite.LaunchSiteWidth.ToString("#0" + " m"), LabelInfo);
+				GUILayout.Label("Max Length: " + ((selectedSite.LaunchSiteLength == 0f) ? "unlimited ": selectedSite.LaunchSiteLength.ToString("#0" + " m")), LabelInfo);
+				GUILayout.Label("Max Width: " + ((selectedSite.LaunchSiteWidth == 0f) ? "unlimited " : selectedSite.LaunchSiteWidth.ToString("#0" + " m")), LabelInfo);
+                GUILayout.Label("Max Height: " + ((selectedSite.LaunchSiteHeight == 0f) ? "unlimited " : selectedSite.LaunchSiteHeight.ToString("#0" + " m")), LabelInfo);
+                GUILayout.Label("Max Mass: " + ((selectedSite.MaxCraftMass == 0f) ? "unlimited " : selectedSite.MaxCraftMass.ToString("#0" + " t")), LabelInfo);
+                GUILayout.Label("Max Parts: " + ((selectedSite.MaxCraftParts == 0) ? "unlimited " : selectedSite.MaxCraftParts.ToString("#0")), LabelInfo);
 
-				GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 			}
 
 			if (MiscUtils.isCareerGame())

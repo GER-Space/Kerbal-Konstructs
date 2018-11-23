@@ -131,7 +131,7 @@ namespace KerbalKonstructs.Modules
             for (int i = 0; i < groundStations.Count; i++)
             {
                 groundStation = groundStations[i];
-                if ((mapHideIconsBehindBody) && (IsOccluded(groundStation.gameObject.transform.position, body)))
+                if ((mapHideIconsBehindBody) && (IsOccluded(groundStation.position, body)))
                 {
                     continue;
                 }
@@ -150,7 +150,7 @@ namespace KerbalKonstructs.Modules
                 if (!display2)
                     continue;
 
-                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(groundStation.gameObject.transform.position));
+                Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(groundStation.position));
 
                 Rect screenRect6 = new Rect((pos.x - 8), (Screen.height - pos.y) - 8, 16, 16);
                 // Distance between camera and spawnpoint sort of
@@ -164,7 +164,7 @@ namespace KerbalKonstructs.Modules
                 {
 
 
-                    var objectpos2 = groundStation.CelestialBody.transform.InverseTransformPoint(groundStation.gameObject.transform.position);
+                    var objectpos2 = groundStation.CelestialBody.transform.InverseTransformPoint(groundStation.position);
 
                     var disObjectLat2 = KKMath.GetLatitudeInDeg(objectpos2);
                     var disObjectLon2 = KKMath.GetLongitudeInDeg(objectpos2);

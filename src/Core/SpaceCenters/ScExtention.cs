@@ -15,11 +15,8 @@ namespace KerbalKonstructs.Core
             MethodInfo originalCall = typeof(EditorEnumExtensions).GetMethod("GetFacility", BindingFlags.Public | BindingFlags.Static);
             MethodInfo improvedCall = typeof(KKSpaceCenter).GetMethod("GetFacility", BindingFlags.Public | BindingFlags.Static);
 
-
-            if (originalCall != null && improvedCall != null)
-                AsmUtils.TryDetourFromTo(originalCall, improvedCall);
-            else
-                Log.Normal( (originalCall != null) + " " + (improvedCall != null));
+            AsmUtils.Detour getFacDetour = new AsmUtils.Detour(originalCall, improvedCall);
+            getFacDetour.Install();
         }
 
     }

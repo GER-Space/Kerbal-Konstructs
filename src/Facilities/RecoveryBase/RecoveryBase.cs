@@ -22,7 +22,7 @@ namespace KerbalKonstructs.Modules
                 customSpaceCenter.isFromFacility = true;
                 customSpaceCenter.SpaceCenterName = FacilityName;
                 customSpaceCenter.staticInstance = staticInstance;
-                customSpaceCenter.gameObject = staticInstance.gameObject;
+                customSpaceCenter.gameObject = staticInstance.transform.gameObject;
                 SpaceCenterManager.AddSpaceCenter(customSpaceCenter);
                 Log.Normal("SpaceCenter created: " + FacilityName);
             }

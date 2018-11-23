@@ -188,6 +188,9 @@ namespace KerbalKonstructs
 
             DontDestroyOnLoad(this);
 
+            KKClassExtentions.FakeGameObjectTags();
+
+
             // PQSMapDecal
             Log.PerfStart("loading MapDecals");
             MapDecalUtils.GetSquadMaps();
@@ -216,6 +219,7 @@ namespace KerbalKonstructs
             Log.PerfStop("Module Creation");
 
             ScExtention.TuneFacilities();
+            LaunchSiteChecks.PrepareSystem();
 
             Log.UserInfo("Version is " + sKKVersion + " .");
 
@@ -245,10 +249,11 @@ namespace KerbalKonstructs
                 {
                     Log.Normal("Trying to bring the vessel back to the surface.");
                     vessel.SetPosition(lastSite.lsGameObject.transform.Find(lastSite.LaunchPadTransform).position); 
-                }        
+                }
             }           
         }
 
+        static bool PimpLV2Runway = false;
 
         internal void OnSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> fromTo)
         {
@@ -259,6 +264,11 @@ namespace KerbalKonstructs
                 Log.Normal("Requested scene is SpaceCenter");
                 FuckUpKSP();
             }
+            if (targetScene == GameScenes.SPACECENTER && fromTo.from == GameScenes.MAINMENU)
+            {
+                PimpLV2Runway = true;
+            }
+
 
         }
 
@@ -330,15 +340,20 @@ namespace KerbalKonstructs
         /// <param name="vVessel"></param>
         void OnVesselLaunched(ShipConstruct vVessel)
         {
-            Log.Normal("OnVesselLaunched");
+
             string sitename = LaunchSiteManager.getCurrentLaunchSite();
+            FlightGlobals.ActiveVessel.SetLandedAt(sitename);
+            FlightGlobals.ActiveVessel.protoVessel.landedAt = sitename;
+
             if (sitename == "Runway" || sitename == "LaunchPad" || sitename == "KSC" || sitename == "")
             {
                 return;
             }
             // reset the name to the site, so it can be fetched again
-            KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
-            lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+            //KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
+            //lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+
+
 
             if (!CareerUtils.isCareerGame)
             {
@@ -454,7 +469,14 @@ namespace KerbalKonstructs
                     }
                     break;
                 case GameScenes.SPACECENTER:
-                    {                        
+                    {
+
+                        if (PimpLV2Runway)
+                        {
+                            SquadStatics.PimpLevel2Runway();
+                            PimpLV2Runway = false;
+                        }
+
                         Log.PerfStart("SC Scene");
                         if (convertLegacyConfigs)
                         {
@@ -472,25 +494,12 @@ namespace KerbalKonstructs
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         // 
-                        //// This is currently broken. I have no idea why
-                        ////
-                        //if (!currentBody.pqsController.isActive)
-                        //{
-                        //    Log.Normal("Activating Body: " + currentBody.name);
-                        //    currentBody.pqsController.SetTarget(currentSite.lsGameObject.transform);
-                        //    currentBody.pqsController.SetSecondaryTarget(currentSite.lsGameObject.transform);
-                        //    currentBody.pqsController.ActivateSphere();
-                        //    FlightGlobals.currentMainBody = currentBody;
-                        //    //currentBody.pqsController.RebuildSphere();
-                        //    Log.Normal("Body is active: " + currentBody.pqsController.isActive.ToString());
                         //}
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         //updateCache();
                         if (scCamWasAltered || focusLastLaunchSite)
                         {
-                            //FlightCamera.fetch.cameras[0].farClipPlane = 9f;
-                            //FlightCamera.fetch.cameras[1].nearClipPlane = 10f;
                             CameraController.SetSpaceCenterCam(currentSite);
                         }
                         updateCache();
@@ -787,7 +796,7 @@ namespace KerbalKonstructs
                 Vector3 playerPos = Vector3.zero;
                 if (selectedObject != null)
                 {
-                    playerPos = selectedObject.gameObject.transform.position;
+                    playerPos = selectedObject.position;
                     //Log.Normal("updateCache using selectedObject as playerPos");
                 }
                 else if (FlightGlobals.ActiveVessel != null)
@@ -1373,7 +1382,9 @@ namespace KerbalKonstructs
 
 
             if (camControl.active)
+            {
                 camControl.disable();
+            }
 
             if (StaticsEditorGUI.instance.snapTargetInstance == obj)
             {

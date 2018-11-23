@@ -394,6 +394,16 @@ namespace KerbalKonstructs.Core
             {
                 GameEvents.onEditorRestart.Fire();
             }
+            else
+            {
+                KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
+                if (uILaunchsiteController == null)
+                {
+                    Log.UserWarning("UILaunchsiteController not found");
+                    return;
+                }
+                uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
+            }
 
         }
 
@@ -803,11 +813,50 @@ namespace KerbalKonstructs.Core
         }
 
 
+        public static void ResetLaunchSiteFacilityName()
+        {
+            if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
+            {
+                return;
+            }
+            // reset the name to the site, so it can be fetched again
+            KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
+            if (lastSite != null)
+            {
+                lastSite.spaceCenterFacility.name = lastSite.LaunchSiteName;
+            }
+            else
+            {
+                // do nothing
+            }
+        }
+
+
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
         public static void setLaunchSite(KKLaunchSite site)
         {
+
+            ResetLaunchSiteFacilityName();
+
+            ////Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
+            //// without detouring some internal functions we have to fake the facility name... which is pretty bad
+            //if (site.spaceCenterFacility != null)
+            //{
+            //    if (EditorDriver.editorFacility == EditorFacility.SPH)
+            //    {
+            //        site.spaceCenterFacility.name = "Runway";
+            //    }
+            //    else
+            //    {
+            //        site.spaceCenterFacility.name = "LaunchPad";
+            //    }
+
+            //    //var field = typeof(EditorDriver).GetField("selectedlaunchSiteName", BindingFlags.Static | BindingFlags.NonPublic);
+            //    //field.SetValue(null, site.LaunchSiteName);
+            //}
+
             Log.Normal("Setting LaunchSite to " + site.LaunchSiteName);
             currentLaunchSite = site.LaunchSiteName;
 

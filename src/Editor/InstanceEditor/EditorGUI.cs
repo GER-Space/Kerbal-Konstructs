@@ -175,8 +175,8 @@ namespace KerbalKonstructs.UI
                 grasColorEnabled = (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0);
 
                 origCenter = selectedInstance.groupCenter;
-                origPosition = selectedInstance.gameObject.transform.localPosition;
-                origRotation = selectedInstance.gameObject.transform.localEulerAngles;
+                origPosition = selectedInstance.transform.localPosition;
+                origRotation = selectedInstance.transform.localEulerAngles;
                 origScale = selectedInstance.ModelScale;
             }
 
@@ -242,16 +242,16 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button(new GUIContent(tCopyPos, "Copy Position"), GUILayout.Width(23), GUILayout.Height(23)))
                 {
                     savedpos = true;
-                    savedPosition = selectedInstance.gameObject.transform.localPosition;
-                    savedRotation = selectedInstance.gameObject.transform.localEulerAngles;
+                    savedPosition = selectedInstance.transform.localPosition;
+                    savedRotation = selectedInstance.transform.localEulerAngles;
                     // Debug.Log("KK: Instance position copied");
                 }
                 if (GUILayout.Button(new GUIContent(tPastePos, "Paste Position"), GUILayout.Width(23), GUILayout.Height(23)))
                 {
                     if (savedpos)
                     {
-                        selectedInstance.gameObject.transform.localPosition = savedPosition;
-                        selectedInstance.gameObject.transform.localEulerAngles = savedRotation;
+                        selectedInstance.transform.localPosition = savedPosition;
+                        selectedInstance.transform.localEulerAngles = savedRotation;
                         ApplySettings();
                         // Debug.Log("KK: Instance position pasted");
                     }
@@ -266,8 +266,8 @@ namespace KerbalKonstructs.UI
                     }
                     else
                     {
-                        selectedInstance.gameObject.transform.localPosition = StaticsEditorGUI.instance.snapTargetInstance.gameObject.transform.localPosition;
-                        selectedInstance.gameObject.transform.localEulerAngles = StaticsEditorGUI.instance.snapTargetInstance.gameObject.transform.localEulerAngles;
+                        selectedInstance.transform.localPosition = StaticsEditorGUI.instance.snapTargetInstance.transform.localPosition;
+                        selectedInstance.transform.localEulerAngles = StaticsEditorGUI.instance.snapTargetInstance.transform.localEulerAngles;
 
                         ApplySettings();
                     }
@@ -413,7 +413,7 @@ namespace KerbalKonstructs.UI
             {
 
                 Vector3 pos = selectedInstance.CelestialBody.GetWorldSurfacePosition(selectedInstance.RefLatitude, selectedInstance.RefLongitude, selectedInstance.surfaceHeight);
-                selectedInstance.gameObject.transform.position = pos;
+                selectedInstance.transform.position = pos;
 
                 ApplySettings();
             }
@@ -452,18 +452,18 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(new GUIContent("Zero", "Zero Rotation"), GUILayout.Height(21), GUILayout.Width(50)))
                 {
-                    selectedInstance.gameObject.transform.localEulerAngles = Vector3.zero;
+                    selectedInstance.transform.localEulerAngles = Vector3.zero;
                     ApplySettings();
                 }
 
                 if (GUILayout.Button(new GUIContent("C-U", "allign UP to GroupCenter Up-vector"), GUILayout.Height(21), GUILayout.Width(50)))
                 {
 
-                    Vector3 newfwd = Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, selectedInstance.gameObject.transform.parent.up).normalized;
+                    Vector3 newfwd = Vector3.ProjectOnPlane(selectedInstance.transform.forward, selectedInstance.transform.parent.up).normalized;
                     Quaternion rotation = new Quaternion();
-                    rotation.SetLookRotation(newfwd, selectedInstance.gameObject.transform.parent.up);
+                    rotation.SetLookRotation(newfwd, selectedInstance.transform.parent.up);
 
-                    selectedInstance.gameObject.transform.rotation = rotation;
+                    selectedInstance.transform.rotation = rotation;
 
                     ApplySettings();
                 }
@@ -472,11 +472,11 @@ namespace KerbalKonstructs.UI
             if (GUILayout.Button(new GUIContent("P-U", "alling UP to Position-Up"), GUILayout.Height(21), GUILayout.Width(50)))
             {
 
-                Vector3 newfwd = Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, upVector).normalized;
+                Vector3 newfwd = Vector3.ProjectOnPlane(selectedInstance.transform.forward, upVector).normalized;
                 Quaternion rotation = new Quaternion();
                 rotation.SetLookRotation(newfwd, upVector);
 
-                selectedInstance.gameObject.transform.rotation = rotation;
+                selectedInstance.transform.rotation = rotation;
 
                 ApplySettings();
 
@@ -675,7 +675,7 @@ namespace KerbalKonstructs.UI
                 {
                     selectedInstance.SaveConfig();
                     KerbalKonstructs.instance.deselectObject(true, true);
-                    SpawnInstance(selectedInstance.model, selectedInstance.groupCenter, selectedInstance.gameObject.transform.position, selectedInstance.Orientation);
+                    SpawnInstance(selectedInstance.model, selectedInstance.groupCenter, selectedInstance.position, selectedInstance.Orientation);
                     MiscUtils.HUDMessage("Spawned duplicate " + selectedInstance.model.title, 10, 2);
                 }
             }
@@ -745,8 +745,8 @@ namespace KerbalKonstructs.UI
                         StaticDatabase.ChangeGroup(selectedInstance, origCenter);
                     }
                     selectedInstance.RelativePosition = origPosition;
-                    selectedInstance.gameObject.transform.localPosition = origPosition;
-                    selectedInstance.gameObject.transform.localEulerAngles = origRotation;
+                    selectedInstance.transform.localPosition = origPosition;
+                    selectedInstance.transform.localEulerAngles = origRotation;
                     selectedInstance.Orientation = origRotation;
                     selectedInstance.ModelScale = origScale;
                     ApplySettings();
@@ -838,10 +838,10 @@ namespace KerbalKonstructs.UI
             instance.groupCenter = groupCenter;
             instance.Group = groupCenter.Group;
 
-            instance.gameObject.transform.position = position;
-            instance.gameObject.transform.parent = groupCenter.gameObject.transform;
+            instance.transform.position = position;
+            instance.transform.parent = groupCenter.gameObject.transform;
 
-            instance.RelativePosition = instance.gameObject.transform.localPosition;
+            instance.RelativePosition = instance.transform.localPosition;
             instance.Orientation = rotation;
 
             if (!Directory.Exists(KSPUtil.ApplicationRootPath + "GameData/" + KerbalKonstructs.newInstancePath))
@@ -871,15 +871,15 @@ namespace KerbalKonstructs.UI
             get
             {
                 //return (selectedInstance.gameObject.transform.position + 4 * selectedInstance.gameObject.transform.up.normalized + 4 * selectedInstance.gameObject.transform.right.normalized);
-                return (selectedInstance.gameObject.transform.position);
+                return (selectedInstance.transform.position);
             }
         }
 
         private string GetHeading()
         {
-            float angle = Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, selectedInstance.gameObject.transform.up), selectedInstance.gameObject.transform.parent.forward);
+            float angle = Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.transform.forward, selectedInstance.transform.up), selectedInstance.transform.parent.forward);
 
-            if (Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, selectedInstance.gameObject.transform.up), selectedInstance.gameObject.transform.parent.right) < 90)
+            if (Vector3.Angle(Vector3.ProjectOnPlane(selectedInstance.transform.forward, selectedInstance.transform.up), selectedInstance.transform.parent.right) < 90)
             {
                 return angle.ToString();
             }
@@ -910,7 +910,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
+            cameraDistance = Vector3.Distance(selectedInstance.transform.position, FlightCamera.fetch.transform.position) / 4;
 
             if (referenceSystem == Reference.Center)
             {
@@ -939,17 +939,17 @@ namespace KerbalKonstructs.UI
                 upVR.SetShow(true);
                 rightVR.SetShow(true);
 
-                fwdVR.Vector = selectedInstance.gameObject.transform.forward;
+                fwdVR.Vector = selectedInstance.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.Scale = cameraDistance;
                 fwdVR.draw();
 
-                upVR.Vector = selectedInstance.gameObject.transform.up;
+                upVR.Vector = selectedInstance.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.Scale = cameraDistance;
                 upVR.draw();
 
-                rightVR.Vector = selectedInstance.gameObject.transform.right;
+                rightVR.Vector = selectedInstance.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.Scale = cameraDistance;
                 rightVR.draw();
@@ -962,7 +962,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void SetupVectors()
         {
-            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
+            cameraDistance = Vector3.Distance(selectedInstance.position, FlightCamera.fetch.transform.position) / 4;
 
             // draw vectors
             fwdVR.Color = new Color(0, 0, 1);
@@ -1005,10 +1005,10 @@ namespace KerbalKonstructs.UI
 
         private void SetupGizmo()
         {
-            origLocalPosition = selectedInstance.gameObject.transform.localPosition;
+            origLocalPosition = selectedInstance.transform.localPosition;
             if (referenceSystem == Reference.Center)
             {
-                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.gameObject.transform.localRotation, OnMoveCB, WhenMovedCB);
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.transform.localRotation, OnMoveCB, WhenMovedCB);
             }
             else
             {
@@ -1031,14 +1031,14 @@ namespace KerbalKonstructs.UI
         {
             // Log.Normal("OnMove: " + vector.ToString());
             //moveGizmo.transform.position += 3* vector;
-            selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+            selectedInstance.transform.position = EditorGizmo.moveGizmo.transform.position;
             //selectedInstance.gameObject.transform.localPosition += selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(vector);
         }
 
         internal void WhenMovedCB(Vector3 vector)
         {
             //Log.Normal("WhenMoved: " + vector.ToString());
-            selectedInstance.gameObject.transform.localPosition = origLocalPosition + selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(vector);
+            selectedInstance.transform.localPosition = origLocalPosition + selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(vector);
             ApplySettings();
         }
 
@@ -1046,15 +1046,15 @@ namespace KerbalKonstructs.UI
         internal void SetupFields()
         {
             incrementStr = increment.ToString();
-            altStr = selectedInstance.CelestialBody.GetAltitude(selectedInstance.gameObject.transform.position).ToString();
+            altStr = selectedInstance.CelestialBody.GetAltitude(selectedInstance.transform.position).ToString();
 
-            oriXStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.x, 4).ToString();
-            oriYStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.y, 4).ToString();
-            oriZStr = Math.Round(selectedInstance.gameObject.transform.localEulerAngles.z, 4).ToString();
+            oriXStr = Math.Round(selectedInstance.transform.localEulerAngles.x, 4).ToString();
+            oriYStr = Math.Round(selectedInstance.transform.localEulerAngles.y, 4).ToString();
+            oriZStr = Math.Round(selectedInstance.transform.localEulerAngles.z, 4).ToString();
 
-            posXStr = Math.Round(selectedInstance.gameObject.transform.localPosition.x, 4).ToString();
-            posYStr = Math.Round(selectedInstance.gameObject.transform.localPosition.y, 4).ToString();
-            posZStr = Math.Round(selectedInstance.gameObject.transform.localPosition.z, 4).ToString();
+            posXStr = Math.Round(selectedInstance.transform.localPosition.x, 4).ToString();
+            posYStr = Math.Round(selectedInstance.transform.localPosition.y, 4).ToString();
+            posZStr = Math.Round(selectedInstance.transform.localPosition.z, 4).ToString();
 
         }
 
@@ -1062,8 +1062,8 @@ namespace KerbalKonstructs.UI
         {
             increment = float.Parse(incrementStr);
 
-            selectedInstance.gameObject.transform.localPosition = new Vector3(float.Parse(posXStr), float.Parse(posYStr), float.Parse(posZStr));
-            selectedInstance.gameObject.transform.localEulerAngles = new Vector3(float.Parse(oriXStr), float.Parse(oriYStr), float.Parse(oriZStr));
+            selectedInstance.transform.localPosition = new Vector3(float.Parse(posXStr), float.Parse(posYStr), float.Parse(posZStr));
+            selectedInstance.transform.localEulerAngles = new Vector3(float.Parse(oriXStr), float.Parse(oriYStr), float.Parse(oriZStr));
 
 
             ApplySettings();
@@ -1078,7 +1078,7 @@ namespace KerbalKonstructs.UI
         /// <param name="increment"></param>
         internal void SetRotation(Vector3 axis, float increment)
         {
-            selectedInstance.gameObject.transform.Rotate(axis, increment);
+            selectedInstance.transform.Rotate(axis, increment);
             ApplySettings();
         }
 
@@ -1093,28 +1093,28 @@ namespace KerbalKonstructs.UI
             //selectedInstance.gameObject.transform.Translate(direction, Space.Self);
             if (referenceSystem == Reference.Center)
             {
-                selectedInstance.gameObject.transform.localPosition += direction;
+                selectedInstance.transform.localPosition += direction;
             }
             else
             {
                
                 if (direction.x != 0)
                 {
-                    movement = selectedInstance.gameObject.transform.right * direction.x;
+                    movement = selectedInstance.transform.right * direction.x;
                     localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);                   
-                    selectedInstance.gameObject.transform.localPosition += localMovement;
+                    selectedInstance.transform.localPosition += localMovement;
                 }
                 if (direction.y != 0)
                 {
-                    movement = selectedInstance.gameObject.transform.up * direction.y;
+                    movement = selectedInstance.transform.up * direction.y;
                     localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);
-                    selectedInstance.gameObject.transform.localPosition += localMovement;
+                    selectedInstance.transform.localPosition += localMovement;
                 }
                 if (direction.z != 0)
                 {
-                    movement = selectedInstance.gameObject.transform.forward * direction.z;
+                    movement = selectedInstance.transform.forward * direction.z;
                     localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);
-                    selectedInstance.gameObject.transform.localPosition += localMovement;
+                    selectedInstance.transform.localPosition += localMovement;
                 }
             }
             ApplySettings();
@@ -1149,7 +1149,7 @@ namespace KerbalKonstructs.UI
                 
                 northVector = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
                 eastVector = Vector3.Cross(upVector, northVector).normalized;
-                forwardVector = Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, upVector);
+                forwardVector = Vector3.ProjectOnPlane(selectedInstance.transform.forward, upVector);
 
                 double heading = Vector3.Angle(forwardVector, northVector);
 

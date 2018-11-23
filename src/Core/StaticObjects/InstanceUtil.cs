@@ -64,12 +64,12 @@ namespace KerbalKonstructs.Core
                     UnityEngine.Object.Destroy(component);
                 }               
             }
-
+            //instance.gameObject.tag = String.Empty;
 
             var transforms = gameObject.transform.GetComponentsInChildren<Transform>(true);
             foreach (var transform in transforms)
             {
-
+                //transform.gameObject.tag = String.Empty;
                 if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
                 {
                     transform.parent = null;
@@ -181,7 +181,7 @@ namespace KerbalKonstructs.Core
         internal static void SetLayerRecursively(StaticInstance instance, int newLayerNumber)
         {
 
-            var transforms = instance.gameObject.GetComponentsInChildren<Transform>(true);
+            var transforms = instance.transform.gameObject.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < transforms.Length; i++)
             {
                 // don't set trigger collider 

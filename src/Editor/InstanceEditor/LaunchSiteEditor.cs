@@ -35,7 +35,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        Rect siteEditorRect = new Rect(400, 45, 360, 625);
+        Rect siteEditorRect = new Rect(400, 45, 360, 660);
 
         #endregion
 
@@ -65,7 +65,16 @@ namespace KerbalKonstructs.UI
         public static StaticInstance selectedObject = null;
 
         internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
-        float flOpenCost, flCloseValue, flLength, flWidth;
+        float flOpenCost, flCloseValue;
+
+
+        string stOpenCost;
+        string stCloseValue;
+        string stLength;
+        string stWidth;
+        string stHeight;
+        string sMaxParts, sMaxMass;
+
 
         private string initialCameraRotation = "90";
 
@@ -179,11 +188,6 @@ namespace KerbalKonstructs.UI
 
         #region Launchsite Editor
         // Launchsite Editor handlers
-        string stOpenCost;
-        string stCloseValue;
-        string stLength;
-        string stWidth;
-
         /// <summary>
         /// Launchsite Editor
         /// </summary>
@@ -229,15 +233,33 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Length: ", GUILayout.Width(120));
+            GUILayout.Label("Max Vessel Length: ", GUILayout.Width(160));
             stLength = GUILayout.TextField(stLength, GUILayout.Height(19));
             GUILayout.Label(" m");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Width: ", GUILayout.Width(120));
+            GUILayout.Label("Max Vessel Width: ", GUILayout.Width(160));
             stWidth = GUILayout.TextField(stWidth, GUILayout.Height(19));
             GUILayout.Label(" m");
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Max Vessel Height: ", GUILayout.Width(160));
+            stHeight = GUILayout.TextField(stHeight, GUILayout.Height(19));
+            GUILayout.Label(" m");
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Max Vessel Mass: ", GUILayout.Width(160));
+            stHeight = GUILayout.TextField(stHeight, GUILayout.Height(19));
+            GUILayout.Label(" t");
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Max Vessel Parts: ", GUILayout.Width(160));
+            stHeight = GUILayout.TextField(stHeight, GUILayout.Height(19));
+            GUILayout.Label("");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -393,6 +415,11 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.LaunchSiteName = siteName;
             selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
             selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
+            selectedObject.launchSite.LaunchSiteHeight = float.Parse(stHeight);
+
+            selectedObject.launchSite.MaxCraftMass = float.Parse(sMaxMass);
+            selectedObject.launchSite.MaxCraftParts = int.Parse(sMaxParts);
+
             selectedObject.launchSite.LaunchSiteType = siteType;
             selectedObject.launchSite.LaunchPadTransform = siteTrans;
             selectedObject.launchSite.LaunchSiteDescription = siteDesc;
@@ -403,7 +430,7 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
             selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
             selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
-            selectedObject.launchSite.refAlt = (float)selectedObject.CelestialBody.GetAltitude(selectedObject.gameObject.transform.position);
+            selectedObject.launchSite.refAlt = (float)selectedObject.CelestialBody.GetAltitude(selectedObject.position);
             selectedObject.launchSite.sitecategory = category;
             selectedObject.launchSite.InitialCameraRotation = float.Parse(initialCameraRotation);
 
@@ -486,15 +513,13 @@ namespace KerbalKonstructs.UI
 
                 initialCameraRotation = selectedObject.launchSite.InitialCameraRotation.ToString();
 
-                flLength = selectedObject.launchSite.LaunchSiteLength;
+                stLength = Math.Round(selectedObject.launchSite.LaunchSiteLength,0).ToString();
+                stWidth = Math.Round(selectedObject.launchSite.LaunchSiteWidth,0).ToString();
+                stHeight = Math.Round(selectedObject.launchSite.LaunchSiteHeight,0).ToString();
 
-                if (flLength < 1)
-                    flLength = selectedObject.model.DefaultLaunchSiteLength;
+                sMaxMass = Math.Round(selectedObject.launchSite.MaxCraftMass, 0).ToString();
+                sMaxParts = selectedObject.launchSite.MaxCraftParts.ToString();
 
-                flWidth = selectedObject.launchSite.LaunchSiteWidth;
-
-                if (flWidth < 1)
-                    flWidth = selectedObject.model.DefaultLaunchSiteWidth;
 
             }
             else
@@ -517,12 +542,16 @@ namespace KerbalKonstructs.UI
 
                 category = LaunchSiteCategory.Other;
 
-                flLength = selectedObject.model.DefaultLaunchSiteLength;
-                flWidth = selectedObject.model.DefaultLaunchSiteWidth;
+                stLength = Math.Round(selectedObject.model.DefaultLaunchSiteLength, 0).ToString();
+                stWidth= Math.Round(selectedObject.model.DefaultLaunchSiteWidth, 0).ToString();
+                stHeight = Math.Round(selectedObject.model.DefaultLaunchSiteHeight, 0).ToString();
+
+                sMaxMass = Math.Round(selectedObject.model.DefaultLaunchSiteMaxMass, 0).ToString();
+                sMaxParts = selectedObject.model.DefaultLaunchSiteMaxParts.ToString();
+
+                ;
             }
 
-            stLength = string.Format("{0}", flLength);
-            stWidth = string.Format("{0}", flWidth);
             siteAuthor = selectedObject.model.author;
             // Debug.Log("KK: Making or editing a launchsite");
         }

@@ -622,7 +622,7 @@ namespace KerbalKonstructs.UI
 
                 if (allStaticInstances[ix].CelestialBody == FlightGlobals.currentMainBody)
                 {
-                    var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].gameObject.transform.position);
+                    var dist = Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStaticInstances[ix].position);
                     isLocal = (dist < KerbalKonstructs.localGroupRange);
                 }
                 else
@@ -943,7 +943,7 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-                Log.Normal("Try to select Object: " + myHitinstance.gameObject.name);
+                //Log.Normal("Try to select Object: " + myHitinstance.mesh.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
                 KerbalKonstructs.instance.selectObject(myHitinstance, true, true, false);
                 if (!EditorGUI.instance.IsOpen())

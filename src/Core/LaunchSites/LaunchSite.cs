@@ -65,9 +65,15 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string LaunchSiteDescription;
         [CFGSetting]
-        public float LaunchSiteLength;
+        public float LaunchSiteLength = 0f;
         [CFGSetting]
-        public float LaunchSiteWidth;
+        public float LaunchSiteWidth = 0f;
+        [CFGSetting]
+        public float LaunchSiteHeight = 0f;
+        [CFGSetting]
+        public float MaxCraftMass = 0f;
+        [CFGSetting]
+        public int MaxCraftParts = 0;
         [CFGSetting]
         public float InitialCameraRotation = 90f;
         [CFGSetting]
@@ -197,7 +203,7 @@ namespace KerbalKonstructs.Core
             refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
-            refAlt = (float)staticInstance.CelestialBody.GetAltitude(staticInstance.gameObject.transform.position);
+            refAlt = (float)staticInstance.CelestialBody.GetAltitude(staticInstance.position);
             
             AttachSelector();
 

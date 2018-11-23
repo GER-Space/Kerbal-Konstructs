@@ -41,7 +41,7 @@ namespace KerbalKonstructs.UI
 					if (instance.model.DefaultFacilityType != "Barracks") continue;
 				}
 
-				var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
+				var dist = Vector3.Distance(selectedFacility.position, instance.position);
 				if (dist > 5000f) continue;
 
                 Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
@@ -70,7 +70,7 @@ namespace KerbalKonstructs.UI
 
 				if (instance.CelestialBody.name == FlightGlobals.currentMainBody.name)
 				{
-					var dist = Vector3.Distance(selectedFacility.gameObject.transform.position, instance.gameObject.transform.position);
+					var dist = Vector3.Distance(selectedFacility.position, instance.position);
 					if (dist > 5000f) continue;
 				}
 				else

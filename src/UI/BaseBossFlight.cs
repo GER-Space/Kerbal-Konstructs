@@ -524,7 +524,7 @@ namespace KerbalKonstructs.UI
                 if (!allStatics[i].isActive)
                     continue;
                 // Facility is more than 5000m away
-                if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].gameObject.transform.position) > 5000f)
+                if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].position) > 5000f)
                     continue;
                 // is not a facility
                 if (String.Equals(allStatics[i].FacilityType, "None", StringComparison.CurrentCultureIgnoreCase))

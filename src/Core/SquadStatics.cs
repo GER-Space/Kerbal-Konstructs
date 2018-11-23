@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -16,17 +17,17 @@ namespace KerbalKonstructs
         /// </summary>
         internal static void LoadSquadModels()
         {
+            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+            {
+                LoadDesertSiteAssets();
+                ExtractDesertLights();
+            }
+
             LoadSquadKSCModels();
             LoadSquadAnomalies();
             LoadSquadAnomaliesLevel2();
             LoadSquadAnomaliesLevel3();
             MangleTrackingDishes();
-
-            if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
-            {
-                LoadDesertSiteAssets();
-                ExtractDesertLights();               
-            }
 
         }
 
@@ -69,6 +70,20 @@ namespace KerbalKonstructs
                     string modelName = "KSC_" + facility.name + "_level_" + (i + 1).ToString();
                     string modelTitle = "KSC " + facility.name + " lv " + (i + 1).ToString();
 
+
+                    if (modelName == "KSC_Runway_level_2")
+                    {
+                        if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
+                        {
+                            PimpLv2Runway(facility.UpgradeLevels[i].facilityPrefab);
+                            if (facility.UpgradeLevels[i].facilityInstance != null)
+                            {
+                                PimpLv2Runway(facility.UpgradeLevels[i].facilityInstance);
+                            }
+
+                        }
+                    }
+
                     // don't double register the models a second time (they will do this) 
                     // maybe with a "without green flag" and filter that our later at spawn in mangle
                     if (StaticDatabase.allStaticModels.Select(x => x.name).Contains(modelName))
@@ -105,7 +120,9 @@ namespace KerbalKonstructs
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                    model.prefab = facility.UpgradeLevels[i].facilityPrefab;
+                    model.prefab = GameObject.Instantiate(facility.UpgradeLevels[i].facilityPrefab);
+                    GameObject.DontDestroyOnLoad(model.prefab);
+                    model.prefab.SetActive(false);
 
                     // Register new GasColor Module
                     bool hasGrasMaterial = false;
@@ -138,7 +155,6 @@ namespace KerbalKonstructs
                         CreateModelFromGameObject(model.prefab.transform.FindRecursive("ksp_pad_waterTower").gameObject, "KSC_WaterTower", "Tanks");
                     }
 
-
                     // try to extract the wrecks from the facilities
                     var transforms = model.prefab.transform.GetComponentsInChildren<Transform>(true);
                     int wreckCount = 0;
@@ -164,7 +180,9 @@ namespace KerbalKonstructs
                             wreck.description = "Squad original " + wreck.title;
 
                             wreck.isSquad = true;
-                            wreck.prefab = transform.gameObject;
+                            wreck.prefab = GameObject.Instantiate(transform.gameObject);
+                            GameObject.DontDestroyOnLoad(wreck.prefab);
+                            wreck.prefab.SetActive(false);
 
                             //wreck.prefab.GetComponent<Transform>().parent = null;
                             StaticDatabase.RegisterModel(wreck, wreck.name);
@@ -181,7 +199,9 @@ namespace KerbalKonstructs
             StaticModel model = new StaticModel();
             model.isSquad = true;
             model.name = modelName;
-            model.prefab = prefab;
+            model.prefab = GameObject.Instantiate(prefab);
+            GameObject.DontDestroyOnLoad(model.prefab);
+            model.prefab.SetActive(false);
             // Fill in FakeNews errr values
             model.path = "KerbalKonstructs/" + modelName;
             model.configPath = model.path + ".cfg";
@@ -236,7 +256,9 @@ namespace KerbalKonstructs
                 model.isSquad = true;
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                model.prefab = pqs.gameObject;
+                model.prefab = GameObject.Instantiate(pqs.gameObject);
+                GameObject.DontDestroyOnLoad(model.prefab);
+                model.prefab.SetActive(false);
 
                 StaticDatabase.RegisterModel(model, modelName);
             }
@@ -287,7 +309,9 @@ namespace KerbalKonstructs
 
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                model.prefab = pqs2.gameObject;
+                model.prefab = GameObject.Instantiate(pqs2.gameObject);
+                GameObject.DontDestroyOnLoad(model.prefab);
+                model.prefab.SetActive(false);
                 StaticDatabase.RegisterModel(model, modelName);
             }
         }
@@ -352,7 +376,9 @@ namespace KerbalKonstructs
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                    model.prefab = child.gameObject;
+                    model.prefab = GameObject.Instantiate(child.gameObject);
+                    GameObject.DontDestroyOnLoad(model.prefab);
+                    model.prefab.SetActive(false);
 
                     StaticDatabase.RegisterModel(model, modelName);
                 }
@@ -427,8 +453,9 @@ namespace KerbalKonstructs
                         model.DefaultLaunchPadTransform = "End09/SpawnPoint";
 
                         // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                        model.prefab = child.gameObject;
-
+                        model.prefab = GameObject.Instantiate(child.gameObject);
+                        GameObject.DontDestroyOnLoad(model.prefab);
+                        model.prefab.SetActive(false);
 
                         StaticDatabase.RegisterModel(model, modelName);
                     }
@@ -486,7 +513,9 @@ namespace KerbalKonstructs
                             model.isSquad = true;
 
                             // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                            model.prefab = child2.gameObject;
+                            model.prefab = GameObject.Instantiate(child2.gameObject);
+                            GameObject.DontDestroyOnLoad(model.prefab);
+                            model.prefab.SetActive(false);
 
                             StaticDatabase.RegisterModel(model, modelName);
 
@@ -683,45 +712,54 @@ namespace KerbalKonstructs
         {
             if (ScenarioUpgradeableFacilities.GetFacilityLevel("Runway") == 0.5f)
             {
+                PQSCity kscPQS = ConfigUtil.GetCelestialBody("HomeWorld").pqsController.transform.GetComponentsInChildren<PQSCity>(true).Where(x => x.name == "KSC").FirstOrDefault();
 
-                var runway = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "Runway").First();
+                if (kscPQS == null)
+                {
+                    Log.Error("Cannot find KSC");
+                    return;
+                }
 
-                PimpLv2Runway(runway.CurrentLevel.facilityInstance.gameObject);
+                GameObject runway = kscPQS.gameObject.transform.FindRecursive("Runway").gameObject;
+                if (runway != null)
+                {
+                    Log.Normal("runway Found");
+                    IEnumerator coroutine = DelayedPatcher(runway);
+                    KerbalKonstructs.instance.StartCoroutine(coroutine);
+                }
             }
         }
 
 
-
-        internal static void PimpLv2Runway(GameObject modelPrefab)
+        internal static IEnumerator DelayedPatcher(GameObject runway)
         {
-            //StaticModel model = StaticDatabase.GetModelByName("KSC_Runway_level_2");
+            yield return new WaitForSeconds(2);
+
+            PimpLv2Runway(runway, true);
+        }
+
+
+        internal static void PimpLv2Runway(GameObject modelPrefab, bool state = false)
+        {
             StaticModel modelLights = StaticDatabase.GetModelByName("SQUAD_Runway_Lights");
+            Log.Normal("Prefab name: " + modelPrefab.name);
             int count = 0;
             foreach (Transform target in modelPrefab.transform.FindAllRecursive("fxTarget"))
             {
                 GameObject light = GameObject.Instantiate(modelLights.prefab);
-                //light.transform.localPosition = target.localPosition;
-                //light.transform.localRotation = target.localRotation;
-                light.transform.localScale *= 0.6f;
+                light.SetActive(state);
+                Log.Normal("found target: " + target.parent.name);
                 light.transform.parent = target.parent.FindRecursiveContains("runway");
-                //light.transform.parent = modelPrefab.transform;
-                //light.transform.localRotation = model.prefab.transform.localRotation;
-                //light.transform.localPosition = target.localPosition;
-                light.transform.position = target.position;
+                light.transform.localScale *= 0.6f;
+
                 light.transform.rotation = modelPrefab.transform.rotation;
-                light.transform.Translate(light.transform.up * 0.85f);
-                light.transform.Translate(light.transform.right * 50);
-                if (count > 1 && count < 7)
-                {
-                    light.transform.Translate(light.transform.right * 55);
-                }
+
+                light.transform.localPosition = new Vector3(6.5f, 0.85f, -1050f + count * 330);
+
                 light.name = light.transform.parent.name + "_lights";
+
                 count++;
             }
-
-
         }
-
-
     }
 }

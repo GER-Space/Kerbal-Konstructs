@@ -135,10 +135,10 @@ namespace KerbalKonstructs.UI
             }
 
 
-            vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
-            vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
+            vTDL = Camera.main.WorldToScreenPoint(soTDL.position);
+            vTDR = Camera.main.WorldToScreenPoint(soTDR.position);
 
-            vlgPos = soLandingGuide.gameObject.transform.position;
+            vlgPos = soLandingGuide.position;
             vcrPos = FlightGlobals.ActiveVessel.GetWorldPos3D();
             distance = Vector3.Distance(vlgPos, vcrPos);
 
@@ -177,7 +177,7 @@ namespace KerbalKonstructs.UI
 
             
 
-            Vector3 landingGuidePoint = soLandingGuide.gameObject.transform.position;
+            Vector3 landingGuidePoint = soLandingGuide.position;
             Vector3d vesselPosition = FlightGlobals.ActiveVessel.GetWorldPos3D();
 
 
@@ -194,7 +194,7 @@ namespace KerbalKonstructs.UI
                 // Draw the landing line depending on the angle
                 if (distance < 8000)
                 {
-                    horizontalVector = Vector3.ProjectOnPlane(fromShipToEnd, soLandingGuide.gameObject.transform.up);
+                    horizontalVector = Vector3.ProjectOnPlane(fromShipToEnd, soLandingGuide.transform.up);
                     glideAngle = Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude / fromShipToEnd.magnitude);
 
                     if (glideAngle > 6f)
@@ -219,7 +219,7 @@ namespace KerbalKonstructs.UI
 
 
                 // Check if we are past the landing guide
-                if (Vector3d.Dot(soLandingGuide.gameObject.transform.forward, fromShipToEnd) < 0)
+                if (Vector3d.Dot(soLandingGuide.transform.forward, fromShipToEnd) < 0)
                 {
                     return;
                 }
@@ -244,8 +244,8 @@ namespace KerbalKonstructs.UI
 
                         if (vTDL != Vector3.zero && vTDR != Vector3.zero)
                         {
-                            vTDR = Camera.main.WorldToScreenPoint(soTDR.gameObject.transform.position);
-                            vTDL = Camera.main.WorldToScreenPoint(soTDL.gameObject.transform.position);
+                            vTDR = Camera.main.WorldToScreenPoint(soTDR.position);
+                            vTDL = Camera.main.WorldToScreenPoint(soTDL.position);
 
                             Marker7 = new Rect((float)(vTDL.x) - (50 * flgWscale), (float)(Screen.height - vTDL.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);
                             Marker8 = new Rect((float)(vTDR.x) - (50 * flgWscale), (float)(Screen.height - vTDR.y) - (140 * flgHscale), 100 * flgWscale, 150 * flgHscale);

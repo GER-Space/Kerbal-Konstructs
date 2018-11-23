@@ -173,12 +173,12 @@ namespace KerbalKonstructs
 
             // from here it should be save to do acually some things.
 
-            touchDownPoint = staticInstance.gameObject.transform.position + (directionsMult * staticInstance.gameObject.transform.forward.normalized * touchDownOffset);
+            touchDownPoint = staticInstance.position + (directionsMult * staticInstance.transform.forward.normalized * touchDownOffset);
             vesselPosition = FlightGlobals.ActiveVessel.GetWorldPos3D();
             fromVesseltoPoint = (touchDownPoint - FlightGlobals.ActiveVessel.GetWorldPos3D());
-            horizontalVector = Vector3.ProjectOnPlane(fromVesseltoPoint, staticInstance.gameObject.transform.up);
+            horizontalVector = Vector3.ProjectOnPlane(fromVesseltoPoint, staticInstance.transform.up);
 
-            if (Vector3d.Dot(horizontalVector, directionsMult * staticInstance.gameObject.transform.forward.normalized) < 0)
+            if (Vector3d.Dot(horizontalVector, directionsMult * staticInstance.transform.forward.normalized) < 0)
             {
                 // we are behind the lights. no need to update them anymore.
                 SetAllOff();

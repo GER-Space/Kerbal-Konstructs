@@ -35,6 +35,12 @@ namespace KerbalKonstructs.Core
         internal float DefaultLaunchSiteLength;
         [CFGSetting]
         internal float DefaultLaunchSiteWidth;
+        [CFGSetting]
+        internal float DefaultLaunchSiteHeight;
+        [CFGSetting]
+        internal float DefaultLaunchSiteMaxMass;
+        [CFGSetting]
+        internal int DefaultLaunchSiteMaxParts;
 
         [CFGSetting]
         internal bool keepConvex;

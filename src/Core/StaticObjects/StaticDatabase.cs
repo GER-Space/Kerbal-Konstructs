@@ -101,7 +101,7 @@ namespace KerbalKonstructs.Core
             }
 
             instance.groupCenter.RemoveInstance(instance);
-            GameObject.Destroy(instance.gameObject);
+            GameObject.Destroy(instance.transform.gameObject);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace KerbalKonstructs.Core
             instance.groupCenter = newGroup;
             instance.Group = newGroup.Group;
 
-            instance.gameObject.transform.parent = newGroup.gameObject.transform;            
+            instance.transform.parent = newGroup.gameObject.transform;            
 
             SetNewName(instance);
             newGroup.AddInstance(instance);            

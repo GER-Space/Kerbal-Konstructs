@@ -65,7 +65,36 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string GrasTexture;
 
-        public GameObject gameObject;
+        internal GameObject gameObject;
+        //private GameObject _mesh;
+
+        //internal GameObject mesh
+        //{
+        //    get
+        //    {
+        //        if (_mesh == null)
+        //        {
+        //            _mesh = GameObject.Instantiate(model.prefab);
+        //            GameObject.DontDestroyOnLoad(_mesh);
+        //            _mesh.transform.parent = transform;
+        //            _mesh.transform.position = transform.position;
+        //            _mesh.transform.rotation = transform.rotation;
+        //        }
+        //        return _mesh;
+        //    }
+        //    set
+        //    {
+        //        _mesh = value;
+        //        _mesh.transform.parent = gameObject.transform;
+        //        _mesh.transform.position = transform.position;
+        //        _mesh.transform.rotation = transform.rotation;
+        //    }
+        ////}
+        //internal GameObject wreck;
+
+        internal Transform transform => gameObject.transform;
+        internal Vector3 position => gameObject.transform.position;
+
         internal StaticModel model;
 
         public UrlDir.UrlConfig configUrl;
@@ -121,6 +150,15 @@ namespace KerbalKonstructs.Core
 
         private List<Renderer> _rendererComponents;
         //internal List<StaticModule> myStaticModules = new List<StaticModule>();
+
+
+        internal StaticInstance()
+        {
+            gameObject = new GameObject("KKBuilding");
+            GameObject.DontDestroyOnLoad(gameObject);
+        }
+
+
 
         /// <summary>
         /// Updates the static instance with new settings

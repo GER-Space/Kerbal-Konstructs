@@ -486,7 +486,7 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                return ((selectedInstance.gameObject.transform.position - startPosition).magnitude < maxEditorRange);
+                return ((selectedInstance.position - startPosition).magnitude < maxEditorRange);
             }
         }
 
@@ -559,7 +559,7 @@ namespace KerbalKonstructs.Modules
             KerbalKonstructs.instance.selectedObject = instance;
 
             selectedInstance = instance;
-            startPosition = selectedInstance.gameObject.transform.position;
+            startPosition = selectedInstance.position;
 
             instance.Update();
             instance.isInSavegame = true;
@@ -580,7 +580,7 @@ namespace KerbalKonstructs.Modules
             get
             {
                 //return (selectedInstance.gameObject.transform.position + 4 * selectedInstance.gameObject.transform.up.normalized + 4 * selectedInstance.gameObject.transform.right.normalized);
-                return (selectedInstance.gameObject.transform.position);
+                return (selectedInstance.position);
             }
         }
 
@@ -593,7 +593,7 @@ namespace KerbalKonstructs.Modules
         {
             get
             {
-                Vector3 myForward = Vector3.ProjectOnPlane(selectedInstance.gameObject.transform.forward, upVector);
+                Vector3 myForward = Vector3.ProjectOnPlane(selectedInstance.transform.forward, upVector);
                 float myHeading;
 
                 if (Vector3.Dot(myForward, eastVector) > 0)
@@ -650,7 +650,7 @@ namespace KerbalKonstructs.Modules
                 return;
             }
 
-            cameraDistance = Vector3.Distance(selectedInstance.gameObject.transform.position, FlightCamera.fetch.transform.position) / 4;
+            cameraDistance = Vector3.Distance(selectedInstance.position, FlightCamera.fetch.transform.position) / 4;
 
             if (referenceSystem == Space.World)
             {
@@ -679,17 +679,17 @@ namespace KerbalKonstructs.Modules
                 upVR.SetShow(true);
                 rightVR.SetShow(true);
 
-                fwdVR.Vector = selectedInstance.gameObject.transform.forward;
+                fwdVR.Vector = selectedInstance.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.Scale = cameraDistance;
                 fwdVR.draw();
 
-                upVR.Vector = selectedInstance.gameObject.transform.up;
+                upVR.Vector = selectedInstance.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.Scale = cameraDistance;
                 upVR.draw();
 
-                rightVR.Vector = selectedInstance.gameObject.transform.right;
+                rightVR.Vector = selectedInstance.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.Scale = cameraDistance;
                 rightVR.draw();
@@ -744,7 +744,7 @@ namespace KerbalKonstructs.Modules
         /// <param name="increment"></param>
         internal void SetRotation(float increment)
         {
-            selectedInstance.gameObject.transform.Rotate(Vector3.up, increment);
+            selectedInstance.transform.Rotate(Vector3.up, increment);
             ApplySettings();
         }
 
@@ -758,20 +758,20 @@ namespace KerbalKonstructs.Modules
             direction = direction / selectedInstance.ModelScale;
             if (referenceSystem == Space.World)
             {
-                selectedInstance.gameObject.transform.localPosition += direction;
+                selectedInstance.transform.localPosition += direction;
             }
             else
             {
                 if (direction.y == 0)
                 {
-                    float oldY = selectedInstance.gameObject.transform.localPosition.y;
-                    selectedInstance.gameObject.transform.Translate(direction);
-                    Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
-                    selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
+                    float oldY = selectedInstance.transform.localPosition.y;
+                    selectedInstance.transform.Translate(direction);
+                    Vector3 newPos = selectedInstance.transform.localPosition;
+                    selectedInstance.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
                 }
                 else
                 {
-                    selectedInstance.gameObject.transform.localPosition += direction;
+                    selectedInstance.transform.localPosition += direction;
                 }
 
 
@@ -795,7 +795,7 @@ namespace KerbalKonstructs.Modules
 
             if (referenceSystem == Space.World)
             {
-                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.gameObject.transform.localRotation, OnMoveCB, WhenMovedCB);
+                EditorGizmo.SetupMoveGizmo(selectedInstance.gameObject, selectedInstance.transform.localRotation, OnMoveCB, WhenMovedCB);
             }
             else
             {
@@ -819,7 +819,7 @@ namespace KerbalKonstructs.Modules
         {
             // Log.Normal("OnMove: " + vector.ToString());
             //moveGizmo.transform.position += 3* vector;
-            selectedInstance.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
+            selectedInstance.transform.position = EditorGizmo.moveGizmo.transform.position;
 
 
             //float oldY = selectedInstance.gameObject.transform.localPosition.y;
