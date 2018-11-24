@@ -252,13 +252,13 @@ namespace KerbalKonstructs.UI
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Max Vessel Mass: ", GUILayout.Width(160));
-            stHeight = GUILayout.TextField(stHeight, GUILayout.Height(19));
+            sMaxMass = GUILayout.TextField(sMaxMass, GUILayout.Height(19));
             GUILayout.Label(" t");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Max Vessel Parts: ", GUILayout.Width(160));
-            stHeight = GUILayout.TextField(stHeight, GUILayout.Height(19));
+            sMaxParts = GUILayout.TextField(sMaxParts, GUILayout.Height(19));
             GUILayout.Label("");
             GUILayout.EndHorizontal();
 

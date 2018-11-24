@@ -27,7 +27,7 @@ namespace KerbalKonstructs
             LoadSquadAnomalies();
             LoadSquadAnomaliesLevel2();
             LoadSquadAnomaliesLevel3();
-            MangleTrackingDishes();
+           // MangleTrackingDishes();
 
         }
 
@@ -120,9 +120,10 @@ namespace KerbalKonstructs
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                    model.prefab = GameObject.Instantiate(facility.UpgradeLevels[i].facilityPrefab);
-                    GameObject.DontDestroyOnLoad(model.prefab);
-                    model.prefab.SetActive(false);
+                    //model.prefab = GameObject.Instantiate(facility.UpgradeLevels[i].facilityPrefab);
+                    //GameObject.DontDestroyOnLoad(model.prefab);
+                    //model.prefab.SetActive(false);
+                    model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
                     // Register new GasColor Module
                     bool hasGrasMaterial = false;
@@ -256,9 +257,10 @@ namespace KerbalKonstructs
                 model.isSquad = true;
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                model.prefab = GameObject.Instantiate(pqs.gameObject);
-                GameObject.DontDestroyOnLoad(model.prefab);
-                model.prefab.SetActive(false);
+                model.prefab = pqs.gameObject;
+                //model.prefab = GameObject.Instantiate(pqs.gameObject);
+                //GameObject.DontDestroyOnLoad(model.prefab);
+                //model.prefab.SetActive(false);
 
                 StaticDatabase.RegisterModel(model, modelName);
             }
@@ -309,9 +311,10 @@ namespace KerbalKonstructs
 
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                model.prefab = GameObject.Instantiate(pqs2.gameObject);
-                GameObject.DontDestroyOnLoad(model.prefab);
-                model.prefab.SetActive(false);
+                model.prefab = pqs2.gameObject;
+                //model.prefab = GameObject.Instantiate(pqs2.gameObject);
+                //GameObject.DontDestroyOnLoad(model.prefab);
+                //model.prefab.SetActive(false);
                 StaticDatabase.RegisterModel(model, modelName);
             }
         }
@@ -376,9 +379,10 @@ namespace KerbalKonstructs
                     }
 
                     // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                    model.prefab = GameObject.Instantiate(child.gameObject);
-                    GameObject.DontDestroyOnLoad(model.prefab);
-                    model.prefab.SetActive(false);
+                    model.prefab = child.gameObject;
+                    //model.prefab = GameObject.Instantiate(child.gameObject);
+                    //GameObject.DontDestroyOnLoad(model.prefab);
+                    //model.prefab.SetActive(false);
 
                     StaticDatabase.RegisterModel(model, modelName);
                 }
@@ -708,35 +712,6 @@ namespace KerbalKonstructs
             StaticDatabase.RegisterModel(lightsModel, lightsModel.name);
         }
 
-        internal static void PimpLevel2Runway()
-        {
-            if (ScenarioUpgradeableFacilities.GetFacilityLevel("Runway") == 0.5f)
-            {
-                PQSCity kscPQS = ConfigUtil.GetCelestialBody("HomeWorld").pqsController.transform.GetComponentsInChildren<PQSCity>(true).Where(x => x.name == "KSC").FirstOrDefault();
-
-                if (kscPQS == null)
-                {
-                    Log.Error("Cannot find KSC");
-                    return;
-                }
-
-                GameObject runway = kscPQS.gameObject.transform.FindRecursive("Runway").gameObject;
-                if (runway != null)
-                {
-                    Log.Normal("runway Found");
-                    IEnumerator coroutine = DelayedPatcher(runway);
-                    KerbalKonstructs.instance.StartCoroutine(coroutine);
-                }
-            }
-        }
-
-
-        internal static IEnumerator DelayedPatcher(GameObject runway)
-        {
-            yield return new WaitForSeconds(2);
-
-            PimpLv2Runway(runway, true);
-        }
 
 
         internal static void PimpLv2Runway(GameObject modelPrefab, bool state = false)

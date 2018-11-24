@@ -253,8 +253,6 @@ namespace KerbalKonstructs
             }           
         }
 
-        static bool PimpLV2Runway = false;
-
         internal void OnSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> fromTo)
         {
             GameScenes targetScene = fromTo.to;
@@ -264,12 +262,6 @@ namespace KerbalKonstructs
                 Log.Normal("Requested scene is SpaceCenter");
                 FuckUpKSP();
             }
-            if (targetScene == GameScenes.SPACECENTER && fromTo.from == GameScenes.MAINMENU)
-            {
-                PimpLV2Runway = true;
-            }
-
-
         }
 
         internal void FuckUpKSP()
@@ -470,13 +462,6 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.SPACECENTER:
                     {
-
-                        if (PimpLV2Runway)
-                        {
-                            SquadStatics.PimpLevel2Runway();
-                            PimpLV2Runway = false;
-                        }
-
                         Log.PerfStart("SC Scene");
                         if (convertLegacyConfigs)
                         {
