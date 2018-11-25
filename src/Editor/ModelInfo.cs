@@ -618,7 +618,7 @@ namespace KerbalKonstructs.UI
             {
                 MiscUtils.HUDMessage("No Local GroupCenter found. Create one, then try again");
             }
-            instance.gameObject = GameObject.Instantiate(model.prefab);
+            instance.mesh = GameObject.Instantiate(model.prefab);
             instance.RadiusOffset = (float)FlightGlobals.ActiveVessel.altitude;
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
             instance.Group = groupCenter.Group;
@@ -632,7 +632,6 @@ namespace KerbalKonstructs.UI
             instance.model = model;
 
             instance.SpawnObject(true, true);
-            // KerbalKonstructs.instance.selectObject(obj, false);
             currPreview = instance;
         }
 

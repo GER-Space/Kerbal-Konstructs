@@ -88,7 +88,7 @@ namespace KerbalKonstructs.Core
         /// Removes a Instance from the group and instance lists.
         /// </summary>
         /// <param name="instance"></param>
-        internal static void DeleteStatic(StaticInstance instance)
+        internal static void DeleteStaticFromDB(StaticInstance instance)
         {
             if (instancedByUUID.ContainsKey(instance.UUID))
             {
@@ -99,9 +99,6 @@ namespace KerbalKonstructs.Core
                 _allStaticInstances.Remove(instance);
                 allStaticInstances = _allStaticInstances.ToArray();
             }
-
-            instance.groupCenter.RemoveInstance(instance);
-            GameObject.Destroy(instance.transform.gameObject);
         }
 
         /// <summary>
@@ -199,6 +196,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
+                Log.Normal("No GroupCenter found with name: " + centerKey);
                 return null;
             }
         }

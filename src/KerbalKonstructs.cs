@@ -198,25 +198,7 @@ namespace KerbalKonstructs
             ConfigParser.LoadAllMapDecals();
             Log.PerfStop("loading MapDecals");
             // end PQSMapDecal
-            Log.PerfStart("Object loading1");
-            Log.PerfStart("Module Creation");
-            Log.PerfPause("Module Creation");
-
-            SquadStatics.LoadSquadModels();
-
-            // normal placement of statics
-            ConfigParser.LoadAllGroupCenter();
-
-            LoadModels();
-          //  SDTest.WriteTextures();
-
-            Log.PerfStop("Object loading1");
-            Log.PerfStart("Object loading2");
-
-            LoadModelInstances();
-
-            Log.PerfStop("Object loading2");
-            Log.PerfStop("Module Creation");
+ 
 
             ScExtention.TuneFacilities();
             LaunchSiteChecks.PrepareSystem();
@@ -234,8 +216,30 @@ namespace KerbalKonstructs
 
         }
 
-        #region Game Events
+        public void Start()
+        {
+            Log.PerfStart("Object loading1");
+            SquadStatics.LoadSquadModels();
 
+            // normal placement of statics
+            ConfigParser.LoadAllGroupCenter();
+
+            LoadModels();
+            //  SDTest.WriteTextures();
+
+            Log.PerfStop("Object loading1");
+            Log.PerfStart("Object loading2");
+
+            LoadModelInstances();
+
+            Log.PerfStop("Object loading2");
+
+        }
+
+
+
+
+        #region Game Events
 
         /// <summary>
         /// called by onVesselGoOffRails
@@ -864,8 +868,8 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                instance.gameObject = Instantiate(model.prefab);
-                if (instance.gameObject == null)
+                instance.mesh = Instantiate(model.prefab);
+                if (instance.mesh == null)
                 {
                     Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
                     instance = null;
@@ -1354,9 +1358,9 @@ namespace KerbalKonstructs
         //    }
         //}
 
-        public void DeleteInstance(StaticInstance obj)
+        public void DeleteInstance(StaticInstance Instance)
         {
-            if (selectedObject == obj)
+            if (selectedObject == Instance)
             {
                 deselectObject(true, false);
             }
@@ -1371,7 +1375,7 @@ namespace KerbalKonstructs
                 camControl.disable();
             }
 
-            if (StaticsEditorGUI.instance.snapTargetInstance == obj)
+            if (StaticsEditorGUI.instance.snapTargetInstance == Instance)
             {
                 StaticsEditorGUI.instance.snapTargetInstance = null;
             }
@@ -1379,9 +1383,9 @@ namespace KerbalKonstructs
             Log.Debug("deleteObject");
 
             // check later when saving if this file is empty
-            deletedInstances.Add(obj);
+            deletedInstances.Add(Instance);
 
-            StaticDatabase.DeleteStatic(obj);
+            Instance.Destroy();
         }
 
 
@@ -1393,7 +1397,7 @@ namespace KerbalKonstructs
         /// <param name="isEditing"></param>
         /// <param name="bFocus"></param>
         /// <param name="bPreview"></param>
-        public void selectObject(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)
+        public void SelectInstance(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)
         {
             // enable any object for editing
             if (StaticsEditorGUI.instance.IsOpen())

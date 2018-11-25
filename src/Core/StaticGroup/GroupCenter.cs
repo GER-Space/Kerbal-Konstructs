@@ -283,7 +283,7 @@ namespace KerbalKonstructs.Core
             foreach (StaticInstance sourceInstance in sourceGroup.childInstances)
             {
                 StaticInstance instance = new StaticInstance();
-                instance.gameObject = UnityEngine.Object.Instantiate(sourceInstance.model.prefab);
+                instance.mesh = UnityEngine.Object.Instantiate(sourceInstance.model.prefab);
                 instance.RelativePosition = sourceInstance.RelativePosition;
                 instance.Orientation = sourceInstance.Orientation;
                 instance.CelestialBody = CelestialBody;

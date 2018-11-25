@@ -668,7 +668,7 @@ namespace KerbalKonstructs.UI
                         {
                             snapTargetInstance = null;
                         }
-                        KerbalKonstructs.instance.selectObject(allStaticInstances[ix], false, true, false);
+                        KerbalKonstructs.instance.SelectInstance(allStaticInstances[ix], false, true, false);
 
                         //obj.selectObject(false);
 
@@ -945,7 +945,7 @@ namespace KerbalKonstructs.UI
             {
                 //Log.Normal("Try to select Object: " + myHitinstance.mesh.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
-                KerbalKonstructs.instance.selectObject(myHitinstance, true, true, false);
+                KerbalKonstructs.instance.SelectInstance(myHitinstance, true, true, false);
                 if (!EditorGUI.instance.IsOpen())
                 {
                     EditorGUI.instance.Open();

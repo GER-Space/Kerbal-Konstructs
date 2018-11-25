@@ -296,8 +296,8 @@ namespace KerbalKonstructs.Core
             if (!string.IsNullOrEmpty(site.LaunchSiteName) && site.lsGameObject.transform.Find(site.LaunchPadTransform) != null)
             {
 
-                site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
-                site.staticInstance.gameObject.name = site.LaunchSiteName;
+                //site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
+                //site.staticInstance.gameObject.name = site.LaunchSiteName;
 
                 if (KKFacilities == null)
                 {
@@ -319,7 +319,7 @@ namespace KerbalKonstructs.Core
                     }
                     else
                     {
-                        spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name;
+                        spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name + "/Mesh" ;
                     }
                     
                     // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
@@ -358,14 +358,14 @@ namespace KerbalKonstructs.Core
                     Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
                 }
 
-                if (PSystemSetup.Instance.SpaceCenterFacilities.ToList().Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
-                {
-                    Log.Normal("LaunchSite registered: " + site.LaunchSiteName);
-                }
-                else
-                {
-                    Log.Normal("LaunchSite registration failed: " + site.LaunchSiteName);
-                }
+                //if (PSystemSetup.Instance.SpaceCenterFacilities.ToList().Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
+                //{
+                //    Log.Normal("LaunchSite registered: " + site.LaunchSiteName);
+                //}
+                //else
+                //{
+                //    Log.Normal("LaunchSite registration failed: " + site.LaunchSiteName);
+                //}
 
 
                 if (site.staticInstance.gameObject != null)

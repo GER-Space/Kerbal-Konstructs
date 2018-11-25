@@ -175,8 +175,7 @@ namespace KerbalKonstructs.Core
                LaunchSiteParser.ParseConfig(this,cfgNode);
             }
 
-            lsGameObject = instance.gameObject;
-            // this is might be slow
+            lsGameObject = instance.mesh;
             staticInstance = instance;
             body = staticInstance.CelestialBody;
 

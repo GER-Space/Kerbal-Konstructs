@@ -66,8 +66,7 @@ namespace KerbalKonstructs.Core
             }
             //instance.gameObject.tag = String.Empty;
 
-            var transforms = gameObject.transform.GetComponentsInChildren<Transform>(true);
-            foreach (var transform in transforms)
+            foreach (Transform transform in gameObject.transform.GetComponentsInChildren<Transform>(true))
             {
                 //transform.gameObject.tag = String.Empty;
                 if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
@@ -131,25 +130,40 @@ namespace KerbalKonstructs.Core
             if (instance.model.name == "KSC_FuelTank")
             {
                 //Log.Normal("Fixing KSC Fuel Tank");
-                GameObject oldGameObject = instance.gameObject;
+                GameObject oldGameObject = instance.mesh;
                 GameObject newBaseObject = new GameObject(instance.model.name);
                 oldGameObject.transform.parent = newBaseObject.transform;
                 oldGameObject.transform.localEulerAngles = new Vector3(270, 0, 0);
-                instance.gameObject = newBaseObject;
+                instance.mesh = newBaseObject;
             }
-            //if (instance.model.name == "KSC_Runway_level_2")
-            //{
-            //    SquadStatics.PimpLv2Runway(instance.gameObject);
-            //}
 
         }
 
         internal static void SetActiveRecursively(StaticInstance instance, bool active)
         {
-            
+
+            if (instance == null || instance.gameObject == null)
+            {
+                Log.UserError("No instance or GameObject found: " + instance.model.name + " " +instance.Group);
+                return;
+            }
+
             //if (instance.isActive != active)
             {
                 instance.isActive = active;
+                instance.gameObject.SetActive(active);
+
+                foreach (Transform transform in instance.gameObject.GetComponentsInChildren<Transform>(true))
+                {
+                    transform.gameObject.SetActive(active);
+                }
+
+
+                foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>(true))
+                {
+                    module.enabled = active;
+                }
+
                 if (active)
                 {
                     foreach (StaticModule module in instance.gameObject.GetComponentsInChildren<StaticModule>(true))
@@ -157,19 +171,6 @@ namespace KerbalKonstructs.Core
                         module.StaticObjectUpdate();
                     }
                 }
-                instance.gameObject.SetActive(active);
-                
-                var transforms = instance.gameObject.GetComponentsInChildren<Transform>(true);
-                for (int i = 0; i < transforms.Length; i++)
-                {
-                    transforms[i].gameObject.SetActive(active);
-                }
-
-                foreach (StaticModule module in instance.gameObject.GetComponentsInChildren<StaticModule>(true))
-                {
-                    module.enabled = active;
-                }
-
             }
         }
 
@@ -251,37 +252,6 @@ namespace KerbalKonstructs.Core
 
         internal static GroupCenter CheckForClosesCenter(StaticInstance instance)
         {
-
-            //if (instance.Group == "Career")
-            //{
-            //    return null;
-            //}
-
-            //if (!StaticDatabase.centersByPlanet.ContainsKey(instance.CelestialBody.name))
-            //{
-            //    return null;
-            //}
-
-            //GroupCenter[] localGroups = StaticDatabase.centersByPlanet[instance.CelestialBody.name].Values.ToArray();
-            //if (localGroups.Length == 0)
-            //{
-            //    return null;
-            //}
-
-            //Vector3 myPosition = instance.CelestialBody.GetWorldSurfacePosition(KKMath.GetLatitudeInDeg(instance.RadialPosition), KKMath.GetLongitudeInDeg(instance.RadialPosition), (instance.CelestialBody.pqsController.GetSurfaceHeight(instance.RadialPosition) - instance.CelestialBody.Radius));
-            //GroupCenter closest = localGroups[0];
-            //float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
-
-            //foreach (GroupCenter center in localGroups)
-            //{
-            //    if (Vector3.Distance(myPosition, center.gameObject.transform.position) < dist)
-            //    {
-            //        dist = Vector3.Distance(myPosition, center.gameObject.transform.position);
-            //        closest = center;
-            //    }
-            //}
-
-            //return closest;
 
             GroupCenter closestCenter = null;
 

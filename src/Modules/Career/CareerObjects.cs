@@ -70,7 +70,7 @@ namespace KerbalKonstructs.Modules
             {
                 if (instance.isInSavegame)
                 {
-                    StaticDatabase.DeleteStatic(instance);
+                    instance.Destroy();
                 }
             }
         }
@@ -79,7 +79,7 @@ namespace KerbalKonstructs.Modules
         {
             if (instance.isInSavegame)
             {
-                StaticDatabase.DeleteStatic(instance);
+                instance.Destroy();
             }
         }
 
@@ -105,7 +105,7 @@ namespace KerbalKonstructs.Modules
                 instance = null;
                 return;
             }
-            instance.gameObject = UnityEngine.Object.Instantiate(instance.model.prefab);
+            instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
 
             instance.UUID = cfgNode.GetValue("UUID");
 

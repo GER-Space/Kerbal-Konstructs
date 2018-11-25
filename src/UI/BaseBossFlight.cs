@@ -381,7 +381,7 @@ namespace KerbalKonstructs.UI
                             if (GUILayout.Button(allFacilities[i].model.title, GUILayout.Height(23)))
                             {
                                 selectedObject = allFacilities[i];
-                                KerbalKonstructs.instance.selectObject(allFacilities[i], false, true, false);
+                                KerbalKonstructs.instance.SelectInstance(allFacilities[i], false, true, false);
                                 FacilityManager.selectedInstance = allFacilities[i];
                                 FacilityManager.instance.Open();
                             }

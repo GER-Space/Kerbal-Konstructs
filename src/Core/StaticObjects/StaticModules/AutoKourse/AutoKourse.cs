@@ -56,8 +56,8 @@ namespace BWStatics
 
         private void Initialize()
         {
-            digit0Transform = GetTransformRecursive(digit0Name, gameObject);
-            digit1Transform = GetTransformRecursive(digit1Name, gameObject);
+            digit0Transform = staticInstance.mesh.transform.FindRecursive(digit0Name);
+            digit1Transform = staticInstance.mesh.transform.FindRecursive(digit1Name);
             dg0renderer = digit0Transform.GetComponent<Renderer>();
             dg1renderer = digit1Transform.GetComponent<Renderer>();
             headingAdj = int.Parse(headingAdjustment);
@@ -106,19 +106,6 @@ namespace BWStatics
 
             return (int)heading;
 		}
-
-        private Transform GetTransformRecursive(string name, GameObject gameObject)
-        {
-            foreach (Transform child in gameObject.transform)
-            {
-                if (child.Find(name) != null)
-                {
-                    return child.Find(name);
-                }
-            }
-            Log.Error("Could not find Transform: " + name);
-            return null;
-        }
 
 	}
 }

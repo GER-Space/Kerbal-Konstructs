@@ -66,31 +66,33 @@ namespace KerbalKonstructs.Core
         public string GrasTexture;
 
         internal GameObject gameObject;
-        //private GameObject _mesh;
+        private GameObject _mesh = null;
 
-        //internal GameObject mesh
-        //{
-        //    get
-        //    {
-        //        if (_mesh == null)
-        //        {
-        //            _mesh = GameObject.Instantiate(model.prefab);
-        //            GameObject.DontDestroyOnLoad(_mesh);
-        //            _mesh.transform.parent = transform;
-        //            _mesh.transform.position = transform.position;
-        //            _mesh.transform.rotation = transform.rotation;
-        //        }
-        //        return _mesh;
-        //    }
-        //    set
-        //    {
-        //        _mesh = value;
-        //        _mesh.transform.parent = gameObject.transform;
-        //        _mesh.transform.position = transform.position;
-        //        _mesh.transform.rotation = transform.rotation;
-        //    }
-        ////}
-        //internal GameObject wreck;
+        internal GameObject mesh
+        {
+            get
+            {
+                if (_mesh == null)
+                {
+                    _mesh = GameObject.Instantiate(model.prefab);
+                    GameObject.DontDestroyOnLoad(_mesh);
+                    _mesh.name = "Mesh";
+                    _mesh.transform.parent = transform;
+                    _mesh.transform.position = transform.position;
+                    _mesh.transform.rotation = transform.rotation;
+                }
+                return _mesh;
+            }
+            set
+            {
+                _mesh = value;
+                _mesh.name = "Mesh";
+                _mesh.transform.parent = gameObject.transform;
+                _mesh.transform.position = transform.position;
+                _mesh.transform.rotation = transform.rotation;
+            }
+        }
+        internal GameObject wreck = null;
 
         internal Transform transform => gameObject.transform;
         internal Vector3 position => gameObject.transform.position;
@@ -250,7 +252,7 @@ namespace KerbalKonstructs.Core
 
             if (RelativePosition.Equals(Vector3.zero))
             {
-                Log.Normal("LegacySpawnInstance called for " + configPath );
+                Log.Normal("LegacySpawnInstance called for " + groupCenterName + "_" + model.name);
                 LegacySpawnInstance();
                 gameObject.transform.parent = groupCenter.gameObject.transform;
                 RelativePosition = gameObject.transform.localPosition;
@@ -273,7 +275,6 @@ namespace KerbalKonstructs.Core
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
 
-            Log.PerfContinue("Module Creation");
             foreach (StaticModule module in model.modules)
             {
                 moduleKey = (module.moduleNamespace + "_" + module.moduleClassname);
@@ -312,7 +313,6 @@ namespace KerbalKonstructs.Core
                     Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
                 }
             }
-            Log.PerfPause("Module Creation");
 
 
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
@@ -346,7 +346,7 @@ namespace KerbalKonstructs.Core
 
             if (editing)
             {
-                KerbalKonstructs.instance.selectObject(this, true, true, bPreview);
+                KerbalKonstructs.instance.SelectInstance(this, true, true, bPreview);
             }
         }
 
@@ -446,6 +446,22 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal void Destroy()
+        {
+
+            groupCenter.RemoveInstance(this);
+            StaticDatabase.DeleteStaticFromDB(this);
+
+            if (_mesh != null)
+            {
+                GameObject.DestroyImmediate(_mesh);
+            }
+            if (wreck != null)
+            {
+                GameObject.DestroyImmediate(wreck);
+            }
+            GameObject.DestroyImmediate(gameObject);
+        }
 
     }
 }

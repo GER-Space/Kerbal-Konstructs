@@ -534,7 +534,7 @@ namespace KerbalKonstructs.Modules
                 Log.UserError("LoadFromSave: Canot find model named: " + model.name);
                 instance = null;
             }
-            instance.gameObject = UnityEngine.Object.Instantiate(instance.model.prefab);
+            instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
 
 
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();

@@ -360,11 +360,8 @@ namespace KerbalKonstructs.UI
             Storage facStorage = selectedObject.myFacilities[0] as Storage;
             if (facStorage.maxVolume == 0f)
             {
-                foreach (var renderer in selectedObject.gameObject.GetComponentsInChildren<Renderer>(true))
-                {
-                    Vector3 size = renderer.bounds.size;
+                    Vector3 size = selectedObject.mesh.GetRendererBounds().extents;
                     facStorage.maxVolume += (size.x * size.y * size.z);
-                }
             }
             // round this to some straight numbers
             facStorage.maxVolume = (float)Math.Round(facStorage.maxVolume / 100, 0) * 100;

@@ -29,7 +29,7 @@ namespace KerbalKonstructs
         {
             if (StaticDatabase.instancedByUUID.ContainsKey(uuid))
             {
-                StaticDatabase.DeleteStatic(StaticDatabase.instancedByUUID[uuid]);
+                StaticDatabase.instancedByUUID[uuid].Destroy();
             }
             else
             {
@@ -91,7 +91,7 @@ namespace KerbalKonstructs
 
                 instance.heighReference = HeightReference.Terrain;
 
-                instance.gameObject = UnityEngine.Object.Instantiate(model.prefab);
+                instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
                 instance.RadiusOffset = alt;
                 instance.CelestialBody = ConfigUtil.GetCelestialBody(bodyName);
                 instance.Group = "Career";
