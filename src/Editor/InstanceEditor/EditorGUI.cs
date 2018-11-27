@@ -832,7 +832,7 @@ namespace KerbalKonstructs.UI
         {
             StaticInstance instance = new StaticInstance();
             instance.model = model;
-            instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
+            //instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
             instance.CelestialBody = FlightGlobals.currentMainBody;
 
             instance.groupCenter = groupCenter;
@@ -854,7 +854,7 @@ namespace KerbalKonstructs.UI
             enableColliders = false;
             enableColliders2 = false;
 
-            instance.SpawnObject();
+            instance.Orientate();
             instance.Activate();
 
             KerbalKonstructs.SelectInstance(instance, true);

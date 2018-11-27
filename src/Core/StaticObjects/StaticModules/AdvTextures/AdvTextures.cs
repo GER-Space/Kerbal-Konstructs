@@ -111,7 +111,7 @@ namespace KerbalKonstructs
             else
             {
            //     Log.Normal("setting to: " + key);
-                renderer.material = cachedMaterials[key];
+                renderer.sharedMaterial = cachedMaterials[key];
             } 
         }
 

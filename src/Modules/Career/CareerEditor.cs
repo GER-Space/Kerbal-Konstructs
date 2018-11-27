@@ -534,7 +534,7 @@ namespace KerbalKonstructs.Modules
                 Log.UserError("LoadFromSave: Canot find model named: " + model.name);
                 instance = null;
             }
-            instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
+            //instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
 
 
             instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
@@ -550,7 +550,7 @@ namespace KerbalKonstructs.Modules
 
             bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
 
-            instance.SpawnObject();
+            instance.Orientate();
             instance.Activate();
 
             KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;

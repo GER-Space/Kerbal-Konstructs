@@ -869,13 +869,13 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                instance.mesh = Instantiate(model.prefab);
-                if (instance.mesh == null)
-                {
-                    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
-                    instance = null;
-                    continue;
-                }
+                //instance.mesh = Instantiate(model.prefab);
+                //if (instance.mesh == null)
+                //{
+                //    Log.UserError("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                //    instance = null;
+                //    continue;
+                //}
 
                 // create RadialPosition, If we don't have one.
                 if (instance.RadialPosition.Equals(Vector3.zero) && instance.RelativePosition.Equals(Vector3.zero))
@@ -892,7 +892,7 @@ namespace KerbalKonstructs
                     }
                 }
 
-                instance.SpawnObject();
+                instance.Orientate();
 
                 AttachFacilities(instance, instanceCfgNode);
 

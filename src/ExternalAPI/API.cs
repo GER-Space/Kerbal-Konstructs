@@ -91,7 +91,7 @@ namespace KerbalKonstructs
 
                 instance.heighReference = HeightReference.Terrain;
 
-                instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
+                //instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
                 instance.RadiusOffset = alt;
                 instance.CelestialBody = ConfigUtil.GetCelestialBody(bodyName);
                 instance.Group = "Career";
@@ -108,7 +108,7 @@ namespace KerbalKonstructs
 
                 instance.isScanable = isScanable;
 
-                instance.SpawnObject();
+                instance.Orientate();
 
                 return instance.UUID;
             }

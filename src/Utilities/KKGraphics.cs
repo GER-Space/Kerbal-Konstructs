@@ -88,7 +88,7 @@ namespace KerbalKonstructs
             }
         }
 
-        //internal static void ReplaceShader (Renderer renderer)
+        //internal static void ReplaceShader(Renderer renderer)
         //{
         //    if (shaderSubstitutions.ContainsKey(renderer.material.shader.name))
         //    {
@@ -100,9 +100,9 @@ namespace KerbalKonstructs
         //            {
         //                AdvancedTextures.CheckForExistingMaterial(renderer);
         //            }
-                    
+
         //        }
-        //    }           
+        //    }
         //}
 
 

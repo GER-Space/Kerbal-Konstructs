@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
                 _mesh.transform.rotation = transform.rotation;
             }
         }
-        internal List<GameObject> wrecks = new List<GameObject>();
+        internal GameObject wreck ;
         internal DestructibleBuilding destructible;
 
 
@@ -146,7 +146,7 @@ namespace KerbalKonstructs.Core
         private Vector3 origScale;
         internal bool isActive = false;
         internal bool isPreview = false;
-        private bool isSpawned = false;
+        internal bool isSpawned = false;
 
         internal int indexInGroup = 0;
 
@@ -158,6 +158,9 @@ namespace KerbalKonstructs.Core
         {
             gameObject = new GameObject("KKBuilding");
             GameObject.DontDestroyOnLoad(gameObject);
+            wreck = new GameObject("KKWreck");
+            GameObject.DontDestroyOnLoad(wreck);
+            wreck.transform.parent = gameObject.transform;
         }
 
 
@@ -213,54 +216,31 @@ namespace KerbalKonstructs.Core
             return fDistance;
         }
 
-        /// <summary>
-        /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
-        /// </summary>
-        /// <param name="editing"></param>
-        /// <param name="bPreview"></param>
-        internal void SpawnObject()
+        private void Spawn()
         {
-            // mangle Squads statics
+
+            isSpawned = true;
+
+            mesh = GameObject.Instantiate(model.prefab);
+            {
+                if (_mesh == null)
+                {
+                    Log.UserError("Cannot spawn 3dModel of Instance: " + model.name);
+                    Destroy();
+                    return;
+                }
+            }
+
             if (model.isSquad)
             {
                 InstanceUtil.MangleSquadStatic(this);
             }
-
             InstanceUtil.SetLayerRecursively(this, 15);
 
-            InstanceUtil.CreateGroupCenterIfMissing(this);
-
-            if (!StaticDatabase.HasGroupCenter(groupCenterName) )
-            {
-                Log.UserWarning("cannot load " + configPath);
-                return;
-            }
-            groupCenter = StaticDatabase.GetGroupCenter(groupCenterName);
-
-            if (RelativePosition.Equals(Vector3.zero))
-            {
-                Log.Normal("LegacySpawnInstance called for " + groupCenterName + "_" + model.name);
-                LegacySpawnInstance();
-                gameObject.transform.parent = groupCenter.gameObject.transform;
-                RelativePosition = gameObject.transform.localPosition;
-                Orientation = gameObject.transform.localEulerAngles;
-
-            }
-            else
-            {
-                gameObject.transform.position = groupCenter.gameObject.transform.position;
-                gameObject.transform.parent = groupCenter.gameObject.transform;
-                gameObject.transform.localPosition = RelativePosition;
-                gameObject.transform.localEulerAngles = Orientation;
-            }
 
             //Scaling
             origScale = gameObject.transform.localScale;             // save the original scale for later use
             gameObject.transform.localScale *= ModelScale;
-
-            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
-            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
-            RadialPosition = radialPosition;
 
             foreach (StaticModule module in model.modules)
             {
@@ -273,9 +253,9 @@ namespace KerbalKonstructs.Core
                 else
                 {
                     moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
-                    staticModules.Add(moduleKey,moduleType);
+                    staticModules.Add(moduleKey, moduleType);
                 }
-                
+
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
@@ -305,8 +285,59 @@ namespace KerbalKonstructs.Core
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
                 renderer.enabled = true;
+                AdvancedTextures.CheckForExistingMaterial(renderer);
                 //KKGraphics.ReplaceShader(renderer);
             }
+
+            if (!model.isSquad)
+            {
+                Destructable.MakeDestructable(this);
+            }
+
+            gameObject.isStatic = true;
+        }
+
+
+        /// <summary>
+        /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
+        /// </summary>
+        /// <param name="editing"></param>
+        /// <param name="bPreview"></param>
+        internal void Orientate()
+        {
+            // mangle Squads statics
+
+
+            InstanceUtil.CreateGroupCenterIfMissing(this);
+
+            if (!StaticDatabase.HasGroupCenter(groupCenterName) )
+            {
+                Log.UserWarning("cannot load " + configPath);
+                return;
+            }
+            groupCenter = StaticDatabase.GetGroupCenter(groupCenterName);
+
+            if (RelativePosition.Equals(Vector3.zero))
+            {
+                Log.Normal("LegacySpawnInstance called for " + groupCenterName + "_" + model.name);
+                LegacySpawnInstance();
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                RelativePosition = gameObject.transform.localPosition;
+                Orientation = gameObject.transform.localEulerAngles;
+
+            }
+            else
+            {
+                gameObject.transform.position = groupCenter.gameObject.transform.position;
+                gameObject.transform.parent = groupCenter.gameObject.transform;
+                gameObject.transform.localPosition = RelativePosition;
+                gameObject.transform.localEulerAngles = Orientation;
+            }
+
+
+            RefLatitude = (float)CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).x;
+            RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
+            RadialPosition = radialPosition;
 
             StaticDatabase.AddStatic(this);
 
@@ -321,15 +352,7 @@ namespace KerbalKonstructs.Core
                     pqsObjectList.Add(groupCenter.pqsCity as PQSSurfaceObject);
                 }
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
-            }
-
-            if (!model.isSquad)
-            {
-                Destructable.MakeDestructable(this);
-            }
-
-
-            gameObject.isStatic = true;
+            }           
 
         }
 
@@ -435,12 +458,32 @@ namespace KerbalKonstructs.Core
 
         internal void Activate()
         {
-            InstanceUtil.SetActive(this);
+            if (!isSpawned)
+            {
+                Log.Normal("Dynamically Spawn: " + gameObject.name);
+                Spawn();
+            }
+
+            isActive = true;
+            gameObject.SetActive(true);
+
+            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
+            {
+                module.enabled = true;
+            }
+            gameObject.BroadcastMessage("StaticObjectUpdate");
         }
+
 
         internal void Deactivate()
         {
-            InstanceUtil.SetInActive(this);
+            isActive = false;
+            gameObject.SetActive(false);
+
+            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
+            {
+                module.enabled = false;
+            }
         }
 
 
@@ -455,13 +498,8 @@ namespace KerbalKonstructs.Core
             {
                 GameObject.DestroyImmediate(_mesh);
             }
-            if (wrecks.Count > 0)
-            {
-                foreach (GameObject wreck in wrecks)
-                {
-                    GameObject.DestroyImmediate(wreck);
-                }
-            }
+            wreck.transform.parent = null;
+            GameObject.DestroyImmediate(wreck);
             GameObject.DestroyImmediate(gameObject);
         }
 

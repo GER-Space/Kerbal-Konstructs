@@ -148,89 +148,89 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal static void SetActiveRecursively(StaticInstance instance, bool active)
-        {
+        //internal static void SetActiveRecursively(StaticInstance instance, bool active)
+        //{
 
-            if (instance == null || instance.gameObject == null)
-            {
-                Log.UserError("No instance or GameObject found: " + instance.model.name + " " +instance.Group);
-                return;
-            }
+        //    if (instance == null || instance.gameObject == null)
+        //    {
+        //        Log.UserError("No instance or GameObject found: " + instance.model.name + " " +instance.Group);
+        //        return;
+        //    }
 
-            if (active && !instance.isActive)
-            {
-                SetActive(instance);
-            }
-            else
-            {
-                SetInActive(instance);
-            }
-
-
-        }
-
-        internal static void SetActive(StaticInstance instance)
-        {
-
-            instance.isActive = true;
-            instance.gameObject.SetActive(true);
-
-            //DestructibleBuilding destructible = instance.gameObject.GetComponentInChildren<DestructibleBuilding>();
-
-            //if (instance.model.isSquad)
-            //{
-            //    foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
-            //    {
-            //        if (destructible == null || destructible.IsDestroyed == transform.name.Contains("wreck"))
-            //        {
-            //            transform.gameObject.SetActive(true);
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    if (destructible != null && destructible.IsDestroyed)
-            //    {
-            //        foreach (GameObject wreck in instance.wrecks)
-            //        foreach (Transform transform in wreck.GetComponentsInChildren<Transform>(true))
-            //        {
-            //            transform.gameObject.SetActive(true);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
-            //        {
-            //            transform.gameObject.SetActive(true);
-            //        }
-            //    }
-            //}
-
-            foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
-            {
-                module.enabled = true;
-            }
-            instance.gameObject.BroadcastMessage("StaticObjectUpdate");
-        }
+        //    if (active && !instance.isActive)
+        //    {
+        //        SetActive(instance);
+        //    }
+        //    else
+        //    {
+        //        SetInActive(instance);
+        //    }
 
 
+        //}
 
-        internal static void SetInActive(StaticInstance instance)
-        {
-            instance.isActive = false;
-            instance.gameObject.SetActive(false);
+        //internal static void SetActive(StaticInstance instance)
+        //{
 
-            //foreach (Transform transform in instance.gameObject.GetComponentsInChildren<Transform>(true))
-            //{
-            //    transform.gameObject.SetActive(false);
-            //}
+        //    instance.isActive = true;
+        //    instance.gameObject.SetActive(true);
+
+        //    //DestructibleBuilding destructible = instance.gameObject.GetComponentInChildren<DestructibleBuilding>();
+
+        //    //if (instance.model.isSquad)
+        //    //{
+        //    //    foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
+        //    //    {
+        //    //        if (destructible == null || destructible.IsDestroyed == transform.name.Contains("wreck"))
+        //    //        {
+        //    //            transform.gameObject.SetActive(true);
+        //    //        }
+        //    //    }
+        //    //}
+        //    //else
+        //    //{
+        //    //    if (destructible != null && destructible.IsDestroyed)
+        //    //    {
+        //    //        foreach (GameObject wreck in instance.wrecks)
+        //    //        foreach (Transform transform in wreck.GetComponentsInChildren<Transform>(true))
+        //    //        {
+        //    //            transform.gameObject.SetActive(true);
+        //    //        }
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
+        //    //        {
+        //    //            transform.gameObject.SetActive(true);
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
+        //    {
+        //        module.enabled = true;
+        //    }
+        //    instance.gameObject.BroadcastMessage("StaticObjectUpdate");
+        //}
 
 
-            foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
-            {
-                module.enabled = false;
-            }
-        }
+
+        //internal static void SetInActive(StaticInstance instance)
+        //{
+        //    instance.isActive = false;
+        //    instance.gameObject.SetActive(false);
+
+        //    //foreach (Transform transform in instance.gameObject.GetComponentsInChildren<Transform>(true))
+        //    //{
+        //    //    transform.gameObject.SetActive(false);
+        //    //}
+
+
+        //    foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
+        //    {
+        //        module.enabled = false;
+        //    }
+        //}
 
 
         /// <summary>

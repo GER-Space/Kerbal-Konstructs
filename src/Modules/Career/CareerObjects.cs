@@ -105,7 +105,7 @@ namespace KerbalKonstructs.Modules
                 instance = null;
                 return;
             }
-            instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
+            //instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
 
             instance.UUID = cfgNode.GetValue("UUID");
 
@@ -126,7 +126,7 @@ namespace KerbalKonstructs.Modules
 
             bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
 
-            instance.SpawnObject();
+            instance.Orientate();
 
             KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;
         }

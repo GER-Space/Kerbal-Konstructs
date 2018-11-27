@@ -284,7 +284,7 @@ namespace KerbalKonstructs.Core
             foreach (StaticInstance sourceInstance in sourceGroup.childInstances)
             {
                 StaticInstance instance = new StaticInstance();
-                instance.mesh = UnityEngine.Object.Instantiate(sourceInstance.model.prefab);
+                //instance.mesh = UnityEngine.Object.Instantiate(sourceInstance.model.prefab);
                 instance.RelativePosition = sourceInstance.RelativePosition;
                 instance.Orientation = sourceInstance.Orientation;
                 instance.CelestialBody = CelestialBody;
@@ -300,7 +300,7 @@ namespace KerbalKonstructs.Core
                 instance.configPath = KerbalKonstructs.newInstancePath + "/" + sourceInstance.model.name + "-instances.cfg";
                 instance.configUrl = null;
 
-                instance.SpawnObject();
+                instance.Orientate();
                 instance.Activate();
 
             }

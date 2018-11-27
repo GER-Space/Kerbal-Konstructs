@@ -92,7 +92,7 @@ namespace KerbalKonstructs
                 replacementObject.name = "wreck_" + counter; 
                 replacementObject.transform.position = target.position;
                 replacementObject.transform.rotation = target.rotation;
-                replacementObject.transform.parent = instance.transform;
+                replacementObject.transform.parent = instance.wreck.transform;
                 Vector3 localScale = replacementObject.transform.localScale;
                 replacementObject.transform.localScale = new Vector3(localScale.x * scale * extrascale, 0.75f * Math.Min(1f, scale * extrascale), localScale.z * scale * extrascale);
                 replacementObject.SetActive(false);

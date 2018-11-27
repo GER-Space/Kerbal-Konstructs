@@ -286,6 +286,11 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
+            if (!instance.isSpawned)
+            {
+                instance.Activate();
+                instance.Deactivate();
+            }
             KKLaunchSite mySite = new KKLaunchSite();
             mySite.ParseLSConfig(instance, cfgNode);
             instance.hasLauchSites = true;
