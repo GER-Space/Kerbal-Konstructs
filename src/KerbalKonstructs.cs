@@ -480,6 +480,7 @@ namespace KerbalKonstructs
                         {
                             currentSite = LaunchSiteManager.GetLaunchSiteByName("LaunchPad");
                         }
+
                         //currentBody = currentSite.body;
                         currentBody = ConfigUtil.GetCelestialBody("HomeWorld");
                         // 
@@ -1393,16 +1394,16 @@ namespace KerbalKonstructs
         /// <summary>
         /// Selects an object for editing
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="instance"></param>
         /// <param name="isEditing"></param>
         /// <param name="bFocus"></param>
         /// <param name="bPreview"></param>
-        public void SelectInstance(StaticInstance obj, bool isEditing, bool bFocus, bool bPreview)
+        public void SelectInstance(StaticInstance instance, bool isEditing, bool bFocus, bool bPreview)
         {
             // enable any object for editing
             if (StaticsEditorGUI.instance.IsOpen())
             {
-                InstanceUtil.SetActiveRecursively(obj, true);
+                instance.Activate();
             }
 
 
@@ -1420,7 +1421,7 @@ namespace KerbalKonstructs
                 if (camControl.active)
                     camControl.disable();
 
-                camControl.enable(obj.gameObject);
+                camControl.enable(instance.gameObject);
             }
             else
             {
@@ -1429,8 +1430,8 @@ namespace KerbalKonstructs
             }
 
             //obj.preview = bPreview;
-            Log.Debug("obj.preview is " + obj.preview.ToString());
-            selectedObject = obj;
+            Log.Debug("obj.preview is " + instance.preview.ToString());
+            selectedObject = instance;
             Log.Debug("selectedObject.preview is " + selectedObject.preview.ToString());
             if (isEditing)
             {

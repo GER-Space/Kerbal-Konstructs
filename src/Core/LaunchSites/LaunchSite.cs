@@ -110,7 +110,12 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                if (openState == true || openString == "Open" || CareerUtils.isSandboxGame || OpenCost == 0f)
+                if (staticInstance.destructible != null && staticInstance.destructible.IsDestroyed)
+                {
+                    return false;
+                }
+
+                if (openState == true || openString == "Open" || CareerUtils.isSandboxGame || OpenCost == 0f )
                 {
                     return true;
                 }

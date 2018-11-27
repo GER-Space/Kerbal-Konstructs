@@ -251,7 +251,7 @@ namespace KerbalKonstructs
                 //Log.Trace();
                 try
                 {
-                    groupBounds.Encapsulate(slaveModule.gameObject.GetRendererBounds());
+                    groupBounds.Encapsulate(slaveModule.gameObject.GetAllRendererBounds());
                 }
                 catch
                 {
@@ -260,7 +260,7 @@ namespace KerbalKonstructs
                 }
 
             }
-            groupBounds.Encapsulate(gameObject.GetRendererBounds());
+            groupBounds.Encapsulate(gameObject.GetAllRendererBounds());
             groupBounds.Expand(1f);
 
             return (groupBounds.center + (FlightGlobals.getUpAxis(FlightGlobals.currentMainBody, groupBounds.center) * (groupBounds.size.y / 2f)));

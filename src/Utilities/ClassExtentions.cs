@@ -155,5 +155,15 @@ namespace KerbalKonstructs.Core
         }
 
 
+        public static Bounds GetAllRendererBounds(this GameObject gameObject)
+        {
+            Bounds bounds = new Bounds(gameObject.transform.position, Vector3.zero);
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            return bounds;
+        }
+
     }
 }

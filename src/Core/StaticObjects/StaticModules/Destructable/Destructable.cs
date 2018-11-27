@@ -1,125 +1,140 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using UnityEngine;
-//using KerbalKonstructs.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+using KerbalKonstructs.Core;
 
-//namespace KerbalKonstructs
-//{
-//    class Destructable
-//    {
-//        private static bool isInitialized = false;
-//        private static VFXSequencer demolitionPrefab;
+namespace KerbalKonstructs
+{
+    class Destructable
+    {
+        private static bool isInitialized = false;
+        private static VFXSequencer demolitionPrefab, secondaryPrefab;
 
-//        private static void Initialize()
-//        {
-//            DestructibleBuilding building = StaticDatabase.GetModelByName("KSC_VehicleAssemblyBuilding_level_3").prefab.GetComponentInChildren<DestructibleBuilding>();
-//            demolitionPrefab = building.DemolitionFXPrefab;
+        private static void Initialize()
+        {
+            foreach (DestructibleBuilding building in StaticDatabase.GetModelByName("KSC_VehicleAssemblyBuilding_level_3").prefab.GetComponentsInChildren<DestructibleBuilding>(true))
+            {
+                if (building.name == "mainBuilding")
+                {
+                    demolitionPrefab = building.DemolitionFXPrefab;
 
-//            isInitialized = true;
-//        }
+                }
+
+            }
+            foreach (DestructibleBuilding building in Resources.FindObjectsOfTypeAll<DestructibleBuilding>())
+            {
+                if (building.name == "CornerLab")
+                {
+                    foreach (var bla in building.CollapsibleObjects)
+                    {
+                        if (bla.SecondaryFXPrefab != null)
+                        {
+                            secondaryPrefab = bla.SecondaryFXPrefab;
+                        }
+                    }
+                }
+            }
 
 
 
-//        internal static void MakeDestructable(StaticInstance instance)
-//        {
-
-//            if (!isInitialized)
-//            {
-//                Initialize();        
-//            }
+            isInitialized = true;
+        }
 
 
 
-//            GameObject oldGO = instance.gameObject;
-//            GameObject newBaseObject = new GameObject(oldGO.name);
-//            if (newBaseObject == null)
-//            {
-//                Log.Normal("Cannot create GO");
-//                return;
-//            }
-//            oldGO.name = "Static";
-//            newBaseObject.SetActive(false);
-//            GameObject.DontDestroyOnLoad(newBaseObject);
-            
-//            DestructibleBuilding building = newBaseObject.AddComponent<DestructibleBuilding>();
-//            building.enabled = false;
-//            newBaseObject.transform.position = instance.gameObject.transform.position;
-//            newBaseObject.transform.rotation = instance.gameObject.transform.rotation;
+        internal static void MakeDestructable(StaticInstance instance)
+        {
 
-//            newBaseObject.transform.parent = instance.gameObject.transform.parent;
+            if (!isInitialized)
+            {
+                Initialize();
+            }
 
-//            instance.gameObject.transform.parent = newBaseObject.transform;
+            instance.destructible = instance.gameObject.AddComponent<DestructibleBuilding>();
+            List<DestructibleBuilding.CollapsibleObject> allCollapsibles = new List<DestructibleBuilding.CollapsibleObject>();
+            instance.destructible.enabled = false;
 
-//            instance.gameObject = newBaseObject;
+            CreateCollapsables(instance,instance.mesh.transform,allCollapsibles);
 
-//      //      oldGO.SetActive(true);
-//            Bounds staticBounds = oldGO.GetRendererBounds();
-//       //     oldGO.SetActive(false);
 
-//            float min = Math.Min(staticBounds.size.x, staticBounds.size.z);
-//            float max = Math.Max(staticBounds.size.x, staticBounds.size.z);
+            instance.destructible.CollapsibleObjects = allCollapsibles.ToArray();
+            instance.destructible.CollapseReputationHit = 0;
+            instance.destructible.FacilityDamageFraction = 100;
+            instance.destructible.id = instance.UUID;
+            instance.destructible.preCompiledId = true;
+            instance.destructible.DemolitionFXPrefab = demolitionPrefab;
+            instance.destructible.FxTarget = instance.gameObject.transform;
 
-//            float scale = min / 70;
-//            float times = max / min;
+            instance.destructible.enabled = true;
+        }
 
-//            Vector3 center = new Vector3(staticBounds.center.x, 0, staticBounds.center.y);
-//            List<DestructibleBuilding.CollapsibleObject> allCollapsibles = new List<DestructibleBuilding.CollapsibleObject>();
 
-//            int counter = 0;
-//            while (times > 0.3f)
-//            {
-//                float extrascale = Math.Min(times, 1);
-//                GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName("KSC_LaunchPad_level_2_wreck_1").prefab);
-//                replacementObject.transform.position = instance.gameObject.transform.position;
-//                replacementObject.transform.rotation = instance.gameObject.transform.rotation;
-//                replacementObject.transform.parent = instance.gameObject.transform;
-//                Vector3 localScale = replacementObject.transform.localScale;
-//                replacementObject.transform.localScale = new Vector3(localScale.x * scale* extrascale, 0.75f * Math.Min(1f, scale * extrascale), localScale.z * scale * extrascale);
-//                replacementObject.SetActive(false);
-//                float offset = max / 2 - ((counter - 0.5f) + ((1+ extrascale)/2)) * (70 * scale );
-//                Vector3 pos;
-//                if (staticBounds.size.x == max)
-//                {
-//                    pos =  new Vector3(offset, 0, 0);
-//                }
-//                else
-//                {
-//                    pos =  new Vector3(0, 0, offset);
-//                }
+        private static void CreateCollapsables(StaticInstance instance, Transform target, List<DestructibleBuilding.CollapsibleObject> allCollapsibles)
+        {
 
-//                replacementObject.transform.localPosition = pos;
+            Bounds staticBounds = target.gameObject.GetAllRendererBounds();
 
-//                DestructibleBuilding.CollapsibleObject collapsible = new DestructibleBuilding.CollapsibleObject();
+            //Log.Normal("Bounds: " + staticBounds.size.ToString());
 
-//                collapsible.collapseBehaviour = DestructibleBuilding.CollapsibleObject.Behaviour.Collapse;
-//                collapsible.collapseDuration = 1f;
-//                collapsible.collapseObject = oldGO;
-//                collapsible.repairDuration = 0;
-//                collapsible.replaceDelay = 0.8f;
-//                collapsible.replacementObject = replacementObject;
-//               // collapsible.SecondaryFXPrefab = scondaryPrefab;
-//                collapsible.Init();
+            float min = Math.Min(staticBounds.size.x, staticBounds.size.z);
+            float max = Math.Max(staticBounds.size.x, staticBounds.size.z);
 
-//         //       Log.Normal("Added collapsible: " + instance.model.name + " : " + pos.ToString()  + " : " + counter);
+            float scale = min / 70;
+            float times = max / min; 
 
-//                collapsible.sharedWith = building;
-//                allCollapsibles.Add(collapsible);
+            int counter = 0;
+            while (times > 0.3f)
+            {
+                float extrascale = Math.Min(times, 1);
+                GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName("KSC_LaunchPad_level_2_wreck_1").prefab);
+                replacementObject.name = "wreck_" + counter; 
+                replacementObject.transform.position = target.position;
+                replacementObject.transform.rotation = target.rotation;
+                replacementObject.transform.parent = instance.transform;
+                Vector3 localScale = replacementObject.transform.localScale;
+                replacementObject.transform.localScale = new Vector3(localScale.x * scale * extrascale, 0.75f * Math.Min(1f, scale * extrascale), localScale.z * scale * extrascale);
+                replacementObject.SetActive(false);
+                float offset = max / 2 - ((counter - 0.5f) + ((1 + extrascale) / 2)) * (70 * scale);
+                Vector3 pos;
+                if (staticBounds.size.x == max)
+                {
+                    pos = new Vector3(offset, 0, 0);
+                }
+                else
+                {
+                    pos = new Vector3(0, 0, offset);
+                }
 
-//                times -= 1f;
-//                counter++;
-//            }
+                replacementObject.transform.localPosition += pos;
 
-//            building.CollapsibleObjects = allCollapsibles.ToArray();
-//            building.CollapseReputationHit = 0;
-//            building.id = instance.UUID;
-//            building.preCompiledId = true;
-//            building.DemolitionFXPrefab = demolitionPrefab;
-//            building.FxTarget = instance.gameObject.transform;
+                DestructibleBuilding.CollapsibleObject collapsible = new DestructibleBuilding.CollapsibleObject();
 
-//            building.enabled = true;
-//        }
+                collapsible.collapseBehaviour = DestructibleBuilding.CollapsibleObject.Behaviour.Collapse;
+                collapsible.collapseDuration = 5f;
+                collapsible.collapseObject = target.gameObject;
+                collapsible.repairDuration = 0;
+                collapsible.replaceDelay = 0.8f;
+                collapsible.replacementObject = replacementObject;
 
-//    }
-//}
+                collapsible.collapseTiltMax = new Vector3(5,0,5);
+                collapsible.collapseOffset = new Vector3(0,-staticBounds.size.y/4,0);
+
+                collapsible.SecondaryFXPrefab = secondaryPrefab;
+                collapsible.Init();
+
+                //       Log.Normal("Added collapsible: " + instance.model.name + " : " + pos.ToString()  + " : " + counter);
+
+                collapsible.sharedWith = instance.destructible;
+                allCollapsibles.Add(collapsible);
+
+                times -= 1f;
+                counter++;
+            }
+
+        }
+
+
+    }
+}

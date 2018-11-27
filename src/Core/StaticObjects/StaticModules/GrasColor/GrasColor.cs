@@ -185,6 +185,7 @@ namespace KerbalKonstructs
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrasMeshName).ToArray();
             foreach (var transform in allTransforms)
             {
+                transform.name = "KKGrass";
                 Renderer grasRenderer = transform.GetComponent<Renderer>();
                 grasMaterials.Add(grasRenderer.material);
                 grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);

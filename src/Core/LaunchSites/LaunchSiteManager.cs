@@ -265,6 +265,12 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void OpenLaunchSite(KKLaunchSite site)
         {
+            if (site.staticInstance.destructible != null)
+            {
+                site.staticInstance.Activate();
+                site.staticInstance.destructible.Reset();
+                site.staticInstance.Deactivate();
+            }
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 Log.Normal("OpenSite: " + site.LaunchSiteName);
@@ -349,7 +355,11 @@ namespace KerbalKonstructs.Core
 
                     site.spaceCenterFacility = spaceCenterFacility;
 
-                    
+                    if (site.staticInstance.destructible != null)
+                    {
+                        ScenarioDestructibles.RegisterDestructible(site.staticInstance.destructible, site.LaunchSiteName);
+                    }
+
 
                     AddLaunchSite(site);
                 }
@@ -879,6 +889,7 @@ namespace KerbalKonstructs.Core
             {
                 return false;
             }
+
             if (!KerbalKonstructs.instance.launchFromAnySite && (EditorDriver.editorFacility == EditorFacility.VAB) && (site.LaunchSiteType == SiteType.SPH))
             {
                 return false;

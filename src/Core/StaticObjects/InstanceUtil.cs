@@ -14,7 +14,8 @@ namespace KerbalKonstructs.Core
 
 //        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
-        private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        //private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        private static List<Type> behavioursToRemove = new List<Type> { typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
         internal static List<TimeOfDayAnimation.MaterialProperty> dayNightEmissives = null;
         internal static Color dotColor;
@@ -66,21 +67,29 @@ namespace KerbalKonstructs.Core
             }
             //instance.gameObject.tag = String.Empty;
 
-            foreach (Transform transform in gameObject.transform.GetComponentsInChildren<Transform>(true))
-            {
-                //transform.gameObject.tag = String.Empty;
-                if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    transform.parent = null;
-                    GameObject.Destroy(transform.gameObject);
-                }
+            //foreach (Transform transform in gameObject.transform.GetComponentsInChildren<Transform>(true))
+            //{
+            //    //transform.gameObject.tag = String.Empty;
+            //    if (transform.name.Equals("wreck", StringComparison.InvariantCultureIgnoreCase))
+            //    {
+            //        transform.parent = null;
+            //        GameObject.Destroy(transform.gameObject);
+            //    }
 
-                //if (transform.name.Equals("commnetnode", StringComparison.InvariantCultureIgnoreCase))
-                //{
-                //    transform.parent = null;
-                //    GameObject.Destroy(transform.gameObject);
-                //}
+            //    //if (transform.name.Equals("commnetnode", StringComparison.InvariantCultureIgnoreCase))
+            //    //{
+            //    //    transform.parent = null;
+            //    //    GameObject.Destroy(transform.gameObject);
+            //    //}
+            //}
+
+            foreach (var component in gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
+            {
+                component.id = instance.UUID;
+                component.preCompiledId = true;
+                instance.destructible = component;
             }
+
 
             TimeOfDayAnimation dotAnim = gameObject.AddComponent<TimeOfDayAnimation>();
             dotAnim.emissives = new List<TimeOfDayAnimation.MaterialProperty>();
@@ -148,31 +157,81 @@ namespace KerbalKonstructs.Core
                 return;
             }
 
-            //if (instance.isActive != active)
+            if (active && !instance.isActive)
             {
-                instance.isActive = active;
-                instance.gameObject.SetActive(active);
+                SetActive(instance);
+            }
+            else
+            {
+                SetInActive(instance);
+            }
 
-                foreach (Transform transform in instance.gameObject.GetComponentsInChildren<Transform>(true))
-                {
-                    transform.gameObject.SetActive(active);
-                }
+
+        }
+
+        internal static void SetActive(StaticInstance instance)
+        {
+
+            instance.isActive = true;
+            instance.gameObject.SetActive(true);
+
+            //DestructibleBuilding destructible = instance.gameObject.GetComponentInChildren<DestructibleBuilding>();
+
+            //if (instance.model.isSquad)
+            //{
+            //    foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
+            //    {
+            //        if (destructible == null || destructible.IsDestroyed == transform.name.Contains("wreck"))
+            //        {
+            //            transform.gameObject.SetActive(true);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    if (destructible != null && destructible.IsDestroyed)
+            //    {
+            //        foreach (GameObject wreck in instance.wrecks)
+            //        foreach (Transform transform in wreck.GetComponentsInChildren<Transform>(true))
+            //        {
+            //            transform.gameObject.SetActive(true);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        foreach (Transform transform in instance.mesh.GetComponentsInChildren<Transform>(true))
+            //        {
+            //            transform.gameObject.SetActive(true);
+            //        }
+            //    }
+            //}
+
+            foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
+            {
+                module.enabled = true;
+            }
+            instance.gameObject.BroadcastMessage("StaticObjectUpdate");
+        }
 
 
-                foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>(true))
-                {
-                    module.enabled = active;
-                }
 
-                if (active)
-                {
-                    foreach (StaticModule module in instance.gameObject.GetComponentsInChildren<StaticModule>(true))
-                    {
-                        module.StaticObjectUpdate();
-                    }
-                }
+        internal static void SetInActive(StaticInstance instance)
+        {
+            instance.isActive = false;
+            instance.gameObject.SetActive(false);
+
+            //foreach (Transform transform in instance.gameObject.GetComponentsInChildren<Transform>(true))
+            //{
+            //    transform.gameObject.SetActive(false);
+            //}
+
+
+            foreach (MonoBehaviour module in instance.gameObject.GetComponentsInChildren<MonoBehaviour>())
+            {
+                module.enabled = false;
             }
         }
+
 
         /// <summary>
         /// Sets tje Layer of the Colliders

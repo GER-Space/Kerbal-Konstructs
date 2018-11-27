@@ -92,7 +92,9 @@ namespace KerbalKonstructs.Core
                 _mesh.transform.rotation = transform.rotation;
             }
         }
-        internal GameObject wreck = null;
+        internal List<GameObject> wrecks = new List<GameObject>();
+        internal DestructibleBuilding destructible;
+
 
         internal Transform transform => gameObject.transform;
         internal Vector3 position => gameObject.transform.position;
@@ -179,10 +181,7 @@ namespace KerbalKonstructs.Core
 
 
             // Notify modules about update
-            foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>(true))
-            {
-                module.StaticObjectUpdate();
-            }
+            gameObject.BroadcastMessage("StaticObjectUpdate");
         }
 
         internal void HighlightObject(Color highlightColor)
@@ -230,7 +229,14 @@ namespace KerbalKonstructs.Core
             }
 
             // Objects spawned at runtime should be active, ones spawned at loading not
-            InstanceUtil.SetActiveRecursively(this, editing);
+            if (editing)
+            {
+                Activate();
+            }
+            else
+            {
+                Deactivate();
+            }
             InstanceUtil.SetLayerRecursively(this, 15);
 
             if (bPreview && editing)
@@ -336,10 +342,10 @@ namespace KerbalKonstructs.Core
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
             }
 
-            //if (!model.isSquad)
-            //{
-            //    Destructable.MakeDestructable(this);
-            //}
+            if (!model.isSquad)
+            {
+                Destructable.MakeDestructable(this);
+            }
 
 
             gameObject.isStatic = true;
@@ -349,6 +355,7 @@ namespace KerbalKonstructs.Core
                 KerbalKonstructs.instance.SelectInstance(this, true, true, bPreview);
             }
         }
+
 
 
         private void LegacySpawnInstance()
@@ -446,6 +453,19 @@ namespace KerbalKonstructs.Core
             }
         }
 
+
+        internal void Activate()
+        {
+            InstanceUtil.SetActive(this);
+        }
+
+        internal void Deactivate()
+        {
+            InstanceUtil.SetInActive(this);
+        }
+
+
+
         internal void Destroy()
         {
 
@@ -456,9 +476,12 @@ namespace KerbalKonstructs.Core
             {
                 GameObject.DestroyImmediate(_mesh);
             }
-            if (wreck != null)
+            if (wrecks.Count > 0)
             {
-                GameObject.DestroyImmediate(wreck);
+                foreach (GameObject wreck in wrecks)
+                {
+                    GameObject.DestroyImmediate(wreck);
+                }
             }
             GameObject.DestroyImmediate(gameObject);
         }

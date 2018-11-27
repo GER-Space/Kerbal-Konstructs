@@ -149,12 +149,13 @@ namespace KerbalKonstructs.Core
                 if (isActive)
                 {
                     ActivateInstance(instance);
+                    instance.Activate();
                 }
                 else
                 {
                     DeActivateInstance(instance);
+                    instance.Deactivate();
                 }
-                InstanceUtil.SetActiveRecursively(instance, newState);
             }
         }
 
@@ -300,7 +301,7 @@ namespace KerbalKonstructs.Core
                 instance.configUrl = null;
 
                 instance.SpawnObject();
-                InstanceUtil.SetActiveRecursively(instance, true);
+                instance.Activate();
 
             }
         }

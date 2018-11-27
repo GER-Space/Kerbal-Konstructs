@@ -104,15 +104,15 @@ namespace KerbalKonstructs.Core
             //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
             if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
             {
-                float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.lsGameObject.transform.position);
+                float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.staticInstance.transform.position);
                 KerbalKonstructs.instance.FuckUpKSP();
 
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
                     Log.Normal("Resetting to: " + currentSite.LaunchSiteName);
-                    scCam.transform.parent = currentSite.lsGameObject.transform;
-                    scCam.transform.position = currentSite.lsGameObject.transform.position;
-                    scCam.initialPositionTransformName = currentSite.lsGameObject.transform.name;
+                    scCam.transform.parent = currentSite.staticInstance.transform;
+                    scCam.transform.position = currentSite.staticInstance.transform.position;
+                    scCam.initialPositionTransformName = currentSite.staticInstance.transform.name;
                     scCam.pqsName = currentSite.body.name;
                     scCam.rotationInitial = currentSite.InitialCameraRotation;
                     scCam.altitudeInitial = nomHeight;
