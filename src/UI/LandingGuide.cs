@@ -256,7 +256,7 @@ namespace KerbalKonstructs.UI
 
                     }
                     // make them less annoying
-                    if (KerbalKonstructs.instance.selectedObject == null)
+                    if (KerbalKonstructs.selectedInstance == null)
                     {
                         GUI.DrawTexture(Marker4, tLGb, ScaleMode.StretchToFill, true);
                         GUI.DrawTexture(Marker5, tLGm, ScaleMode.StretchToFill, true);

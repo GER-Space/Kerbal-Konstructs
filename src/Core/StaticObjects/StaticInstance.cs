@@ -143,12 +143,10 @@ namespace KerbalKonstructs.Core
         // used for non KKFacility objects like AirRace
         public string legacyfacilityID;
 
-
-        internal Boolean editing;
-        internal Boolean preview;
-
         private Vector3 origScale;
         internal bool isActive = false;
+        internal bool isPreview = false;
+        private bool isSpawned = false;
 
         internal int indexInGroup = 0;
 
@@ -220,7 +218,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="editing"></param>
         /// <param name="bPreview"></param>
-        internal void SpawnObject(Boolean editing = false, Boolean bPreview = false)
+        internal void SpawnObject()
         {
             // mangle Squads statics
             if (model.isSquad)
@@ -228,24 +226,7 @@ namespace KerbalKonstructs.Core
                 InstanceUtil.MangleSquadStatic(this);
             }
 
-            // Objects spawned at runtime should be active, ones spawned at loading not
-            if (editing)
-            {
-                Activate();
-            }
-            else
-            {
-                Deactivate();
-            }
             InstanceUtil.SetLayerRecursively(this, 15);
-
-            if (bPreview && editing)
-            {
-                this.ToggleAllColliders(false);
-            }
-
-
-            this.preview = bPreview;
 
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
@@ -350,10 +331,6 @@ namespace KerbalKonstructs.Core
 
             gameObject.isStatic = true;
 
-            if (editing)
-            {
-                KerbalKonstructs.instance.SelectInstance(this, true, true, bPreview);
-            }
         }
 
 
@@ -409,14 +386,16 @@ namespace KerbalKonstructs.Core
         /// resets the object highlightColor to 0 and resets the editing flag.
         /// </summary>
         /// <param name="enableColliders"></param>
-        internal void deselectObject(Boolean enableColliders)
+        internal void DeselectObject(Boolean enableColliders)
         {
-            this.editing = false;
-            if (enableColliders)
-                this.ToggleAllColliders(true);
 
-            Color highlightColor = new Color(0, 0, 0, 0);
-            this.HighlightObject(highlightColor);
+            if (enableColliders)
+            {
+                this.ToggleAllColliders(true);
+            }
+
+            //Color highlightColor = new Color(0, 0, 0, 0);
+            this.HighlightObject(Color.black);
         }
 
         internal void SaveConfig()

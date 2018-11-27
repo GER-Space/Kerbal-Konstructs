@@ -631,7 +631,9 @@ namespace KerbalKonstructs.UI
 
             instance.model = model;
 
-            instance.SpawnObject(true, true);
+            instance.SpawnObject();
+            instance.Activate();
+            KerbalKonstructs.SelectInstance(instance, true);
             currPreview = instance;
         }
 

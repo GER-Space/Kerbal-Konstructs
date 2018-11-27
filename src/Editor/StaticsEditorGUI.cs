@@ -108,8 +108,10 @@ namespace KerbalKonstructs.UI
 
         public void ToggleEditor()
         {
-            if (KerbalKonstructs.instance.selectedObject != null)
-                KerbalKonstructs.instance.deselectObject(true, true);
+            if (KerbalKonstructs.selectedInstance != null)
+            {
+                KerbalKonstructs.DeselectObject(true, true);
+            }
 
             this.Toggle();
 
@@ -668,7 +670,7 @@ namespace KerbalKonstructs.UI
                         {
                             snapTargetInstance = null;
                         }
-                        KerbalKonstructs.instance.SelectInstance(allStaticInstances[ix], false, true, false);
+                        KerbalKonstructs.SelectInstance(allStaticInstances[ix], false);
 
                         //obj.selectObject(false);
 
@@ -945,7 +947,7 @@ namespace KerbalKonstructs.UI
             {
                 //Log.Normal("Try to select Object: " + myHitinstance.mesh.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
-                KerbalKonstructs.instance.SelectInstance(myHitinstance, true, true, false);
+                KerbalKonstructs.SelectInstance(myHitinstance, true);
                 if (!EditorGUI.instance.IsOpen())
                 {
                     EditorGUI.instance.Open();

@@ -102,7 +102,7 @@ namespace KerbalKonstructs.Modules
             {
                 return;
             }
-            if (KerbalKonstructs.instance.selectedObject == null)
+            if (KerbalKonstructs.selectedInstance == null)
             {
                 CloseEditors();
                 CloseVectors();
@@ -110,11 +110,11 @@ namespace KerbalKonstructs.Modules
                 Close();
             }
 
-            if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
+            if ((KerbalKonstructs.selectedInstance != null) && (!KerbalKonstructs.selectedInstance.isPreview))
             {
-                drawEditor(KerbalKonstructs.instance.selectedObject);
+                drawEditor(KerbalKonstructs.selectedInstance);
 
-                DrawObject.DrawObjects(KerbalKonstructs.instance.selectedObject.gameObject);
+                DrawObject.DrawObjects(KerbalKonstructs.selectedInstance.gameObject);
             }
         }
 
@@ -188,7 +188,7 @@ namespace KerbalKonstructs.Modules
                 if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
                     //KerbalKonstructs.instance.saveObjects();
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.DeselectObject(true, true);
                 }
             }
             GUILayout.EndHorizontal();
@@ -434,7 +434,7 @@ namespace KerbalKonstructs.Modules
                 if (GUILayout.Button("Save&Close", GUILayout.Width(110), GUILayout.Height(23)))
                 {
                     selectedInstance.ToggleAllColliders(true);
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.DeselectObject(true, true);
                     selectedInstance.HighlightObject(Color.clear);
                 }
                 GUI.enabled = true;
@@ -550,13 +550,12 @@ namespace KerbalKonstructs.Modules
 
             bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
 
-            instance.SpawnObject(true);
+            instance.SpawnObject();
+            instance.Activate();
 
             KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;
 
-
-
-            KerbalKonstructs.instance.selectedObject = instance;
+            KerbalKonstructs.SelectInstance(instance, true);
 
             selectedInstance = instance;
             startPosition = selectedInstance.position;

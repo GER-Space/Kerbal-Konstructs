@@ -63,8 +63,8 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            if (KerbalKonstructs.instance.selectedObject != null)
-                KerbalKonstructs.instance.deselectObject(true, true);
+            if (KerbalKonstructs.selectedInstance != null)
+                KerbalKonstructs.DeselectObject(true, true);
 
 
             MerchantGUI.lastInstance = null;
@@ -84,8 +84,8 @@ namespace KerbalKonstructs.UI
         {
             if (MapView.MapIsEnabled)
             {
-                if (KerbalKonstructs.instance.selectedObject != null)
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                if (KerbalKonstructs.selectedInstance != null)
+                    KerbalKonstructs.DeselectObject(true, true);
             }
 
 

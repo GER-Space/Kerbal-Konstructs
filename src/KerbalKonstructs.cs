@@ -28,7 +28,7 @@ namespace KerbalKonstructs
         internal static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
         #region Holders
-        internal StaticInstance selectedObject = null;
+        internal static StaticInstance selectedInstance = null;
         internal StaticModel selectedModel;
         internal static CameraController camControl = new CameraController();
         private CelestialBody currentBody;
@@ -393,9 +393,9 @@ namespace KerbalKonstructs
 
             StaticDatabase.ToggleActiveAllStatics(false);
 
-            if (selectedObject != null)
+            if (selectedInstance != null)
             {
-                deselectObject(false, true);
+                DeselectObject(false, true);
                 camControl.active = false;
             }
             CancelInvoke("updateCache");
@@ -658,9 +658,9 @@ namespace KerbalKonstructs
             // Delete everything
 
             // instances
-            if (selectedObject != null)
+            if (selectedInstance != null)
             {
-                deselectObject(true, false);
+                DeselectObject(true, false);
             }
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
@@ -784,9 +784,9 @@ namespace KerbalKonstructs
                 }
 
                 Vector3 playerPos = Vector3.zero;
-                if (selectedObject != null)
+                if (selectedInstance != null)
                 {
-                    playerPos = selectedObject.position;
+                    playerPos = selectedInstance.position;
                     //Log.Normal("updateCache using selectedObject as playerPos");
                 }
                 else if (FlightGlobals.ActiveVessel != null)
@@ -1361,9 +1361,9 @@ namespace KerbalKonstructs
 
         public void DeleteInstance(StaticInstance Instance)
         {
-            if (selectedObject == Instance)
+            if (selectedInstance == Instance)
             {
-                deselectObject(true, false);
+                DeselectObject(true, false);
             }
 
             InputLockManager.RemoveControlLock("KKShipLock");
@@ -1398,60 +1398,44 @@ namespace KerbalKonstructs
         /// <param name="isEditing"></param>
         /// <param name="bFocus"></param>
         /// <param name="bPreview"></param>
-        public void SelectInstance(StaticInstance instance, bool isEditing, bool bFocus, bool bPreview)
+        public static void SelectInstance(StaticInstance instance, bool isEditing)
         {
-            // enable any object for editing
-            if (StaticsEditorGUI.instance.IsOpen())
+            InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
+            InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
+            InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
+
+            if (selectedInstance != null)
             {
-                instance.Activate();
+                DeselectObject(true, true);
             }
 
+            if (camControl.active)
+                camControl.disable();
 
-            if (bFocus)
-            {
-                InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
-                InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
-                InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
-
-
-
-                if (selectedObject != null)
-                    deselectObject(true, true);
-
-                if (camControl.active)
-                    camControl.disable();
-
-                camControl.enable(instance.gameObject);
-            }
-            else
-            {
-                if (selectedObject != null)
-                    deselectObject(true, true);
-            }
+            camControl.enable(instance.gameObject);
 
             //obj.preview = bPreview;
-            Log.Debug("obj.preview is " + instance.preview.ToString());
-            selectedObject = instance;
-            Log.Debug("selectedObject.preview is " + selectedObject.preview.ToString());
+            selectedInstance = instance;
             if (isEditing)
             {
-                selectedObject.editing = true;
-                selectedObject.ToggleAllColliders(false);
+                if (!selectedInstance.isActive)
+                {
+                selectedInstance.Activate();
+                }
+                selectedInstance.ToggleAllColliders(false);
             }
         }
 
-        public void deselectObject(Boolean disableCam, Boolean enableColliders)
+        public static void DeselectObject(bool disableCam, bool enableColliders)
         {
-            if (selectedObject != null)
+            if (selectedInstance != null)
             {
                 /* selectedObject.editing = false;
 				if (enableColliders) selectedObject.ToggleAllColliders(true);
+                */
 
-				Color highlightColor = new Color(0, 0, 0, 0);
-				selectedObject.HighlightObject(highlightColor); */
-
-                selectedObject.deselectObject(enableColliders);
-                selectedObject = null;
+                selectedInstance.DeselectObject(enableColliders);
+                selectedInstance = null;
             }
 
             InputLockManager.RemoveControlLock("KKShipLock");
@@ -1459,7 +1443,9 @@ namespace KerbalKonstructs
             InputLockManager.RemoveControlLock("KKCamModes");
 
             if (disableCam)
+            {
                 camControl.disable();
+            }
         }
 
         #endregion

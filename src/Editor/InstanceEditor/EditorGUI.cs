@@ -125,7 +125,7 @@ namespace KerbalKonstructs.UI
             {
                 return;
             }
-            if (KerbalKonstructs.instance.selectedObject == null)
+            if (KerbalKonstructs.selectedInstance == null)
             {
                 CloseEditors();
                 CloseVectors();
@@ -133,11 +133,11 @@ namespace KerbalKonstructs.UI
                 selectedInstance = null;
             }
 
-            if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
+            if ((KerbalKonstructs.selectedInstance != null) && (!KerbalKonstructs.selectedInstance.isPreview))
             {
-                drawEditor(KerbalKonstructs.instance.selectedObject);
+                drawEditor(KerbalKonstructs.selectedInstance);
 
-                DrawObject.DrawObjects(KerbalKonstructs.instance.selectedObject.gameObject);
+                DrawObject.DrawObjects(KerbalKonstructs.selectedInstance.gameObject);
             }
         }
 
@@ -217,7 +217,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
                     //KerbalKonstructs.instance.saveObjects();
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.DeselectObject(true, true);
                     //this.Close();
                 }
             }
@@ -674,7 +674,7 @@ namespace KerbalKonstructs.UI
                 if (GUILayout.Button("Duplicate", GUILayout.Width(130), GUILayout.Height(23)))
                 {
                     selectedInstance.SaveConfig();
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.DeselectObject(true, true);
                     SpawnInstance(selectedInstance.model, selectedInstance.groupCenter, selectedInstance.position, selectedInstance.Orientation);
                     MiscUtils.HUDMessage("Spawned duplicate " + selectedInstance.model.title, 10, 2);
                 }
@@ -728,7 +728,7 @@ namespace KerbalKonstructs.UI
                 {
                     selectedInstance.SaveConfig();
                     MiscUtils.HUDMessage("Saved changes to this object.", 10, 2);
-                    KerbalKonstructs.instance.deselectObject(true, true);
+                    KerbalKonstructs.DeselectObject(true, true);
                 }
             }
             GUILayout.EndHorizontal();
@@ -854,12 +854,16 @@ namespace KerbalKonstructs.UI
             enableColliders = false;
             enableColliders2 = false;
 
-            instance.SpawnObject(true);
+            instance.SpawnObject();
+            instance.Activate();
+
+            KerbalKonstructs.SelectInstance(instance, true);
+
             if (instance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
             {
                 instance.GrasColor = StaticsEditorGUI.defaultGrasColor;
                 instance.GrasTexture = StaticsEditorGUI.defaultGrasTexture;
-                KerbalKonstructs.instance.selectedObject.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();
+                instance.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();
             }
         }
 

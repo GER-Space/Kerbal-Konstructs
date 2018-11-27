@@ -70,7 +70,7 @@ namespace KerbalKonstructs.UI
             {
                 return;
             }
-            if (KerbalKonstructs.instance.selectedObject == null)
+            if (KerbalKonstructs.selectedInstance == null)
             {
                 Close();
             }
@@ -79,9 +79,9 @@ namespace KerbalKonstructs.UI
                 InitializeLayout();
                 guiInitialized = true;
             }
-            if (selectedObject != KerbalKonstructs.instance.selectedObject)
+            if (selectedObject != KerbalKonstructs.selectedInstance)
             {
-                selectedObject = KerbalKonstructs.instance.selectedObject;
+                selectedObject = KerbalKonstructs.selectedInstance;
                 updateSelection();
             }
             
@@ -91,9 +91,9 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            if (KerbalKonstructs.instance.selectedObject != null)
+            if (KerbalKonstructs.selectedInstance != null)
             {
-                selectedObject = KerbalKonstructs.instance.selectedObject;
+                selectedObject = KerbalKonstructs.selectedInstance;
                 updateSelection();
             }
             base.Open();

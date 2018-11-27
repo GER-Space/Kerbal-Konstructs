@@ -78,7 +78,6 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            var obj = KerbalKonstructs.instance.selectedObject;
             KKWindow = new GUIStyle(GUI.skin.window)
             {
                 padding = new RectOffset(3, 3, 5, 5)
@@ -381,7 +380,7 @@ namespace KerbalKonstructs.UI
                             if (GUILayout.Button(allFacilities[i].model.title, GUILayout.Height(23)))
                             {
                                 selectedObject = allFacilities[i];
-                                KerbalKonstructs.instance.SelectInstance(allFacilities[i], false, true, false);
+                                KerbalKonstructs.SelectInstance(allFacilities[i], false);
                                 FacilityManager.selectedInstance = allFacilities[i];
                                 FacilityManager.instance.Open();
                             }

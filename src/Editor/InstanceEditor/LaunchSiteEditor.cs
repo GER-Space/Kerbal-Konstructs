@@ -92,20 +92,20 @@ namespace KerbalKonstructs.UI
             {
                 return;
             }
-            if (KerbalKonstructs.instance.selectedObject == null)
+            if (KerbalKonstructs.selectedInstance == null)
             {
                 this.Close();
             }
 
-            if ((KerbalKonstructs.instance.selectedObject != null) && (!KerbalKonstructs.instance.selectedObject.preview))
+            if ((KerbalKonstructs.selectedInstance != null) && (!KerbalKonstructs.selectedInstance.isPreview))
             {
-                drawEditor(KerbalKonstructs.instance.selectedObject);
+                drawEditor(KerbalKonstructs.selectedInstance);
             }
         }
 
         public override void Open()
         {
-            selectedObject = KerbalKonstructs.instance.selectedObject;
+            selectedObject = KerbalKonstructs.selectedInstance;
             ReadSettings();
             base.Open();
         }
