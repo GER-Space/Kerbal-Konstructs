@@ -53,16 +53,15 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void MangleSquadStatic(StaticInstance instance)
         {
-            GameObject gameObject = instance.gameObject;
+            GameObject gameObject = instance.mesh;
 
-            gameObject.transform.parent = null;
             foreach (var component in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
 
                 if (behavioursToRemove.Contains(component.GetType()))
                 {
                //     Log.Normal("Removed: " + bla.GetType().ToString());
-                    UnityEngine.Object.Destroy(component);
+                    UnityEngine.Object.DestroyImmediate(component);
                 }               
             }
             //instance.gameObject.tag = String.Empty;
@@ -100,7 +99,8 @@ namespace KerbalKonstructs.Core
                    // Log.Normal("found Material: " + gameObject.name +" " +  mat.name);
                     foreach (string matname in materialPropertyNames)
                     {
-                        if (mat.name.Contains(matname) && mat.HasProperty(dotPoperty))
+                        if (mat.name.Contains(matname))
+                        //if (mat.name.Contains(matname) && mat.HasProperty(dotPoperty))
                         {
                             //Log.Normal("added Materialproperty to: " + gameObject.name + " "+ mat.name);
 

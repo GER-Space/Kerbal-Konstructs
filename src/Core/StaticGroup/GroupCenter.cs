@@ -65,6 +65,8 @@ namespace KerbalKonstructs.Core
             }
 
             gameObject = new GameObject();
+            GameObject.DontDestroyOnLoad(gameObject);
+
             gameObject.name = Group + "_PQS";
 
             pqsCity = gameObject.AddComponent<PQSCity>();

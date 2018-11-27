@@ -52,11 +52,13 @@ namespace KerbalKonstructs
                 Initialize();
             }
 
+            bool wasActive = instance.gameObject.activeSelf;
+            instance.gameObject.SetActive(false);
             instance.destructible = instance.gameObject.AddComponent<DestructibleBuilding>();
             List<DestructibleBuilding.CollapsibleObject> allCollapsibles = new List<DestructibleBuilding.CollapsibleObject>();
             instance.destructible.enabled = false;
 
-            CreateCollapsables(instance,instance.mesh.transform,allCollapsibles);
+            CreateCollapsables(instance,instance.mesh.transform,allCollapsibles, "KSC_LaunchPad_level_2_wreck_1");
 
 
             instance.destructible.CollapsibleObjects = allCollapsibles.ToArray();
@@ -67,36 +69,49 @@ namespace KerbalKonstructs
             instance.destructible.DemolitionFXPrefab = demolitionPrefab;
             instance.destructible.FxTarget = instance.gameObject.transform;
 
+            instance.wreck.SetActive(true);
             instance.destructible.enabled = true;
+
+            instance.gameObject.SetActive(wasActive);
         }
 
 
-        private static void CreateCollapsables(StaticInstance instance, Transform target, List<DestructibleBuilding.CollapsibleObject> allCollapsibles)
+        private static void CreateCollapsables(StaticInstance instance, Transform target, List<DestructibleBuilding.CollapsibleObject> allCollapsibles, string wreckName)
         {
 
             Bounds staticBounds = target.gameObject.GetAllRendererBounds();
+            GameObject wreckObj = GameObject.Instantiate(StaticDatabase.GetModelByName(wreckName).prefab);
 
+
+            //wreckObj.SetActive(true);
+            //Bounds wreckBounds = wreckObj.GetAllRendererBounds();
+            //wreckObj.SetActive(false);
+            //GameObject.DestroyImmediate(wreckObj);
+            //Log.Normal("Wreck Bounds: " + wreckBounds.size.ToString());
             //Log.Normal("Bounds: " + staticBounds.size.ToString());
+
+            float wrecksize = 65f;
 
             float min = Math.Min(staticBounds.size.x, staticBounds.size.z);
             float max = Math.Max(staticBounds.size.x, staticBounds.size.z);
 
-            float scale = min / 70;
+            float scale = min / wrecksize;
             float times = max / min; 
 
             int counter = 0;
             while (times > 0.3f)
             {
                 float extrascale = Math.Min(times, 1);
-                GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName("KSC_LaunchPad_level_2_wreck_1").prefab);
+                GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName(wreckName).prefab);
                 replacementObject.name = "wreck_" + counter; 
                 replacementObject.transform.position = target.position;
                 replacementObject.transform.rotation = target.rotation;
+                
                 replacementObject.transform.parent = instance.wreck.transform;
                 Vector3 localScale = replacementObject.transform.localScale;
                 replacementObject.transform.localScale = new Vector3(localScale.x * scale * extrascale, 0.75f * Math.Min(1f, scale * extrascale), localScale.z * scale * extrascale);
                 replacementObject.SetActive(false);
-                float offset = max / 2 - ((counter - 0.5f) + ((1 + extrascale) / 2)) * (70 * scale);
+                float offset = max / 2 - ((counter - 0.5f) + ((1 + extrascale) / 2)) * (wrecksize * scale);
                 Vector3 pos;
                 if (staticBounds.size.x == max)
                 {

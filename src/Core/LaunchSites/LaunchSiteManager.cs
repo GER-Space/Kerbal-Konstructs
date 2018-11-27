@@ -267,9 +267,8 @@ namespace KerbalKonstructs.Core
         {
             if (site.staticInstance.destructible != null)
             {
-                site.staticInstance.Activate();
+                site.staticInstance.TrySpawn();
                 site.staticInstance.destructible.Reset();
-                site.staticInstance.Deactivate();
             }
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
             {
@@ -286,11 +285,7 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
-            if (!instance.isSpawned)
-            {
-                instance.Activate();
-                instance.Deactivate();
-            }
+            instance.TrySpawn();
             KKLaunchSite mySite = new KKLaunchSite();
             mySite.ParseLSConfig(instance, cfgNode);
             instance.hasLauchSites = true;

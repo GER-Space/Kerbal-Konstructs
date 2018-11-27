@@ -216,6 +216,17 @@ namespace KerbalKonstructs.Core
             return fDistance;
         }
 
+
+        internal void TrySpawn()
+        {
+            if (!isSpawned)
+            {
+                Log.Normal("Spawning instance: " + gameObject.name);
+                Spawn();
+            }
+        }
+
+
         private void Spawn()
         {
 
@@ -230,6 +241,8 @@ namespace KerbalKonstructs.Core
                     return;
                 }
             }
+
+            mesh.SetActive(true);
 
             if (model.isSquad)
             {
@@ -256,10 +269,13 @@ namespace KerbalKonstructs.Core
                     staticModules.Add(moduleKey, moduleType);
                 }
 
+
+
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
                 {
+                    mod.enabled = false;
                     mod.staticInstance = this;
                     foreach (string fieldName in module.moduleFields.Keys)
                     {
@@ -285,7 +301,7 @@ namespace KerbalKonstructs.Core
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
                 renderer.enabled = true;
-                AdvancedTextures.CheckForExistingMaterial(renderer);
+                //AdvancedTextures.CheckForExistingMaterial(renderer);
                 //KKGraphics.ReplaceShader(renderer);
             }
 
@@ -306,7 +322,6 @@ namespace KerbalKonstructs.Core
         internal void Orientate()
         {
             // mangle Squads statics
-
 
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
@@ -352,8 +367,7 @@ namespace KerbalKonstructs.Core
                     pqsObjectList.Add(groupCenter.pqsCity as PQSSurfaceObject);
                 }
                 CelestialBody.pqsSurfaceObjects = pqsObjectList.ToArray();
-            }           
-
+            }
         }
 
 
@@ -458,11 +472,7 @@ namespace KerbalKonstructs.Core
 
         internal void Activate()
         {
-            if (!isSpawned)
-            {
-                Log.Normal("Dynamically Spawn: " + gameObject.name);
-                Spawn();
-            }
+            TrySpawn();
 
             isActive = true;
             gameObject.SetActive(true);
