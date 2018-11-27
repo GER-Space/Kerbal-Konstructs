@@ -86,7 +86,12 @@ namespace KerbalKonstructs
 
 
         internal static void CheckForExistingMaterial(Renderer renderer)
-        {            
+        {
+
+            if (renderer.material.mainTexture == null)
+            {
+                return;
+            }
             string transformName = renderer.gameObject.name;
             string textureName = renderer.material.mainTexture.GetHashCode().ToString();
             string ColorValue = "";

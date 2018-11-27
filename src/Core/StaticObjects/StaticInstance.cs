@@ -221,7 +221,6 @@ namespace KerbalKonstructs.Core
         {
             if (!isSpawned)
             {
-                Log.Normal("Spawning instance: " + gameObject.name);
                 Spawn();
             }
         }
@@ -301,7 +300,7 @@ namespace KerbalKonstructs.Core
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
                 renderer.enabled = true;
-                //AdvancedTextures.CheckForExistingMaterial(renderer);
+                AdvancedTextures.CheckForExistingMaterial(renderer);
                 //KKGraphics.ReplaceShader(renderer);
             }
 
@@ -313,6 +312,42 @@ namespace KerbalKonstructs.Core
             gameObject.isStatic = true;
         }
 
+
+        internal void Despawn()
+        {
+            if (hasLauchSites)
+            {
+                return;
+            }
+
+            foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>())
+            {
+                GameObject.DestroyImmediate(module);
+            }
+
+            foreach (DestructibleBuilding building in gameObject.GetComponentsInChildren<DestructibleBuilding>())
+            {
+                GameObject.DestroyImmediate(building);
+            }
+
+
+            _mesh.transform.parent = null;
+            GameObject.DestroyImmediate(_mesh);
+
+            wreck.transform.parent = null;
+            GameObject.DestroyImmediate(wreck);
+
+            wreck = new GameObject("wreck");
+            GameObject.DontDestroyOnLoad(wreck);
+
+            wreck.transform.position = transform.position;
+            wreck.transform.rotation = transform.rotation;
+
+            wreck.transform.parent = transform;
+
+            isSpawned = false;
+
+        }
 
         /// <summary>
         /// Spawns a new Instance in the Gameworld and registers itself to the Static Database 
@@ -494,6 +529,12 @@ namespace KerbalKonstructs.Core
             {
                 module.enabled = false;
             }
+
+            if (isSpawned)
+            {
+                Despawn();
+            }
+
         }
 
 
