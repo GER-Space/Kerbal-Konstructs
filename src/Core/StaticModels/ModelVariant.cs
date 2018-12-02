@@ -70,33 +70,42 @@ namespace KerbalKonstructs.Core
 
         internal static GameObject SpawnVariant(StaticInstance instance)
         {
-            if (instance.model.hasVariants && !String.IsNullOrEmpty(instance.VariantName))
+            if (instance.model.hasVariants)
             {
-                if (instance.model.variants.ContainsKey(instance.VariantName))
+                if (!String.IsNullOrEmpty(instance.VariantName))
                 {
 
-                    ModelVariant variant = instance.model.variants[instance.VariantName];
-                    if (String.IsNullOrEmpty(variant.newMeshName))
+                    if (instance.model.variants.ContainsKey(instance.VariantName))
                     {
-                        variant.newMeshName = instance.model.mesh;
-                        variant.prefab = instance.model.prefab;
+
+                        ModelVariant variant = instance.model.variants[instance.VariantName];
+                        if (String.IsNullOrEmpty(variant.newMeshName))
+                        {
+                            variant.newMeshName = instance.model.mesh;
+                            variant.prefab = instance.model.prefab;
+                        }
+                        else
+                        {
+                            variant.prefab = GameDatabase.Instance.GetModelPrefab(instance.model.path + "/" + variant.newMeshName);
+                            if (variant.prefab == null)
+                            {
+                                Log.UserError("Could not find " + instance.model.path + "/" + variant.newMeshName + ".mu! Did the modder forget to include it or did you actually install it?");
+                            }
+                        }
+
+                        return GameObject.Instantiate(variant.prefab);
                     }
                     else
                     {
-                        variant.prefab = GameDatabase.Instance.GetModelPrefab(instance.model.path + "/" + variant.newMeshName);
-                        if (variant.prefab== null)
-                        {
-                            Log.UserError("Could not find " + instance.model.path + "/" + variant.newMeshName + ".mu! Did the modder forget to include it or did you actually install it?");
-                        }
+                        Log.UserError("Cannot find variant: " + instance.VariantName + "on model " + instance.model.name);
+                        return null;
                     }
-
-                    return GameObject.Instantiate(variant.prefab);
-                }
-                else
+                } else
                 {
-                    Log.UserError("Cannot find variant: " + instance.VariantName + "on model " + instance.model.name);
-                    return null;
-                } 
+                    // Default is the first one
+                    instance.VariantName = instance.model.variants.Keys.ToArray()[0];
+                    return SpawnVariant(instance);
+                }
             }
             else
             {

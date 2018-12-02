@@ -43,7 +43,7 @@ namespace KerbalKonstructs.Core
             {
                 List<DialogGUIBase> list = new List<DialogGUIBase>();
                 list.Add(new DialogGUIFlexibleSpace());
-                list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
+                //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
 
                 foreach (var variant in staticInstance.model.variants)
                 {

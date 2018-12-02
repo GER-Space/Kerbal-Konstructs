@@ -349,7 +349,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Selected Variant: ");
                 GUI.enabled = (selectedInstance.model.hasVariants);
-                string vaiantstring = (String.IsNullOrEmpty(selectedInstance.VariantName)) ? "Default" : selectedInstance.VariantName;
+                string vaiantstring = (String.IsNullOrEmpty(selectedInstance.VariantName)) ? "N.A." : selectedInstance.VariantName;
 
                 if (GUILayout.Button(vaiantstring, GUILayout.Width(150), GUILayout.Height(21)))
                 {
