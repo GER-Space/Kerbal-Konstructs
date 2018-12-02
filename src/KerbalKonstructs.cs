@@ -947,19 +947,21 @@ namespace KerbalKonstructs
                 }
 
                 StaticModel model = new StaticModel();
-                ConfigParser.ParseModelConfig(model, conf.config);
-                model.name = modelName;
-                model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
                 model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
+                model.name = modelName;
                 model.config = conf.url;
                 model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
+
+                ConfigParser.ParseModelConfig(model, conf.config);
+                
+                model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
                 //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
 
                 model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
 
                 if (model.prefab == null)
                 {
-                    Debug.Log("KK: Could not find " + model.mesh + ".mu! Did the modder forget to include it or did you actually install it?");
+                    Log.UserError("Could not find " + model.path + "/" + model.mesh + ".mu!");
                     continue;
                 }
 

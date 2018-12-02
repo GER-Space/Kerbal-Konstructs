@@ -18,6 +18,8 @@ namespace KerbalKonstructs.UI
         }
 
 
+        internal static float windowWidth  = 330;
+        internal static float windowHeight  = 750;
 
         private static EditorGUI _instance = null;
         public static EditorGUI instance
@@ -69,7 +71,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(1200, 60, 330, 730);
+        internal static Rect toolRect = new Rect(1200, 60, windowWidth, windowHeight);
 
         #endregion
 
@@ -340,21 +342,25 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
             }
             GUILayout.EndHorizontal();
+            //
+            // Model Switching
+            //
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Selected Variant: ");
+                GUI.enabled = (selectedInstance.model.hasVariants);
+                string vaiantstring = (String.IsNullOrEmpty(selectedInstance.VariantName)) ? "Default" : selectedInstance.VariantName;
 
+                if (GUILayout.Button(vaiantstring, GUILayout.Width(150), GUILayout.Height(21)))
+                {
+                    VariantSelector.staticInstance = selectedInstance;
+                    VariantSelector.Open();
+                }
+                GUI.enabled = true;
+                GUILayout.FlexibleSpace();
 
-            //GUILayout.BeginHorizontal();
-            //{
-            //    GUILayout.Label("Rel. Position");
-            //    GUILayout.FlexibleSpace();
-            //    GUILayout.Label("X", GUILayout.Height(18));
-            //    posXStr = (GUILayout.TextField(posXStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
-            //    GUILayout.Label("Y", GUILayout.Height(18));
-            //    posYStr = (GUILayout.TextField(posYStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
-            //    GUILayout.Label("Z", GUILayout.Height(18));
-            //    posZStr = (GUILayout.TextField(posZStr, 8, GUILayout.Width(48), GUILayout.Height(18)));
-
-            //}
-            //GUILayout.EndHorizontal();
+            }
+            GUILayout.EndHorizontal();
             //
             // Position editing
             //

@@ -21,6 +21,28 @@ namespace KerbalKonstructs.Core
             {
                 ConfigUtil.ReadCFGNode(target, field, cfgNode);
             }
+
+            foreach (ConfigNode variNode in cfgNode.GetNodes("VARIANT"))
+            {
+                ModelVariant vaiant = new ModelVariant(target, variNode);
+
+                if (string.IsNullOrEmpty(vaiant.name))
+                {
+                    Log.UserError("model " + target.name + " has a vaiant without a name" );
+                    continue;
+                }
+
+                if (!target.variants.ContainsKey(vaiant.name))
+                {
+                    target.variants.Add(vaiant.name, vaiant);
+                }
+                else
+                {
+                    Log.UserError("model " + target.name + " already has a vaiant with name: " + vaiant.name);
+                }
+                
+            }
+
         }
 
         internal static void WriteModelConfig(StaticModel model, ConfigNode cfgNode)
@@ -94,6 +116,12 @@ namespace KerbalKonstructs.Core
                 {
                     Log.UserError("error in writing modelconfig: " + model.name + " key: "  + modelsetting.Key);
                 }
+
+                foreach (ModelVariant vaiant in model.variants.Values)
+                {
+                    cfgNode.AddNode("VARIANT", vaiant.GetConfig());
+                }
+
             }
         }
 

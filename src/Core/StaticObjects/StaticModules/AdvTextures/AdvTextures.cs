@@ -31,14 +31,19 @@ namespace KerbalKonstructs
         private List<string> targetTransforms = new List<string>();
 
         private string[] seperators = new string[] { " ", ",", ";" };
-
-
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
+
+        private bool done = false;
 
 
         public void Start()
         {
-            
+            if (done)
+            {
+                return;
+            }
+            done = true;
+
             //Log.Normal("AdvTexture called on " + staticInstance.model.name);
 
             if (!int.TryParse(BuiltinIndex, out textureIndex))

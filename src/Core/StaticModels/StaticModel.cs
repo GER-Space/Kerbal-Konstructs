@@ -72,5 +72,9 @@ namespace KerbalKonstructs.Core
         internal float DefaultScienceOMax;
         [CFGSetting]
         internal float DefaultFundsOMax;
+
+        internal bool hasVariants = false;
+        internal Dictionary<string,ModelVariant> variants = new Dictionary<string, ModelVariant>();
+
 	}
 }

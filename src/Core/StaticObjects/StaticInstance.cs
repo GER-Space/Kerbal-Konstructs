@@ -64,6 +64,8 @@ namespace KerbalKonstructs.Core
         public Color GrasColor = Color.clear;
         [CFGSetting]
         public string GrasTexture;
+        [CFGSetting]
+        public string VariantName;
 
         internal GameObject gameObject;
         private GameObject _mesh = null;
@@ -231,7 +233,7 @@ namespace KerbalKonstructs.Core
 
             isSpawned = true;
 
-            mesh = GameObject.Instantiate(model.prefab);
+            mesh = ModelVariant.SpawnVariant(this);
             {
                 if (_mesh == null)
                 {
@@ -297,6 +299,9 @@ namespace KerbalKonstructs.Core
             }
 
 
+            ModelVariant.ApplyVariant(this);
+
+
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
                 renderer.enabled = true;
@@ -315,7 +320,7 @@ namespace KerbalKonstructs.Core
 
         internal void Despawn()
         {
-            if (hasLauchSites)
+            if (hasLauchSites && (KerbalKonstructs.selectedInstance != this))
             {
                 return;
             }
