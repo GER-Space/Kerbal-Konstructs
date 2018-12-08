@@ -34,8 +34,8 @@ namespace KerbalKonstructs
             {
                 RotationTransform = RotationTrasform;
             }
-            rotTransform = gameObject.transform.FindRecursive(RotationTransform);
-            elTransform = gameObject.transform.FindRecursive(ElevationTransform);
+            rotTransform = staticInstance.mesh.transform.FindRecursive(RotationTransform);
+            elTransform = staticInstance.mesh.transform.FindRecursive(ElevationTransform);
 
             if (rotTransform == null)
             {
@@ -80,7 +80,7 @@ namespace KerbalKonstructs
             //dish.rotationInit = new Quaternion();
 
 
-            controller = gameObject.AddComponent<DishController>();
+            controller = staticInstance.mesh.AddComponent<DishController>();
             controller.dishes = new DishController.Dish[] { dish };
             controller.enabled = true;
 
