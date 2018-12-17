@@ -588,6 +588,7 @@ namespace KerbalKonstructs
                 CustomSpaceCenter customSC = null;
 
                 double smallestDist = SpaceCenterManager.KSC.GreatCircleDistance(SpaceCenterManager.KSC.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+
                 Log.Normal("Distance to KSC is " + smallestDist);
 
                 foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
@@ -624,7 +625,7 @@ namespace KerbalKonstructs
                     {
                         recovery = (float)Math.Max(0, (0.98 - ((smallestDist / 1000) / 2150)));
                         dialog.fundsEarned = shipvalue * recovery;
-                        dialog.recoveryFactor =  Math.Round(recovery,1).ToString() + "%";
+                        dialog.recoveryFactor =  Math.Round(recovery *100 ,1).ToString() + "%";
                         dialog.recoveryLocation = Math.Round(smallestDist/1000, 1) + "km from " + customSC.SpaceCenterName;
                     }
 
