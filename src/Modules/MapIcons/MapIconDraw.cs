@@ -149,7 +149,7 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                if (groundStation.groupCenter.isHidden && !isOpen)
+                if (groundStation.groupCenter.isHidden && !isOpen || groundStation.groupCenter.isHidden && (((GroundStation)groundStation.myFacilities[0]).OpenCost == 0) )
                 {
                     continue;
                 }
@@ -323,7 +323,7 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                if (customSpaceCenter.staticInstance.groupCenter.isHidden && !cscIsOpen)
+                if ((customSpaceCenter.staticInstance.groupCenter != null) && (customSpaceCenter.staticInstance.groupCenter.isHidden && !cscIsOpen))
                 {
                     continue;
                 }

@@ -293,6 +293,10 @@ namespace KerbalKonstructs.Core
             instance.launchSite = mySite;
             RegisterLaunchSite(mySite);
             instance.groupCenter.launchsites.Add(mySite);
+            if (mySite.LaunchSiteIsHidden)
+            {
+                instance.groupCenter.hidden = true;
+            }
         }
 
         /// <summary>
