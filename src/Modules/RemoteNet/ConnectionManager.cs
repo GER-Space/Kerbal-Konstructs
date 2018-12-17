@@ -132,6 +132,12 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
+                // Don't revreal hidden bases
+                if (instance.myFacilities[0].OpenCost == 0f && instance.groupCenter.isHidden)
+                {
+                    continue;
+                }
+
                 AttachGroundStation(instance);
             }
         }

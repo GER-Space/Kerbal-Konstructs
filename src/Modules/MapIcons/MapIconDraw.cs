@@ -43,11 +43,9 @@ namespace KerbalKonstructs.Modules
         private KKLaunchSite launchSite;
         private CelestialBody body;
         private StaticInstance groundStation;
-        private bool display2 = false;
         private bool isOpen = false;
 
         private bool cscIsOpen = false;
-        private bool cscDisplay = false;
 
         Vector3 launchSitePosition;
         Vector3 lsPosition;
@@ -120,8 +118,10 @@ namespace KerbalKonstructs.Modules
                 KerbalKonstructs.instance.mapShowOpen = true;
             }
                 
-            if (!KerbalKonstructs.instance.mapShowOpenT)
+            if (!KerbalKonstructs.instance.mapShowGroundStation)
+            {
                 return;
+            }
 
             body = PlanetariumCamera.fetch.target.GetReferenceBody();
 
@@ -139,16 +139,21 @@ namespace KerbalKonstructs.Modules
                 isOpen = ((GroundStation)groundStation.myFacilities[0]).isOpen;
 
 
-
-                if (KerbalKonstructs.instance.mapShowOpenT)
-                    display2 = true;
                 if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
-                    display2 = false;
-                if (!KerbalKonstructs.instance.mapShowOpen && isOpen)
-                    display2 = false;
-
-                if (!display2)
+                {
                     continue;
+                }
+
+                if (!KerbalKonstructs.instance.mapShowOpen && isOpen)
+                {
+                    continue;
+                }
+
+                if (groundStation.groupCenter.isHidden && !isOpen)
+                {
+                    continue;
+                }
+
 
                 Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(groundStation.position));
 
@@ -313,16 +318,16 @@ namespace KerbalKonstructs.Modules
                 cscIsOpen = customSpaceCenter.isOpen;
 
 
-
-                if (KerbalKonstructs.instance.mapShowRecovery)
-                    cscDisplay = true;
-                if (!KerbalKonstructs.instance.mapShowClosed && !cscIsOpen)
-                    cscDisplay = false;
-                if (!KerbalKonstructs.instance.mapShowOpen && cscIsOpen)
-                    cscDisplay = false;
-
-                if (!cscDisplay)
+                if( (!cscIsOpen && !KerbalKonstructs.instance.mapShowClosed) || (cscIsOpen && !KerbalKonstructs.instance.mapShowOpen))
+                {
                     continue;
+                }
+
+                if (customSpaceCenter.staticInstance.groupCenter.isHidden && !cscIsOpen)
+                {
+                    continue;
+                }
+
 
                 Vector3 pos = MapView.MapCamera.GetComponent<Camera>().WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(customSpaceCenter.gameObject.transform.position));
 

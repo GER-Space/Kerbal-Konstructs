@@ -124,7 +124,7 @@ namespace KerbalKonstructs
         [KSPField]
         public Boolean mapShowClosed = false;
         [KSPField]
-        public Boolean mapShowOpenT = false;
+        public Boolean mapShowGroundStation = false;
         [KSPField]
         public Boolean mapShowHelipads = true;
         [KSPField]

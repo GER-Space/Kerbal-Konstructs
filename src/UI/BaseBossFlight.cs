@@ -286,8 +286,7 @@ namespace KerbalKonstructs.UI
                             else
                             {
                                 Funding.Instance.AddFunds(-fOpenCost, TransactionReasons.Cheating);
-
-                                LaunchSiteManager.setSiteOpenCloseState(Base, "Open");
+                                LaunchSiteManager.OpenLaunchSite(LaunchSiteManager.GetLaunchSiteByName(Base));
                                 smessage = Base + " opened";
                                 MiscUtils.HUDMessage(smessage, 10, 2);
                             }

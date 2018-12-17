@@ -103,16 +103,16 @@ namespace KerbalKonstructs.Modules
                 GUI.enabled = true;
 
                 GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-                if (KerbalKonstructs.instance.mapShowOpenT)
+                if (KerbalKonstructs.instance.mapShowGroundStation)
                 {
                     if (GUILayout.Button(new GUIContent(UIMain.tTrackingOn, "Tracking Stations"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowOpenT = false;
+                        KerbalKonstructs.instance.mapShowGroundStation = false;
                 }
                 else
                 {
 
                     if (GUILayout.Button(new GUIContent(UIMain.tTrackingOff, "Tracking Stations"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowOpenT = true;
+                        KerbalKonstructs.instance.mapShowGroundStation = true;
                 }
 
 

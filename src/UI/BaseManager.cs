@@ -288,7 +288,6 @@ namespace KerbalKonstructs.UI
 									3);
 							else
 							{
-								selectedSite.SetOpen();
                                 LaunchSiteManager.OpenLaunchSite(selectedSite);
                                 Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
 							}

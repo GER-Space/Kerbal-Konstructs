@@ -49,6 +49,29 @@ namespace KerbalKonstructs.Core
         internal List<StaticInstance> childInstances = new List<StaticInstance>();
         internal bool isActive = true;
 
+        internal List<KKLaunchSite> launchsites = new List<KKLaunchSite>();
+
+        internal bool hidden = false;
+
+
+        internal bool isHidden
+        {
+            get
+            {
+                if (!hidden)
+                {
+                    return false;
+                }
+
+                bool active = false; 
+                foreach (KKLaunchSite site in launchsites)
+                {
+                    active = (active || site.isOpen);
+                }
+                return (!active);
+            }
+        }
+
 
         internal void Spawn()
         {

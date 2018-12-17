@@ -275,6 +275,7 @@ namespace KerbalKonstructs.Core
                 Log.Normal("OpenSite: " + site.LaunchSiteName);
                 AlterMHSelector();
             }
+            site.SetOpen();
         }
 
 
@@ -291,6 +292,7 @@ namespace KerbalKonstructs.Core
             instance.hasLauchSites = true;
             instance.launchSite = mySite;
             RegisterLaunchSite(mySite);
+            instance.groupCenter.launchsites.Add(mySite);
         }
 
         /// <summary>
@@ -382,7 +384,6 @@ namespace KerbalKonstructs.Core
                 {
                     CustomSpaceCenter.CreateFromLaunchsite(site);
                 }
-
             }
             else
             {
