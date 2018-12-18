@@ -337,6 +337,11 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal static bool HasInstance(StaticInstance instance)
+        {
+            return instancedByUUID.ContainsKey(instance.UUID);
+        }
+
 
         internal static List<StaticInstance> GetInstancesFromModel(StaticModel model)
 		{

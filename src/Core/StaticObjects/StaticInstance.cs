@@ -546,18 +546,25 @@ namespace KerbalKonstructs.Core
 
         internal void Destroy()
         {
+            if (groupCenter != null)
+            {
+                groupCenter.RemoveInstance(this);
+            }
+            if (StaticDatabase.HasInstance(this))
+            {
 
-            groupCenter.RemoveInstance(this);
-            StaticDatabase.DeleteStaticFromDB(this);
-
+                StaticDatabase.DeleteStaticFromDB(this);
+            }
             if (_mesh != null)
             {
                 GameObject.DestroyImmediate(_mesh);
             }
-            wreck.transform.parent = null;
-            GameObject.DestroyImmediate(wreck);
+            if (wreck != null)
+            {
+                wreck.transform.parent = null;
+                GameObject.DestroyImmediate(wreck);
+            }
             GameObject.DestroyImmediate(gameObject);
         }
-
     }
 }

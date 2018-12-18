@@ -211,6 +211,7 @@ namespace KerbalKonstructs.Core
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;
+            ksc2.isSquad = true;
 
             ksc2Instance.launchSite = ksc2;
             RegisterLaunchSite(ksc2);

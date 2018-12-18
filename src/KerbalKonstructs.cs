@@ -895,6 +895,12 @@ namespace KerbalKonstructs
 
                 instance.Orientate();
 
+                if (!StaticDatabase.HasInstance(instance))
+                {
+                    instance.Destroy();
+                    continue;
+                }
+
                 AttachFacilities(instance, instanceCfgNode);
 
                 LaunchSiteManager.AttachLaunchSite(instance, instanceCfgNode);
