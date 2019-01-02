@@ -36,12 +36,9 @@ namespace KerbalKonstructs
 
         internal static bool scCamWasAltered = false;
 
-        //internal double VesselCost = 0;
-        //internal double RefundAmount = 0;
-
         internal double recoveryExraRefund = 0;
 
-
+        internal static double gameTime = -1d;
         internal static float localGroupRange = 25000f;
         internal static bool convertLegacyConfigs = false;
 
@@ -499,6 +496,7 @@ namespace KerbalKonstructs
                     break;
                 case GameScenes.MAINMENU:
                     {
+                        gameTime = -1f;
                         CareerState.ResetFacilitiesOpenState();
                         scCamWasAltered = false;
                         // reset this for the next Newgame
@@ -776,6 +774,8 @@ namespace KerbalKonstructs
         /// </summary>
         public void updateCache()
         {
+            KerbalKonstructs.gameTime = HighLogic.CurrentGame.UniversalTime;
+
             if (HighLogic.LoadedSceneIsGame)
             {
                 // Don't update visiblility when Editor is open

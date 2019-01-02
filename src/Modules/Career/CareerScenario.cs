@@ -15,12 +15,23 @@ namespace KerbalKonstructs.Career
         [Persistent (isPersistant = true)]
         internal bool initialized = false;
 
+        [Persistent(isPersistant = true)]
+        internal double saveTime;
+
         /// <summary>
         /// called at the OnLoad()
         /// </summary>
         /// <param name="node">The name of the config node</param>
         public override void OnLoad(ConfigNode node)
         {
+            // check if we have been in the mainmenue before (gameTime == -1) or if we saved just before we load (scene switch)
+            if (KerbalKonstructs.gameTime == -1d || KerbalKonstructs.gameTime > HighLogic.CurrentGame.UniversalTime)
+            {
+            }
+            else
+            {
+                return;
+            }
 
             CareerObjects.LoadBuildings(node);
 
@@ -31,6 +42,13 @@ namespace KerbalKonstructs.Career
             {
                 initialized = bool.Parse(node.GetValue("initialized"));
             }
+
+            if (node.HasValue("savetime"))
+            {
+                saveTime = double.Parse(node.GetValue("savetime"));
+                KerbalKonstructs.gameTime = saveTime;
+            }
+
 
             if (!initialized)
             {
@@ -54,9 +72,15 @@ namespace KerbalKonstructs.Career
         /// </summary>
         /// <param name="node">The name of the config node</param>
         public override void OnSave(ConfigNode node)
-        {            
+        {
+            KerbalKonstructs.gameTime = HighLogic.CurrentGame.UniversalTime;
+            saveTime = KerbalKonstructs.gameTime;
+
             // save the state, that we got the initialisation done
             node.SetValue("initialized", initialized, true);
+
+            node.SetValue("savetime", saveTime, true);
+
 
             KerbalKonstructs.instance.SaveKKConfig(node);
 
