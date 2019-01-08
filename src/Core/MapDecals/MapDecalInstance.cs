@@ -97,6 +97,15 @@ namespace KerbalKonstructs.Core
 		public void Update(bool doUpdate = true)
 		{
 
+            mapDecal.heightMap = DecalsDatabase.GetHeightMapByName(HeightMapName).map;
+            mapDecal.colorMap = DecalsDatabase.GetColorMapByName(ColorMapName).map;
+
+            if (mapDecal.heightMap == null && mapDecal.colorMap == null)
+            {
+                //DecalsDatabase.DeleteMapDecalInstance(this);
+                return;
+            }
+
             mapDecal.modEnabled = true;
             mapDecal.requirements = PQS.ModiferRequirements.MeshColorChannel | PQS.ModiferRequirements.MeshCustomNormals;
             mapDecal.order = Order;
@@ -112,9 +121,6 @@ namespace KerbalKonstructs.Core
             mapDecal.angle = Angle;
             mapDecal.removeScatter = RemoveScatter;
 
-
-            mapDecal.heightMap = DecalsDatabase.GetHeightMapByName(HeightMapName).map;
-            mapDecal.colorMap = DecalsDatabase.GetColorMapByName(ColorMapName).map;
 
             mapDecal.smoothHeight = SmoothHeight;
 

@@ -68,6 +68,7 @@ namespace KerbalKonstructs
             instance.destructible.preCompiledId = true;
             instance.destructible.DemolitionFXPrefab = demolitionPrefab;
             instance.destructible.FxTarget = instance.gameObject.transform;
+            instance.destructible.impactMomentumThreshold = 1000f;
 
             instance.wreck.SetActive(true);
             instance.destructible.enabled = true;

@@ -204,7 +204,9 @@ namespace KerbalKonstructs.Core
         internal static void ParseMapDecalConfig(MapDecalInstance target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
+            {
                 ConfigUtil.InitTypes();
+            }
 
             foreach (var field in ConfigUtil.mapDecalFields.Values)
             {
