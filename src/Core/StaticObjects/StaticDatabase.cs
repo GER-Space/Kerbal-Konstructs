@@ -262,8 +262,13 @@ namespace KerbalKonstructs.Core
 
         internal static void UpdateCache(Vector3 playerPos)
         {
+            float packRange = 0f;
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT && FlightGlobals.ActiveVessel != null)
+            {
+                packRange = FlightGlobals.ActiveVessel.vesselRanges.flying.pack;
+            }
 
-            float maxDistance = (float)(PhysicsGlobals.Instance.VesselRangesDefault.flying.load + (KerbalKonstructs.localGroupRange * 1.5));
+            float maxDistance = (float)(packRange + (KerbalKonstructs.localGroupRange * 1.5));
            // Log.Normal("MaxDistance: " + maxDistance);
             bool isInRange = false;
 
