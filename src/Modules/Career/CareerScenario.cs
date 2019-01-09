@@ -13,10 +13,10 @@ namespace KerbalKonstructs.Career
     public class KerbalKonstructsSettings : ScenarioModule
     {
         [Persistent (isPersistant = true)]
-        internal bool initialized = false;
+        public bool initialized = false;
 
         [Persistent(isPersistant = true)]
-        internal double saveTime;
+        public double saveTime;
 
         /// <summary>
         /// called at the OnLoad()
@@ -41,6 +41,13 @@ namespace KerbalKonstructs.Career
             if (node.HasValue("initialized"))
             {
                 initialized = bool.Parse(node.GetValue("initialized"));
+            }
+
+            if (!initialized)
+            {
+                Log.Normal("Resetting OpenCloseStates for new Games");
+                CareerState.ResetFacilitiesOpenState();
+                initialized = true;
             }
 
             if (node.HasValue("savetime"))
@@ -96,15 +103,6 @@ namespace KerbalKonstructs.Career
         public void Start()
         {
             Log.Normal("Career Module Start Called");
-
-            if (!initialized)
-            {
-                Log.Normal("Resetting OpenCloseStates for new Games");
-                CareerState.ResetFacilitiesOpenState();
-                ConnectionManager.LoadGroundStations();
-            }
-
-            initialized = true;
 
         }
 
