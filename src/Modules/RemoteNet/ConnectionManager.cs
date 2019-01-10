@@ -294,7 +294,7 @@ namespace KerbalKonstructs.Modules
                 }
                 else
                 {
-                    Log.Warning("Trying To close a GroundStation that was never opened by us");
+                    Log.Warning("Trying To close a GroundStation that was never opened by us: " + instance.groupCenterName + ":" + instance.gameObject.name);
                 }
             }
         }
