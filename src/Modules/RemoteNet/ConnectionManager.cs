@@ -287,8 +287,15 @@ namespace KerbalKonstructs.Modules
 
             if (KerbalKonstructs.instance.enableRT)
             {
-                RemoteTechAddon.RemoveGroundStation(openRTStations[instance]);
-                openRTStations.Remove(instance);
+                if (openRTStations.ContainsKey(instance))
+                {
+                    openRTStations.Remove(instance);
+                    RemoteTechAddon.RemoveGroundStation(openRTStations[instance]);
+                }
+                else
+                {
+                    Log.Warning("Trying To close a GroundStation that was never opened by us");
+                }
             }
         }
 
