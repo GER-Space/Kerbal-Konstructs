@@ -114,10 +114,14 @@ namespace KerbalKonstructs.Addons
         internal static void RemoveGroundStation(Guid stationId)
         {
             if (!isInstalled)
+            {
                 return;
+            }
 
             if (!isInitialized)
+            {
                 Init();
+            }
 
             MethodInfo methodInfo = rtType.GetMethod("RemoveGroundStation");
             methodInfo.Invoke(null, new object[] { stationId });
@@ -147,10 +151,14 @@ namespace KerbalKonstructs.Addons
         internal static void CloseAllStations()
         {
             if (!isInstalled)
+            {
                 return;
+            }
 
             if (!isInitialized)
+            {
                 Init();
+            }
 
             Guid stationID = Guid.Empty;
             MethodInfo methodInfo = rtType.GetMethod("GetGroundStations");
@@ -162,7 +170,9 @@ namespace KerbalKonstructs.Addons
                 stationID = GetGroundStationGuid(stationName);
                 //don't remove mission control
                 if (stationID.ToString("N").Equals("5105f5a9d62841c6ad4b21154e8fc488"))
+                {
                     continue;
+                }
 
                 RemoveGroundStation(stationID);
             }

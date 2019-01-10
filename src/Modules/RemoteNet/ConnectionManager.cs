@@ -109,8 +109,8 @@ namespace KerbalKonstructs.Modules
             // needed as long the Groundstation list is still not saved in persestence layer.
             if (KerbalKonstructs.instance.enableRT)
             {
-                // nothing to do, as RT saves the groundstations an we query them later.
-
+                // just remove all groundstations and add them later
+                RemoteTechAddon.CloseAllStations();
             }
 
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
