@@ -69,11 +69,11 @@ namespace KerbalKonstructs.UI
 
         private void drawGrasColorUI()
         {
-            windowRect = GUI.Window(0xB31B1E3, windowRect, GroupSelectorWindow, "", UIMain.KKWindow);
+            windowRect = GUI.Window(0xB31B1F1, windowRect, GrasSelectorWindow, "", UIMain.KKWindow);
         }
 
 
-        private void GroupSelectorWindow(int WindowID)
+        private void GrasSelectorWindow(int WindowID)
         {
             GUI.enabled = true;
 
@@ -92,7 +92,6 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("X", UIMain.DeadButtonRed, GUILayout.Height(21)))
                 {
-                    //KerbalKonstructs.instance.saveObjects();
                     this.Close();
                 }
             }
@@ -223,6 +222,10 @@ namespace KerbalKonstructs.UI
             if (String.IsNullOrEmpty(selectedInstance.GrasTexture))
             {
                 grasTextureName = "BUILTIN:/terrain_grass00_new";
+            }
+            else
+            {
+                grasTextureName = selectedInstance.GrasTexture;
             }
         }
 

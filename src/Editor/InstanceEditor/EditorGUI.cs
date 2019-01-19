@@ -637,6 +637,8 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Edit", GUILayout.Width(90), GUILayout.Height(23)))
                 {
+                    GrasColorUI.selectedInstance = selectedInstance;
+                    GrasColorUI.instance.SetupFields();
                     GrasColorUI.instance.Open();
                 }
 
