@@ -103,8 +103,8 @@ namespace KerbalKonstructs
             }
             if (animationComponent == null)
             {
-                Log.UserError("AnimateOnSunRise: no anim found, destroying now");
-                Destroy(this);
+                Log.UserError("AnimateOnSunRise: no anim found: \"" + animationName + "\", on: " + staticInstance.model.name);
+                GameObject.DestroyImmediate(this);
                 return;
             }
 
@@ -178,7 +178,6 @@ namespace KerbalKonstructs
                 {
                     master.SetUp();
                 }
-
             }
         }
 
