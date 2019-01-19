@@ -218,6 +218,7 @@ namespace KerbalKonstructs
             Log.PerfStart("Object loading1");
             SquadStatics.LoadSquadModels();
 
+            BuiltinCenters.AddAllBuiltinCenters();
             // normal placement of statics
             ConfigParser.LoadAllGroupCenter();
 
