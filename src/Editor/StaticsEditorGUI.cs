@@ -873,6 +873,10 @@ namespace KerbalKonstructs.UI
                 {
                     continue;
                 }
+                if (groupCenter.isBuiltIn)
+                {
+                    continue;
+                }
 
                 foundList.Add(groupCenter);
             }

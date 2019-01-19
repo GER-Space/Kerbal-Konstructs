@@ -488,7 +488,7 @@ namespace KerbalKonstructs
                             }
 
 
-                            Log.Normal("found child2 " + child2.gameObject.name);
+                            //Log.Normal("found child2 " + child2.gameObject.name);
 
                             string modelName = "SQUAD_" + pqs2.gameObject.name + "_" + child2.gameObject.name;
                             string modelTitle = "Squad " + pqs2.gameObject.name + " " + child2.gameObject.name;
@@ -624,7 +624,9 @@ namespace KerbalKonstructs
             foreach (PQSCity pqs in Resources.FindObjectsOfTypeAll<PQSCity>())
             {
                 if (pqs.gameObject.name != "Pyramids")
+                {
                     continue;
+                }
 
 
                 // find the lv2 parent
@@ -717,13 +719,13 @@ namespace KerbalKonstructs
         internal static void PimpLv2Runway(GameObject modelPrefab, bool state = false)
         {
             StaticModel modelLights = StaticDatabase.GetModelByName("SQUAD_Runway_Lights");
-            Log.Normal("Prefab name: " + modelPrefab.name);
+            //Log.Normal("Prefab name: " + modelPrefab.name);
             int count = 0;
             foreach (Transform target in modelPrefab.transform.FindAllRecursive("fxTarget"))
             {
                 GameObject light = GameObject.Instantiate(modelLights.prefab);
                 light.SetActive(state);
-                Log.Normal("found target: " + target.parent.name);
+                //Log.Normal("found target: " + target.parent.name);
                 light.transform.parent = target.parent.FindRecursiveContains("runway");
                 light.transform.localScale *= 0.6f;
 

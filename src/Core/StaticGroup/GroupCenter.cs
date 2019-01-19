@@ -52,6 +52,9 @@ namespace KerbalKonstructs.Core
         internal List<KKLaunchSite> launchsites = new List<KKLaunchSite>();
 
         internal bool hidden = false;
+        internal bool isBuiltIn = false;
+
+        internal bool repositionToSphere = false;
 
 
         internal bool isHidden
@@ -112,9 +115,10 @@ namespace KerbalKonstructs.Core
             pqsCity.modEnabled = true;
             pqsCity.transform.parent = CelestialBody.pqsController.transform;
 
-            pqsCity.repositionToSphereSurface = true; //Snap to surface?
-            pqsCity.repositionToSphereSurfaceAddHeight = true;
-            pqsCity.repositionToSphere = false;
+            pqsCity.repositionToSphere = repositionToSphere;
+            pqsCity.repositionToSphereSurface = !repositionToSphere; //Snap to surface?
+            pqsCity.repositionToSphereSurfaceAddHeight = !repositionToSphere;
+            
 
             pqsCity.OnSetup();
             pqsCity.Orientate();
@@ -167,7 +171,7 @@ namespace KerbalKonstructs.Core
             }
             isActive = newState;
 
-            Log.Normal("Setting Group " + Group + " to: " + newState);
+            //Log.Normal("Setting Group " + Group + " to: " + newState);
 
             foreach (StaticInstance instance in childInstances)
             {
@@ -232,9 +236,9 @@ namespace KerbalKonstructs.Core
                 pqsCity.reorientInitialUp = Orientation;
                 pqsCity.reorientFinalAngle = RotationAngle;
                 pqsCity.transform.localScale = origScale * ModelScale;
-                pqsCity.repositionToSphereSurface = true; //Snap to surface?
-                pqsCity.repositionToSphereSurfaceAddHeight = true;
-                pqsCity.repositionToSphere = false;
+//                pqsCity.repositionToSphereSurface = true; //Snap to surface?
+//                pqsCity.repositionToSphereSurfaceAddHeight = true;
+//                pqsCity.repositionToSphere = false;
 
                 pqsCity.Orientate();
             }
@@ -285,6 +289,11 @@ namespace KerbalKonstructs.Core
         /// <param name="instance"></param>
         internal void Save()
         {
+            if (isBuiltIn)
+            {
+                return;
+            }
+
             if (configPath == null)
             {
                 configPath = KerbalKonstructs.newInstancePath + "/KK_GroupCenter_" + dbKey + ".cfg";

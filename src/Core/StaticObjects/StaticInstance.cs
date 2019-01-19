@@ -270,8 +270,6 @@ namespace KerbalKonstructs.Core
                     staticModules.Add(moduleKey, moduleType);
                 }
 
-
-
                 StaticModule mod = gameObject.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
