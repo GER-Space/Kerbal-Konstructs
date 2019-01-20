@@ -312,10 +312,7 @@ namespace KerbalKonstructs.Core
                 //site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
                 //site.staticInstance.gameObject.name = site.LaunchSiteName;
 
-                if (KKFacilities == null)
-                {
-                    KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
-                }
+                KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
 
                 if (KKFacilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null)
                 {
@@ -354,11 +351,15 @@ namespace KerbalKonstructs.Core
                     }
                     spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
 
-
-
                     KKFacilities.Add(spaceCenterFacility);
 
+                    KKFacilities.Sort(delegate (PSystemSetup.SpaceCenterFacility a, PSystemSetup.SpaceCenterFacility b)
+                    {
+                        return (a.facilityDisplayName).CompareTo(b.facilityDisplayName);
+                    });
+
                     PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
+
 
                     site.spaceCenterFacility = spaceCenterFacility;
 
@@ -427,7 +428,7 @@ namespace KerbalKonstructs.Core
 
         internal static void RegisterMHLaunchSites(EditorFacility facility)
         {
-            foreach (KKLaunchSite site in allLaunchSites)
+            foreach (KKLaunchSite site in allLaunchSites )
             {
                 if (facility == EditorFacility.SPH && site.LaunchSiteType == SiteType.VAB)
                 {
@@ -469,17 +470,22 @@ namespace KerbalKonstructs.Core
                 CloseLaunchSite(site);
             }
 
-            List<PSystemSetup.SpaceCenterFacility> spaceCenters = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
-            PSystemSetup.SpaceCenterFacility spaceToDel = spaceCenters.Where(x => x.facilityName == site.LaunchSiteName).FirstOrDefault();
+            List<PSystemSetup.SpaceCenterFacility> spaceCenters = new List<PSystemSetup.SpaceCenterFacility>();
 
-            if (spaceToDel != null)
+            foreach (PSystemSetup.SpaceCenterFacility center in PSystemSetup.Instance.SpaceCenterFacilities)
             {
-                spaceCenters.Remove(spaceToDel);
-                PSystemSetup.Instance.SpaceCenterFacilities = spaceCenters.ToArray();
-                Log.Normal("Launchsite: " + site.LaunchSiteName + " sucessfully unregistered");
+                if (center.facilityDisplayName == site.LaunchSiteName)
+                {
+                    Log.Normal("Launchsite: " + site.LaunchSiteName + " sucessfully unregistered");
+                    continue;
+                }
+                else
+                {
+                    spaceCenters.Add(center);
+                }
             }
 
-            KKFacilities.Remove(site.spaceCenterFacility);
+            PSystemSetup.Instance.SpaceCenterFacilities = spaceCenters.ToArray();
 
         }
 
@@ -512,14 +518,12 @@ namespace KerbalKonstructs.Core
         /// <param name="site2add"></param>
         internal static void AddLaunchSite(KKLaunchSite site2add)
         {
-
             launchSites.Add(site2add);
-            List<KKLaunchSite> tmpList = launchSites.ToList();
-            tmpList.Sort(delegate (KKLaunchSite a, KKLaunchSite b)
+            launchSites.Sort(delegate (KKLaunchSite a, KKLaunchSite b)
             {
                 return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
             });
-            allLaunchSites = tmpList.ToArray();
+            allLaunchSites = launchSites.ToArray();
             launchSiteNames.Add(site2add.LaunchSiteName);
         }
 
@@ -658,9 +662,9 @@ namespace KerbalKonstructs.Core
                     if (site.LaunchSiteName.Equals(siteName))
                     {
                         mySite = site;
+                        Log.Normal("found LS: " + mySite.LaunchSiteName);
                     }
                 }
-                Log.Normal("Returning LS: " + mySite.LaunchSiteName);
                 return mySite;
             }
             else

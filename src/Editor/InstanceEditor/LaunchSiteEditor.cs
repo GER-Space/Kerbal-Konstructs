@@ -407,10 +407,20 @@ namespace KerbalKonstructs.UI
                 selectedObject.launchSite.body = selectedObject.CelestialBody;
                 addToDB = true;
             }
+            else
+            {
+                // delete old LaunchSite on name change and add the new one.
+                if (siteName != selectedObject.launchSite.LaunchSiteName)
+                {
+                    Log.Normal("Renaming of a LaunchSite triggered 1");
+                    LaunchSiteManager.DeleteLaunchSite(selectedObject.launchSite);
+                }
+            }
 
             string oldName = selectedObject.launchSite.LaunchSiteName;
             LaunchSiteCategory oldCategory = category;
             bool oldState = selectedObject.launchSite.ILSIsActive;
+
 
             selectedObject.launchSite.LaunchSiteName = siteName;
             selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
@@ -468,7 +478,6 @@ namespace KerbalKonstructs.UI
                 }
             }
 
-
             if (addToDB)
             {
                 selectedObject.launchSite.ParseLSConfig(selectedObject, null);
@@ -477,6 +486,16 @@ namespace KerbalKonstructs.UI
                 selectedObject.ToggleAllColliders(true);
                 LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
             }
+            else
+            {
+                // register with the new name.
+                if (siteName != oldName)
+                {
+                    Log.Normal("Renaming of a LaunchSite triggered 2");
+                    LaunchSiteManager.RegisterLaunchSite(selectedObject.launchSite);
+                }
+            }
+
             selectedObject.SaveConfig();
 
         }

@@ -47,7 +47,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         public PreFlightCheck NewPreflightCheck(string launchSiteName)
         {
-            Log.Normal("using injected call");
+            //Log.Normal("using injected call");
             PreFlightCheck check = (PreFlightCheck)preFlightCheckDetour.CallOriginal(EditorLogic.fetch, new object[] { launchSiteName });
             check.AddTest(new KKPrelaunchSizeCheck(launchSiteName));
             check.AddTest(new KKPrelaunchMassCheck(launchSiteName));

@@ -21,7 +21,9 @@ namespace KerbalKonstructs.Core
         internal static void Debug(string message)
         {
             if (KerbalKonstructs.instance.DebugMode)
+            {
                 UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+            }
         }
 
         /// <summary>
