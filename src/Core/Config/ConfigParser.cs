@@ -385,7 +385,7 @@ namespace KerbalKonstructs.Core
                 return;
             }
 
-            Log.Normal("Saving File: " + pathname);
+            Log.Debug("Saving File: " + pathname);
             StaticInstance[] allInstances = StaticDatabase.allStaticInstances.Where(instance => instance.configPath == pathname).ToArray();
             StaticInstance firstInstance = allInstances.First();
             ConfigNode instanceConfig = null;
