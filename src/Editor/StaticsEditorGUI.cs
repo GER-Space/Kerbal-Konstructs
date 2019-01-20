@@ -772,7 +772,10 @@ namespace KerbalKonstructs.UI
         {
             foreach (var groupCenter in localGroups)
             {
-
+                if (groupCenter.isBuiltIn)
+                {
+                    continue;
+                }
                 if (GUILayout.Button(new GUIContent(" " + groupCenter.Group, "Edit this Group."), GUILayout.Height(23)))
                 {
                     EditorGUI.CloseEditors();
@@ -870,10 +873,6 @@ namespace KerbalKonstructs.UI
                 }
 
                 if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > KerbalKonstructs.localGroupRange)
-                {
-                    continue;
-                }
-                if (groupCenter.isBuiltIn)
                 {
                     continue;
                 }
