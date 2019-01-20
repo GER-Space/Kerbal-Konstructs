@@ -26,6 +26,7 @@ namespace KerbalKonstructs
             if (soundFile == null)
             {
                 Log.UserError("No audiofile found at: " + audioClip);
+                GameObject.DestroyImmediate(this);
                 return;
             }
 
@@ -51,6 +52,14 @@ namespace KerbalKonstructs
                 float scale = staticInstance.ModelScale;
                 audioPlayer.minDistance = minDistance * scale;
                 audioPlayer.maxDistance = maxDistance * scale;
+            }
+        }
+
+        void OnDestroy()
+        {
+            if (audioPlayer != null && audioPlayer.isPlaying)
+            {
+                audioPlayer.Stop();
             }
         }
     }
