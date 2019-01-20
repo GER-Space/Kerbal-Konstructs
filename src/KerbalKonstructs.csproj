@@ -94,6 +94,7 @@
     <Compile Include="Core\MapDecals\MapDecalUtils.cs" />
     <Compile Include="Core\SpaceCenters\ScExtention.cs" />
     <Compile Include="Core\SquadStatics.cs" />
+    <Compile Include="Core\StaticGroup\BuiltinCenters.cs" />
     <Compile Include="Core\StaticGroup\GroupCenter.cs" />
     <Compile Include="Core\StaticModels\ModelVariant.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
