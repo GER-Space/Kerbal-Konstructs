@@ -355,6 +355,10 @@ namespace KerbalKonstructs.Core
 
                     KKFacilities.Sort(delegate (PSystemSetup.SpaceCenterFacility a, PSystemSetup.SpaceCenterFacility b)
                     {
+                        if (a.editorFacility == EditorFacility.None)
+                        {
+                            return 1;
+                        } 
                         return (a.facilityDisplayName).CompareTo(b.facilityDisplayName);
                     });
 

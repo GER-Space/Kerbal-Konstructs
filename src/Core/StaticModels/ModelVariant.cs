@@ -197,9 +197,6 @@ namespace KerbalKonstructs.Core
         }
 
 
-
-
-
         internal class TextureSet
         {
             internal string newTexture = "";
