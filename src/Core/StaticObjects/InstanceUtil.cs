@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Core
 //        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
         //private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
-        private static List<Type> behavioursToRemove = new List<Type> { typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        private static List<Type> behavioursToRemove = new List<Type> { typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2), typeof(PQSCity) };
 
         internal static List<TimeOfDayAnimation.MaterialProperty> dayNightEmissives = null;
         internal static Color dotColor;
@@ -63,6 +63,12 @@ namespace KerbalKonstructs.Core
                //     Log.Normal("Removed: " + bla.GetType().ToString());
                     UnityEngine.Object.DestroyImmediate(component);
                 }               
+            }
+
+            // activate them
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                child.gameObject.SetActive(true);
             }
             //instance.gameObject.tag = String.Empty;
 
