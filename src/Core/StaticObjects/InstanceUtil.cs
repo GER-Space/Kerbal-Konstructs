@@ -65,11 +65,6 @@ namespace KerbalKonstructs.Core
                 }               
             }
 
-            // activate them
-            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
-            {
-                child.gameObject.SetActive(true);
-            }
             //instance.gameObject.tag = String.Empty;
 
             //foreach (Transform transform in gameObject.transform.GetComponentsInChildren<Transform>(true))

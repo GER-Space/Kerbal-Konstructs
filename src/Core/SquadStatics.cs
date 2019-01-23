@@ -257,10 +257,15 @@ namespace KerbalKonstructs
                 model.isSquad = true;
 
                 // we reference only the original prefab, as we cannot instantiate an instance for some reason
-                model.prefab = pqs.gameObject;
-                //model.prefab = GameObject.Instantiate(pqs.gameObject);
-                //GameObject.DontDestroyOnLoad(model.prefab);
+                //model.prefab = pqs.gameObject;
+                model.prefab = GameObject.Instantiate(pqs.gameObject);
+                GameObject.DontDestroyOnLoad(model.prefab);
                 //model.prefab.SetActive(false);
+                // activate them
+                foreach (Transform child in model.prefab.GetComponentsInChildren<Transform>(true))
+                {
+                        child.gameObject.SetActive(true);                    
+                }
 
                 StaticDatabase.RegisterModel(model, modelName);
             }
