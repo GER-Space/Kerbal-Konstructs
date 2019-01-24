@@ -274,7 +274,9 @@ namespace KerbalKonstructs.Core
                 center.Group = instance.Group;
                 center.RadialPosition = instance.RadialPosition;
                 center.CelestialBody = instance.CelestialBody;
+                center.isInSavegame = instance.isInSavegame;
                 center.Spawn();
+                instance.Group = center.Group;
             }
             else
             {
@@ -301,6 +303,7 @@ namespace KerbalKonstructs.Core
                             center.Group = instance.Group;
                             center.RadialPosition = instance.RadialPosition;
                             center.CelestialBody = instance.CelestialBody;
+                            center.isInSavegame = instance.isInSavegame;
                             center.Spawn();
                             instance.Group = center.Group;
                             Log.Normal("New GroupCenter Created: " + instance.groupCenterName);

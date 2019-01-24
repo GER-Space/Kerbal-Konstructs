@@ -867,11 +867,15 @@ namespace KerbalKonstructs.UI
             List<GroupCenter> foundList = new List<GroupCenter>();
             foreach (var groupCenter in StaticDatabase.allGroupCenters)
             {
+
                 if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
                 {
                     continue;
                 }
-
+                if (groupCenter.isInSavegame)
+                {
+                    continue;
+                }
                 if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > KerbalKonstructs.localGroupRange)
                 {
                     continue;

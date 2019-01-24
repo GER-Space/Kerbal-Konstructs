@@ -93,7 +93,7 @@ namespace KerbalKonstructs.Modules
             instance.heighReference = HeightReference.Terrain;
             instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
 
-            instance.Group = "Career";
+            instance.Group = "SaveGame";
 
             instance.RadialPosition = ConfigNode.ParseVector3(cfgNode.GetValue("Position"));
 

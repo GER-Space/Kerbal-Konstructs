@@ -94,7 +94,7 @@ namespace KerbalKonstructs
                 //instance.mesh = UnityEngine.Object.Instantiate(model.prefab);
                 instance.RadiusOffset = alt;
                 instance.CelestialBody = ConfigUtil.GetCelestialBody(bodyName);
-                instance.Group = "Career";
+                instance.Group = "SaveGame";
                 instance.RadialPosition = KKMath.GetRadiadFromLatLng(instance.CelestialBody, lat, lng);
                 instance.RotationAngle = rotation;
                 instance.Orientation = Vector3.up;

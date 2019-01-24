@@ -524,7 +524,7 @@ namespace KerbalKonstructs.Modules
             instance.heighReference = HeightReference.Terrain;
             instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
 
-            instance.Group = "Career";
+            instance.Group = "SaveGame";
             instance.RadialPosition = vPosition;
 
             instance.model = model;

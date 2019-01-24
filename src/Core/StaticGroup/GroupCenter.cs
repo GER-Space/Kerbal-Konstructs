@@ -53,6 +53,7 @@ namespace KerbalKonstructs.Core
 
         internal bool hidden = false;
         internal bool isBuiltIn = false;
+        internal bool isInSavegame = false;
 
         internal bool repositionToSphere = false;
 
@@ -290,6 +291,10 @@ namespace KerbalKonstructs.Core
         internal void Save()
         {
             if (isBuiltIn)
+            {
+                return;
+            }
+            if (isInSavegame)
             {
                 return;
             }
