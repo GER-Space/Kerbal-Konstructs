@@ -266,6 +266,7 @@ namespace KerbalKonstructs
                 {
                         child.gameObject.SetActive(true);                    
                 }
+                model.prefab.SetActive(false);
 
                 StaticDatabase.RegisterModel(model, modelName);
             }
