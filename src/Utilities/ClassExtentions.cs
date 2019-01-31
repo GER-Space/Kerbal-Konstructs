@@ -11,8 +11,8 @@ namespace KerbalKonstructs.Core
     static class KKClassExtentions
     {
         internal static Dictionary<int, string> gameObjectTags = new Dictionary<int, string>();
-        internal static AsmUtils.Detour getGetTagDetour;
-        internal static AsmUtils.Detour getSetTagDetour;
+        //internal static AsmUtils.Detour getGetTagDetour;
+        //internal static AsmUtils.Detour getSetTagDetour;
 
 
 
@@ -127,9 +127,9 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                getGetTagDetour.Uninstall();
+                //getGetTagDetour.Uninstall();
                 string retval = gameObject.tag;
-                getGetTagDetour.Install();
+                //getGetTagDetour.Install();
                 if (String.IsNullOrEmpty(retval))
                 {
                     retval = "";

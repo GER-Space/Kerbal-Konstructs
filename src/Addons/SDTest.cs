@@ -233,6 +233,12 @@ namespace KerbalKonstructs.Addons
 
         }
 
+        internal static void WriteTexture(Texture2D texture)
+        {
+            var mainTextureblob = CopyTexture(texture).EncodeToPNG();
+            // For testing purposes, also write to a file in the project folder
+            File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/KKTextures/" + texture.name + ".png", mainTextureblob);
+        }
 
         private static Texture2D CopyTexture (Texture2D texture)
         {
@@ -270,6 +276,8 @@ namespace KerbalKonstructs.Addons
 
             return myTexture2D;
         }
+
+
 
 
         internal static void DumpBuildInTextures()
