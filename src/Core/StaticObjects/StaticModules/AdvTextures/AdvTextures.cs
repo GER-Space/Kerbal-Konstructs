@@ -18,6 +18,9 @@ namespace KerbalKonstructs
         public string newMaterial = "";
         public string BuiltinIndex = "0";
 
+        public string tileTextureWithScale = "false";
+        public string forceTiling = "1, 1";
+
         public string _MainTex = null;          // texture
         public string _BumpMap = null;          // normal map
         public string _ParallaxMap = null;      // height map
@@ -33,6 +36,10 @@ namespace KerbalKonstructs
         private string[] seperators = new string[] { " ", ",", ";" };
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
+        private bool doTileing = false;
+
+        private Vector2 iTileing = Vector2.zero;
+        TileTextures tileing;
         private bool done = false;
 
 
@@ -50,6 +57,36 @@ namespace KerbalKonstructs
             {
                 Log.UserError("AdvancedTexture: could not parse BuiltinIndex " + BuiltinIndex);
             }
+
+            if (!bool.TryParse(tileTextureWithScale, out doTileing))
+            {
+                Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
+            }
+
+//                Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
+
+            if (doTileing)
+            {
+                try
+                {
+                    iTileing = ConfigNode.ParseVector2(forceTiling);
+                    Log.Normal("found tiling: " + iTileing.ToString());
+                }
+                catch
+                {
+                    Log.UserError("Cannot parse: \"forceTiling\" : " + forceTiling);
+                    iTileing = Vector2.zero;
+                }
+                
+
+                tileing = staticInstance.mesh.AddComponent<TileTextures>();
+                tileing.initialTileing = iTileing;
+                tileing.staticInstance = staticInstance;
+                tileing.textureTransformNames = transforms;
+                tileing.Start();
+                tileing.enabled = true;
+            }
+
 
             targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -74,7 +111,7 @@ namespace KerbalKonstructs
                     ReplaceShader(renderer, newShader);
                 }
 
-                SetTexture(renderer,_MainTex, "_MainTex");
+                SetTexture(renderer, _MainTex, "_MainTex");
                 SetTexture(renderer, _ParallaxMap, "_ParallaxMap");
                 SetTexture(renderer, _Emissive, "_Emissive");
                 SetTexture(renderer, _EmissionMap, "_EmissionMap");
@@ -83,10 +120,12 @@ namespace KerbalKonstructs
                 SetTexture(renderer, _SpecGlossMap, "_SpecGlossMap");
                 SetTexture(renderer, _BumpMap, "_BumpMap", true);
 
-           //     KKGraphics.ReplaceShader(renderer);
+                //     KKGraphics.ReplaceShader(renderer);
                 CheckForExistingMaterial(renderer);
 
             }
+
+
         }
 
 
@@ -133,13 +172,16 @@ namespace KerbalKonstructs
                 Texture2D newTexture = KKGraphics.GetTexture(texturename, isNormal, textureIndex);
                 if (newTexture != null)
                 {
-   
+
                     renderer.material.SetTexture(targetname, newTexture);
-                    
+                    if (doTileing)
+                    {
+                        tileing.StaticObjectUpdate();
+                    }
                 }
                 else
                 {
-                    Log.UserWarning("cannot set Texture: " + texturename + " as "  + targetname + " on: " + staticInstance.model.name);
+                    Log.UserWarning("cannot set Texture: " + texturename + " as " + targetname + " on: " + staticInstance.model.name);
                 }
             }
         }
@@ -152,7 +194,11 @@ namespace KerbalKonstructs
             if (foundMaterial != null)
             {
                // Log.Normal("Material replaced: " + foundMaterial.name);
-                renderer.material = Instantiate(foundMaterial);  
+                renderer.material = Instantiate(foundMaterial);
+                if (doTileing)
+                {
+                    tileing.StaticObjectUpdate();
+                }
             }
 
         }

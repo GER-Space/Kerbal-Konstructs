@@ -110,6 +110,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\TileTextures\TileTextures.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
