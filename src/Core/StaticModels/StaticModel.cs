@@ -30,6 +30,10 @@ namespace KerbalKonstructs.Core
         internal string description;
 
         [CFGSetting]
+        internal float impactThreshold = 1000f;
+
+
+        [CFGSetting]
         internal string DefaultLaunchPadTransform;
         [CFGSetting]
         internal float DefaultLaunchSiteLength;
@@ -72,6 +76,7 @@ namespace KerbalKonstructs.Core
         internal float DefaultScienceOMax;
         [CFGSetting]
         internal float DefaultFundsOMax;
+
 
         internal bool hasVariants = false;
         internal Dictionary<string,ModelVariant> variants = new Dictionary<string, ModelVariant>();
