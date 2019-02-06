@@ -795,6 +795,7 @@ namespace KerbalKonstructs.UI
         {
             FacilityEditor.instance.Close();
             LaunchSiteEditor.instance.Close();
+            VariantSelector.Close();
         }
 
 

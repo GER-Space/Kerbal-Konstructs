@@ -194,6 +194,7 @@
     <Compile Include="Utilities\KKGraphics.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Addons\NavUtils\ILSConfig.cs" />
+    <Compile Include="Utilities\Tar.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

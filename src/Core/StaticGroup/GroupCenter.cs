@@ -272,7 +272,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="mapDecalInstance"></param>
         /// <param name="cfgNode"></param>
-        private void WriteConfig(ConfigNode cfgNode)
+        internal void WriteConfig(ConfigNode cfgNode)
         {
             foreach (var groupField in ConfigUtil.groupCenterFields.Values)
             {

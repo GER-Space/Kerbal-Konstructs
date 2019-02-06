@@ -533,10 +533,10 @@ namespace KerbalKonstructs.Core
                 module.enabled = false;
             }
 
-            if (isSpawned)
-            {
-                Despawn();
-            }
+            //if (isSpawned)
+            //{
+            //    Despawn();
+            //}
 
         }
 

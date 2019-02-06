@@ -304,7 +304,12 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = true;
 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(110), GUILayout.Height(23)))
+                if (GUILayout.Button(new GUIContent("Export", "Export everyting into zip files"), UIMain.ButtonDefault, GUILayout.Width(90), GUILayout.Height(23)))
+                {
+                    ConfigParser.ExportAll();
+                }
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(90), GUILayout.Height(23)))
                 {
                     KerbalKonstructs.instance.saveObjects();
                     smessage = "Saved all changes to all objects.";

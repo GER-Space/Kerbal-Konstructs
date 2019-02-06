@@ -187,14 +187,16 @@ namespace KerbalKonstructs
 
             KKClassExtentions.FakeGameObjectTags();
 
-
-            // PQSMapDecal
-            Log.PerfStart("loading MapDecals");
+            // Squad stoff
+            SquadStatics.LoadSquadModels();
             MapDecalUtils.GetSquadMaps();
+
             ConfigParser.LoadAllMapDecalMaps();
+            BuiltinCenters.AddAllBuiltinCenters();
+            ConfigParser.LoadAllGroupCenter();
+
             ConfigParser.LoadAllMapDecals();
-            Log.PerfStop("loading MapDecals");
-            // end PQSMapDecal
+
  
 
             ScExtention.TuneFacilities();
@@ -216,11 +218,6 @@ namespace KerbalKonstructs
         public void Start()
         {
             Log.PerfStart("Object loading1");
-            SquadStatics.LoadSquadModels();
-
-            BuiltinCenters.AddAllBuiltinCenters();
-            // normal placement of statics
-            ConfigParser.LoadAllGroupCenter();
 
             LoadModels();
             //  SDTest.WriteTextures();
@@ -1289,85 +1286,6 @@ namespace KerbalKonstructs
         }
 
 
-        //public void exportMasters()
-        //{
-        //    string sBase = "";
-        //    string activeBodyName = "";
-
-        //    Dictionary<string, Dictionary<string, StaticGroup>> groupList = new Dictionary<string, Dictionary<string, StaticGroup>>();
-
-        //    foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
-        //    {
-        //        String bodyName = instance.CelestialBody.bodyName;
-        //        String groupName = instance.Group;
-
-        //        if (!groupList.ContainsKey(bodyName))
-        //        {
-        //            groupList.Add(bodyName, new Dictionary<string, StaticGroup>());
-        //            Debug.Log("Added " + bodyName);
-        //        }
-
-        //        if (!groupList[bodyName].ContainsKey(groupName))
-        //        {
-        //            StaticGroup group = new StaticGroup(groupName, bodyName);
-        //            groupList[bodyName].Add(groupName, group);
-        //            Debug.Log("Added " + groupName);
-        //        }
-        //    }
-
-        //    foreach (CelestialBody cBody in FlightGlobals.Bodies)
-        //    {
-        //        activeBodyName = cBody.name;
-        //        Debug.Log("activeBodyName is " + cBody.name);
-
-        //        if (!groupList.ContainsKey(activeBodyName))
-        //            continue;
-
-        //        foreach (StaticGroup group in groupList[activeBodyName].Values)
-        //        {
-        //            sBase = group.name;
-        //            Debug.Log("sBase is " + sBase);
-
-        //            foreach (StaticModel model in StaticDatabase.allStaticModels)
-        //            {
-        //                ConfigNode staticNode = new ConfigNode("STATIC");
-        //                ConfigNode modelConfig = GameDatabase.Instance.GetConfigNode(model.config);
-
-        //                //Debug.Log("Model is " + model.getSetting("name"));
-
-        //                modelConfig.RemoveNodes("Instances");
-        //                bool bNoInstances = true;
-
-        //                foreach (StaticInstance obj in StaticDatabase.GetInstancesFromModel(model))
-        //                {
-        //                    string sObjGroup = obj.Group;
-        //                    if (sObjGroup != sBase)
-        //                        continue;
-
-        //                    ConfigNode inst = new ConfigNode("Instances");
-
-        //                    ConfigParser.WriteInstanceConfig(obj, inst);
-        //                    modelConfig.nodes.Add(inst);
-        //                    bNoInstances = false;
-        //                }
-
-        //                if (bNoInstances)
-        //                    continue;
-
-        //                string sModelName = modelConfig.GetValue("name");
-        //                modelConfig.AddValue("pointername", sModelName);
-
-        //                modelConfig.RemoveValue("name");
-        //                modelConfig.AddValue("name", "Master" + "_" + sBase + "_" + sModelName);
-
-        //                staticNode.AddNode(modelConfig);
-
-        //                Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/");
-        //                staticNode.Save(KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/Master/" + sBase + "/" + sModelName + ".cfg", "Exported master instances by Kerbal Konstructs");
-        //            }
-        //        }
-        //    }
-        //}
 
         public void DeleteInstance(StaticInstance Instance)
         {

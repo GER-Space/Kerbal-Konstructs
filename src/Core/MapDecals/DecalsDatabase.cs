@@ -145,6 +145,26 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        internal static GroupCenter GetCloesedCenter(Vector3 myPosition)
+        {
+            if (StaticDatabase.allGroupCenters.Length == 0)
+            {
+                return null;
+            }
+
+            GroupCenter closest = StaticDatabase.allGroupCenters[0];
+            float dist = Vector3.Distance(myPosition, closest.gameObject.transform.position);
+            foreach (GroupCenter center in StaticDatabase.allGroupCenters)
+            {
+                if (Vector3.Distance(myPosition, center.gameObject.transform.position) < dist)
+                {
+                    dist = Vector3.Distance(myPosition, center.gameObject.transform.position);
+                    closest = center;
+                }
+            }
+
+            return closest;
+        }
 
     }
 }
