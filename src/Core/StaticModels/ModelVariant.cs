@@ -11,8 +11,8 @@ namespace KerbalKonstructs.Core
 
         public string name = "Default";
         public string newMeshName = "";
-        public string deactiateTransforms = "";
-        //public string actiateTransforms = "";
+        public string deactivateTransforms = "";
+        //public string activateTransforms = "";
 
 
         internal StaticModel model;
@@ -37,11 +37,11 @@ namespace KerbalKonstructs.Core
             variantNode.TryGetValue("name", ref name);
 
             variantNode.TryGetValue("newMeshName", ref newMeshName);
-            variantNode.TryGetValue("deactiateTransforms", ref deactiateTransforms);
-//            variantNode.TryGetValue("actiateTransforms", ref actiateTransforms);
+            variantNode.TryGetValue("deactivateTransforms", ref deactivateTransforms);
+//            variantNode.TryGetValue("activateTransforms", ref activateTransforms);
 
 //            transforms2Activate = actiateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
-            transforms2Deactivate = deactiateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+            transforms2Deactivate = deactivateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 
             model.hasVariants = true;
