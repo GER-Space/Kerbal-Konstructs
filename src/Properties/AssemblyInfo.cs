@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("KerbalKonstructs")]
-[assembly: AssemblyCopyright("Copyright © Matt \"medsouz\" Souza, Ashley \"AlphaAsh\" Hall, Christian \"GER-Space\" Bronk 2018"  )]
+[assembly: AssemblyCopyright("Copyright © Matt \"medsouz\" Souza, Ashley \"AlphaAsh\" Hall, Christian \"GER-Space\" Bronk 2019"  )]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,6 +33,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("1.4.5.59")]
-[assembly: AssemblyInformationalVersion("1.4.5.59")]
+[assembly: AssemblyFileVersion("1.4.5.61")]
+[assembly: AssemblyInformationalVersion("1.4.5.61")]
 [assembly: KSPAssembly("KerbalKonstructs", 0, 9)]

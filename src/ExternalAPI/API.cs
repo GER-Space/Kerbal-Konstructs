@@ -11,6 +11,9 @@ namespace KerbalKonstructs
     static class API
     {
 
+        public static Action<GameObject> OnBuildingSpawned = delegate { };
+
+
         public static string SpawnObject(string modelName)
         {
             StaticModel model = StaticDatabase.GetModelByName(modelName);
@@ -190,5 +193,17 @@ namespace KerbalKonstructs
                 return false;
             }
         }
+
+        public static void RegisterOnBuildingSpawned(Action<GameObject> action)
+        {
+            OnBuildingSpawned += action;
+        }
+
+        public static void UnregisterOnBuildingSpawned(Action<GameObject> action)
+        {
+            OnBuildingSpawned -= action;
+        }
+
+
     }
 }

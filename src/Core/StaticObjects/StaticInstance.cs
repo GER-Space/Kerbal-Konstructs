@@ -224,6 +224,12 @@ namespace KerbalKonstructs.Core
             if (!isSpawned)
             {
                 Spawn();
+
+                if (isSpawned)
+                {
+                    API.OnBuildingSpawned.Invoke(gameObject);
+                }
+                
             }
         }
 

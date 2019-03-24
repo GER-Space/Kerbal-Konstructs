@@ -293,6 +293,7 @@ namespace KerbalKonstructs.Core
             instance.hasLauchSites = true;
             instance.launchSite = mySite;
             RegisterLaunchSite(mySite);
+            instance.destructible.impactMomentumThreshold = Math.Max(instance.destructible.impactMomentumThreshold, 3000);
             instance.groupCenter.launchsites.Add(mySite);
             if (mySite.LaunchSiteIsHidden)
             {

@@ -83,11 +83,22 @@ namespace KerbalKonstructs
         // called by OnTriggerEnter
         internal void MakePartFloat(Part myPart)
         {
+            if (myPart == null)
+            {
+                Log.Normal("null part");
+                return;
+            }
             myPart.partBuoyancy.waterLevel = waterLevel;
+            
         }
 
         internal void RemoveCustomWaterLevel(Part myPart)
         {
+            if (myPart == null)
+            {
+                Log.Normal("null part");
+                return;
+            }
             myPart.partBuoyancy.waterLevel = 0;
         }
 

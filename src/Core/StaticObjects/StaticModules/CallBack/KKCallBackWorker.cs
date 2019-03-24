@@ -93,16 +93,40 @@ namespace KerbalKonstructs.Core
 
         internal static Part GetPartForCollider(Collider collider)
         {
-
-            foreach (Part part in FlightGlobals.PersistentLoadedPartIds.Values)
+            foreach (Vessel vessel in FlightGlobals.VesselsLoaded)
             {
-                if (part.collider == collider)
+                foreach (Part part in vessel.parts)
                 {
-               //     Log.Normal("Found part for collider: " + part.name);
-                    return part;
+                    if (part.collider == collider)
+                    {
+                        //     Log.Normal("Found part for collider: " + part.name);
+                        return part;
+                    }
                 }
             }
+            //foreach (Part part in FlightGlobals.PersistentLoadedPartIds.Values)
+            //{
+            //    if (part.collider == collider)
+            //    {
+            //        Log.Normal("Found part for collider: " + part.name);
+            //        return part;
+            //    }
+            //}
+            // Fallback to root part for Kerbals
+            if (collider.transform.parent != null)
+            {
+                Part rootPart = collider.transform.root.GetComponent<Part>();
+                if (rootPart != null)
+                {
+                    return rootPart;
+                }
+                
+            }
+            Log.Normal("No Part found for collider: " + collider.name);
             return null;
         }
+
+
+
     }
 }
