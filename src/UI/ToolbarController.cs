@@ -50,6 +50,7 @@ namespace KerbalKonstructs.UI
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
                 //KSCManager.instance.Open();
+                InputLockManager.SetControlLock("KK_KSC");
                 KSCManager.CreatePopUp();
                 return;
             }

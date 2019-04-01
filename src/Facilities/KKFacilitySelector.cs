@@ -91,7 +91,7 @@ namespace KerbalKonstructs.Core
                 FacilityManager.instance.Open();
             }
 
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES))
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES) && !(InputLockManager.GetControlLock("KK_KSC") == ControlTypes.UI))
             {
                 staticInstance.HighlightObject(Color.clear);
                 SpaceCenterAction();
@@ -130,7 +130,7 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !(InputLockManager.GetControlLock("KK_KSC") == ControlTypes.UI ))
             {
                 if (spaceCenterBlackList.Contains(facType))
                 {

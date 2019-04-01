@@ -209,13 +209,15 @@ namespace KerbalKonstructs.UI
                        new DialogGUIFlexibleSpace(),
                        new DialogGUIVerticalLayout(
                            new DialogGUIFlexibleSpace(),
-                           new DialogGUIButton("Repair All Buildings", RepairAllBuildings, 140.0f, 30.0f, false),
+                           new DialogGUIButton("Repair All Buildings", RepairAllBuildings, 140.0f, 30.0f, true),
                            new DialogGUIButton("Close", () =>
                            {
+                               InputLockManager.RemoveControlLock("KK_KSC");
                            }, 140.0f, 30.0f, true)
                            )),
                    false,
-                   HighLogic.UISkin,false);
+                   HighLogic.UISkin,
+                   false);
         }
 
         internal static void RepairAllBuildings()
@@ -232,6 +234,7 @@ namespace KerbalKonstructs.UI
                     }
                 }
             }
+            InputLockManager.RemoveControlLock("KK_KSC");
         }
     }
 }
