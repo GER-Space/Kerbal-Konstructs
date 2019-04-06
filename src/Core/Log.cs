@@ -20,7 +20,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void Debug(string message)
         {
-            if (KerbalKonstructs.instance.DebugMode)
+            if (KerbalKonstructs.instance.debugMode)
             {
                 UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
             }

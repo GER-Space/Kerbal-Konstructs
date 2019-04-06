@@ -450,7 +450,7 @@ namespace KerbalKonstructs.UI
             if (GUILayout.Button("Save", GUILayout.Height(23), GUILayout.Width(120)))
             {
                 updateSettings(mModel);
-                KerbalKonstructs.instance.saveModelConfig(mModel);
+                KerbalKonstructs.instance.SaveModelConfig(mModel);
                 smessage = "Saved changes to static models config.";
                 MiscUtils.HUDMessage(smessage, 10, 2);
             }
@@ -620,9 +620,9 @@ namespace KerbalKonstructs.UI
             }
             //instance.mesh = GameObject.Instantiate(model.prefab);
             instance.RadiusOffset = (float)FlightGlobals.ActiveVessel.altitude;
-            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
+            instance.CelestialBody = KerbalKonstructs.instance.GetCurrentBody();
             instance.Group = groupCenter.Group;
-            instance.RadialPosition = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
+            instance.RadialPosition = KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
             instance.RotationAngle = 0f;
             instance.Orientation = Vector3.up;
             instance.VisibilityRange = 25000f;

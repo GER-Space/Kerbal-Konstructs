@@ -142,7 +142,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("Landing Guide ", LabelInfo);
                 if (GUILayout.Button(LandingGuideUI.instance.IsOpen()? tIconOpen : tIconClosed, GUILayout.Height(18), GUILayout.Width(56)))
                 {
-                    KerbalKonstructs.instance.updateCache();
+                    KerbalKonstructs.instance.UpdateCache();
                     LandingGuideUI.instance.Toggle();
                 }
 
@@ -399,7 +399,7 @@ namespace KerbalKonstructs.UI
                 {
                     GUILayout.Label("Click the button above to display a list of nearby operational facilities.", LabelInfo);
 
-                    if (KerbalKonstructs.instance.DebugMode)
+                    if (KerbalKonstructs.instance.debugMode)
                     {
                         GUILayout.Box("Debug Mode ActiveVessel Report");
                         GUILayout.Label("Name " + FlightGlobals.ActiveVessel.vesselName);

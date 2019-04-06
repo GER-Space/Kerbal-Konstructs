@@ -133,7 +133,7 @@ namespace KerbalKonstructs.UI
             {
                 return;
             }
-            drawEditor();
+            DrawEditor();
         }
 
         public override void Open()
@@ -152,7 +152,7 @@ namespace KerbalKonstructs.UI
             base.Close();
         }
 
-        public void drawEditor()
+        public void DrawEditor()
         {
 
             KKWindow = new GUIStyle(GUI.skin.window)
@@ -160,7 +160,7 @@ namespace KerbalKonstructs.UI
                 padding = new RectOffset(8, 8, 3, 3)
             };
 
-            editorRect = GUI.Window(0xB00B1E5, editorRect, drawEditorWindow, "", KKWindow);
+            editorRect = GUI.Window(0xB00B1E5, editorRect, DrawEditorWindow, "", KKWindow);
         }
 
 
@@ -213,7 +213,7 @@ namespace KerbalKonstructs.UI
         /// draw the editor window
         /// </summary>
         /// <param name="id"></param>
-        private void drawEditorWindow(int id)
+        private void DrawEditorWindow(int id)
         {
 
             if (isInitialized == false)
@@ -311,7 +311,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    KerbalKonstructs.instance.saveObjects();
+                    KerbalKonstructs.instance.SaveObjects();
                     smessage = "Saved all changes to all objects.";
                     MiscUtils.HUDMessage(smessage, 10, 2);
                 }
@@ -446,30 +446,23 @@ namespace KerbalKonstructs.UI
             foreach (StaticModel model in allStaticModels)
             {
                 if (titleFilter == "" && categoryfilter == "")
+                {
                     showStatic = true;
+                }
 
                 if (titleFilter != "")
                 {
-                    if (model.title.ToLower().Contains(titleFilter.ToLower()))
-                        showStatic = true;
-                    else
-                        showStatic = false;
+                    showStatic = model.title.ToLower().Contains(titleFilter.ToLower());
                 }
 
                 if (categoryfilter != "")
                 {
-                    if (model.category.ToLower().Contains(categoryfilter.ToLower()))
-                        showStatic = true;
-                    else
-                        showStatic = false;
+                    showStatic = model.category.ToLower().Contains(categoryfilter.ToLower());
                 }
 
                 if (categoryfilter != "" && titleFilter != "")
                 {
-                    if ((model.category.ToLower().Contains(categoryfilter.ToLower())) && (model.title.ToLower().Contains(titleFilter.ToLower())))
-                        showStatic = true;
-                    else
-                        showStatic = false;
+                    showStatic = (model.category.ToLower().Contains(categoryfilter.ToLower())) && (model.title.ToLower().Contains(titleFilter.ToLower()));
                 }
 
                 if (showStatic)
@@ -811,10 +804,12 @@ namespace KerbalKonstructs.UI
                     MapDecalEditor.Instance.Close();
                     EditorGUI.selectedInstance = null;
 
-                    GroupCenter groupCenter = new GroupCenter();
-                    groupCenter.RadialPosition = FlightGlobals.currentMainBody.transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position);
-                    groupCenter.Group = "NewGroup";
-                    groupCenter.CelestialBody = FlightGlobals.currentMainBody;
+                    GroupCenter groupCenter = new GroupCenter
+                    {
+                        RadialPosition = FlightGlobals.currentMainBody.transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
+                        Group = "NewGroup",
+                        CelestialBody = FlightGlobals.currentMainBody
+                    };
                     groupCenter.Spawn();
 
                     GroupEditor.selectedGroup = groupCenter;
@@ -992,7 +987,9 @@ namespace KerbalKonstructs.UI
                 if (allStaticInstances.Where(x => x.gameObject == foundObject).FirstOrDefault() == null)
                 {
                     if (foundObject.transform.parent != null)
+                    {
                         foundObject = foundObject.transform.parent.gameObject;
+                    }
                 }
                 else
                 {

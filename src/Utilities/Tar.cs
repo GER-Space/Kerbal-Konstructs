@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using System.Threading;
 
 namespace KerbalKonstructs.Core
@@ -21,7 +20,7 @@ namespace KerbalKonstructs.Core
 
 
     //internal class TarHeader : ITarHeader
-    internal class TarHeader 
+    internal class TarHeader
     {
         private readonly byte[] buffer = new byte[512];
         private long headerChecksum;
@@ -46,9 +45,9 @@ namespace KerbalKonstructs.Core
 
         protected readonly DateTime TheEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
 
-        private static byte[] spaces = Encoding.ASCII.GetBytes("        ");
+        private static readonly byte[] spaces = Encoding.ASCII.GetBytes("        ");
 
-        public virtual string FileName
+        public virtual string fileNameString
         {
             get
             {
@@ -65,7 +64,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        public string ModeString
+        public string modeString
         {
             get
             {
@@ -73,7 +72,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public string UserIdString
+        public string userIdString
         {
             get
             {
@@ -81,7 +80,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public string GroupIdString
+        public string groupIdString
         {
             get
             {
@@ -89,7 +88,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public string SizeString
+        public string sizeString
         {
             get
             {
@@ -97,7 +96,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public string LastModificationString
+        public string lastModificationString
         {
             get
             {
@@ -105,7 +104,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        public string HeaderChecksumString
+        public string headerChecksumString
         {
             get
             {
@@ -119,23 +118,23 @@ namespace KerbalKonstructs.Core
             // Clean old values
             Array.Clear(buffer, 0, buffer.Length);
 
-            if (string.IsNullOrEmpty(FileName))
+            if (string.IsNullOrEmpty(fileNameString))
             {
                 Log.UserError("FileName can not be empty.");
             }
 
-            if (FileName.Length >= 100)
+            if (fileNameString.Length >= 100)
             {
                 Log.UserError("FileName is too long. It must be less than 100 bytes.");
             }
 
             // Fill header
-            Encoding.ASCII.GetBytes(FileName.PadRight(100, '\0')).CopyTo(buffer, 0);
-            Encoding.ASCII.GetBytes(ModeString).CopyTo(buffer, 100);
-            Encoding.ASCII.GetBytes(UserIdString).CopyTo(buffer, 108);
-            Encoding.ASCII.GetBytes(GroupIdString).CopyTo(buffer, 116);
-            Encoding.ASCII.GetBytes(SizeString).CopyTo(buffer, 124);
-            Encoding.ASCII.GetBytes(LastModificationString).CopyTo(buffer, 136);
+            Encoding.ASCII.GetBytes(fileNameString.PadRight(100, '\0')).CopyTo(buffer, 0);
+            Encoding.ASCII.GetBytes(modeString).CopyTo(buffer, 100);
+            Encoding.ASCII.GetBytes(userIdString).CopyTo(buffer, 108);
+            Encoding.ASCII.GetBytes(groupIdString).CopyTo(buffer, 116);
+            Encoding.ASCII.GetBytes(sizeString).CopyTo(buffer, 124);
+            Encoding.ASCII.GetBytes(lastModificationString).CopyTo(buffer, 136);
 
             //            buffer[156] = 20;
             buffer[156] = ((byte)EntryType);
@@ -144,7 +143,7 @@ namespace KerbalKonstructs.Core
             RecalculateChecksum(buffer);
 
             // Write checksum
-            Encoding.ASCII.GetBytes(HeaderChecksumString).CopyTo(buffer, 148);
+            Encoding.ASCII.GetBytes(headerChecksumString).CopyTo(buffer, 148);
 
             return buffer;
         }
@@ -166,7 +165,7 @@ namespace KerbalKonstructs.Core
 
     public class LegacyTarWriter : IDisposable
     {
-        private readonly Stream outStream;
+        private readonly Stream outStreamObj;
         protected byte[] buffer = new byte[1024];
         private bool isClosed;
         public bool ReadOnZero = true;
@@ -177,14 +176,14 @@ namespace KerbalKonstructs.Core
         /// <param name="writeStream">stream to write archive to</param>
         public LegacyTarWriter(Stream writeStream)
         {
-            outStream = writeStream;
+            outStreamObj = writeStream;
         }
 
-        protected virtual Stream OutStream
+        protected virtual Stream outStream
         {
             get
             {
-                return outStream;
+                return outStreamObj;
             }
         }
 
@@ -231,7 +230,6 @@ namespace KerbalKonstructs.Core
         public static string GetRelativePath(string fullDestinationPath, string startPath)
         {
             int offsetlength = startPath.Length;
-            int fullLenghth = fullDestinationPath.Length;
 
             var bla = fullDestinationPath.ToArray().Skip(offsetlength).ToArray();
             return new string(bla);
@@ -270,7 +268,7 @@ namespace KerbalKonstructs.Core
                         break;
                     }
                 }
-                OutStream.Write(buffer, 0, bytesRead);
+                outStream.Write(buffer, 0, bytesRead);
                 count -= bytesRead;
             }
             if (count > 0)
@@ -285,13 +283,13 @@ namespace KerbalKonstructs.Core
                 {
                     while (count > 0)
                     {
-                        OutStream.WriteByte(0);
+                        outStream.WriteByte(0);
                         --count;
                     }
                 }
                 else
                 {
-                    OutStream.Write(buffer, 0, bytesRead);
+                    outStream.Write(buffer, 0, bytesRead);
                 }
             }
         }
@@ -300,7 +298,7 @@ namespace KerbalKonstructs.Core
         {
             var header = new TarHeader
             {
-                FileName = name,
+                fileNameString = name,
                 LastModification = lastModificationTime,
                 SizeInBytes = count,
                 UserId = userId,
@@ -308,13 +306,13 @@ namespace KerbalKonstructs.Core
                 Mode = mode,
                 EntryType = entryType
             };
-            OutStream.Write(header.GetHeaderValue(), 0, header.HeaderSize);
+            outStream.Write(header.GetHeaderValue(), 0, header.HeaderSize);
         }
 
 
         public void AlignTo512(long size, bool acceptZero)
         {
-            size = size % 512;
+            size %= 512;
             if (size == 0 && !acceptZero)
             {
                 return;
@@ -322,7 +320,7 @@ namespace KerbalKonstructs.Core
 
             while (size < 512)
             {
-                OutStream.WriteByte(0);
+                outStream.WriteByte(0);
                 size++;
             }
         }

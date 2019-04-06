@@ -537,7 +537,7 @@ namespace KerbalKonstructs.Modules
             //instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
 
 
-            instance.CelestialBody = KerbalKonstructs.instance.getCurrentBody();
+            instance.CelestialBody = KerbalKonstructs.instance.GetCurrentBody();
 
             instance.RadiusOffset = fOffset;
             instance.RotationAngle = 0;

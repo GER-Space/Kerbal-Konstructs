@@ -228,7 +228,9 @@ namespace KerbalKonstructs.Core
         internal static void ParseDecalsMapConfig(MapDecalsMap target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
+            {
                 ConfigUtil.InitTypes();
+            }
 
             foreach (var field in ConfigUtil.mapDecalsMapFields.Values)
             {
@@ -246,11 +248,10 @@ namespace KerbalKonstructs.Core
 
             foreach (var mapDecalSetting in ConfigUtil.mapDecalFields)
             {
-                if (mapDecalSetting.Value.GetValue(mapDecalInstance) == null)
-                    continue;
-
-                ConfigUtil.Write2CfgNode(mapDecalInstance, mapDecalSetting.Value, cfgNode);
-
+                if (mapDecalSetting.Value.GetValue(mapDecalInstance) != null)
+                {
+                    ConfigUtil.Write2CfgNode(mapDecalInstance, mapDecalSetting.Value, cfgNode);
+                }
             }
         }
 

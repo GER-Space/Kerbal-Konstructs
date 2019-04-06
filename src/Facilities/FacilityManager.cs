@@ -184,7 +184,7 @@ namespace KerbalKonstructs.UI
 
                 fAlt = selectedInstance.RadiusOffset;
 
-                objectPos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(selectedInstance.position);
+                objectPos = KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(selectedInstance.position);
                 disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
                 disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
 

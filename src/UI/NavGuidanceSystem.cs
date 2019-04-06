@@ -80,7 +80,7 @@ namespace KerbalKonstructs.UI
 				if (fRangeToTarget > fOldRange) bClosing = false;
 				if (fRangeToTarget < fOldRange) bClosing = true;
 
-				var basepos = KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(lTargetSite.lsGameObject.transform.position);
+				var basepos = KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(lTargetSite.lsGameObject.transform.position);
 
 				//disBaseLat = dBaseLat * 180 / Math.PI;
 				//disBaseLon = dBaseLon * 180 / Math.PI;

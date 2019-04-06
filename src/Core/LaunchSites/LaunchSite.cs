@@ -90,7 +90,7 @@ namespace KerbalKonstructs.Core
             }
             set
             {
-                LaunchSiteCategory tmpCat = LaunchSiteCategory.Other;
+                LaunchSiteCategory tmpCat;
                 try
                 {
                     tmpCat = (LaunchSiteCategory)Enum.Parse(typeof(LaunchSiteCategory), value);
@@ -189,19 +189,24 @@ namespace KerbalKonstructs.Core
                 logo = GameDatabase.Instance.GetTexture(LaunchSiteLogo, false);
 
                 if (logo == null)
+                {
                     logo = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteLogo, false);
+                }
             }
             // use default logo
             if (logo == null)
+            {
                 logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+            }
 
             if (!string.IsNullOrEmpty(LaunchSiteIcon))
             {
 
                 icon = GameDatabase.Instance.GetTexture(LaunchSiteIcon, false);
-
                 if (icon == null)
+                {
                     icon = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteIcon, false);
+                }
             }
 
             refLon = (float)Math.Round(KKMath.GetLongitudeInDeg(staticInstance.RadialPosition), 2);

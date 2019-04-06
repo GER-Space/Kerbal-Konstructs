@@ -19,7 +19,7 @@ namespace KerbalKonstructs
             StaticModel model = StaticDatabase.GetModelByName(modelName);
             if (model != null)
             {
-                return CareerEditor.instance.SpawnInstance(model, 3f, KerbalKonstructs.instance.getCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position));
+                return CareerEditor.instance.SpawnInstance(model, 3f, KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position));
             }
             else
             {

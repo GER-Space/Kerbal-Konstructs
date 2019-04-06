@@ -90,7 +90,7 @@ namespace KerbalKonstructs
         internal bool toggleIconsWithBB { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().toggleIconsWithBB = value; } }
         internal static float soundMasterVolume { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().soundMasterVolume; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().soundMasterVolume = value; } }
         internal double maxEditorVisRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().maxEditorVisRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().maxEditorVisRange = (float)value; } }
-        internal bool DebugMode
+        internal bool debugMode
         {
             get
             {
@@ -156,7 +156,7 @@ namespace KerbalKonstructs
             Log.PerfStart("Awake Function");
 
             #region Game Event Hooks
-            GameEvents.onDominantBodyChange.Add(onDominantBodyChange);
+            GameEvents.onDominantBodyChange.Add(OnDominantBodyChange);
             GameEvents.onLevelWasLoaded.Add(OnLevelWasLoad);
             GameEvents.onGUIApplicationLauncherReady.Add(TbController.OnGUIAppLauncherReady);
             GameEvents.onVesselRecoveryProcessing.Add(OnProcessRecoveryProcessing);
@@ -414,7 +414,7 @@ namespace KerbalKonstructs
                             //StaticDatabase.ToggleActiveStaticsOnPlanet(FlightGlobals.ActiveVessel.mainBody, true, true);
                             currentBody = FlightGlobals.ActiveVessel.mainBody;
                             StaticDatabase.OnBodyChanged(FlightGlobals.currentMainBody);
-                            updateCache();
+                            UpdateCache();
                             Hangar.DoHangaredCraftCheck();
                         }
                         else
@@ -465,7 +465,7 @@ namespace KerbalKonstructs
                         if (convertLegacyConfigs)
                         {
                             Log.UserWarning("KK converts your configs to a new format");
-                            saveObjects();
+                            SaveObjects();
                             convertLegacyConfigs = false;
                         }
                         InputLockManager.RemoveControlLock("KKEditorLock");
@@ -487,7 +487,7 @@ namespace KerbalKonstructs
                         {
                             CameraController.SetSpaceCenterCam(currentSite);
                         }
-                        updateCache();
+                        UpdateCache();
                         Log.PerfStop("SC Scene");
                         // LaunchSiteManager.AlterMHSelector();
                     }
@@ -511,11 +511,11 @@ namespace KerbalKonstructs
         }
 
 
-        void onDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
+        void OnDominantBodyChange(GameEvents.FromToAction<CelestialBody, CelestialBody> data)
         {
             StaticDatabase.OnBodyChanged(data.to);
             currentBody = data.to;
-            updateCache();
+            UpdateCache();
         }
 
 
@@ -579,8 +579,6 @@ namespace KerbalKonstructs
             {
 
                 Log.Normal("OnProcessRecovery");
-
-                SpaceCenter closestSpaceCenter = SpaceCenterManager.KSC;
                 CustomSpaceCenter customSC = null;
 
                 double smallestDist = SpaceCenterManager.KSC.GreatCircleDistance(SpaceCenterManager.KSC.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
@@ -594,7 +592,7 @@ namespace KerbalKonstructs
                         continue;
                     }
 
-                    closestSpaceCenter = csc.GetSpaceCenter();
+                    SpaceCenter closestSpaceCenter = csc.GetSpaceCenter();
                     double dist = closestSpaceCenter.GreatCircleDistance(csc.staticInstance.CelestialBody.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
                     if (dist < smallestDist)
@@ -702,7 +700,7 @@ namespace KerbalKonstructs
                 //{
                 //    CareerState.Load(careerNode.GetNode("SCENARIO", "name", "KerbalKonstructsSettings"));
                 //}
-                updateCache();
+                UpdateCache();
             }
             
 
@@ -770,7 +768,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Invoked by invoke repeating and onLevelWasLoaded gameevent. controls the visiblility of Statics
         /// </summary>
-        public void updateCache()
+        public void UpdateCache()
         {
             KerbalKonstructs.gameTime = HighLogic.CurrentGame.UniversalTime;
 
@@ -922,6 +920,7 @@ namespace KerbalKonstructs
 
             foreach (UrlDir.UrlConfig conf in configs)
             {
+
                 // ignore referenced objects
                 if (conf.config.HasValue("pointername"))
                 {
@@ -950,18 +949,22 @@ namespace KerbalKonstructs
                         continue;
                     }
                 }
-
-                StaticModel model = new StaticModel();
-                model.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
-                model.name = modelName;
-                model.config = conf.url;
-                model.configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
+            
+                StaticModel model = new StaticModel
+                {
+                    path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)),
+                    name = modelName,
+                    config = conf.url,
+                    configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"
+                };
 
                 ConfigParser.ParseModelConfig(model, conf.config);
-                
-                model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
-                //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
 
+                if (model.mesh.Contains('.'))
+                {
+                    model.mesh = model.mesh.Substring(0, model.mesh.LastIndexOf('.'));
+                    //                model.settings = KKAPI.loadConfig(conf.config, KKAPI.getModelSettings());
+                }
                 model.prefab = GameDatabase.Instance.GetModelPrefab(model.path + "/" + model.mesh);
 
                 if (model.prefab == null)
@@ -1055,9 +1058,9 @@ namespace KerbalKonstructs
         public void LoadModelInstances()
         {
             UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("STATIC");
-            string modelname = null;
             foreach (UrlDir.UrlConfig conf in configs)
             {
+                string modelname;
                 if (conf.config.HasValue("pointername") && !String.IsNullOrEmpty(conf.config.GetValue("pointername")))
                 {
                     modelname = conf.config.GetValue("pointername");
@@ -1173,7 +1176,7 @@ namespace KerbalKonstructs
         /// saves the model definition and the direct instances
         /// </summary>
         /// <param name="mModelToSave"></param>
-        internal void saveModelConfig(StaticModel mModelToSave)
+        internal void SaveModelConfig(StaticModel mModelToSave)
         {
             StaticModel model = StaticDatabase.GetModelByName(mModelToSave.name);
 
@@ -1201,7 +1204,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// This saves all satic objects to thier instance files.. 
         /// </summary>
-        public void saveObjects()
+        public void SaveObjects()
         {
             ConfigUtil.CreateNewInstanceDirIfNeeded();
 
@@ -1223,7 +1226,7 @@ namespace KerbalKonstructs
 
                 if (instance.configPath == instance.model.configPath)
                 {
-                    saveModelConfig(instance.model);
+                    SaveModelConfig(instance.model);
                 }
                 else
                 {
@@ -1242,7 +1245,7 @@ namespace KerbalKonstructs
                     if (deletedInstance.configPath == deletedInstance.model.configPath)
                     {
                         // keep the mode definition
-                        saveModelConfig(deletedInstance.model);
+                        SaveModelConfig(deletedInstance.model);
                     }
                     else
                     {
@@ -1338,7 +1341,9 @@ namespace KerbalKonstructs
             }
 
             if (camControl.active)
+            {
                 camControl.disable();
+            }
 
             camControl.enable(instance.gameObject);
 
@@ -1382,7 +1387,7 @@ namespace KerbalKonstructs
         #region Get Methods
 
 
-        public CelestialBody getCurrentBody()
+        public CelestialBody GetCurrentBody()
         {
             return currentBody;
             //ToDo: FlightGlobals.currentMainBody;
