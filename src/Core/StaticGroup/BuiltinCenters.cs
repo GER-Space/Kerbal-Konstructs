@@ -54,7 +54,7 @@ namespace KerbalKonstructs.Core
 
             //newGroup.RadiusOffset = (float)0;
             newGroup.RadiusOffset = (float)tgtPQS.alt;
-            newGroup.repositionToSphere = true;
+            newGroup.SeaLevelAsReference = true;
             //newGroup.repositionToSphere = tgtPQS.repositionToSphere;
             newGroup.Spawn();
 
@@ -92,7 +92,7 @@ namespace KerbalKonstructs.Core
             //newGroup.RadiusOffset = (float)0;
             newGroup.RadiusOffset = (float)tgtPQS.repositionRadiusOffset;
             //newGroup.repositionToSphere = false;
-            newGroup.repositionToSphere = tgtPQS.repositionToSphere;
+            newGroup.SeaLevelAsReference = tgtPQS.repositionToSphere;
             newGroup.Spawn();
 
 
