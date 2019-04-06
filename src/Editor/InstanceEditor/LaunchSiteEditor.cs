@@ -67,6 +67,7 @@ namespace KerbalKonstructs.UI
         internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
         float flOpenCost, flCloseValue;
 
+        private bool togglePositioning = false;
 
         string stOpenCost;
         string stCloseValue;
@@ -308,6 +309,15 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Toogle positioning behavior:");
+                GUILayout.FlexibleSpace();
+                togglePositioning = GUILayout.Toggle(togglePositioning, "", GUILayout.Width(40), GUILayout.Height(23));
+            }
+            GUILayout.EndHorizontal();
+
             GUILayout.BeginHorizontal();
             GUILayout.Label("Author: ", GUILayout.Width(120));
             siteAuthor = GUILayout.TextField(siteAuthor, GUILayout.Height(19));
@@ -444,6 +454,8 @@ namespace KerbalKonstructs.UI
             selectedObject.launchSite.sitecategory = category;
             selectedObject.launchSite.InitialCameraRotation = float.Parse(initialCameraRotation);
 
+            selectedObject.launchSite.ToggleLaunchPositioning = togglePositioning;
+
             if (ILSConfig.DetectNavUtils())
             {
                 Log.Normal("NavUtils detected");
@@ -532,6 +544,8 @@ namespace KerbalKonstructs.UI
 
                 initialCameraRotation = selectedObject.launchSite.InitialCameraRotation.ToString();
 
+                togglePositioning = selectedObject.launchSite.ToggleLaunchPositioning;
+
                 stLength = Math.Round(selectedObject.launchSite.LaunchSiteLength,0).ToString();
                 stWidth = Math.Round(selectedObject.launchSite.LaunchSiteWidth,0).ToString();
                 stHeight = Math.Round(selectedObject.launchSite.LaunchSiteHeight,0).ToString();
@@ -558,6 +572,7 @@ namespace KerbalKonstructs.UI
                 stOpenCost = string.Format("{0}", flOpenCost);
                 stCloseValue = string.Format("{0}", flCloseValue);
                 initialCameraRotation = "90";
+                togglePositioning = false;
 
                 category = LaunchSiteCategory.Other;
 

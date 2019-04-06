@@ -244,9 +244,9 @@ namespace KerbalKonstructs
             if (vessel.situation == Vessel.Situations.PRELAUNCH)
             {
                 KKLaunchSite lastSite = LaunchSiteManager.GetCurrentLaunchSite();
-                if (lastSite.sitecategory == LaunchSiteCategory.Waterlaunch)
+                if ((lastSite.sitecategory == LaunchSiteCategory.Waterlaunch && !lastSite.ToggleLaunchPositioning) || (lastSite.sitecategory != LaunchSiteCategory.Waterlaunch && lastSite.ToggleLaunchPositioning))
                 {
-                    Log.Normal("Trying to bring the vessel back to the surface.");
+                    Log.Normal("Trying to bring the vessel back to the spawn point.");
                     vessel.SetPosition(lastSite.lsGameObject.transform.Find(lastSite.LaunchPadTransform).position); 
                 }
             }           

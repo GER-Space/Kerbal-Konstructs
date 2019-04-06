@@ -80,6 +80,9 @@ namespace KerbalKonstructs.Core
         public bool LaunchSiteIsHidden = false;
         [CFGSetting]
         public bool ILSIsActive = false;
+        [CFGSetting]
+        public bool ToggleLaunchPositioning = false;
+
         // legacy API for KTC (needed for KSP 1.2.2 & 1.3.1)
         [CFGSetting]
         public string Category

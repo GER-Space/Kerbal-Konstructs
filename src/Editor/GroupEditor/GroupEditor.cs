@@ -451,7 +451,6 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("SeaLevel as Reference:");
                 GUILayout.FlexibleSpace();                
                 selectedGroup.SeaLevelAsReference = GUILayout.Toggle(selectedGroup.SeaLevelAsReference, "", GUILayout.Width(140), GUILayout.Height(23));
-
             }
             GUILayout.EndHorizontal();
 
