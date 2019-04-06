@@ -34,6 +34,8 @@ namespace KerbalKonstructs.Core
         public float RotationAngle = 0f;
         [CFGSetting]
         public float ModelScale = 1f;
+        [CFGSetting]
+        public bool SeaLevelAsReference = false;
 
         internal double RefLatitude = 0d;
         internal double RefLongitude = 0d;
@@ -55,7 +57,8 @@ namespace KerbalKonstructs.Core
         internal bool isBuiltIn = false;
         internal bool isInSavegame = false;
 
-        internal bool repositionToSphere = false;
+
+        
 
 
         internal bool isHidden
@@ -116,10 +119,7 @@ namespace KerbalKonstructs.Core
             pqsCity.modEnabled = true;
             pqsCity.transform.parent = CelestialBody.pqsController.transform;
 
-            pqsCity.repositionToSphere = repositionToSphere;
-            pqsCity.repositionToSphereSurface = !repositionToSphere; //Snap to surface?
-            pqsCity.repositionToSphereSurfaceAddHeight = !repositionToSphere;
-            
+            SetReference();
 
             pqsCity.OnSetup();
             pqsCity.Orientate();
@@ -237,9 +237,7 @@ namespace KerbalKonstructs.Core
                 pqsCity.reorientInitialUp = Orientation;
                 pqsCity.reorientFinalAngle = RotationAngle;
                 pqsCity.transform.localScale = origScale * ModelScale;
-//                pqsCity.repositionToSphereSurface = true; //Snap to surface?
-//                pqsCity.repositionToSphereSurfaceAddHeight = true;
-//                pqsCity.repositionToSphere = false;
+                SetReference();
 
                 pqsCity.Orientate();
             }
@@ -363,6 +361,13 @@ namespace KerbalKonstructs.Core
             Log.Normal("deleted GroupCenter: " + dbKey);
         }
 
+
+        internal void SetReference()
+        {
+            pqsCity.repositionToSphere = SeaLevelAsReference;
+            pqsCity.repositionToSphereSurface = !SeaLevelAsReference; //Snap to surface?
+            pqsCity.repositionToSphereSurfaceAddHeight = !SeaLevelAsReference;
+        }
 
         internal double surfaceHeight
         {
