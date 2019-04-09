@@ -36,9 +36,10 @@ namespace KerbalKonstructs.Core
         public float ModelScale = 1f;
         [CFGSetting]
         public bool SeaLevelAsReference = false;
-
-        internal double RefLatitude = 0d;
-        internal double RefLongitude = 0d;
+        [CFGSetting]
+        internal double RefLatitude = 361d;
+        [CFGSetting]
+        internal double RefLongitude = 361d;
 
 
         public UrlDir.UrlConfig configUrl;
@@ -109,7 +110,28 @@ namespace KerbalKonstructs.Core
             };
             pqsCity.lod = new[] { range };
             pqsCity.frameDelta = 10000; //update interval for its own visiblility range checking. unused by KK, so set this to a high value
+
+            if (RadialPosition == Vector3.zero)
+            {
+                if ((RefLatitude != 361d) && (RefLongitude != 361d))
+                {
+                    RadialPosition = KKMath.GetRadiadFromLatLng(CelestialBody, RefLatitude, RefLongitude);
+                }
+                else
+                {
+                    Log.UserError("No Valid Position found for Group: " + Group);
+                }
+            }
+            else
+            if ((RefLatitude == 361d) || (RefLongitude == 361d))
+            {
+                {
+                    RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
+                    RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
+                }
+            }
             pqsCity.repositionRadial = RadialPosition; //position
+
             pqsCity.repositionRadiusOffset = RadiusOffset; //height
             pqsCity.reorientInitialUp = Orientation; //orientation
             pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
@@ -124,8 +146,7 @@ namespace KerbalKonstructs.Core
             pqsCity.OnSetup();
             pqsCity.Orientate();
 
-            RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
-            RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
+
 
             StaticDatabase.AddGroupCenter(this);
 
@@ -237,6 +258,11 @@ namespace KerbalKonstructs.Core
                 pqsCity.reorientInitialUp = Orientation;
                 pqsCity.reorientFinalAngle = RotationAngle;
                 pqsCity.transform.localScale = origScale * ModelScale;
+
+                RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
+                RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
+
+
                 SetReference();
 
                 pqsCity.Orientate();
@@ -274,7 +300,7 @@ namespace KerbalKonstructs.Core
         {
             foreach (var groupField in ConfigUtil.groupCenterFields.Values)
             {
-                if (groupField.GetValue(this) == null)
+                if ((groupField.GetValue(this) == null ) || (groupField.Name == "RadialPosition") )
                 {
                     continue;
                 }
