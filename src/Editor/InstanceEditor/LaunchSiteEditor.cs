@@ -1,13 +1,8 @@
-﻿using System;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
-using System.IO;
 using System.Globalization;
-using Upgradeables;
-using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -23,15 +18,15 @@ namespace KerbalKonstructs.UI
                 if (_instance == null)
                 {
                     _instance = new LaunchSiteEditor();
-				}
-				return _instance;
-			}
-		}
+                }
+                return _instance;
+            }
+        }
 
-		#region Variable Declarations
+        #region Variable Declarations
 
-		private List<Transform> transformList = new List<Transform>();
-        private CultureInfo culture = new CultureInfo ("en-US");
+        private List<Transform> transformList = new List<Transform>();
+        private CultureInfo culture = new CultureInfo("en-US");
 
         #region GUI Windows
         // GUI Windows
@@ -125,12 +120,12 @@ namespace KerbalKonstructs.UI
                 guiInitialized = true;
             }
             if (obj != null)
-            { 
+            {
 
 
                 siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
-                    
-                
+
+
             }
         }
 
@@ -273,7 +268,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("Site Category: ", GUILayout.Width(115));
             GUILayout.Label(category.ToString(), GUILayout.Width(85));
             GUILayout.FlexibleSpace();
-            GUI.enabled = (category != LaunchSiteCategory.RocketPad );
+            GUI.enabled = (category != LaunchSiteCategory.RocketPad);
             if (GUILayout.Button("RP", GUILayout.Width(25), GUILayout.Height(23)))
                 category = LaunchSiteCategory.RocketPad;
             GUI.enabled = (category != LaunchSiteCategory.Runway);
@@ -351,18 +346,18 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             //if (ILSConfig.DetectNavUtils ()) {
-                // NavUtilities config generator
-                GUILayout.BeginHorizontal ();
-                GUILayout.Label ("ILS/HSI on (NavUtilities)", GUILayout.Width (115));
-                GUILayout.Label (ILSActive, GUILayout.Width (85));
-                GUILayout.FlexibleSpace ();
-                GUI.enabled = !(ILSActive == "false");
-                if (GUILayout.Button ("No", GUILayout.Width (40), GUILayout.Height (23)))
-                    ILSActive = "false";
-                GUI.enabled = !(ILSActive == "true");
-                if (GUILayout.Button ("Yes", GUILayout.Width (40), GUILayout.Height (23)))
-                    ILSActive = "true";
-                GUILayout.EndHorizontal ();
+            // NavUtilities config generator
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("ILS/HSI on (NavUtilities)", GUILayout.Width(115));
+            GUILayout.Label(ILSActive, GUILayout.Width(85));
+            GUILayout.FlexibleSpace();
+            GUI.enabled = !(ILSActive == "false");
+            if (GUILayout.Button("No", GUILayout.Width(40), GUILayout.Height(23)))
+                ILSActive = "false";
+            GUI.enabled = !(ILSActive == "true");
+            if (GUILayout.Button("Yes", GUILayout.Width(40), GUILayout.Height(23)))
+                ILSActive = "true";
+            GUILayout.EndHorizontal();
             //}
             GUI.enabled = true;
             GUILayout.Label("Description: ");
@@ -546,9 +541,9 @@ namespace KerbalKonstructs.UI
 
                 togglePositioning = selectedObject.launchSite.ToggleLaunchPositioning;
 
-                stLength = Math.Round(selectedObject.launchSite.LaunchSiteLength,0).ToString();
-                stWidth = Math.Round(selectedObject.launchSite.LaunchSiteWidth,0).ToString();
-                stHeight = Math.Round(selectedObject.launchSite.LaunchSiteHeight,0).ToString();
+                stLength = Math.Round(selectedObject.launchSite.LaunchSiteLength, 0).ToString();
+                stWidth = Math.Round(selectedObject.launchSite.LaunchSiteWidth, 0).ToString();
+                stHeight = Math.Round(selectedObject.launchSite.LaunchSiteHeight, 0).ToString();
 
                 sMaxMass = Math.Round(selectedObject.launchSite.MaxCraftMass, 0).ToString();
                 sMaxParts = selectedObject.launchSite.MaxCraftParts.ToString();
@@ -577,7 +572,7 @@ namespace KerbalKonstructs.UI
                 category = LaunchSiteCategory.Other;
 
                 stLength = Math.Round(selectedObject.model.DefaultLaunchSiteLength, 0).ToString();
-                stWidth= Math.Round(selectedObject.model.DefaultLaunchSiteWidth, 0).ToString();
+                stWidth = Math.Round(selectedObject.model.DefaultLaunchSiteWidth, 0).ToString();
                 stHeight = Math.Round(selectedObject.model.DefaultLaunchSiteHeight, 0).ToString();
 
                 sMaxMass = Math.Round(selectedObject.model.DefaultLaunchSiteMaxMass, 0).ToString();
