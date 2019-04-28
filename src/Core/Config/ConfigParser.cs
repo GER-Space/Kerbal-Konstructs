@@ -14,6 +14,9 @@ namespace KerbalKonstructs.Core
 
     internal static class ConfigParser
     {
+
+        internal static string exportTime;
+
         internal static void ParseModelConfig(StaticModel target, ConfigNode cfgNode)
         {
             if (!ConfigUtil.initialized)
@@ -447,6 +450,7 @@ namespace KerbalKonstructs.Core
 
         internal static void ExportAll()
         {
+            exportTime = "Export_" + DateTime.Now.ToString("yyyy-MM-dd_HHmm-ss" + "/");
             ExportAllGroups();
             ExportPQSMapDecals();
             CreateZips();
@@ -456,12 +460,17 @@ namespace KerbalKonstructs.Core
 
         internal static void ExportAllGroups()
         {
-            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/";
+            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
             HashSet<string> parsedModels = new HashSet<string>();
 
             foreach (GroupCenter group in StaticDatabase.allGroupCenters)
             {
                 parsedModels.Clear();
+
+                if (!System.IO.Directory.Exists(basePath))
+                {
+                    System.IO.Directory.CreateDirectory(basePath);
+                }
 
                 if (!System.IO.Directory.Exists(basePath + group.Group))
                 {
@@ -505,7 +514,7 @@ namespace KerbalKonstructs.Core
 
         internal static void ExportPQSMapDecals()
         {
-            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/";
+            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
 
             foreach (MapDecalInstance mapDecalInstance in DecalsDatabase.allMapDecalInstances)
             {
@@ -533,18 +542,18 @@ namespace KerbalKonstructs.Core
         internal static void CreateZips()
         {
 
-            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/";
+            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
 
-            string timeStamp = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".tar";
+            //string timeStamp = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".tar";
 
-            FileStream allTarFileStream = File.Create(basePath + "_AllExports" + timeStamp);
+            FileStream allTarFileStream = File.Create(basePath + "_AllExports.tar");
             LegacyTarWriter writerAll = new LegacyTarWriter(allTarFileStream);
 
 
             foreach (string dirname in Directory.GetDirectories(basePath))
             {
 
-                string groupFilename = dirname + timeStamp;
+                string groupFilename = dirname + ".tar";
 
                 if (File.Exists(groupFilename))
                 {
@@ -559,6 +568,7 @@ namespace KerbalKonstructs.Core
 
                 foreach (string fileName in Directory.GetFiles(dirname))
                 {
+                    //Log.Normal("Proceccing Dir: " + LegacyTarWriter.GetRelativePath(dirname, basePath));
                     if (string.IsNullOrEmpty(fileName))
                     {
                         Log.UserError(fileName + " not found");
