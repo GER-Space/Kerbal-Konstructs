@@ -205,6 +205,20 @@ namespace KerbalKonstructs
             ScExtention.TuneFacilities();
             LaunchSiteChecks.PrepareSystem();
 
+
+            Log.PerfStart("Object loading1");
+
+            LoadModels();
+            //  SDTest.WriteTextures();
+
+            Log.PerfStop("Object loading1");
+            Log.PerfStart("Object loading2");
+
+            LoadModelInstances();
+
+            Log.PerfStop("Object loading2");
+
+
             Log.UserInfo("Version is " + sKKVersion + " .");
 
             Log.UserInfo("StaticDatabase has: " + StaticDatabase.allStaticInstances.Count() + "Entries");
@@ -220,17 +234,17 @@ namespace KerbalKonstructs
 
         public void Start()
         {
-            Log.PerfStart("Object loading1");
+            //Log.PerfStart("Object loading1");
 
-            LoadModels();
-            //  SDTest.WriteTextures();
+            //LoadModels();
+            ////  SDTest.WriteTextures();
 
-            Log.PerfStop("Object loading1");
-            Log.PerfStart("Object loading2");
+            //Log.PerfStop("Object loading1");
+            //Log.PerfStart("Object loading2");
 
-            LoadModelInstances();
+            //LoadModelInstances();
 
-            Log.PerfStop("Object loading2");
+            //Log.PerfStop("Object loading2");
 
         }
 
@@ -396,7 +410,7 @@ namespace KerbalKonstructs
                 DeselectObject(false, true);
                 camControl.active = false;
             }
-            CancelInvoke("updateCache");
+            CancelInvoke("UpdateCache");
 
             //FlightCamera.fetch.cameras[0].farClipPlane = 400f;
             //FlightCamera.fetch.cameras[1].nearClipPlane = 397f;
@@ -425,7 +439,7 @@ namespace KerbalKonstructs
                             Log.Debug("Flight scene load. No activevessel. Activating all statics.");
                             StaticDatabase.ToggleActiveAllStatics(true);
                         }
-                        InvokeRepeating("updateCache", 0, 1);
+                        InvokeRepeating("UpdateCache", 0, 1);
                     }
                     break;
                 case GameScenes.EDITOR:
@@ -742,10 +756,10 @@ namespace KerbalKonstructs
                 //    StaticsEditorGUI.instance.SelectMouseObject();
                 //}
 
-                if (KerbalKonstructs.instance.debugMode && (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))))
-                {
-                    API.SpawnObject("KKflagDemo");
-                }
+                //if (KerbalKonstructs.instance.debugMode && (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))))
+                //{
+                //    API.SpawnObject("KKflagDemo");
+                //}
 
                 if (useLegacyCamera && camControl.active)
                 {
@@ -903,7 +917,7 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-                instance.TrySpawn();
+               //instance.TrySpawn();
 
                 AttachFacilities(instance, instanceCfgNode);
 
@@ -1057,8 +1071,6 @@ namespace KerbalKonstructs
                 }
 
                 StaticDatabase.RegisterModel(model, modelName);
-                // most mods will not load without beeing loaded here
-                LoadInstances(conf, model);
             }
         }
 
@@ -1077,8 +1089,8 @@ namespace KerbalKonstructs
                 }
                 else
                 {
-                    continue;
-                    //modelname = conf.config.GetValue("name");
+                    //continue;
+                    modelname = conf.config.GetValue("name");
                 }
 
                 StaticModel model = StaticDatabase.GetModelByName(modelname);
@@ -1220,7 +1232,7 @@ namespace KerbalKonstructs
 
             SaveGroupCenters();
 
-            HashSet<String> processedInstances = new HashSet<string>();
+            HashSet<string> processedInstances = new HashSet<string>();
             foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 if (instance.isInSavegame)
