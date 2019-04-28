@@ -83,6 +83,7 @@ namespace KerbalKonstructs.UI
                 if (KSCManager.dialog != null)
                 {
                     KSCManager.dialog.Dismiss();
+                    InputLockManager.RemoveControlLock("KK_KSC");
                 }
                 return;
             }

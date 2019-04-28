@@ -75,6 +75,7 @@ namespace KerbalKonstructs.UI
             Log.Normal("Close Called");
             //dialog.Dismiss();
             //dialog = null;
+            InputLockManager.RemoveControlLock("KK_KSC");
             base.Close();
         }
 
@@ -231,6 +232,12 @@ namespace KerbalKonstructs.UI
                         //building.RepairCost = 0;
                         //building.Repair();
                         building.Reset();
+                        // reactivate the Building Spawn if the building was active before
+                        if (instance.isActive)
+                        {
+                            instance.Activate();
+                        }
+                        
                     }
                 }
             }
