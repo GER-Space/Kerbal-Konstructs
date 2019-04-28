@@ -1,11 +1,7 @@
-﻿using System;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using System.IO;
-using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.UI
 {
@@ -58,7 +54,7 @@ namespace KerbalKonstructs.UI
 
         #region GUI Windows
         // GUI Windows
-        internal Rect toolRect = new Rect(300, 35, 330, 340);
+        internal Rect toolRect = new Rect(300, 35, 330, 350);
 
         #endregion
 
@@ -68,6 +64,8 @@ namespace KerbalKonstructs.UI
 
         internal static GroupCenter selectedGroup = null;
         internal GroupCenter selectedObjectPrevious = null;
+
+        internal string refLat, refLng, headingStr;
 
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";
@@ -121,6 +119,7 @@ namespace KerbalKonstructs.UI
             CloseVectors();
             EditorGizmo.CloseGizmo();
             CloseEditors();
+            selectedObjectPrevious = null;
             base.Close();
         }
 
@@ -141,6 +140,7 @@ namespace KerbalKonstructs.UI
             {
                 selectedObjectPrevious = groupCenter;
                 SetupVectors();
+                UpdateStrings();
                 EditorGizmo.SetupMoveGizmo(groupCenter.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
                 if (!KerbalKonstructs.camControl.active)
                 {
@@ -385,7 +385,17 @@ namespace KerbalKonstructs.UI
 
             GUI.enabled = true;
 
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Lat: ");
+                GUILayout.FlexibleSpace();
+                refLat = GUILayout.TextField(refLat, 10, GUILayout.Width(fTempWidth));
 
+                GUILayout.Label("  Lng: ");
+                GUILayout.FlexibleSpace();
+                refLng = GUILayout.TextField(refLng, 10, GUILayout.Width(fTempWidth));
+            }
+            GUILayout.EndHorizontal();
 
             // 
             // Altitude editing
@@ -422,7 +432,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Rotation:");
                 GUILayout.FlexibleSpace();
-                GUILayout.TextField(heading.ToString(), 9, GUILayout.Width(fTempWidth));
+                headingStr = GUILayout.TextField(headingStr, 9, GUILayout.Width(fTempWidth));
 
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -449,7 +459,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Label("SeaLevel as Reference:");
-                GUILayout.FlexibleSpace();                
+                GUILayout.FlexibleSpace();
                 selectedGroup.SeaLevelAsReference = GUILayout.Toggle(selectedGroup.SeaLevelAsReference, "", GUILayout.Width(140), GUILayout.Height(23));
             }
             GUILayout.EndHorizontal();
@@ -806,8 +816,42 @@ namespace KerbalKonstructs.UI
             EditorGizmo.CloseGizmo();
             EditorGizmo.SetupMoveGizmo(selectedGroup.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
         }
-        
 
+
+
+        internal void ApplyInputStrings()
+        {
+
+            selectedGroup.RefLatitude = double.Parse(refLat);
+            selectedGroup.RefLongitude = double.Parse(refLng);
+
+            selectedGroup.RadialPosition = KKMath.GetRadiadFromLatLng(selectedGroup.CelestialBody, selectedGroup.RefLatitude, selectedGroup.RefLongitude);
+
+
+            float oldRotation = selectedGroup.RotationAngle;
+            float tgtheading = float.Parse(headingStr);
+            float diffHeading = (tgtheading - heading);
+
+            selectedGroup.RotationAngle = oldRotation + diffHeading;
+
+
+            ApplySettings();
+
+
+
+
+            selectedGroup.RefLatitude = double.Parse(refLat);
+            selectedGroup.RefLongitude = double.Parse(refLng);
+        }
+
+
+        internal void UpdateStrings()
+        {
+            refLat = Math.Round(selectedGroup.RefLatitude, 4).ToString();
+            refLng = Math.Round(selectedGroup.RefLongitude, 4).ToString();
+
+            headingStr = Math.Round(heading, 3).ToString();
+        }
 
 
         /// <summary>
@@ -816,7 +860,50 @@ namespace KerbalKonstructs.UI
         internal void ApplySettings()
         {
             selectedGroup.Update();
+            UpdateStrings();
             UpdateMoveGizmo();
+        }
+
+
+        internal void CheckEditorKeys()
+        {
+            if (selectedGroup != null)
+            {
+
+                if (IsOpen())
+                {
+                    if (Input.GetKey(KeyCode.W))
+                    {
+                        SetTransform(Vector3.forward * increment);
+                    }
+                    if (Input.GetKey(KeyCode.S))
+                    {
+                        SetTransform(Vector3.back * increment);
+                    }
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        SetTransform(Vector3.right * increment);
+                    }
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        SetTransform(Vector3.left * increment);
+                    }
+                    if (Input.GetKey(KeyCode.PageUp))
+                    {
+                        SetTransform(Vector3.up * increment);
+                    }
+                    if (Input.GetKey(KeyCode.PageDown))
+                    {
+                        SetTransform(Vector3.down * increment);
+                    }
+                    if (Event.current.keyCode == KeyCode.Return)
+                    {
+                        ApplyInputStrings();
+                    }
+                }
+
+            }
+
         }
 
 
