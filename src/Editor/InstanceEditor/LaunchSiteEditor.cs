@@ -59,7 +59,7 @@ namespace KerbalKonstructs.UI
 
         public static StaticInstance selectedObject = null;
 
-        internal String siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
+        internal string siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
         float flOpenCost, flCloseValue;
 
         private bool togglePositioning = false;

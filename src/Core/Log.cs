@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -41,7 +37,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserWarning(string message)
         {
-            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": "+ message);
+            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
         }
 
         /// <summary>
@@ -57,7 +53,7 @@ namespace KerbalKonstructs.Core
         /// Logs a unity debug message
         /// </summary>
         /// <param name="message"></param>
-        internal static void Normal (string message)
+        internal static void Normal(string message)
         {
 #if DEBUG
             UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
@@ -132,7 +128,9 @@ namespace KerbalKonstructs.Core
         internal static void PerfPause(string id = "default")
         {
             if (alltimers.TryGetValue(id, out myWatch))
+            {
                 myWatch.Stop();
+            }
         }
 
         /// <summary>
@@ -142,7 +140,9 @@ namespace KerbalKonstructs.Core
         internal static void PerfContinue(string id = "default")
         {
             if (alltimers.TryGetValue(id, out myWatch))
+            {
                 myWatch.Start();
+            }
         }
 
         /// <summary>
