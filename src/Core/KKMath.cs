@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
-    class KKMath
+    internal class KKMath
     {
 
         internal static double rad2deg { get { return 180 / Math.PI; } }
@@ -68,9 +65,11 @@ namespace KerbalKonstructs.Core
             return (!double.IsNaN(latitude) ? (latitude * rad2deg) : 0.0);
         }
 
-        public static Vector3 GetRadiadFromLatLng(CelestialBody body, double lat , double lng )
+        public static Vector3 GetRadiadFromLatLng(CelestialBody body, double lat, double lng)
         {
-            return (body.GetRelSurfaceNVector(lat, lng).normalized* body.Radius);
+            //Log.Normal("Body Radius is: " +body.pqsController.radius);
+            return (body.GetRelSurfaceNVector(lat, lng).normalized * body.pqsController.radius);
+
         }
     }
 }
