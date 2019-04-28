@@ -31,7 +31,7 @@ namespace KerbalKonstructs.Core
         public static float rangeNearestBase = 0f;
         public static string nearestBase = "";
 
-        internal static KKLaunchSite runway = new KKLaunchSite { isSquad = true};
+        internal static KKLaunchSite runway = new KKLaunchSite { isSquad = true };
         internal static KKLaunchSite launchpad = new KKLaunchSite { isSquad = true };
         internal static KKLaunchSite ksc2 = new KKLaunchSite { isSquad = true };
 
@@ -287,13 +287,12 @@ namespace KerbalKonstructs.Core
         /// <param name="cfgNode"></param>
         internal static void CreateLaunchSite(StaticInstance instance, ConfigNode cfgNode)
         {
-            instance.TrySpawn();
+            //instance.TrySpawn();
             KKLaunchSite mySite = new KKLaunchSite();
             mySite.ParseLSConfig(instance, cfgNode);
             instance.hasLauchSites = true;
             instance.launchSite = mySite;
             RegisterLaunchSite(mySite);
-            instance.destructible.impactMomentumThreshold = Math.Max(instance.destructible.impactMomentumThreshold, 3000);
             instance.groupCenter.launchsites.Add(mySite);
             if (mySite.LaunchSiteIsHidden)
             {
@@ -305,101 +304,111 @@ namespace KerbalKonstructs.Core
         /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
         /// <param name="site"></param>
-        internal static void RegisterLaunchSite(KKLaunchSite site , bool isSquad = false)
+        internal static void RegisterLaunchSite(KKLaunchSite site, bool isSquad = false)
         {
-            if (!string.IsNullOrEmpty(site.LaunchSiteName) && site.lsGameObject.transform.Find(site.LaunchPadTransform) != null)
+
+            if (string.IsNullOrEmpty(site.LaunchSiteName))
             {
+                Log.UserWarning("No LaunchSiteName specified:" + site);
+                return;
+            }
 
-                //site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
-                //site.staticInstance.gameObject.name = site.LaunchSiteName;
 
-                KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
-
-                if (KKFacilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() == null)
+            if (site.isSquad)
+            {
+                if (site.lsGameObject.transform.Find(site.LaunchPadTransform) == null)
                 {
-                    Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
-                    PSystemSetup.SpaceCenterFacility spaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
-                    spaceCenterFacility.name = site.LaunchSiteName;
-                    spaceCenterFacility.facilityDisplayName = site.LaunchSiteName;
-                    spaceCenterFacility.facilityName = site.LaunchSiteName;
-                    spaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
-
-                    if (site.staticInstance.groupCenter == null)
-                    {
-                        spaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
-                    }
-                    else
-                    {
-                        spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name + "/Mesh" ;
-                    }
-                    
-                    // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
-                    //     newFacility.facilityTransformName = instance.gameObject.transform.name;
-                    spaceCenterFacility.pqsName = site.body.pqsController.name;
-
-                    PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
-                    spawnPoint.name = site.LaunchSiteName;
-                    spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-                    spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
-                    spaceCenterFacility.spawnPoints[0] = spawnPoint;
-                    if (site.LaunchSiteType == SiteType.VAB)
-                    {
-                        spaceCenterFacility.editorFacility = EditorFacility.VAB;
-                    }
-                    else
-                    {
-                        spaceCenterFacility.editorFacility = EditorFacility.SPH;
-                    }
-                    spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
-
-                    KKFacilities.Add(spaceCenterFacility);
-
-                    KKFacilities.Sort(delegate (PSystemSetup.SpaceCenterFacility a, PSystemSetup.SpaceCenterFacility b)
-                    {
-                        if (a.editorFacility == EditorFacility.None)
-                        {
-                            return 1;
-                        } 
-                        return (a.facilityDisplayName).CompareTo(b.facilityDisplayName);
-                    });
-
-                    PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
-
-
-                    site.spaceCenterFacility = spaceCenterFacility;
-
-                    if (site.staticInstance.destructible != null)
-                    {
-                        ScenarioDestructibles.RegisterDestructible(site.staticInstance.destructible, site.LaunchSiteName);
-                    }
-
-
-                    AddLaunchSite(site);
-                }
-                else
-                {
-                    Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
-                }
-
-                //if (PSystemSetup.Instance.SpaceCenterFacilities.ToList().Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
-                //{
-                //    Log.Normal("LaunchSite registered: " + site.LaunchSiteName);
-                //}
-                //else
-                //{
-                //    Log.Normal("LaunchSite registration failed: " + site.LaunchSiteName);
-                //}
-
-
-                if (site.staticInstance.gameObject != null)
-                {
-                    CustomSpaceCenter.CreateFromLaunchsite(site);
+                    Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
+                    return;
                 }
             }
             else
             {
-                Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
+                if (site.staticInstance.model.prefab.transform.Find(site.LaunchPadTransform) == null)
+                {
+                    Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
+                    return;
+                }
             }
+
+            KKFacilities = PSystemSetup.Instance.SpaceCenterFacilities.ToList();
+            if (KKFacilities.Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
+            {
+
+                Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
+            }
+
+
+            //site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
+            //site.staticInstance.gameObject.name = site.LaunchSiteName;
+            Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
+            PSystemSetup.SpaceCenterFacility spaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
+            spaceCenterFacility.name = site.LaunchSiteName;
+            spaceCenterFacility.facilityDisplayName = site.LaunchSiteName;
+            spaceCenterFacility.facilityName = site.LaunchSiteName;
+            spaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
+
+            if (site.staticInstance.groupCenter == null)
+            {
+                spaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
+            }
+            else
+            {
+                spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name + "/Mesh";
+            }
+
+            // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
+            //     newFacility.facilityTransformName = instance.gameObject.transform.name;
+            spaceCenterFacility.pqsName = site.body.pqsController.name;
+
+            PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
+            spawnPoint.name = site.LaunchSiteName;
+            spawnPoint.spawnTransformURL = site.LaunchPadTransform;
+            spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
+            spaceCenterFacility.spawnPoints[0] = spawnPoint;
+            if (site.LaunchSiteType == SiteType.VAB)
+            {
+                spaceCenterFacility.editorFacility = EditorFacility.VAB;
+            }
+            else
+            {
+                spaceCenterFacility.editorFacility = EditorFacility.SPH;
+            }
+            spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
+
+            KKFacilities.Add(spaceCenterFacility);
+            KKFacilities.Sort(delegate (PSystemSetup.SpaceCenterFacility a, PSystemSetup.SpaceCenterFacility b)
+            {
+                if (a.editorFacility == EditorFacility.None)
+                {
+                    return 1;
+                }
+                return (a.facilityDisplayName).CompareTo(b.facilityDisplayName);
+            });
+
+            PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
+            site.spaceCenterFacility = spaceCenterFacility;
+            if (site.staticInstance.destructible != null)
+            {
+                ScenarioDestructibles.RegisterDestructible(site.staticInstance.destructible, site.LaunchSiteName);
+            }
+            AddLaunchSite(site);
+
+            if (site.staticInstance.gameObject != null)
+            {
+                CustomSpaceCenter.CreateFromLaunchsite(site);
+            }
+
+
+            //if (PSystemSetup.Instance.SpaceCenterFacilities.ToList().Where(fac => fac.facilityName == site.LaunchSiteName).FirstOrDefault() != null)
+            //{
+            //    Log.Normal("LaunchSite registered: " + site.LaunchSiteName);
+            //}
+            //else
+            //{
+            //    Log.Normal("LaunchSite registration failed: " + site.LaunchSiteName);
+            //}
+
         }
 
 
@@ -433,7 +442,7 @@ namespace KerbalKonstructs.Core
 
         internal static void RegisterMHLaunchSites(EditorFacility facility)
         {
-            foreach (KKLaunchSite site in allLaunchSites )
+            foreach (KKLaunchSite site in allLaunchSites)
             {
                 if (facility == EditorFacility.SPH && site.LaunchSiteType == SiteType.VAB)
                 {

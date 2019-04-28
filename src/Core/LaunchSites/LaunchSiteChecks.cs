@@ -48,11 +48,21 @@ namespace KerbalKonstructs.Core
         public PreFlightCheck NewPreflightCheck(string launchSiteName)
         {
             //Log.Normal("using injected call");
-            PreFlightCheck check = (PreFlightCheck)preFlightCheckDetour.CallOriginal(EditorLogic.fetch, new object[] { launchSiteName });
-            check.AddTest(new KKPrelaunchSizeCheck(launchSiteName));
-            check.AddTest(new KKPrelaunchMassCheck(launchSiteName));
-            check.AddTest(new KKPrelaunchPartCheck(launchSiteName));
 
+            PreFlightCheck check = (PreFlightCheck)preFlightCheckDetour.CallOriginal(EditorLogic.fetch, new object[] { launchSiteName });
+            // Spawn the launchSite before we use it
+
+            KKLaunchSite launchSite = LaunchSiteManager.GetLaunchSiteByName(launchSiteName);
+            if (launchSite != null)
+            {
+                if (!launchSite.isSquad)
+                {
+                    launchSite.staticInstance.TrySpawn();
+                }
+                check.AddTest(new KKPrelaunchSizeCheck(launchSiteName));
+                check.AddTest(new KKPrelaunchMassCheck(launchSiteName));
+                check.AddTest(new KKPrelaunchPartCheck(launchSiteName));
+            }
             return check;
         }
 

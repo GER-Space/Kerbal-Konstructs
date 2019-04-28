@@ -110,6 +110,20 @@ namespace KerbalKonstructs.Core
         internal GroupCenter groupCenter = null;
 
         internal bool isInSavegame = false;
+        internal bool isDestroyed
+        {
+            get
+            {
+                if (destructible != null)
+                {
+                    return destructible.IsDestroyed;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         private static Dictionary<string, Type> staticModules = new Dictionary<string, Type>();
         private static string moduleKey;
@@ -303,31 +317,32 @@ namespace KerbalKonstructs.Core
             }
 
 
-            ModelVariant.ApplyVariant(this);
-
-
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
             {
                 renderer.enabled = true;
                 AdvancedTextures.CheckForExistingMaterial(renderer);
-                //KKGraphics.ReplaceShader(renderer);
             }
+
+            ModelVariant.ApplyVariant(this);
 
             if (!model.isSquad)
             {
                 Destructable.MakeDestructable(this);
+                if (hasLauchSites)
+                {
+                    destructible.impactMomentumThreshold = Math.Max(destructible.impactMomentumThreshold, 3000f);
+                }
             }
 
-            gameObject.isStatic = true;
         }
 
 
         internal void Despawn()
         {
-            if (hasLauchSites && (KerbalKonstructs.selectedInstance != this))
-            {
-                return;
-            }
+            //if (hasLauchSites && (KerbalKonstructs.selectedInstance != this))
+            //{
+            //    return;
+            //}
 
             foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>())
             {
@@ -418,13 +433,6 @@ namespace KerbalKonstructs.Core
 
         private void LegacySpawnInstance()
         {
-
-            float objvisibleRange = VisibilityRange;
-
-            if (objvisibleRange < 1)
-            {
-                objvisibleRange = KerbalKonstructs.localGroupRange;
-            }
 
             RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
             RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
@@ -521,10 +529,24 @@ namespace KerbalKonstructs.Core
             isActive = true;
             gameObject.SetActive(true);
 
+            //if (!model.isSquad && !isDestroyed)
+            //if (!model.isSquad && !isDestroyed)
+            //{
+            //    if (mesh != null)
+            //    {
+            //        foreach (Transform transform in mesh.GetComponentsInChildren<Transform>(true))
+            //        {
+            //            transform.gameObject.SetActive(true);
+            //        }
+            //    }
+            //}
+
             foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
             {
                 module.enabled = true;
             }
+
+
             gameObject.BroadcastMessage("StaticObjectUpdate");
         }
 
@@ -532,17 +554,29 @@ namespace KerbalKonstructs.Core
         internal void Deactivate()
         {
             isActive = false;
-            gameObject.SetActive(false);
 
             foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
             {
                 module.enabled = false;
             }
 
-            //if (isSpawned)
+            gameObject.SetActive(false);
+
+            //if (!model.isSquad)
             //{
-            //    Despawn();
+            //    if (mesh != null)
+            //    {
+            //        foreach (Transform transform in mesh.GetComponentsInChildren<Transform>(true))
+            //        {
+            //            transform.gameObject.SetActive(false);
+            //        }
+            //    }
             //}
+
+            if (isSpawned)
+            {
+                Despawn();
+            }
 
         }
 
