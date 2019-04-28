@@ -193,7 +193,7 @@ namespace KerbalKonstructs.Core
             }
             isActive = newState;
 
-            //Log.Normal("Setting Group " + Group + " to: " + newState);
+            Log.Normal("Setting Group " + Group + " to: " + newState);
 
             foreach (StaticInstance instance in childInstances)
             {

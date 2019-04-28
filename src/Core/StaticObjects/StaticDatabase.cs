@@ -302,9 +302,8 @@ namespace KerbalKonstructs.Core
             {
                 foreach (GroupCenter center in centersByPlanet[lastActiveBody.name].Values)
                 {
-                //    Log.Normal("Checking Group: " + center.Group  ); 
+                    //Log.Normal("Checking Group: " + center.Group + " distance: " + Vector3.Distance(center.gameObject.transform.position, vPlayerPos)); 
                     isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
-                    // Log.Debug("StaticDatabase.updateCache(): group visrange is " + group.visibilityRange.ToString() + " for " + group.name);
                     center.SetInstancesEnabled(isInRange);
                 }
             }
