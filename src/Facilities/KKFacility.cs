@@ -310,12 +310,13 @@ namespace KerbalKonstructs.Modules
                 //Log.Normal("Skipping facility mouse support for:" + myType.Name);
                 return;
             }
-
+            facSelector.Clear();
             foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
                 KKFacilitySelector selector = colloder.gameObject.AddComponent<KKFacilitySelector>();
                 selector.facility = this;
                 facSelector.Add(selector);
+                selector.enabled = true;
             }
         }
 

@@ -128,7 +128,7 @@
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\Barracks\Barracks.cs" />
     <Compile Include="Facilities\Business\Business.cs" />
-    <Compile Include="Facilities\FacilityModule.cs" />
+    <Compile Include="Facilities\KKFacility.cs" />
     <Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
     <Compile Include="Facilities\Hangar\Hangar.cs" />

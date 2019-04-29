@@ -830,7 +830,7 @@ namespace KerbalKonstructs.UI
 
             float oldRotation = selectedGroup.RotationAngle;
             float tgtheading = float.Parse(headingStr);
-            float diffHeading = (tgtheading - heading);
+            float diffHeading = (tgtheading - selectedGroup.heading);
 
             selectedGroup.RotationAngle = oldRotation + diffHeading;
 
@@ -850,7 +850,7 @@ namespace KerbalKonstructs.UI
             refLat = Math.Round(selectedGroup.RefLatitude, 4).ToString();
             refLng = Math.Round(selectedGroup.RefLongitude, 4).ToString();
 
-            headingStr = Math.Round(heading, 3).ToString();
+            headingStr = Math.Round(selectedGroup.heading, 3).ToString();
         }
 
 

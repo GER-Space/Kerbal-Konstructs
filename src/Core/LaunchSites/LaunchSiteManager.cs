@@ -132,7 +132,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteLength = 2500f;
             runway.LaunchSiteWidth = 75f;
             runway.InitialCameraRotation = -60f;
-            runway.lsGameObject = rwInstance.gameObject;
+            runway.staticInstance.mesh = rwInstance.gameObject;
             runway.SetOpen();
 
             launchpad.staticInstance = padInstance;
@@ -149,7 +149,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteLength = 20f;
             launchpad.LaunchSiteWidth = 20f;
             launchpad.InitialCameraRotation = -60f;
-            launchpad.lsGameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             launchpad.SetOpen();
 
 
@@ -207,7 +207,7 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchSiteLength = 15f;
             ksc2.LaunchSiteWidth = 15f;
             ksc2.InitialCameraRotation = 135f;
-            ksc2.lsGameObject = ksc2PQS.gameObject;
+            ksc2.staticInstance.mesh = ksc2PQS.gameObject;
             ksc2.OpenCost = 1f;
             ksc2.SetClosed();
             ksc2.LaunchSiteIsHidden = true;

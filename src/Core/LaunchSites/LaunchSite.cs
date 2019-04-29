@@ -167,7 +167,8 @@ namespace KerbalKonstructs.Core
         internal float refAlt;
         internal CelestialBody body;
 
-        internal GameObject lsGameObject;
+        internal GameObject lsGameObject => staticInstance.mesh;
+
         internal PSystemSetup.SpaceCenterFacility spaceCenterFacility = null;
 
         private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
@@ -183,7 +184,7 @@ namespace KerbalKonstructs.Core
                LaunchSiteParser.ParseConfig(this,cfgNode);
             }
 
-            lsGameObject = instance.mesh;
+            
             staticInstance = instance;
             body = staticInstance.CelestialBody;
 
@@ -216,8 +217,6 @@ namespace KerbalKonstructs.Core
             refLat = (float)Math.Round(KKMath.GetLatitudeInDeg(staticInstance.RadialPosition), 2);
 
             refAlt = (float)staticInstance.CelestialBody.GetAltitude(staticInstance.position);
-            
-            AttachSelector();
 
         }
 
@@ -260,11 +259,14 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal void AttachSelector()
         {
+            facSelector.Clear();
             foreach (Collider colloder in lsGameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
                 KKLaunchSiteSelector selector = colloder.gameObject.AddComponent<KKLaunchSiteSelector>();
                 selector.staticInstance = staticInstance;
                 facSelector.Add(selector);
+                selector.enabled = true;
+
             }
         }
     }

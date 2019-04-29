@@ -22,7 +22,7 @@ namespace KerbalKonstructs.Core
                 var csc = new CustomSpaceCenter();
                 csc.SpaceCenterName = site.LaunchSiteName;
                 csc.staticInstance = parentinstance;
-                csc.gameObject = site.lsGameObject;
+                csc.gameObject = site.staticInstance.gameObject;
                 SpaceCenterManager.AddSpaceCenter(csc);
             }
             else

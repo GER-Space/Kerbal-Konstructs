@@ -325,13 +325,20 @@ namespace KerbalKonstructs.Core
 
             ModelVariant.ApplyVariant(this);
 
+            //Make LaunchSites more sturdy
             if (!model.isSquad)
             {
                 Destructable.MakeDestructable(this);
                 if (hasLauchSites)
                 {
                     destructible.impactMomentumThreshold = Math.Max(destructible.impactMomentumThreshold, 3000f);
+                    launchSite.AttachSelector();
                 }
+            }
+
+            foreach (var facility in myFacilities)
+            {
+                facility.AttachSelector();
             }
 
         }
@@ -562,16 +569,6 @@ namespace KerbalKonstructs.Core
 
             gameObject.SetActive(false);
 
-            //if (!model.isSquad)
-            //{
-            //    if (mesh != null)
-            //    {
-            //        foreach (Transform transform in mesh.GetComponentsInChildren<Transform>(true))
-            //        {
-            //            transform.gameObject.SetActive(false);
-            //        }
-            //    }
-            //}
 
             if (isSpawned)
             {

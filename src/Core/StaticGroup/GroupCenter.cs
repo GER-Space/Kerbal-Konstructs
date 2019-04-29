@@ -33,6 +33,8 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float RotationAngle = 0f;
         [CFGSetting]
+        public float Heading = 361f;
+        [CFGSetting]
         public float ModelScale = 1f;
         [CFGSetting]
         public bool SeaLevelAsReference = false;
@@ -130,11 +132,26 @@ namespace KerbalKonstructs.Core
                     RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
                 }
             }
+
+            if (Heading >= 361f)
+            {
+                // legacy configs
+                pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
+            }
+            else
+            {
+                Vector3 forward = CelestialBody.GetRelSurfacePosition(RefLatitude, RefLongitude + CelestialBody.directRotAngle, RadiusOffset);
+                QuaternionD rotForward = Quaternion.LookRotation(forward);
+                QuaternionD rotHeading = Quaternion.Euler(0f, 0f, Heading);
+                QuaternionD halveInvert = Quaternion.Euler(-90f, -90f, -90f);
+                gameObject.transform.rotation = rotForward * rotHeading * halveInvert;
+            }
+            
+
             pqsCity.repositionRadial = RadialPosition; //position
 
             pqsCity.repositionRadiusOffset = RadiusOffset; //height
             pqsCity.reorientInitialUp = Orientation; //orientation
-            pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
             pqsCity.reorientToSphere = true; //adjust rotations to match the direction of gravity
             pqsCity.sphere = CelestialBody.pqsController;
             pqsCity.order = 100;
@@ -146,9 +163,13 @@ namespace KerbalKonstructs.Core
             pqsCity.OnSetup();
             pqsCity.Orientate();
 
+            if (Heading >= 361f)
+            {
+                Heading = heading;
+            }
 
 
-            StaticDatabase.AddGroupCenter(this);
+                StaticDatabase.AddGroupCenter(this);
 
         }
 
@@ -262,11 +283,11 @@ namespace KerbalKonstructs.Core
                 RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);
                 RefLongitude = KKMath.GetLongitudeInDeg(RadialPosition);
 
-
                 SetReference();
 
                 pqsCity.Orientate();
             }
+            Heading = heading;
             // Notify modules about update
             foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>((true)))
             {
@@ -300,7 +321,7 @@ namespace KerbalKonstructs.Core
         {
             foreach (var groupField in ConfigUtil.groupCenterFields.Values)
             {
-                if ((groupField.GetValue(this) == null ) || (groupField.Name == "RadialPosition") )
+                if ((groupField.GetValue(this) == null ) || (groupField.Name == "RadialPosition") || (groupField.Name == "RotationAngle"))
                 {
                     continue;
                 }
@@ -408,6 +429,55 @@ namespace KerbalKonstructs.Core
             get
             {
                 return (CelestialBody.name + "_" + Group);
+            }
+        }
+
+        internal float heading
+        {
+            get
+            {
+                Vector3 myForward = Vector3.ProjectOnPlane(gameObject.transform.forward, upVector);
+                float myHeading;
+
+                if (Vector3.Dot(myForward, eastVector) > 0)
+                {
+                    myHeading = Vector3.Angle(myForward, northVector);
+                }
+                else
+                {
+                    myHeading = 360 - Vector3.Angle(myForward, northVector);
+                }
+                return myHeading;
+            }
+        }
+
+        /// <summary>
+        /// gives a vector to the east
+        /// </summary>
+        private Vector3 eastVector
+        {
+            get
+            {
+                return Vector3.Cross(upVector, northVector).normalized;
+            }
+        }
+
+        /// <summary>
+        /// vector to north
+        /// </summary>
+        private Vector3 northVector
+        {
+            get
+            {
+                return Vector3.ProjectOnPlane(CelestialBody.transform.up, upVector).normalized;
+            }
+        }
+
+        private Vector3 upVector
+        {
+            get
+            {
+                return CelestialBody.GetSurfaceNVector(RefLatitude, RefLongitude).normalized;
             }
         }
 
