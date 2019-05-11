@@ -58,6 +58,7 @@ namespace KerbalKonstructs.Core
                 if (!launchSite.isSquad)
                 {
                     launchSite.staticInstance.TrySpawn();
+                    Log.Normal("Spawned LaunchSite for launch: " + launchSite.LaunchSiteName);
                 }
                 check.AddTest(new KKPrelaunchSizeCheck(launchSiteName));
                 check.AddTest(new KKPrelaunchMassCheck(launchSiteName));

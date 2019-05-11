@@ -179,14 +179,16 @@ namespace KerbalKonstructs.Core
 
         internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
+            staticInstance = instance;
+            body = staticInstance.CelestialBody;
+
             if (cfgNode != null)
             {
                LaunchSiteParser.ParseConfig(this,cfgNode);
             }
 
-            
-            staticInstance = instance;
-            body = staticInstance.CelestialBody;
+     
+
 
             if (!string.IsNullOrEmpty(LaunchSiteLogo))
             {

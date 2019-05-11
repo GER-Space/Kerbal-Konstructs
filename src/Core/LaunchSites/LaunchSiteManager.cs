@@ -347,25 +347,7 @@ namespace KerbalKonstructs.Core
             spaceCenterFacility.facilityDisplayName = site.LaunchSiteName;
             spaceCenterFacility.facilityName = site.LaunchSiteName;
             spaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
-
-            if (site.staticInstance.groupCenter == null)
-            {
-                spaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
-            }
-            else
-            {
-                spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name + "/Mesh";
-            }
-
-            // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
-            //     newFacility.facilityTransformName = instance.gameObject.transform.name;
-            spaceCenterFacility.pqsName = site.body.pqsController.name;
-
-            PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint();
-            spawnPoint.name = site.LaunchSiteName;
-            spawnPoint.spawnTransformURL = site.LaunchPadTransform;
-            spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[1];
-            spaceCenterFacility.spawnPoints[0] = spawnPoint;
+            spaceCenterFacility.facilityTransform = site.staticInstance.mesh.transform;
             if (site.LaunchSiteType == SiteType.VAB)
             {
                 spaceCenterFacility.editorFacility = EditorFacility.VAB;
@@ -374,7 +356,29 @@ namespace KerbalKonstructs.Core
             {
                 spaceCenterFacility.editorFacility = EditorFacility.SPH;
             }
-            spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
+            spaceCenterFacility.pqsName = site.body.pqsController.name;
+
+
+            //if (site.staticInstance.groupCenter == null)
+            //{
+            //    spaceCenterFacility.facilityTransformName = site.staticInstance.gameObject.name;
+            //}
+            //else
+            //{
+            //    spaceCenterFacility.facilityTransformName = site.staticInstance.groupCenter.gameObject.name + "/" + site.staticInstance.gameObject.name + "/Mesh";
+            //}
+            // newFacility.facilityTransform = site.lsGameObject.transform.Find(site.LaunchPadTransform);
+            //     newFacility.facilityTransformName = instance.gameObject.transform.name;
+
+            PSystemSetup.SpaceCenterFacility.SpawnPoint spawnPoint = new PSystemSetup.SpaceCenterFacility.SpawnPoint
+            {
+                name = site.LaunchSiteName,
+                spawnTransformURL = site.LaunchPadTransform
+            };
+            spawnPoint.Setup(spaceCenterFacility);
+            spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint [] { spawnPoint };
+
+            //spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
 
             KKFacilities.Add(spaceCenterFacility);
             KKFacilities.Sort(delegate (PSystemSetup.SpaceCenterFacility a, PSystemSetup.SpaceCenterFacility b)
