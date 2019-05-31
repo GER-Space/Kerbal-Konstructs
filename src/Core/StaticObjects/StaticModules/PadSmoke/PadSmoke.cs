@@ -23,6 +23,7 @@ namespace KerbalKonstructs
 
         public void Start()
         {
+            //Log.Normal("PadSmoke Start");
             baseObject = gameObject;
             emitterTransforms = smokeEmittersNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -32,8 +33,9 @@ namespace KerbalKonstructs
             if (receiverCollider != null)
             {
                 receiverCollider.tag = "LaunchpadFX";
+                //Log.Normal("Collider Tag: " + receiverCollider.tag);
                 receiverCollider.gameObject.layer = 15;
-                KKPadFX padfx = receiverCollider.gameObject.AddComponent<KKPadFX>();
+                KKPadFX padfx = receiverCollider.gameObject.AddOrGetComponent<KKPadFX>();
                 padfx.Setup(emitterTransforms, gameObject);
             }
             else

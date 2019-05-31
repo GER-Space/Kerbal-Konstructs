@@ -33,6 +33,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
 		internal static StaticInstance GetStaticInstanceForGameObject(GameObject gameObject)
         {
+            Log.UserWarning("Depricated call");
             List<StaticInstance> objList = (from obj in StaticDatabase.allStaticInstances where obj.gameObject == gameObject select obj).ToList();
 
             if (objList.Count >= 1)
