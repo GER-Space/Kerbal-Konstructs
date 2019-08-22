@@ -4,24 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using CustomPreLaunchChecks;
 
 
 namespace KerbalKonstructs.Core
 {
     class LaunchSiteChecks
     {
-        internal static AsmUtils.Detour preFlightCheckDetour;
         internal static AsmUtils.Detour findVesselDetour;
         internal static AsmUtils.Detour findVesselDetour2;
 
         internal static void PrepareSystem()
         {
-
-            MethodBase oldCheckFunction = typeof(EditorLogic).GetMethod("GetStockPreFlightCheck", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodBase newCheckFunction = typeof(LaunchSiteChecks).GetMethod("NewPreflightCheck", BindingFlags.Instance | BindingFlags.Public);
-
-            preFlightCheckDetour = new AsmUtils.Detour(oldCheckFunction, newCheckFunction);
-            preFlightCheckDetour.Install();
 
             MethodBase oldFindVesselFunction = typeof(ShipConstruction).GetMethods(BindingFlags.Static | BindingFlags.Public)
                 .Where(mi => mi.Name == "FindVesselsLandedAt" && mi.GetParameters().Length == 6).FirstOrDefault();
@@ -38,33 +32,24 @@ namespace KerbalKonstructs.Core
             findVesselDetour2.Install();
 
 
+            CPLC.RegisterCheck(GetSizeCheck);
+            CPLC.RegisterCheck(GetMassCheck);
+            CPLC.RegisterCheck(GetPartCheck);
+
         }
 
-        /// <summary>
-        /// Appends our custom checks to the prefilled checks
-        /// </summary>
-        /// <param name="launchSiteName"></param>
-        /// <returns></returns>
-        public PreFlightCheck NewPreflightCheck(string launchSiteName)
+
+        public static PreFlightTests.IPreFlightTest GetSizeCheck(string launchSiteName)
         {
-            //Log.Normal("using injected call");
-
-            PreFlightCheck check = (PreFlightCheck)preFlightCheckDetour.CallOriginal(EditorLogic.fetch, new object[] { launchSiteName });
-            // Spawn the launchSite before we use it
-
-            KKLaunchSite launchSite = LaunchSiteManager.GetLaunchSiteByName(launchSiteName);
-            if (launchSite != null)
-            {
-                if (!launchSite.isSquad)
-                {
-                    launchSite.staticInstance.TrySpawn();
-                    Log.Normal("Spawned LaunchSite for launch: " + launchSite.LaunchSiteName);
-                }
-                check.AddTest(new KKPrelaunchSizeCheck(launchSiteName));
-                check.AddTest(new KKPrelaunchMassCheck(launchSiteName));
-                check.AddTest(new KKPrelaunchPartCheck(launchSiteName));
-            }
-            return check;
+            return new KKPrelaunchSizeCheck(launchSiteName);
+        }
+        public static PreFlightTests.IPreFlightTest GetMassCheck(string launchSiteName)
+        {
+            return new KKPrelaunchMassCheck(launchSiteName);
+        }
+        public static PreFlightTests.IPreFlightTest GetPartCheck(string launchSiteName)
+        {
+            return new KKPrelaunchPartCheck(launchSiteName);
         }
 
 
@@ -139,8 +124,6 @@ namespace KerbalKonstructs.Core
                 //Log.Normal("Ship dimensions: " + shipSize.ToString() );
                 return retval;
             }
-
-
 
             public string GetWarningTitle()
             {
@@ -277,20 +260,11 @@ namespace KerbalKonstructs.Core
 
             public bool Test()
             {
-                if (allowLaunch)
+                if (allowLaunch || launchSite == null || launchSite.isSquad)
                 {
                     return true;
                 }
 
-                if (launchSite == null)
-                {
-                    return true;
-                }
-
-                if (launchSite.isSquad)
-                {
-                    return true;
-                }
                 if (shipParts == 0)
                 {
                     return false;
@@ -307,13 +281,10 @@ namespace KerbalKonstructs.Core
 
             }
 
-
-
             public string GetWarningTitle()
             {
                 return ("KK Vessel Part Check");
             }
-
 
             public string GetWarningDescription()
             {

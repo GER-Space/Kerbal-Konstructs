@@ -245,6 +245,7 @@ namespace KerbalKonstructs
             //LoadModelInstances();
 
             //Log.PerfStop("Object loading2");
+            UI2.WindowManager.Initialize();
 
         }
 
@@ -735,6 +736,12 @@ namespace KerbalKonstructs
             {
                 CareerState.FixKSCFacilities();
             }
+
+            //if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+            //{
+            //    UI2.EditorModeSelector.Toggle();
+            //}
+
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {

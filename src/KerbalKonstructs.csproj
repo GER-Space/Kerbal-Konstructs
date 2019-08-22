@@ -58,6 +58,10 @@
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CustomPreLaunchChecks">
+      <HintPath>..\..\Kerbal Space Program\GameData\CustomPrelaunchChecks\CustomPreLaunchChecks.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_Data\Managed\System.dll</HintPath>
       <Private>False</Private>
@@ -117,6 +121,7 @@
     <Compile Include="Editor\InstanceEditor\GrasColorUI.cs" />
     <Compile Include="Editor\InstanceEditor\GrasColorPresetUI.cs" />
     <Compile Include="Editor\InstanceEditor\VariantSelector.cs" />
+    <Compile Include="Editor\KKEditorLogic.cs" />
     <Compile Include="Editor\Shared\DrawObject.cs" />
     <Compile Include="Editor\Shared\DrawTools.cs" />
     <Compile Include="Editor\MapDecalEditor.cs" />
@@ -152,6 +157,15 @@
     <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
     <Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
     <Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
+    <Compile Include="UI2\Editor\EditorModeSelector.cs" />
+    <Compile Include="UI2\Editor2.cs" />
+    <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
+    <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
+    <Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
+    <Compile Include="UI2\KKStyle.cs" />
+    <Compile Include="UI2\KKWindow2.cs" />
+    <Compile Include="UI2\WindowManager.cs" />
+    <Compile Include="UI\BaseSelectorGUI.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />
@@ -167,7 +181,7 @@
     <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
     <Compile Include="Core\StaticModels\StaticModel.cs" />
     <Compile Include="Core\StaticObjects\StaticModule.cs" />
-    <Compile Include="Utilities\AsmUtils.cs" />
+    <Compile Include="Utilities\AsmUtilsOld.cs" />
     <Compile Include="Utilities\CameraController.cs" />
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />

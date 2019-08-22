@@ -100,7 +100,7 @@ namespace KerbalKonstructs.Core
             gameObject = new GameObject();
             GameObject.DontDestroyOnLoad(gameObject);
 
-            gameObject.name = Group + "_PQS";
+            gameObject.name = Group;
 
             pqsCity = gameObject.AddComponent<PQSCity>();
 
@@ -439,13 +439,13 @@ namespace KerbalKonstructs.Core
                 Vector3 myForward = Vector3.ProjectOnPlane(gameObject.transform.forward, upVector);
                 float myHeading;
 
-                if (Vector3.Dot(myForward, eastVector) > 0)
+                if (Vector3.Dot(myForward, eastVector) >= 0)
                 {
                     myHeading = Vector3.Angle(myForward, northVector);
                 }
                 else
                 {
-                    myHeading = 360 - Vector3.Angle(myForward, northVector);
+                    myHeading = (360 - Vector3.Angle(myForward, northVector) %360);
                 }
                 return myHeading;
             }

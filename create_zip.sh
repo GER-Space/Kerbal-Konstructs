@@ -32,6 +32,7 @@ sed -i "s/MINOR\":./MINOR\":$MINOR/" GameData/KerbalKonstructs/KerbalKonstructs.
 sed -i "s/PATCH\":./PATCH\":$PATCH/" GameData/KerbalKonstructs/KerbalKonstructs.version
 sed -i "s/BUILD\":.*/BUILD\":$BUILD/" GameData/KerbalKonstructs/KerbalKonstructs.version
 
+cp -r /c/Git/CustomPreLaunchChecks/GameData/CustomPreLaunchChecks/ GameData
 
 /c/Program\ Files/7-Zip/7z.exe a -r  $FILENAME GameData
 

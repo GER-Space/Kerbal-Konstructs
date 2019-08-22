@@ -31,9 +31,7 @@ namespace KerbalKonstructs.UI
         public Texture tToggle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
         public Texture tToggle2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
         private Rect managerRect = new Rect(10, 25, 320, 520);
-        private Rect facilityRect = new Rect(150, 75, 420, 640);
-        private Rect targetSelectorRect = new Rect(450, 150, 270, 570);
-        private Rect downlickRect = new Rect(300, 50, 160, 370);
+
 
         public float iFundsOpen2 = 0f;
 
@@ -57,7 +55,6 @@ namespace KerbalKonstructs.UI
         internal string Base;
         internal string Base2;
         internal float Range;
-        internal KKLaunchSite lNearest;
         internal KKLaunchSite lBase;
         internal KKLaunchSite lBase2;
         internal string smessage = "";
@@ -84,7 +81,7 @@ namespace KerbalKonstructs.UI
             //        EditorGUI.updateSelection(obj);
             //}
 
-            managerRect = GUI.Window(0xB00B1E2, managerRect, drawBaseManagerWindow, "", KKWindow);
+            managerRect = GUI.Window(0xB00B1E2, managerRect, DrawBaseManagerWindow, "", KKWindow);
         }
 
         public override void Close()
@@ -94,7 +91,7 @@ namespace KerbalKonstructs.UI
             base.Close();
         }
 
-        private void drawBaseManagerWindow(int windowID)
+        private void DrawBaseManagerWindow(int windowID)
         {
 
             if (!isInitialized)
@@ -227,7 +224,7 @@ namespace KerbalKonstructs.UI
                 if (Range < 5000)
                 {
                     LaunchSiteManager.getSiteOpenCloseState(Base, out sClosed, out fOpenCost);
-                    fOpenCost = fOpenCost / 2f;
+                    fOpenCost /= 2f;
 
                     if (FlightGlobals.ActiveVessel.Landed && sClosed == "Closed")
                     {

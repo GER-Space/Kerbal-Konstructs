@@ -82,7 +82,7 @@ namespace KerbalKonstructs
                 }
             }
 
-            foreach (Animation anim in staticInstance.gameObject.GetComponentsInChildren<Animation>(true))
+            foreach (Animation anim in staticInstance.mesh.GetComponentsInChildren<Animation>(true))
             {
                 if (anim[animationName] != null)
                 {
@@ -218,7 +218,7 @@ namespace KerbalKonstructs
                 {
                     continue;
                 }
-                foreach (var module in sInstance.gameObject.GetComponentsInChildren<AnimateOnSunRise>())
+                foreach (var module in sInstance.mesh.GetComponents<AnimateOnSunRise>())
                 {
                     if (module.isMaster)
                     {

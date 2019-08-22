@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using KerbalKonstructs;
 using System.Reflection;
+using CustomPreLaunchChecks;
 
 namespace KerbalKonstructs.Core
 {

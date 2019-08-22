@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
-    class AsmUtils
+    class AsmUtilsOld
     {
 
         public class Detour
