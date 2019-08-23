@@ -9,21 +9,21 @@ using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.UI2
 {
-    class InstanceEditorToolbar
+    class ModelList
     {
         internal static PopupDialog dialog;
         internal static MultiOptionDialog optionDialog;
         internal static List<DialogGUIBase> content;
 
-        internal static string windowName = "InstanceToolbar";
+        internal static string windowName = "ModelList";
         internal static string windowMessage = null;
-        internal static string windowTitle = "Instance Toolbar";
+        internal static string windowTitle = "Model List";
 
         internal static Rect windowRect;
 
         //internal static float windowWidth = Screen.width * 0.9f;
-        internal static float windowWidth = 600f;
-        internal static float windowHeight = 30f;
+        internal static float windowWidth = 300f;
+        internal static float windowHeight = 600f;
 
         internal static bool showTitle = false;
         internal static bool showKKTitle = true;
@@ -33,20 +33,38 @@ namespace KerbalKonstructs.UI2
         internal static bool placeToParent = false;
         internal static bool checkForParent = true;
 
-        internal static Func<bool> parentWindow = EditorModeSelector.IsOpen;
+        internal static Func<bool> parentWindow = InstanceEditorToolbar.IsOpen;
 
 
         internal static void CreateContent()
         {
             content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUILabel("Hallo", HighLogic.UISkin.label),
-                new DialogGUIButton("show models", delegate { ModelList.Open(); }, false),
-                new DialogGUIButton("show nearby instances", null, false),
+                new DialogGUILabel("All Models", HighLogic.UISkin.label),
                 new DialogGUIFlexibleSpace()
-
                 ));
-            //content.Add(new DialogGUILabel("Hallo", HighLogic.UISkin.label));
-            //content.Add(VaiantList);
+            content.Add(VaiantList);
+        }
+
+
+
+        internal static DialogGUIScrollList VaiantList
+        {
+            get
+            {
+                List<DialogGUIBase> list = new List<DialogGUIBase>();
+                list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
+                list.Add(new DialogGUIFlexibleSpace());
+                //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
+
+                foreach (var model in StaticDatabase.allStaticModels)
+                {
+                    list.Add(new DialogGUIButton(model.name, delegate { SpawnModel(model); }, 140.0f, 25.0f, false));
+                }
+                list.Add(new DialogGUIFlexibleSpace());
+                var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
+                var scroll = new DialogGUIScrollList(new Vector2(200, 300), new Vector2(200, 23f * list.Count), false, true, layout);
+                return scroll;
+            }
         }
 
 
@@ -102,7 +120,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void PlaceToParent()
         {
-            
+
         }
 
 
@@ -117,7 +135,7 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-        
+
 
 
         internal static void Open()
@@ -153,11 +171,6 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-        internal static bool IsOpen()
-        {
-                return (dialog != null);
-        }
-
         internal static void Toggle()
         {
             if (isOpen)
@@ -171,9 +184,9 @@ namespace KerbalKonstructs.UI2
         }
 
 
-        internal static void SetVariant(string variantName)
+        internal static void SpawnModel(StaticModel model)
         {
-            Log.Normal("Base Selected: " + variantName);
+            Log.Normal("Model selected: " + model.name);
         }
 
     }

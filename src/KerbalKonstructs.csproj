@@ -161,6 +161,7 @@
     <Compile Include="UI2\Editor2.cs" />
     <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
     <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
+    <Compile Include="UI2\Editor\Instance\ModelList.cs" />
     <Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
     <Compile Include="UI2\KKStyle.cs" />
     <Compile Include="UI2\KKWindow2.cs" />
