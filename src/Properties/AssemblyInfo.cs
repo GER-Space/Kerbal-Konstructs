@@ -19,6 +19,10 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(true)]
 
+// Require CustomPrelaunchChecks
+[assembly: KSPAssemblyDependency("CustomPreLaunchChecks", 1, 0)]
+
+
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("c868c344-eb8b-4318-a3da-0462f49d6261")]
 
@@ -33,6 +37,7 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("1.7.3.1")]
-[assembly: AssemblyInformationalVersion("1.7.3.1")]
+[assembly: AssemblyFileVersion("1.7.3.2")]
+[assembly: AssemblyInformationalVersion("1.7.3.2")]
 [assembly: KSPAssembly("KerbalKonstructs", 0, 9)]
+
