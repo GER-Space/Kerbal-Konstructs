@@ -62,10 +62,10 @@ namespace KerbalKonstructs.Core
 
         [GameParameters.CustomParameterUI("Disable Remote Recoovery", toolTip = "Disable the usage of open bases for the calculation of the recovery value", autoPersistance = true)]
         public bool disableRemoteRecovery = false;
-        [GameParameters.CustomFloatParameterUI("Default recovery factor" , toolTip = "How good is KK base at recovering a vessel, this might be overwritten the bases configuration" , minValue = 0 , maxValue = 100 , autoPersistance = true)]
-        public float defaultRecoveryFactor = 50;
-        [GameParameters.CustomFloatParameterUI("Default recovery range", toolTip = "until which distance should a base be able to recover a vessel, this might be overwritten the bases configuration",  minValue = 0, maxValue = 500000, stepCount = 100, autoPersistance = true)]
-        public float defaultEffectiveRange = 100000;
+        //[GameParameters.CustomFloatParameterUI("Default recovery factor" , toolTip = "How good is KK base at recovering a vessel, this might be overwritten the bases configuration" , minValue = 0 , maxValue = 100 , autoPersistance = true)]
+        //public float defaultRecoveryFactor = 50;
+        //[GameParameters.CustomFloatParameterUI("Default recovery range", toolTip = "until which distance should a base be able to recover a vessel, this might be overwritten the bases configuration",  minValue = 0, maxValue = 500000, stepCount = 100, autoPersistance = true)]
+        //public float defaultEffectiveRange = 100000;
 
         // misc settings
         [GameParameters.CustomStringParameterUI("", title = "", lines = 1)]
@@ -79,7 +79,7 @@ namespace KerbalKonstructs.Core
         [GameParameters.CustomFloatParameterUI("The master volume for KK sound objects", toolTip = "Set here to adjust the loudness of the AudioPlayer objects.", minValue = 0 , maxValue = 1 , asPercentage = true , stepCount = 100, autoPersistance = true)]
         public float soundMasterVolume = 1f;
         [GameParameters.CustomParameterUI("Focus last LaunchSite", toolTip = "Switch the SpaceCenter view to the Last LaunchSite used", autoPersistance = true)]
-        public bool focusLastLaunchSite = true;
+        public bool focusLastLaunchSite = false;
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
