@@ -100,7 +100,8 @@ namespace KerbalKonstructs.Core
                         Log.UserError("Cannot find variant: " + instance.VariantName + "on model " + instance.model.name);
                         return null;
                     }
-                } else
+                }
+                else
                 {
                     // Default is the first one
                     instance.VariantName = instance.model.variants.Keys.ToArray()[0];

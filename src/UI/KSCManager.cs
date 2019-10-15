@@ -211,6 +211,7 @@ namespace KerbalKonstructs.UI
                        new DialogGUIVerticalLayout(
                            new DialogGUIFlexibleSpace(),
                            new DialogGUIButton("Repair All Buildings", RepairAllBuildings, 140.0f, 30.0f, true),
+                           new DialogGUIButton("Spawn Worker", SpawnWorker, 140.0f, 30.0f, false),
                            new DialogGUIButton("Close", () =>
                            {
                                InputLockManager.RemoveControlLock("KK_KSC");
@@ -243,5 +244,15 @@ namespace KerbalKonstructs.UI
             }
             InputLockManager.RemoveControlLock("KK_KSC");
         }
+
+        internal static void SpawnWorker()
+        {
+            ProtoCrewMember protoCrew =  HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
+            protoCrew.trait = "Worker";
+
+
+            protoCrew.rosterStatus = ProtoCrewMember.RosterStatus.Available;
+        }
+
     }
 }

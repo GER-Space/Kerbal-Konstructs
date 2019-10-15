@@ -129,10 +129,8 @@ namespace KerbalKonstructs.UI
             }
             if (KerbalKonstructs.selectedInstance == null)
             {
-                CloseEditors();
-                CloseVectors();
-                CloseGizmo();
-                selectedInstance = null;
+                Log.Warning("No instance selected and editor is open --> Closing it");
+                this.Close();
             }
 
             if ((KerbalKonstructs.selectedInstance != null) && (!KerbalKonstructs.selectedInstance.isPreview))
