@@ -119,6 +119,7 @@ namespace KerbalKonstructs.Core
             padInstance.launchSite = launchpad;
 
             runway.staticInstance = rwInstance;
+            runway.isSquad = true;
             runway.LaunchSiteName = "Runway";
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
@@ -130,12 +131,13 @@ namespace KerbalKonstructs.Core
             runway.refLon = (float)rwInstance.RefLongitude;
             runway.refAlt = 69f;
             runway.LaunchSiteLength = 2500f;
-            runway.LaunchSiteWidth = 75f;
+            runway.LaunchSiteWidth = 0f;
             runway.InitialCameraRotation = -60f;
             runway.staticInstance.mesh = rwInstance.gameObject;
             runway.SetOpen();
 
             launchpad.staticInstance = padInstance;
+            launchpad.isSquad = true;
             launchpad.LaunchSiteName = "LaunchPad";
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
@@ -146,8 +148,8 @@ namespace KerbalKonstructs.Core
             launchpad.refLat = getKSCLat;
             launchpad.refLon = getKSCLon;
             launchpad.refAlt = 72;
-            launchpad.LaunchSiteLength = 20f;
-            launchpad.LaunchSiteWidth = 20f;
+            launchpad.LaunchSiteLength = 0f;
+            launchpad.LaunchSiteWidth = 0f;
             launchpad.InitialCameraRotation = -60f;
             launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             launchpad.SetOpen();
@@ -259,6 +261,7 @@ namespace KerbalKonstructs.Core
                 Log.Normal("Close: " + site.LaunchSiteName);
                 AlterMHSelector();
             }
+            site.SetClosed();
         }
 
         /// <summary>

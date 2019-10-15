@@ -241,8 +241,11 @@ namespace KerbalKonstructs.UI
                             }
                             else
                             {
-                                Funding.Instance.AddFunds(-fOpenCost, TransactionReasons.Cheating);
                                 LaunchSiteManager.OpenLaunchSite(LaunchSiteManager.GetLaunchSiteByName(Base));
+                                if (MiscUtils.isCareerGame())
+                                {
+                                    Funding.Instance.AddFunds(-LaunchSiteManager.GetLaunchSiteByName(Base).OpenCost, TransactionReasons.Cheating);
+                                }
                                 smessage = Base + " opened";
                                 MiscUtils.HUDMessage(smessage, 10, 2);
                             }

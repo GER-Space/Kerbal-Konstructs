@@ -118,7 +118,7 @@ namespace KerbalKonstructs.Core
                     return false;
                 }
 
-                if (openState == true || openString == "Open" || CareerUtils.isSandboxGame || OpenCost == 0f )
+                if (openState == true || openString == "Open")
                 {
                     return true;
                 }
@@ -230,6 +230,7 @@ namespace KerbalKonstructs.Core
         internal void SetOpen()
         {
             isOpen = true;
+
         }
 
         /// <summary>

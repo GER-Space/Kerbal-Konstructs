@@ -275,38 +275,40 @@ namespace KerbalKonstructs.UI
 				}
 
                 GUI.enabled = !selectedSite.isOpen;
-				if (selectedSite.OpenCost > 0)
-				{
-					if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
-					{
-						if (GUILayout.Button("Open Base for \n" + selectedSite.OpenCost + " funds", GUILayout.Height(38)))
-						{
-							double currentfunds = Funding.Instance.Funds;
 
-							if (selectedSite.OpenCost > currentfunds)
-								MiscUtils.HUDMessage("Insufficient funds to open this base!", 10,
-									3);
-							else
-							{
-                                LaunchSiteManager.OpenLaunchSite(selectedSite);
+                if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
+                {
+                    if (GUILayout.Button("Open Base for \n" + selectedSite.OpenCost + " funds", GUILayout.Height(38)))
+                    {
+                        double currentfunds = Funding.Instance.Funds;
+
+                        if (selectedSite.OpenCost > currentfunds)
+                            MiscUtils.HUDMessage("Insufficient funds to open this base!", 10, 3);
+                        else
+                        {
+                            LaunchSiteManager.OpenLaunchSite(selectedSite);
+                            if (CareerUtils.isCareerGame)
+                            {
                                 Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
-							}
-						}
-					}
-				}
-				GUI.enabled = true;
+                            }
+                        }
+                    }
+                }
 
+                GUI.enabled = true;
 				GUI.enabled = selectedSite.isOpen;
-				if (selectedSite.CloseValue > 0)
-				{
-					if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
-					{
-						Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
-                        LaunchSiteManager.CloseLaunchSite(selectedSite);
-                        selectedSite.SetClosed();
-					}
-				}
-				GUI.enabled = true;
+
+
+                if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
+                {
+                    LaunchSiteManager.CloseLaunchSite(selectedSite);
+                    if (CareerUtils.isCareerGame)
+                    {
+                        Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
+                    }
+                }
+
+                GUI.enabled = true;
 
 				GUILayout.FlexibleSpace();
 
