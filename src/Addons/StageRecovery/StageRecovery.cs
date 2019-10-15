@@ -40,24 +40,32 @@ namespace KerbalKonstructs.Addons
 
                 foreach (CustomSpaceCenter csc in SpaceCenterManager.spaceCenters)
                 {
-
-                    if (csc.staticInstance.launchSite.isOpen == false )
+                    try
                     {
-                        continue;
-                    }
+                        //Log.Normal("Checking LS: " + csc.SpaceCenterName);
+                        if (!csc.isOpen)
+                        {
+                            //Log.Normal("Ignoring closed SC: " + csc.SpaceCenterName);
+                            continue;
+                        }
 
-                    spaceCenter = csc.GetSpaceCenter();
-                    dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
-
-                    if (dist < smallestDist)
-                    {
-                        if (csc.staticInstance.launchSite.isOpen)
+                        spaceCenter = csc.GetSpaceCenter();
+                        dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+                        Log.Normal("distance is: " + dist);
+                        if (dist < smallestDist)
                         {
                             closestSpaceCenter = spaceCenter;
                             smallestDist = dist;
-                            // Debug.Log("KK: closest updated to " + closest.SpaceCenterName + ", distance " + smallestDist);
+                            Log.Normal("KK: closest updated to " + csc.SpaceCenterName + ", distance " + smallestDist);
                         }
+
                     }
+                    catch
+                    {
+
+                        Log.UserWarning("Error Processing... " + csc.SpaceCenterName);
+                    }
+
                 }
 
                 // set the Spacecenter to the closest SpaceCenter, because StageRecovery uses this. We revert this later on the PostRecovery function
@@ -82,18 +90,7 @@ namespace KerbalKonstructs.Addons
             Log.Normal("onVesselRecovered called");
             if (!KerbalKonstructs.instance.disableRemoteRecovery && CareerUtils.isCareerGame)
             {
-                if (vessel == null)
-                {
-                    Log.Warning("onVesselRecovered vessel was null");
-                    if (MiscUtils.CareerStrategyEnabled(HighLogic.CurrentGame))
-                    {
-                        SpaceCenter.Instance = SpaceCenterManager.KSC;
-                    }
-                    return;
-                }
-                // Put the KSC back as the Space Centre
-                // Not needed as it is buggy in the moment
-                Log.Debug("Resetting SpaceCenter to KSC");
+                //Log.Normal("Resetting SpaceCenter to KSC");
                 SpaceCenter.Instance = SpaceCenterManager.KSC;
             }
         }
