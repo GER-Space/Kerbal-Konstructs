@@ -140,36 +140,35 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Space(5);
 
-                if (MiscUtils.isCareerGame())
+
+                if (GUILayout.Button(new GUIContent(showOpen ? UIMain.tOpenBasesOn : UIMain.tOpenBasesOff, "Open"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
-                    if (GUILayout.Button(new GUIContent(showOpen ? UIMain.tOpenBasesOn : UIMain.tOpenBasesOff, "Open"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                    if (showOpen)
                     {
-                        if (showOpen)
-                        {
-                            showOpen = false;
-                            showClosed = true;
-                        }
-                        else
-                        {
-                            showOpen = true;
-                        }
+                        showOpen = false;
+                        showClosed = true;
                     }
-
-                    if (GUILayout.Button(new GUIContent(showClosed ? UIMain.tClosedBasesOn : UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                    else
                     {
-                        if (showClosed)
-                        {
-                            showClosed = false;
-                            showOpen = true;
-                        }
-                        else
-                        {
-                            showClosed = true;
-                        }
+                        showOpen = true;
                     }
-
-                    GUILayout.FlexibleSpace();
                 }
+
+                if (GUILayout.Button(new GUIContent(showClosed ? UIMain.tClosedBasesOn : UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                {
+                    if (showClosed)
+                    {
+                        showClosed = false;
+                        showOpen = true;
+                    }
+                    else
+                    {
+                        showClosed = true;
+                    }
+                }
+
+                GUILayout.FlexibleSpace();
+
 
                 if (GUILayout.Button(new GUIContent(showFavOnly ? UIMain.tFavesOn : UIMain.tFavesOff, "Only Favourites"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
@@ -272,18 +271,14 @@ namespace KerbalKonstructs.UI
                     {
                         continue;
                     }
-
-                    if (MiscUtils.isCareerGame())
+                    if ((!showOpen && site.isOpen) || (!showClosed && !site.isOpen))
                     {
-                        if ((!showOpen && site.isOpen) || (!showClosed && !site.isOpen))
-                        {
-                            continue;
-                        }
-                        // Don't show hidden closed Bases
-                        if (site.LaunchSiteIsHidden && (!site.isOpen))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
+                    // Don't show hidden closed Bases
+                    if (site.LaunchSiteIsHidden && (!site.isOpen))
+                    {
+                        continue;
                     }
 
                     GUILayout.BeginHorizontal();
@@ -434,16 +429,13 @@ namespace KerbalKonstructs.UI
 
         internal void ShowOpenStatus(KKLaunchSite site)
         {
-            if (MiscUtils.isCareerGame())
+            if (site.isOpen)
             {
-                if (site.isOpen)
-                {
-                    GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
-                }
-                else
-                {
-                    GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
-                }
+                GUILayout.Label(UIMain.tIconOpen, GUILayout.Height(30), GUILayout.Width(30));
+            }
+            else
+            {
+                GUILayout.Label(UIMain.tIconClosed, GUILayout.Height(30), GUILayout.Width(30));
             }
         }
 

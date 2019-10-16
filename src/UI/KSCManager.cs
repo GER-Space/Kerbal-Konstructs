@@ -238,7 +238,7 @@ namespace KerbalKonstructs.UI
                         {
                             instance.Activate();
                         }
-                        
+                        instance.isDestroyed = false;                        
                     }
                 }
             }
