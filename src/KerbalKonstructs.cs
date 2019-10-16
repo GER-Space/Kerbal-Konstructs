@@ -149,6 +149,8 @@ namespace KerbalKonstructs
         internal static List<StaticInstance> deletedInstances = new List<StaticInstance>();
         internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
+        internal static bool launchSitesAltering = false;
+
         /// <summary>
         /// Unity GameObject Awake function
         /// </summary>
@@ -568,21 +570,13 @@ namespace KerbalKonstructs
 
         public void OnEditorRestart()
         {
-            Log.Normal("On Editor Restart");
-            LaunchSiteManager.AlterMHSelector(false);
+            //Log.Normal("On Editor Restart");
+
+            if (!KerbalKonstructs.launchSitesAltering)
+            {
+                LaunchSiteManager.AlterMHSelector();
+            }
         }
-
-        //public void OnGameSceneLoadRequested(GameScenes scene)
-        //{
-        //    if (scene == GameScenes.MAINMENU)
-        //    {
-        //        Log.Normal("OnGameSceneLoadRequested");
-        //        LaunchSiteManager.ResetLaunchSites();
-        //        typeof(EditorDriver).GetMethod("setupValidLaunchSites", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
-
-
-        //    }
-        //}
 
 
         /// <summary>

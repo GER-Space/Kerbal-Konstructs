@@ -256,12 +256,12 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void CloseLaunchSite(KKLaunchSite site)
         {
+            site.SetClosed();
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 Log.Normal("Close: " + site.LaunchSiteName);
                 AlterMHSelector();
             }
-            site.SetClosed();
         }
 
         /// <summary>
@@ -274,12 +274,14 @@ namespace KerbalKonstructs.Core
                 site.staticInstance.TrySpawn();
                 site.staticInstance.destructible.Reset();
             }
+
+            site.staticInstance.isDestroyed = false;
+            site.SetOpen();
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 Log.Normal("OpenSite: " + site.LaunchSiteName);
                 AlterMHSelector();
             }
-            site.SetOpen();
         }
 
 
@@ -419,8 +421,9 @@ namespace KerbalKonstructs.Core
         }
 
 
-        public static void AlterMHSelector(bool triggerRestart = true)
+        public static void AlterMHSelector()
         {
+            Log.Normal("working on launchsites");
             if (!HighLogic.CurrentGame.Parameters.Difficulty.AllowOtherLaunchSites)
             {
                 return;
@@ -428,21 +431,10 @@ namespace KerbalKonstructs.Core
 
             RegisterMHLaunchSites(EditorDriver.editorFacility);
 
-            if (triggerRestart)
-            {
-                GameEvents.onEditorRestart.Fire();
-            }
-            else
-            {
-                KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
-                if (uILaunchsiteController == null)
-                {
-                    Log.UserWarning("UILaunchsiteController not found");
-                    return;
-                }
-                uILaunchsiteController.GetType().GetMethod("resetItems", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(uILaunchsiteController, null);
-            }
+            KerbalKonstructs.launchSitesAltering = true;
+            GameEvents.onEditorRestart.Fire();
 
+            KerbalKonstructs.launchSitesAltering = false;
         }
 
 
