@@ -110,21 +110,9 @@ namespace KerbalKonstructs.Core
         internal GroupCenter groupCenter = null;
 
         internal bool isInSavegame = false;
-        internal bool isDestroyed
-        {
-            get
-            {
-                if (destructible != null)
-                {
-                    return destructible.IsDestroyed;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
 
+        internal bool isDestroyed = false;
+       
         private static Dictionary<string, Type> staticModules = new Dictionary<string, Type>();
         private static string moduleKey;
 
@@ -361,6 +349,7 @@ namespace KerbalKonstructs.Core
                 GameObject.DestroyImmediate(building);
             }
 
+            destructible = null;
 
             _mesh.transform.parent = null;
             GameObject.DestroyImmediate(_mesh);
@@ -560,6 +549,12 @@ namespace KerbalKonstructs.Core
 
         internal void Deactivate()
         {
+
+            if (isSpawned && destructible != null)
+            {
+                isDestroyed = destructible.IsDestroyed;
+            }
+            
             isActive = false;
 
             foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())

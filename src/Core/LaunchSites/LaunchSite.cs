@@ -113,7 +113,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                if (staticInstance.destructible != null && staticInstance.destructible.IsDestroyed)
+                if ((staticInstance.destructible != null && staticInstance.destructible.IsDestroyed )|| staticInstance.isDestroyed)
                 {
                     return false;
                 }
