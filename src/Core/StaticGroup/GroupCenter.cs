@@ -169,7 +169,7 @@ namespace KerbalKonstructs.Core
             }
 
 
-                StaticDatabase.AddGroupCenter(this);
+            StaticDatabase.AddGroupCenter(this);
 
         }
 
@@ -277,7 +277,10 @@ namespace KerbalKonstructs.Core
                 pqsCity.repositionRadial = RadialPosition;
                 pqsCity.repositionRadiusOffset = RadiusOffset;
                 pqsCity.reorientInitialUp = Orientation;
+
                 pqsCity.reorientFinalAngle = RotationAngle;
+
+
                 pqsCity.transform.localScale = origScale * ModelScale;
 
                 RefLatitude = KKMath.GetLatitudeInDeg(RadialPosition);

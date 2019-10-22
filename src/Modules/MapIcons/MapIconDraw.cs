@@ -179,7 +179,7 @@ namespace KerbalKonstructs.Modules
                     //Only display one tooltip at a time
                     DisplayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
 
-                    if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {                    
                         selectedFacility = groundStation;
                         FacilityManager.selectedInstance = groundStation;
@@ -285,7 +285,7 @@ namespace KerbalKonstructs.Modules
                     DisplayMapIconToolTip(sToolTip, lsPosition);
 
                     // Select a base by clicking on the icon
-                    if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {
                         MapIconSelector.Close();
                         MapIconSelector.selectedSite = launchSite;
@@ -363,7 +363,7 @@ namespace KerbalKonstructs.Modules
                         DisplayMapIconToolTip(customSpaceCenter.staticInstance.launchSite.LaunchSiteName  + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
                     }
 
-                    if (Event.current.type == EventType.mouseDown && Event.current.button == 0)
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {
                         if (customSpaceCenter.isFromFacility)
                         {

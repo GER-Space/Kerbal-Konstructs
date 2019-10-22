@@ -36,7 +36,7 @@ namespace KerbalKonstructs.Core
                     return "Closed";
                 }
             }
-            private set
+            set
             {
                 openString = value;
                 if (value == "Open")

@@ -165,8 +165,8 @@ namespace KerbalKonstructs.UI
 
                     GetShipCenterCoords();
 
-                    line.material = new Material(Shader.Find("Particles/Additive"));
-                    hat.material = new Material(Shader.Find("Particles/Additive"));
+                    line.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
+                    hat.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
 
                     // This is how font loading would work if other fonts were available in KSP:
                     // Font lblFont = (Font)Resources.Load( "Arial", typeof(Font) );

@@ -431,10 +431,10 @@ namespace KerbalKonstructs.Core
 
             RegisterMHLaunchSites(EditorDriver.editorFacility);
 
-            KerbalKonstructs.launchSitesAltering = true;
+            KerbalKonstructs.calledByAlterMHSelector = true;
             GameEvents.onEditorRestart.Fire();
 
-            KerbalKonstructs.launchSitesAltering = false;
+            KerbalKonstructs.calledByAlterMHSelector = false;
         }
 
 

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KerbalKonstructs</RootNamespace>
     <AssemblyName>KerbalKonstructs</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <!-- To compile for ksp 1.2 use these constants: DEBUG,KSP12 -->
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
@@ -76,8 +76,52 @@
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -110,7 +154,8 @@
     <Compile Include="Core\StaticObjects\StaticModules\Destructable\Destructable.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\DishAnimate\DishAnimate.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\GrasColor\GrasColor.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrasColor.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColor2.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
@@ -118,7 +163,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
-    <Compile Include="Editor\InstanceEditor\GrasColorUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrassColorUI.cs" />
     <Compile Include="Editor\InstanceEditor\GrasColorPresetUI.cs" />
     <Compile Include="Editor\InstanceEditor\VariantSelector.cs" />
     <Compile Include="Editor\KKEditorLogic.cs" />
@@ -161,6 +206,7 @@
     <Compile Include="UI2\Editor2.cs" />
     <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
     <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
+    <Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
     <Compile Include="UI2\Editor\Instance\ModelList.cs" />
     <Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
     <Compile Include="UI2\KKStyle.cs" />

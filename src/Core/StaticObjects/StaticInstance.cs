@@ -105,6 +105,7 @@ namespace KerbalKonstructs.Core
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;
+        internal ConfigNode cfgNode;
 
 
         internal GroupCenter groupCenter = null;

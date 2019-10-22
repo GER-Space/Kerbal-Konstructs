@@ -125,13 +125,48 @@ namespace KerbalKonstructs
                     //model.prefab.SetActive(false);
                     model.prefab = facility.UpgradeLevels[i].facilityPrefab;
 
+
+
+                    ////Debug code for Material dumping
+                    //foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
+                    //{
+                    //    foreach (Material material in renderer.materials)
+                    //    {
+                    //        try
+                    //        {
+                    //            string textures = "";
+
+                    //            foreach (string textName in material.GetTexturePropertyNames())
+                    //            {
+                    //                textures = textures + textName + ": " + material.GetTexture(textName).name + " ;  " + material.GetTextureScale(textName).ToString() + " ";
+                    //            }
+
+                    //            {
+                    //                if (!material.HasProperty("_Color"))
+                    //                {
+                    //                    Log.Normal("Material: " + material.name + " : " + material.shader.name + " : " + textures + " : " + "No Color");
+                    //                }
+                    //                else
+                    //                {
+                    //                    Log.Normal("Material: " + material.name + " : " + material.shader.name + " : " + textures + " : " + material.color.ToString());
+                    //                }
+                    //                continue;
+                    //            }
+                    //        }
+                    //        catch { }
+                    //    }
+                    //}
+
+
                     // Register new GasColor Module
                     bool hasGrasMaterial = false;
+                    Material grassMaterial = null;
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
-                        foreach (Material material in renderer.materials.Where(mat => mat.name == "ksc_exterior_terrain_grass_02 (Instance)"))
+                        foreach (Material material in renderer.materials.Where(mat => mat.shader.name == "KSP/Scenery/Diffuse Ground KSC"))
                         {
-                            //Log.Normal("gras: " + material.name + " : " + material.color.ToString() + " : " + material.mainTexture.name);
+                            Log.Normal("Found GrassColor on: " + model.name);
+                            grassMaterial = material;
                             hasGrasMaterial = true;
                             break;
                         }
@@ -141,8 +176,19 @@ namespace KerbalKonstructs
                         //Log.Normal("Adding GrasColor to: " + model.name);
                         StaticModule module = new StaticModule();
                         module.moduleNamespace = "KerbalKonstructs";
-                        module.moduleClassname = "GrasColor";
-                        module.moduleFields.Add("GrasTextureImage", "BUILTIN:/terrain_grass00_new");
+                        module.moduleClassname = "GrassColor2";
+                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/"+grassMaterial.GetTexture("_BlendMaskTexture").name);
+                        module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
+                        module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
+                        module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
+                        module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
+
+                        Log.Normal("Instance: " + model.name + " uses Near Tiling: " + grassMaterial.GetFloat("_NearGrassTiling").ToString());
+                        Log.Normal("Instance: " + model.name + " uses Far  Tiling: " + grassMaterial.GetFloat("_FarGrassTiling").ToString());
+                        module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
+
+                        module.moduleFields.Add("DefaultFarGrassBlendDistance", grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
+                        Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);
                     }

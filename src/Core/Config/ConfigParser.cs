@@ -166,18 +166,19 @@ namespace KerbalKonstructs.Core
                 {
                     continue;
                 }
-                if (instanceSetting.Key == "FacilityType")
+                if (instanceSetting.Key == "FacilityType" ) 
+                {
+                    continue;
+                }
+
+                // Remove legacy GrassColor values
+                if  ((instance.model.modules.Where(module => module.moduleClassname.Equals("GrasColor")).FirstOrDefault() == null ) && ( (instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture")) )
                 {
                     continue;
                 }
 
                 // No Longer save Legacy Values
                 if (instanceSetting.Key == "RadialPosition" || instanceSetting.Key == "RadiusOffset" || instanceSetting.Key == "RotationAngle" || instanceSetting.Key == "RefLatitude" || instanceSetting.Key == "RefLongitude" || instanceSetting.Key == "IsRelativeToTerrain")
-                {
-                    continue;
-                }
-
-                if (instanceSetting.Key == "GrasColor" && (Color)instanceSetting.Value.GetValue(instance) == Color.clear)
                 {
                     continue;
                 }
@@ -200,6 +201,14 @@ namespace KerbalKonstructs.Core
             {
                 ConfigNode lsNode = cfgNode.AddNode("LaunchSite");
                 LaunchSiteParser.WriteConfig(instance.launchSite, lsNode);
+            }
+
+            if (instance.mesh.GetComponent<GrasColor>() == null)
+            {
+                foreach (GrassColor2 grassColor2 in instance.mesh.GetComponents<GrassColor2>())
+                {
+                    grassColor2.WriteCfg(cfgNode);
+                }
             }
 
         }
@@ -358,7 +367,7 @@ namespace KerbalKonstructs.Core
                 // Load Settings into instance
                 ParseDecalsMapConfig(newMapDecalInstance, conf.config);
 
-                newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url));
+                newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace('\\','/');
                 newMapDecalInstance.mapTexture = KKGraphics.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
 
                 if (newMapDecalInstance.mapTexture == null)

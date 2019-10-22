@@ -57,7 +57,7 @@ namespace KerbalKonstructs.Modules
                     return false;
                 }
             }
-            private set
+            set
             {
                 openState = value;
                 if (openState == true)
@@ -85,7 +85,7 @@ namespace KerbalKonstructs.Modules
                     return "Closed";
                 }
             }
-            private set
+            set
             {
                 openString = value;
                 if (value == "Open")

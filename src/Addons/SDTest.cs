@@ -159,30 +159,6 @@ namespace KerbalKonstructs.Addons
             }
         }
 
-        public static void GetShaderStats()
-        {
-            List<Shader> myshaders = new List<Shader>();
-
-            foreach (StaticModel model in StaticDatabase.allStaticModels)
-            {
-                foreach (var renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
-                {
-
-                    Log.Normal("Model: " + model.name + " ,Shader" + renderer.material.shader.name);
-                    if (renderer.material.HasProperty("_UnderwaterFogFactor"))
-                    {
-                        Log.Normal("Found: _UnderwaterFogFactor");
-                    }
-
-                    if (renderer.material.HasProperty("_BurnColor"))
-                    {
-                        Log.Normal("Found: _BurnColor");
-                    }
-
-                }
-
-            }
-        }
 
         internal static void WriteTextures()
         {

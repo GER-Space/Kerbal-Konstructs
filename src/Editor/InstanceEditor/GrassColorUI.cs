@@ -9,9 +9,9 @@ using KerbalKonstructs;
 
 namespace KerbalKonstructs.UI
 {
-    public class GrasColorUI : KKWindow
+    public class GrassColorUI : KKWindow
     {
-        private static GrasColorUI _instance = null;
+        private static GrassColorUI _instance = null;
         private static Rect windowRect = new Rect(500, 600, 300, 340);
 
         internal static StaticInstance selectedInstance;
@@ -21,13 +21,13 @@ namespace KerbalKonstructs.UI
 
         internal static string titleText = "GrasColor UI";
 
-        internal static GrasColorUI instance
+        internal static GrassColorUI instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new GrasColorUI();
+                    _instance = new GrassColorUI();
 
                 }
                 return _instance;
@@ -208,7 +208,6 @@ namespace KerbalKonstructs.UI
                 MiscUtils.HUDMessage("GrasColorUI: Texture not found: " + grasTextureName);
             }
             //Log.Normal("found Texture: " + selectedInstance.GrasTexture);
-            selectedInstance.Update();
         }
 
 

@@ -172,7 +172,7 @@ namespace KerbalKonstructs.UI
                 SetupGizmo();
 
                 grasColorModeIsAuto = false;
-                grasColorEnabled = (selectedInstance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0);
+                grasColorEnabled = (selectedInstance.mesh.GetComponents<GrassColor2>().Count() > 0);
 
                 origCenter = selectedInstance.groupCenter;
                 origPosition = selectedInstance.transform.localPosition;
@@ -624,20 +624,18 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("GrasColor: ", GUILayout.Height(23));
                 GUILayout.FlexibleSpace();
 
-                GUI.enabled = (grasColorEnabled && !GrasColorUI.instance.IsOpen());
+                GUI.enabled = (grasColorEnabled && !UI2.GrassEditor.isOpen);
                 if (GUILayout.Button("Preset", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    GrasColorPresetUI.callBack = GrasColorUI.instance.UpdateCallBack;
-                    GrasColorUI.selectedInstance = selectedInstance;
-                    GrasColorUI.instance.SetupFields();
+                    GrasColorPresetUI.callBack = GrassColorUI.instance.UpdateCallBack;
+                    GrassColorUI.selectedInstance = selectedInstance;
+                    GrassColorUI.instance.SetupFields();
                     GrasColorPresetUI.instance.Open();
                 }
 
                 if (GUILayout.Button("Edit", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    GrasColorUI.selectedInstance = selectedInstance;
-                    GrasColorUI.instance.SetupFields();
-                    GrasColorUI.instance.Open();
+                    UI2.GrassEditor.Open();
                 }
 
                 GUI.enabled = true;

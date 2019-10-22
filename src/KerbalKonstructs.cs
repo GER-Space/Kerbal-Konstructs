@@ -149,7 +149,7 @@ namespace KerbalKonstructs
         internal static List<StaticInstance> deletedInstances = new List<StaticInstance>();
         internal static List<GroupCenter> deletedGroups = new List<GroupCenter>();
 
-        internal static bool launchSitesAltering = false;
+        internal static bool calledByAlterMHSelector = false;
 
         /// <summary>
         /// Unity GameObject Awake function
@@ -231,6 +231,8 @@ namespace KerbalKonstructs
             //Log.PerfStop("Model Test");
             //SDTest.GetShaderStats();
             //SDTest.ScanParticles();
+            //KKGraphics.LoadShaders();
+            //KKGraphics.GetBuiltinTexture("", 0);
 
         }
 
@@ -572,7 +574,9 @@ namespace KerbalKonstructs
         {
             //Log.Normal("On Editor Restart");
 
-            if (!KerbalKonstructs.launchSitesAltering)
+            // this is a switch to prevent endless loops. we will call this GameEvent function from within AlterMHSelector so it does some magic for us. 
+            // is need to call call it by itself because there might be some editor switch, so we implement this semaphore.
+            if (!KerbalKonstructs.calledByAlterMHSelector)
             {
                 LaunchSiteManager.AlterMHSelector();
             }
@@ -924,6 +928,8 @@ namespace KerbalKonstructs
 
                 LaunchSiteManager.AttachLaunchSite(instance, instanceCfgNode);
 
+                instance.cfgNode = instanceCfgNode;
+
                 // update the references
                 foreach (var facility in instance.myFacilities)
                 {
@@ -977,7 +983,7 @@ namespace KerbalKonstructs
 
                 StaticModel model = new StaticModel
                 {
-                    path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)),
+                    path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace("\\","/"),
                     name = modelName,
                     config = conf.url,
                     configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"

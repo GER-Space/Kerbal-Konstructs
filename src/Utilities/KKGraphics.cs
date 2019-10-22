@@ -41,7 +41,8 @@ namespace KerbalKonstructs
                 if (!allShaders.ContainsKey(shader.name))
                 {
                     allShaders.Add(shader.name, shader);
-                    //Util.log("Loaded shader: " + shader.name);
+                    // Debug Code
+                    //Log.Normal("Loaded shader: " + shader.name);
                 }
             }
             loadedShaders = true;
@@ -116,7 +117,7 @@ namespace KerbalKonstructs
         internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0)
         {
             string textureKey;
-
+            textureName.Replace("\\", "/");
             if (textureName.StartsWith("BUILTIN:"))
             {
                 {
@@ -191,6 +192,8 @@ namespace KerbalKonstructs
                         counter++;
                     }
                     builtinTextures.Add(texture.name + "_" + counter, texture);
+                    // Debug Code
+                    //Log.Normal("BuiltinTex:  " +  texture.name + " | " + counter);
                 }
                 texturesAreCached = true;
             }
@@ -217,6 +220,7 @@ namespace KerbalKonstructs
                 {
                     if (!cachedMaterials.ContainsKey(material.name))
                     {
+                        //Log.Normal("Material added: " + material.name);
                         cachedMaterials.Add(material.name, material);
                     }
                 }

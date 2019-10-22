@@ -113,7 +113,9 @@ namespace KerbalKonstructs.Core
         internal static void ReadCFGNode(object target, FieldInfo field, ConfigNode cfgNode)
         {
             if (!cfgNode.HasValue(field.Name))
+            {
                 return;
+            }
 
             if (!string.IsNullOrEmpty(cfgNode.GetValue(field.Name)))
             {
