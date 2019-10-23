@@ -165,11 +165,6 @@ namespace KerbalKonstructs.UI
             foreach (ConfigNode colorNode in GameDatabase.Instance.GetConfigNodes("KK_ColorPreset"))
             {
 
-                //if (!colorNode.HasValue("IsGrasColor") || bool.Parse(colorNode.GetValue("IsGrasColor")))
-                //{
-                //    continue;
-                //}
-
                 if (colorNode.HasValue("Name") && colorNode.HasValue("GrassColor"))
                 {
                     ColorPreset preset = new ColorPreset();
