@@ -104,7 +104,7 @@ namespace KerbalKonstructs.UI
             {
                 if (GUILayout.Button("Select Preset", GUILayout.Height(23), GUILayout.Width(120)))
                 {
-                    GrasColorPresetUI.callBack = UpdateCallBack;
+                    //GrasColorPresetUI.callBack = grassMod.UpdateCallBack;
                     GrasColorPresetUI.instance.Open();
                 }
 
@@ -228,26 +228,5 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        internal void UpdateCallBack(Color newColor, string newTexture)
-        {
-            EditorGUI.instance.grasColorModeIsAuto = false;
-            selectedInstance.GrasColor = newColor;
-
-            if (KKGraphics.GetTexture(newTexture) != null)
-            {
-                //Log.Normal("Updating Texture to: " + newTexture);
-                selectedInstance.GrasTexture = newTexture;
-                grasTextureName = newTexture;
-            }
-            else
-            {
-                Log.UserWarning("GrasColorUI: Texture not found: " + newTexture);
-                MiscUtils.HUDMessage("GrasColorUI: Texture not found: " + newTexture);
-            }
-            selectedInstance.Update();
-            SetupFields();
-        }
-
-
-    }
+      }
 }

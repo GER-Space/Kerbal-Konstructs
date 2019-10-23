@@ -13,8 +13,8 @@ namespace KerbalKonstructs.UI
     {
         internal class ColorPreset
         {
-            internal string name = "unset";
-            internal Color grassColor = Color.clear;
+            internal string name = "KSC Default";
+            internal Color grassColor = GrassColor2.defaultColor;
             internal Color tarmacColor = Color.white;
             internal string nearGrassTexture = "BUILTIN:/terrain_grass00_new";
             internal string farGrassTexture = "BUILTIN:/terrain_grass00_new_detail";

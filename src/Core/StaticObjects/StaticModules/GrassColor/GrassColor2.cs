@@ -45,13 +45,13 @@ namespace KerbalKonstructs
         internal string tarmacTextureName = null;
 
 
-        internal float nearGrassTiling = 0.2f; 
-        internal float farGrassTiling = 0.01f;  
-        internal float farGrassBlendDistance = 100; 
+        internal float nearGrassTiling = 0.2f;
+        internal float farGrassTiling = 0.01f;
+        internal float farGrassBlendDistance = 100;
 
         private ConfigNode cfgNode;
 
-        internal static Color defaultColor = new Color(0.576471f,0.611765f,0.392157f,1.00000f);
+        internal static Color defaultColor = new Color(0.576471f, 0.611765f, 0.392157f, 1.00000f);
         internal static Color defaultTarmacColor = Color.white;
 
 
@@ -90,7 +90,7 @@ namespace KerbalKonstructs
 
             //grassColor = GetColor();
 
-             foreach (Renderer renderer in grassRenderers)
+            foreach (Renderer renderer in grassRenderers)
             {
 
                 renderer.material.SetColor("_GrassColor", grassColor);
@@ -140,7 +140,7 @@ namespace KerbalKonstructs
             if (staticInstance.model.isSquad)
             {
                 FindSquadGrasMaterial();
-            } 
+            }
             else
             {
                 FindModelGrasMaterials();
@@ -160,7 +160,7 @@ namespace KerbalKonstructs
         internal Color GetColor()
         {
             Color underGroundColor = defaultColor;
-            if ((StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)  )
+            if ((StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
             {
                 if (usePQS)
                 {
@@ -233,7 +233,7 @@ namespace KerbalKonstructs
             foreach (var transform in allTransforms)
             {
                 Renderer grassRenderer = transform.GetComponent<Renderer>();
-                
+
                 grassRenderers.Add(grassRenderer);
 
 
@@ -266,10 +266,8 @@ namespace KerbalKonstructs
                     //farGrassTextureName = "BUILTIN:/" + material.GetTexture("_FarGrassTexture").name;
 
                     nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
-                    farGrassTiling =  renderer.material.GetFloat("_FarGrassTiling");
+                    farGrassTiling = renderer.material.GetFloat("_FarGrassTiling");
                     GrassMeshName = renderer.transform.name;
-
-
                 }
             }
         }
@@ -281,18 +279,18 @@ namespace KerbalKonstructs
 
             if (staticInstance.cfgNode == null || staticInstance.cfgNode.GetNodes("GrassColor2").Length == 0)
             {
-                nearGrassTextureName =  DefaultNearGrassTexture;
-                farGrassTextureName =  DefaultFarGrassTexture;
-                tarmacTextureName =  DefaultTarmacTexture;
+                nearGrassTextureName = DefaultNearGrassTexture;
+                farGrassTextureName = DefaultFarGrassTexture;
+                tarmacTextureName = DefaultTarmacTexture;
                 blendMaskTextureName = DefaultBlendMaskTexture;
-                nearGrassTiling = float.Parse(DefaultNearGrassTiling) ;
+                nearGrassTiling = float.Parse(DefaultNearGrassTiling);
                 farGrassTiling = float.Parse(DefaultFarGrassTiling);
                 farGrassBlendDistance = float.Parse(DefaultFarGrassBlendDistance);
                 grassColor = defaultColor;
                 tarmacColor = Color.white;
                 return;
-            } 
-                
+            }
+
             foreach (ConfigNode grassConfig in staticInstance.cfgNode.GetNodes("GrassColor2"))
             {
                 Log.Normal("found instance cfgnode");
@@ -300,16 +298,16 @@ namespace KerbalKonstructs
                 {
                     Log.Normal("found instance grassnode");
                     cfgNode = grassConfig;
-                    nearGrassTexture = (grassConfig.GetValue("NearGrassTexture") != null) ? KKGraphics.GetTexture(grassConfig.GetValue("NearGrassTexture")) : KKGraphics.GetTexture(DefaultNearGrassTexture);
-                    farGrassTexture = (grassConfig.GetValue("FarGrassTexture") != null) ? KKGraphics.GetTexture(grassConfig.GetValue("FarGrassTexture")) : KKGraphics.GetTexture(DefaultFarGrassTexture);
-                    tarmacTexture = (grassConfig.GetValue("TarmacTexture") != null) ? KKGraphics.GetTexture(grassConfig.GetValue("TarmacTexture")) : KKGraphics.GetTexture(DefaultTarmacTexture);
-                    blendMaskTexture = (grassConfig.GetValue("BlendMaskTexture") != null) ? KKGraphics.GetTexture(grassConfig.GetValue("BlendMaskTexture")) : KKGraphics.GetTexture(DefaultBlendMaskTexture);                    
-                    nearGrassTiling = (grassConfig.GetValue("NearGrassTiling") != null) ? float.Parse(grassConfig.GetValue("NearGrassTiling")) : 1f;
-                    farGrassTiling = (grassConfig.GetValue("FarGrassTiling") != null) ? float.Parse(grassConfig.GetValue("FarGrassTiling")) : 1f;
-                    farGrassBlendDistance = (grassConfig.GetValue("FarGrassBlendDistance") != null) ? float.Parse(grassConfig.GetValue("FarGrassBlendDistance")) : 50f;
+                    nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") :DefaultNearGrassTexture;
+                    farGrassTextureName = (grassConfig.HasValue("FarGrassTexture")) ? grassConfig.GetValue("FarGrassTexture") : DefaultFarGrassTexture;
+                    tarmacTextureName = (grassConfig.HasValue("TarmacTexture")) ? grassConfig.GetValue("TarmacTexture") : DefaultTarmacTexture;
+                    blendMaskTextureName = (grassConfig.HasValue("BlendMaskTexture") ) ? grassConfig.GetValue("BlendMaskTexture") :DefaultBlendMaskTexture;
+                    nearGrassTiling = (grassConfig.HasValue("NearGrassTiling")) ? float.Parse(grassConfig.GetValue("NearGrassTiling")) : 1f;
+                    farGrassTiling = (grassConfig.HasValue("FarGrassTiling") ) ? float.Parse(grassConfig.GetValue("FarGrassTiling")) : 1f;
+                    farGrassBlendDistance = (grassConfig.HasValue("FarGrassBlendDistance") ) ? float.Parse(grassConfig.GetValue("FarGrassBlendDistance")) : 50f;
 
-                    grassColor = (grassConfig.GetValue("GrassColor") != null) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
-                    tarmacColor = (grassConfig.GetValue("TarmacColor") != null) ? ConfigNode.ParseColor(grassConfig.GetValue("TarmacColor")) : Color.white;
+                    grassColor = (grassConfig.HasValue("GrassColor") ) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
+                    tarmacColor = (grassConfig.HasValue("TarmacColor") ) ? ConfigNode.ParseColor(grassConfig.GetValue("TarmacColor")) : Color.white;
                     break;
                 }
 
@@ -350,6 +348,35 @@ namespace KerbalKonstructs
         }
 
 
-    }
+        internal void UpdateCallBack(GrasColorPresetUI.ColorPreset preset)
+        {
+            EditorGUI.instance.grasColorModeIsAuto = false;
 
+            if (KKGraphics.GetTexture(preset.nearGrassTexture) != null)
+            {
+                //Log.Normal("Updating Texture to: " + newTexture);
+                nearGrassTextureName = preset.nearGrassTexture;
+            }
+
+            if (KKGraphics.GetTexture(preset.farGrassTexture) != null)
+            {
+                //Log.Normal("Updating Texture to: " + newTexture);
+                farGrassTextureName = preset.farGrassTexture;
+            }
+
+            if (KKGraphics.GetTexture(preset.tarmacTexture) != null)
+            {
+                //Log.Normal("Updating Texture to: " + newTexture);
+                tarmacTextureName = preset.tarmacTexture;
+            }
+
+
+            grassColor = preset.grassColor;
+            tarmacColor = preset.tarmacColor;
+
+            ApplySettings();
+
+        }
+
+    }
 }

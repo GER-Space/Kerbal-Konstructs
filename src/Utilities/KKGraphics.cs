@@ -116,6 +116,11 @@ namespace KerbalKonstructs
         /// <returns></returns>
         internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0)
         {
+            if (string.IsNullOrEmpty(textureName))
+            {
+                Log.UserWarning("Empty texture Name");
+                return null; 
+            }
             string textureKey;
             textureName.Replace("\\", "/");
             if (textureName.StartsWith("BUILTIN:"))

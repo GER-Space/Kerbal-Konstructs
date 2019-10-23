@@ -116,6 +116,8 @@ namespace KerbalKonstructs.UI
         private static Vector3 localMovement;
         private static Vector3 origLocalPosition;
 
+        private static GrassColor2 grassMod = null;
+
 
         #endregion
 
@@ -172,7 +174,9 @@ namespace KerbalKonstructs.UI
                 SetupGizmo();
 
                 grasColorModeIsAuto = false;
-                grasColorEnabled = (selectedInstance.mesh.GetComponents<GrassColor2>().Count() > 0);
+
+                grassMod = selectedInstance.mesh.GetComponent<GrassColor2>();
+                grasColorEnabled = ( grassMod != null );
 
                 origCenter = selectedInstance.groupCenter;
                 origPosition = selectedInstance.transform.localPosition;
@@ -627,7 +631,7 @@ namespace KerbalKonstructs.UI
                 GUI.enabled = (grasColorEnabled && !UI2.GrassEditor.isOpen);
                 if (GUILayout.Button("Preset", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    GrasColorPresetUI.callBack = GrassColorUI.instance.UpdateCallBack;
+                    GrasColorPresetUI.callBack = grassMod.UpdateCallBack;
                     GrassColorUI.selectedInstance = selectedInstance;
                     GrassColorUI.instance.SetupFields();
                     GrasColorPresetUI.instance.Open();
@@ -864,11 +868,12 @@ namespace KerbalKonstructs.UI
 
             KerbalKonstructs.SelectInstance(instance, true);
 
-            if (instance.model.modules.Where(x => x.moduleClassname == "GrasColor").Count() > 0)
+            GrassColor2 grassMod = instance.gameObject.GetComponent<GrassColor2>();
+
+            if (grassMod != null)
             {
-                instance.GrasColor = StaticsEditorGUI.defaultGrasColor;
-                instance.GrasTexture = StaticsEditorGUI.defaultGrasTexture;
-                instance.gameObject.GetComponent<GrasColor>().StaticObjectUpdate();
+                grassMod.UpdateCallBack(StaticsEditorGUI.defaultGrassPreset);
+
             }
         }
 

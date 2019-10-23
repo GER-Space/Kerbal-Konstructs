@@ -70,28 +70,28 @@ namespace KerbalKonstructs.UI2
                 new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetBlendMaskTexture, 25),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: R ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetGrassFloatR, 0, 1, false, 140, 25, SetGrassFloatR),
+                    new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
                     new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber , 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: G ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetGrassFloatG, 0, 1, false, 140, 25, SetGrassFloatG),
+                    new DialogGUISlider(GetGrassFloatG, 0, 4f, false, 140, 25, SetGrassFloatG),
                     new DialogGUITextInput("0", false, 10, SetGrassGStr, GetGrassGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: B ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetGrassFloatB, 0, 1, false, 140, 25, SetGrassFloatB),
+                    new DialogGUISlider(GetGrassFloatB, 0, 4f, false, 140, 25, SetGrassFloatB),
                     new DialogGUITextInput("0", false, 10, SetGrassBStr, GetGrassBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
-                    new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
-                    new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
-                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               //new DialogGUIHorizontalLayout(
+               //     new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
+               //     new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
+               //     new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               //new DialogGUIHorizontalLayout(
+               //     new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
+               //     new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
+               //     new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               //new DialogGUIHorizontalLayout(
+               //     new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
+               //     new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
+               //     new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTiling", HighLogic.UISkin.label),
                     new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
@@ -197,7 +197,7 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetGrassGStr(string newFloat)
         {
-            selectedMod.grassColor.r = float.Parse(newFloat);
+            selectedMod.grassColor.g = float.Parse(newFloat);
             selectedMod.ApplySettings();
             return newFloat;
         }
@@ -218,7 +218,7 @@ namespace KerbalKonstructs.UI2
         }
         internal static string SetGrassBStr(string newFloat)
         {
-            selectedMod.grassColor.r = float.Parse(newFloat);
+            selectedMod.grassColor.b = float.Parse(newFloat);
             selectedMod.ApplySettings();
             return newFloat;
         }
@@ -264,7 +264,7 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetTarmacGStr(string newFloat)
         {
-            selectedMod.tarmacColor.r = float.Parse(newFloat);
+            selectedMod.tarmacColor.g = float.Parse(newFloat);
             selectedMod.ApplySettings();
             return newFloat;
         }
@@ -285,7 +285,7 @@ namespace KerbalKonstructs.UI2
         }
         internal static string SetTarmacBStr(string newFloat)
         {
-            selectedMod.tarmacColor.r = float.Parse(newFloat);
+            selectedMod.tarmacColor.b = float.Parse(newFloat);
             selectedMod.ApplySettings();
             return newFloat;
         }

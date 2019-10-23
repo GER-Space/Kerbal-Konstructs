@@ -172,7 +172,7 @@ namespace KerbalKonstructs.Core
                 }
 
                 // Remove legacy GrassColor values
-                if  ((instance.model.modules.Where(module => module.moduleClassname.Equals("GrasColor")).FirstOrDefault() == null ) && ( (instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture")) )
+                if  ( (instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture"))
                 {
                     continue;
                 }
@@ -203,12 +203,9 @@ namespace KerbalKonstructs.Core
                 LaunchSiteParser.WriteConfig(instance.launchSite, lsNode);
             }
 
-            if (instance.mesh.GetComponent<GrasColor>() == null)
+            foreach (GrassColor2 grassColor2 in instance.mesh.GetComponents<GrassColor2>())
             {
-                foreach (GrassColor2 grassColor2 in instance.mesh.GetComponents<GrassColor2>())
-                {
-                    grassColor2.WriteCfg(cfgNode);
-                }
+                grassColor2.WriteCfg(cfgNode);
             }
 
         }
