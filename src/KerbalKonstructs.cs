@@ -427,8 +427,11 @@ namespace KerbalKonstructs
 
                         //EditorGUI.camInitialized = false;
 
-                        InputLockManager.RemoveControlLock("KKEditorLock");
-                        InputLockManager.RemoveControlLock("KKEditorLock2");
+                        InputLockManager.RemoveControlLock("KKShipLock");
+                        InputLockManager.RemoveControlLock("KKEVALock");
+                        InputLockManager.RemoveControlLock("KKCamModes");
+                        InputLockManager.RemoveControlLock("KKCamModes2");
+                        InputLockManager.RemoveControlLock("KKActions");
 
 
                         if (FlightGlobals.ActiveVessel != null)
@@ -490,7 +493,11 @@ namespace KerbalKonstructs
                             SaveObjects();
                             convertLegacyConfigs = false;
                         }
-                        InputLockManager.RemoveControlLock("KKEditorLock");
+                        InputLockManager.RemoveControlLock("KKShipLock");
+                        InputLockManager.RemoveControlLock("KKEVALock");
+                        InputLockManager.RemoveControlLock("KKCamModes");
+                        InputLockManager.RemoveControlLock("KKCamModes2");
+                        InputLockManager.RemoveControlLock("KKActions");
                         //SquadStatics.PimpLevel2Runway();
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
                         if (currentSite == null)
@@ -1329,6 +1336,8 @@ namespace KerbalKonstructs
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
             InputLockManager.RemoveControlLock("KKCamModes");
+            InputLockManager.RemoveControlLock("KKCamModes2");
+            InputLockManager.RemoveControlLock("KKActions");
 
 
             if (camControl.active)
@@ -1362,7 +1371,9 @@ namespace KerbalKonstructs
         {
             InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "KKShipLock");
             InputLockManager.SetControlLock(ControlTypes.EVA_INPUT, "KKEVALock");
-            InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes");
+            InputLockManager.SetControlLock(ControlTypes.ALLBUTCAMERAS, "KKCamModes");
+            InputLockManager.SetControlLock(ControlTypes.CAMERAMODES, "KKCamModes2");
+            InputLockManager.SetControlLock(ControlTypes.ACTIONS_ALL, "KKActions");
 
             if (selectedInstance != null)
             {
@@ -1403,6 +1414,8 @@ namespace KerbalKonstructs
             InputLockManager.RemoveControlLock("KKShipLock");
             InputLockManager.RemoveControlLock("KKEVALock");
             InputLockManager.RemoveControlLock("KKCamModes");
+            InputLockManager.RemoveControlLock("KKCamModes2");
+            InputLockManager.RemoveControlLock("KKActions");
 
             if (disableCam)
             {

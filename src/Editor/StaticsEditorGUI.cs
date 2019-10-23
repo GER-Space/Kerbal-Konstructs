@@ -952,6 +952,10 @@ namespace KerbalKonstructs.UI
             }
             else
             {
+                if (KerbalKonstructs.selectedInstance != null)
+                {
+                    KerbalKonstructs.DeselectObject(true, true);
+                }
                 //Log.Normal("Try to select Object: " + myHitinstance.mesh.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
                 KerbalKonstructs.SelectInstance(myHitinstance, true);

@@ -55,10 +55,6 @@ namespace KerbalKonstructs
         internal static Color defaultTarmacColor = Color.white;
 
 
-
-
-
-
         public void Awake()
         {
         }
@@ -271,7 +267,7 @@ namespace KerbalKonstructs
 
                     nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
                     farGrassTiling =  renderer.material.GetFloat("_FarGrassTiling");
-
+                    GrassMeshName = renderer.transform.name;
 
 
                 }

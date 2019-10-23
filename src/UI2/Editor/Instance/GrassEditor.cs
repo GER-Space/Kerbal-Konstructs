@@ -45,6 +45,7 @@ namespace KerbalKonstructs.UI2
 
         internal static string NearGrassTiling;
         internal static string FarGrassTiling;
+        internal static string BlendDistance;
 
         internal static StaticInstance staticInstance = null;
 
@@ -60,33 +61,46 @@ namespace KerbalKonstructs.UI2
             content.Add(VaiantList);
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUILabel("NearGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetString, 30),
+                new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetString, 25),
                 new DialogGUILabel("FarGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetString, 30),
+                new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetString, 25),
                 new DialogGUILabel("TamarcTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetString, 30),
+                new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetString, 25),
                 new DialogGUILabel("BlendMaskTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetString, 30),
+                new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetString, 25),
                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Color: R ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetFloatR, 0, 1, false, 140, 25, SetFloatR),
-                    new DialogGUILabel(GetFloatRStr)) ,
+                    new DialogGUILabel(" Grass: R ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetGrassFloatR, 0, 1, false, 140, 25, SetGrassFloatR),
+                    new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber , 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Color: G ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetFloatG, 0, 1, false, 140, 25, SetFloatG),
-                    new DialogGUILabel(GetFloatGStr)),
+                    new DialogGUILabel(" Grass: G ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetGrassFloatG, 0, 1, false, 140, 25, SetGrassFloatG),
+                    new DialogGUITextInput("0", false, 10, SetGrassGStr, GetGrassGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Color: B ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetFloatB, 0, 1, false, 140, 25, SetFloatB),
-                    new DialogGUILabel(GetFloatBStr)),
+                    new DialogGUILabel(" Grass: B ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetGrassFloatB, 0, 1, false, 140, 25, SetGrassFloatB),
+                    new DialogGUITextInput("0", false, 10, SetGrassBStr, GetGrassBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
+                    new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
+                    new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
+                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTiling", HighLogic.UISkin.label),
-                    new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 40, SetNearTile, 30)),
+                    new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarGrassTiling", HighLogic.UISkin.label),
-                    new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 40, SetFarTile, 30))
-
-
+                    new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("FarBlendDistance", HighLogic.UISkin.label),
+                    new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25))
 
                 )); ;
         }
@@ -111,55 +125,146 @@ namespace KerbalKonstructs.UI2
             selectedMod.farGrassTiling = float.Parse(newTile);
             selectedMod.SetColor();
             return newTile;
-
+        }
+        internal static string SetBlendDistance(string newTile)
+        {
+            selectedMod.farGrassBlendDistance = float.Parse(newTile);
+            selectedMod.SetColor();
+            return newTile;
         }
 
 
-
-        internal static float GetFloatR()
+        //red
+        internal static float GetGrassFloatR()
         {
             return selectedMod.grassColor.r;
         }
-        internal static string GetFloatRStr()
+        internal static string GetGrassRStr()
         {
             return selectedMod.grassColor.r.ToString();
         }
-        internal static void SetFloatR(float newFloat)
+        internal static void SetGrassFloatR(float newFloat)
         {
-            Log.Normal("SetFloat: " + newFloat);
             selectedMod.grassColor.r = newFloat;
             selectedMod.SetColor();
         }
 
-        internal static float GetFloatG()
+        internal static string SetGrassRStr(string newFloat)
+        {
+            selectedMod.grassColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
+        }
+
+        //Green
+        internal static float GetGrassFloatG()
         {
             return selectedMod.grassColor.g;
         }
-        internal static string GetFloatGStr()
+        internal static string GetGrassGStr()
         {
             return selectedMod.grassColor.g.ToString();
         }
 
-        internal static void SetFloatG(float newFloat)
+        internal static void SetGrassFloatG(float newFloat)
         {
-            Log.Normal("SetFloat: " + newFloat);
             selectedMod.grassColor.g = newFloat;
             selectedMod.SetColor();
         }
 
-        internal static float GetFloatB()
+        internal static string SetGrassGStr(string newFloat)
+        {
+            selectedMod.grassColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
+        }
+
+        //blue
+        internal static float GetGrassFloatB()
         {
             return selectedMod.grassColor.b;
         }
-        internal static string GetFloatBStr()
+        internal static string GetGrassBStr()
         {
             return selectedMod.grassColor.b.ToString();
         }
-        internal static void SetFloatB(float newFloat)
+        internal static void SetGrassFloatB(float newFloat)
         {
-            Log.Normal("SetFloat: " + newFloat);
             selectedMod.grassColor.b = newFloat;
             selectedMod.SetColor();
+        }
+        internal static string SetGrassBStr(string newFloat)
+        {
+            selectedMod.grassColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
+        }
+
+        // Tarmac
+        //red
+        internal static float GetTarmacFloatR()
+        {
+            return selectedMod.tarmacColor.r;
+        }
+        internal static string GetTarmacRStr()
+        {
+            return selectedMod.tarmacColor.r.ToString();
+        }
+        internal static void SetTarmacFloatR(float newFloat)
+        {
+            selectedMod.tarmacColor.r = newFloat;
+            selectedMod.SetColor();
+        }
+
+        internal static string SetTarmacRStr(string newFloat)
+        {
+            selectedMod.tarmacColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
+        }
+
+        //Green
+        internal static float GetTarmacFloatG()
+        {
+            return selectedMod.tarmacColor.g;
+        }
+        internal static string GetTarmacGStr()
+        {
+            return selectedMod.tarmacColor.g.ToString();
+        }
+
+        internal static void SetTarmacFloatG(float newFloat)
+        {
+            selectedMod.tarmacColor.g = newFloat;
+            selectedMod.SetColor();
+        }
+
+        internal static string SetTarmacGStr(string newFloat)
+        {
+            selectedMod.tarmacColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
+        }
+
+        //blue
+        internal static float GetTarmacFloatB()
+        {
+            return selectedMod.tarmacColor.b;
+        }
+        internal static string GetTarmacBStr()
+        {
+            return selectedMod.tarmacColor.b.ToString();
+        }
+        internal static void SetTarmacFloatB(float newFloat)
+        {
+            selectedMod.tarmacColor.b = newFloat;
+            selectedMod.SetColor();
+        }
+        internal static string SetTarmacBStr(string newFloat)
+        {
+            selectedMod.tarmacColor.r = float.Parse(newFloat);
+            selectedMod.SetColor();
+            return newFloat;
         }
 
 
@@ -263,6 +368,7 @@ namespace KerbalKonstructs.UI2
         {
             KKStyle.Init();
             staticInstance = EditorGUI.selectedInstance;
+            staticInstance.HighlightObject(Color.clear);
             selectedMod = EditorGUI.selectedInstance.mesh.GetComponents<GrassColor2>()[0];
             ReadMod(selectedMod);
             //windowRect = new Rect(CreateBesidesMainwindow(), new Vector2(windowWidth, windowHeight));
@@ -277,13 +383,20 @@ namespace KerbalKonstructs.UI2
 
         internal static void Close()
         {
+            if (EditorGUI.instance.IsOpen() && (EditorGUI.selectedInstance == staticInstance))
+            {
+                staticInstance.HighlightObject(XKCDColors.Green_Yellow);
+            }
+
             if (dialog != null)
             {
                 WindowManager.SavePosition(dialog);
                 dialog.Dismiss();
             }
+            
             dialog = null;
             optionDialog = null;
+
         }
 
 
@@ -320,6 +433,7 @@ namespace KerbalKonstructs.UI2
             BlendMaskTexture = mod.blendMaskTexture != null ? mod.blendMaskTextureName : "no texture";
             NearGrassTiling = mod.nearGrassTiling.ToString();
             FarGrassTiling = mod.farGrassTiling.ToString();
+            BlendDistance = mod.farGrassBlendDistance.ToString();
         }
 
 
