@@ -63,7 +63,7 @@ namespace KerbalKonstructs
 
             grass2.enabled = true;
             grass2.Initialize();
-            grass2.SetColor();
+            grass2.ApplySettings();
         }
     }
 }

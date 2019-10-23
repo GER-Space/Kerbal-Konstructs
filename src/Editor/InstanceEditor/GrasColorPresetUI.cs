@@ -14,8 +14,11 @@ namespace KerbalKonstructs.UI
         internal class ColorPreset
         {
             internal string name = "unset";
-            internal  Color color = Color.clear;
-            internal  string texture = "BUILTIN:/terrain_grass00_new";
+            internal Color grassColor = Color.clear;
+            internal Color tarmacColor = Color.white;
+            internal string nearGrassTexture = "BUILTIN:/terrain_grass00_new";
+            internal string farGrassTexture = "BUILTIN:/terrain_grass00_new_detail";
+            internal string tarmacTexture = "BUILTIN:/ksc_exterior_terrain_asphalt";
         };
 
 
@@ -28,8 +31,8 @@ namespace KerbalKonstructs.UI
         private ColorPreset selectedPreset;
 
         internal static bool showOnlyLocal = true;
-        internal static Action<Color, string> callBack = delegate { };
-        internal static string titleText = "Select an Preset";
+        internal static Action<ColorPreset> callBack = delegate { };
+        internal static string titleText = "Select a Preset";
 
         private bool isInitialized = false;
 
@@ -48,7 +51,7 @@ namespace KerbalKonstructs.UI
 
         public override void Open()
         {
-            SetColorList();
+            CreateColorList();
             base.Open();
         }
 
@@ -122,7 +125,7 @@ namespace KerbalKonstructs.UI
                     if (GUILayout.Button(preset.name))
                     {
                         selectedPreset = preset;
-                        callBack.Invoke(selectedPreset.color, selectedPreset.texture);
+                        callBack.Invoke(selectedPreset);
                         this.Close();
                     }
                 }
@@ -150,7 +153,7 @@ namespace KerbalKonstructs.UI
 
 
 
-        private void SetColorList()
+        private void CreateColorList()
         {
             if (isInitialized)
             {
@@ -167,15 +170,27 @@ namespace KerbalKonstructs.UI
                 //    continue;
                 //}
 
-                if (colorNode.HasValue("Name") && colorNode.HasValue("Color"))
+                if (colorNode.HasValue("Name") && colorNode.HasValue("GrassColor"))
                 {
                     ColorPreset preset = new ColorPreset();
                     preset.name = colorNode.GetValue("Name");
                     Log.Normal("Adding Color to List" + preset.name);
-                    preset.color = ConfigNode.ParseColor(colorNode.GetValue("Color"));
-                    if (colorNode.HasValue("Texture"))
+                    preset.grassColor = ConfigNode.ParseColor(colorNode.GetValue("GrassColor"));
+                    if (colorNode.HasValue("NearGrassTexture"))
                     {
-                        preset.texture = colorNode.GetValue("Texture");
+                        preset.nearGrassTexture = colorNode.GetValue("NearGrassTexture");
+                    }
+                    if (colorNode.HasValue("FarGrassTexture"))
+                    {
+                        preset.farGrassTexture = colorNode.GetValue("FarGrassTexture");
+                    }
+                    if (colorNode.HasValue("TarmacTexture"))
+                    {
+                        preset.tarmacTexture = colorNode.GetValue("TarmacTexture");
+                    }
+                    if (colorNode.HasValue("TarmacColor"))
+                    {
+                        preset.tarmacColor = ConfigNode.ParseColor(colorNode.GetValue("TarmacColor"));
                     }
                     colors2Display.Add(preset);
                 }

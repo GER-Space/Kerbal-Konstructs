@@ -61,13 +61,13 @@ namespace KerbalKonstructs.UI2
             content.Add(VaiantList);
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUILabel("NearGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetString, 25),
+                new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetNearGrassTexture, 25),
                 new DialogGUILabel("FarGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetString, 25),
+                new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetFarGrassTexture, 25),
                 new DialogGUILabel("TamarcTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetString, 25),
+                new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetTarmacTexture, 25),
                 new DialogGUILabel("BlendMaskTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetString, 25),
+                new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetBlendMaskTexture, 25),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: R ", HighLogic.UISkin.label),
                     new DialogGUISlider(GetGrassFloatR, 0, 1, false, 140, 25, SetGrassFloatR),
@@ -107,29 +107,52 @@ namespace KerbalKonstructs.UI2
 
 
 
-        internal static string SetString(string teststring)
+        internal static string SetNearGrassTexture(string newTexture)
         {
-            Log.Normal("SetString: " + teststring);
-            return teststring;
+            selectedMod.nearGrassTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
         }
+
+        internal static string SetFarGrassTexture(string newTexture)
+        {
+            selectedMod.farGrassTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
+        }
+
+        internal static string SetTarmacTexture(string newTexture)
+        {
+            selectedMod.tarmacTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
+        }
+
+        internal static string SetBlendMaskTexture(string newTexture)
+        {
+            selectedMod.blendMaskTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
+        }
+
 
         internal static string SetNearTile(string newTile)
         {
             selectedMod.nearGrassTiling = float.Parse(newTile);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newTile;
         }
 
         internal static string SetFarTile(string newTile)
         {
             selectedMod.farGrassTiling = float.Parse(newTile);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newTile;
         }
         internal static string SetBlendDistance(string newTile)
         {
             selectedMod.farGrassBlendDistance = float.Parse(newTile);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newTile;
         }
 
@@ -146,13 +169,13 @@ namespace KerbalKonstructs.UI2
         internal static void SetGrassFloatR(float newFloat)
         {
             selectedMod.grassColor.r = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
 
         internal static string SetGrassRStr(string newFloat)
         {
             selectedMod.grassColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 
@@ -169,13 +192,13 @@ namespace KerbalKonstructs.UI2
         internal static void SetGrassFloatG(float newFloat)
         {
             selectedMod.grassColor.g = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
 
         internal static string SetGrassGStr(string newFloat)
         {
             selectedMod.grassColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 
@@ -191,12 +214,12 @@ namespace KerbalKonstructs.UI2
         internal static void SetGrassFloatB(float newFloat)
         {
             selectedMod.grassColor.b = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
         internal static string SetGrassBStr(string newFloat)
         {
             selectedMod.grassColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 
@@ -213,13 +236,13 @@ namespace KerbalKonstructs.UI2
         internal static void SetTarmacFloatR(float newFloat)
         {
             selectedMod.tarmacColor.r = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
 
         internal static string SetTarmacRStr(string newFloat)
         {
             selectedMod.tarmacColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 
@@ -236,13 +259,13 @@ namespace KerbalKonstructs.UI2
         internal static void SetTarmacFloatG(float newFloat)
         {
             selectedMod.tarmacColor.g = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
 
         internal static string SetTarmacGStr(string newFloat)
         {
             selectedMod.tarmacColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 
@@ -258,12 +281,12 @@ namespace KerbalKonstructs.UI2
         internal static void SetTarmacFloatB(float newFloat)
         {
             selectedMod.tarmacColor.b = newFloat;
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
         }
         internal static string SetTarmacBStr(string newFloat)
         {
             selectedMod.tarmacColor.r = float.Parse(newFloat);
-            selectedMod.SetColor();
+            selectedMod.ApplySettings();
             return newFloat;
         }
 

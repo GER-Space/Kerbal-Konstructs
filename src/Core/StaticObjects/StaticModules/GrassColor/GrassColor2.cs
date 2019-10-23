@@ -63,14 +63,14 @@ namespace KerbalKonstructs
 
         public override void StaticObjectUpdate()
         {
-            SetColor();
+            ApplySettings();
         }
 
 
         /// <summary>
         /// Sets the texture in all transforms of the right name
         /// </summary>
-        internal void SetColor()
+        internal void ApplySettings()
         {
 
             if (!isInitialized)
