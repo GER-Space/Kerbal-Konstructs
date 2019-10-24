@@ -27,6 +27,7 @@ namespace KerbalKonstructs.UI2
             DeadButtonRed.fontSize = 12;
             DeadButtonRed.fontStyle = FontStyle.Bold;
             DeadButtonRed.alignment = TextAnchor.MiddleCenter;
+            DeadButtonRed.normal.background = DeadButtonRed.disabled.background;
 
             whiteLabel = defaultStyle;
             whiteLabel.name = "whiteLabel";

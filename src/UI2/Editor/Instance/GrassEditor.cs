@@ -36,8 +36,6 @@ namespace KerbalKonstructs.UI2
 
         internal static Func<bool> parentWindow = EditorGUI.instance.IsOpen;
 
-        internal static GrassColor2 selectedMod = null;
-
         internal static string NearGrassTexture;
         internal static string FarGrassTexture;
         internal static string TamarcTexture;
@@ -48,7 +46,7 @@ namespace KerbalKonstructs.UI2
         internal static string BlendDistance;
 
         internal static StaticInstance staticInstance = null;
-
+        internal static GrassColor2 selectedMod = null;
 
         internal static void CreateContent()
         {
@@ -60,14 +58,22 @@ namespace KerbalKonstructs.UI2
 
             content.Add(VaiantList);
             content.Add(new DialogGUIVerticalLayout(
-                new DialogGUILabel("NearGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetNearGrassTexture, 25),
-                new DialogGUILabel("FarGrassTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetFarGrassTexture, 25),
-                new DialogGUILabel("TamarcTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetTarmacTexture, 25),
-                new DialogGUILabel("BlendMaskTexture", HighLogic.UISkin.label),
-                new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetBlendMaskTexture, 25),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetNearGrassTexture, 25),
+                    new DialogGUIButton("S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("FarGrassTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetFarGrassTexture, 25),
+                    new DialogGUIButton("S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetTarmacTexture, 25),
+                    new DialogGUIButton("S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetBlendMaskTexture, 25),
+                    new DialogGUIButton("S", delegate { OpenTextureSelector("blendMaskTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: R ", HighLogic.UISkin.label),
                     new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
@@ -93,18 +99,24 @@ namespace KerbalKonstructs.UI2
                //     new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
                //     new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("NearGrassTiling", HighLogic.UISkin.label),
+                    new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
                     new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("FarGrassTiling", HighLogic.UISkin.label),
+                    new DialogGUILabel("FarGrassTiling", KKStyle.whiteLabel),
                     new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25)),
                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("FarBlendDistance", HighLogic.UISkin.label),
+                    new DialogGUILabel("FarBlendDistance", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25))
 
                 )); ;
         }
 
+
+        internal static void OpenTextureSelector (string fieldName)
+        {
+            TextureSelector.fieldName = fieldName;
+            TextureSelector.Open();
+        }
 
 
         internal static string SetNearGrassTexture(string newTexture)

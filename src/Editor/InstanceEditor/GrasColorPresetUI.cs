@@ -25,7 +25,6 @@ namespace KerbalKonstructs.UI
         private static GrasColorPresetUI _instance = null;
         private static Rect windowRect = new Rect(300, 700, 400, 340);
 
-        private List<ColorPreset> colors2Display = new List<ColorPreset>();
         private Vector2 scrollPointer;
 
         private ColorPreset selectedPreset;
@@ -34,7 +33,8 @@ namespace KerbalKonstructs.UI
         internal static Action<ColorPreset> callBack = delegate { };
         internal static string titleText = "Select a Preset";
 
-        private bool isInitialized = false;
+        private static List<ColorPreset> colors2Display = new List<ColorPreset>();
+        private static bool isInitialized = false;
 
         internal static GrasColorPresetUI instance
         {
