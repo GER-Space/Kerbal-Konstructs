@@ -165,7 +165,7 @@ namespace KerbalKonstructs
                     {
                         foreach (Material material in renderer.materials.Where(mat => mat.shader.name == "KSP/Scenery/Diffuse Ground KSC"))
                         {
-                            Log.Normal("Found GrassColor on: " + model.name);
+                            //Log.Normal("Found GrassColor on: " + model.name);
                             grassMaterial = material;
                             hasGrasMaterial = true;
                             break;
@@ -177,7 +177,7 @@ namespace KerbalKonstructs
                         StaticModule module = new StaticModule();
                         module.moduleNamespace = "KerbalKonstructs";
                         module.moduleClassname = "GrassColor2";
-                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/"+grassMaterial.GetTexture("_BlendMaskTexture").name);
+                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/"+ grassMaterial.GetTexture("_BlendMaskTexture").name);
                         module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
                         module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
                         module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
@@ -191,6 +191,12 @@ namespace KerbalKonstructs
                         Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);
+
+                        TexturePreset preset = new TexturePreset();
+                        preset.usage = TextureUsage.BlendMask;
+                        preset.texturePath = "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name;
+                        TextureSelector.additionalTextures.Add(preset);
+
                     }
 
                     StaticDatabase.RegisterModel(model, modelName);

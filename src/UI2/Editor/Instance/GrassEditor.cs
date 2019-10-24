@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using KerbalKonstructs.Core;
 using KerbalKonstructs.UI;
+using System.Reflection;
 
 
 namespace KerbalKonstructs.UI2
@@ -51,8 +52,9 @@ namespace KerbalKonstructs.UI2
         internal static void CreateContent()
         {
             content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUILabel("All Models", HighLogic.UISkin.label),
-                new DialogGUIFlexibleSpace()
+                new DialogGUILabel("Grass Color Editor", HighLogic.UISkin.label),
+                new DialogGUIFlexibleSpace(),
+                new DialogGUIButton("select preset", delegate { GrasColorPresetUI.callBack = selectedMod.UpdateCallBack ; GrasColorPresetUI.instance.Open(); } ,50, 25, false)
                 ));
 
 
@@ -60,30 +62,30 @@ namespace KerbalKonstructs.UI2
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(NearGrassTexture, NearGrassTexture, false, 40, SetNearGrassTexture, 25),
-                    new DialogGUIButton("S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                    new DialogGUITextInput(NearGrassTexture, false, 40, SetNearGrassTexture, delegate { return GetTextureName("nearGrassTextureName"); } , TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarGrassTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FarGrassTexture, FarGrassTexture, false, 40, SetFarGrassTexture, 25),
-                    new DialogGUIButton("S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                    new DialogGUITextInput(FarGrassTexture, false, 40, SetFarGrassTexture, delegate { return GetTextureName("farGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(TamarcTexture, TamarcTexture, false, 40, SetTarmacTexture, 25),
-                    new DialogGUIButton("S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(BlendMaskTexture, BlendMaskTexture, false, 40, SetBlendMaskTexture, 25),
-                    new DialogGUIButton("S", delegate { OpenTextureSelector("blendMaskTextureName"); }, 21f, 21.0f, true, HighLogic.UISkin.label)),
+                    new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: R ", HighLogic.UISkin.label),
+                    new DialogGUILabel(" Grass: R ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
                     new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber , 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: G ", HighLogic.UISkin.label),
+                    new DialogGUILabel(" Grass: G ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatG, 0, 4f, false, 140, 25, SetGrassFloatG),
                     new DialogGUITextInput("0", false, 10, SetGrassGStr, GetGrassGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: B ", HighLogic.UISkin.label),
+                    new DialogGUILabel(" Grass: B ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatB, 0, 4f, false, 140, 25, SetGrassFloatB),
                     new DialogGUITextInput("0", false, 10, SetGrassBStr, GetGrassBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                //new DialogGUIHorizontalLayout(
@@ -112,9 +114,16 @@ namespace KerbalKonstructs.UI2
         }
 
 
-        internal static void OpenTextureSelector (string fieldName)
+        internal static string GetTextureName(string fieldName)
+        {
+            return typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;         
+        }
+
+
+        internal static void OpenTextureSelector (string fieldName, TextureUsage filter = TextureUsage.Texture)
         {
             TextureSelector.fieldName = fieldName;
+            TextureSelector.textureFilter = filter;
             TextureSelector.Open();
         }
 

@@ -42,12 +42,12 @@ namespace KerbalKonstructs.Core
         internal static Rect windowRect;
 
         //internal static float windowWidth = Screen.width * 0.9f;
-        internal static float windowWidth = 250f;
+        internal static float windowWidth = 350f;
         internal static float windowHeight = 300f;
 
         internal static bool showTitle = false;
         internal static bool showKKTitle = true;
-        internal static bool isModal = true;
+        internal static bool isModal = false;
 
 
         internal static bool placeToParent = false;
@@ -59,13 +59,17 @@ namespace KerbalKonstructs.Core
 
 
         private static bool isInitialized = false;
-        internal static List<TexturePreset> textureList;
+        private static List<TexturePreset> textureList = new List<TexturePreset>();
+
+        internal static List<TexturePreset> additionalTextures = new List<TexturePreset>();
 
         private static StaticInstance staticInstance = null;
         private static GrassColor2 selectedMod = null;
 
         //internal static Callback<TexturePreset> callBack = null;
         internal static string fieldName = "";
+        internal static TextureUsage textureFilter = TextureUsage.Texture;
+
         internal static string lastTexture = "";
 
 
@@ -78,15 +82,16 @@ namespace KerbalKonstructs.Core
             }
             isInitialized = true;
             textureList.Clear();
+            textureList = additionalTextures;
             foreach (ConfigNode colorNode in GameDatabase.Instance.GetConfigNodes("KK_TexturePreset"))
             {
 
-                if (colorNode.HasValue("TexturePath") && colorNode.HasValue("TextureUsage"))
+                if (colorNode.HasValue("TextureFile") && colorNode.HasValue("Usage"))
                 {
                     TexturePreset preset = new TexturePreset();
-                    preset.texturePath = colorNode.GetValue("TexturePath");
+                    preset.texturePath = colorNode.GetValue("TextureFile");
 
-                    if (!Enum.TryParse( colorNode.GetValue("TextureUsage"), true, out preset.usage))
+                    if (!Enum.TryParse( colorNode.GetValue("Usage"), true, out preset.usage))
                     {
                         preset.usage = TextureUsage.Unused;
                     }
@@ -97,9 +102,6 @@ namespace KerbalKonstructs.Core
                     textureList.Add(preset);
                 }
             }
-
-            lastTexture = typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;
-
         }
 
 
@@ -138,14 +140,14 @@ namespace KerbalKonstructs.Core
                 list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
                 list.Add(new DialogGUIFlexibleSpace());
 
-                foreach (var textureSet in textureList)
+                foreach (var textureSet in textureList.Where(set => set.usage == textureFilter))
                 {
-                    list.Add(new DialogGUIButton(textureSet.texturePath, delegate { SetTexture(textureSet); }, delegate { return (textureSet.texturePath != lastTexture); }, 140.0f, 25.0f, true));
+                    list.Add(new DialogGUIButton(textureSet.texturePath, delegate { SetTexture(textureSet); }, delegate { return (textureSet.texturePath != lastTexture); }, 250, 20.0f, true, KKStyle.whiteLabel));
                 }
-                list.Add(new DialogGUIButton("Calcel", null, 140.0f, 25f, true));
+                list.Add(new DialogGUIButton("Cancel", null, 140.0f, 25f, true));
                 list.Add(new DialogGUIFlexibleSpace());
                 var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(250, 250), new Vector2(200, 25f * list.Count), false, false, layout);
+                var scroll = new DialogGUIScrollList(new Vector2(300, 250), new Vector2(200, 25f * list.Count), false, true, layout);
                 return scroll;
             }
         }
@@ -231,6 +233,7 @@ namespace KerbalKonstructs.Core
             staticInstance = EditorGUI.selectedInstance;
             selectedMod = GrassEditor.selectedMod;
             Initialize();
+            lastTexture = typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;
 
             //windowRect = new Rect(CreateBesidesMainwindow(), new Vector2(windowWidth, windowHeight));
             content = new List<DialogGUIBase>();
