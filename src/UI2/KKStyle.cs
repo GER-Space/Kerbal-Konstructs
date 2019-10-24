@@ -15,9 +15,11 @@ namespace KerbalKonstructs.UI2
         internal static UIStyle whiteLabel ;
         internal static UIStyle windowTitle;
 
+        //private static Sprite clearSprite;
 
         internal static void Init()
         {
+            //CreateSprite();
             DeadButtonRed = defaultStyle;
             DeadButtonRed.name = "DeadButtonRed";
             DeadButtonRed.normal.textColor = Color.red;
@@ -29,6 +31,8 @@ namespace KerbalKonstructs.UI2
             DeadButtonRed.alignment = TextAnchor.MiddleCenter;
             DeadButtonRed.normal.background = null;
             DeadButtonRed.highlight.background = null;
+            DeadButtonRed.active.background = null;
+            DeadButtonRed.disabled.background = null;
 
             whiteLabel = defaultStyle;
             whiteLabel.name = "whiteLabel";
@@ -51,6 +55,22 @@ namespace KerbalKonstructs.UI2
             windowTitle.alignment = TextAnchor.MiddleCenter;
 
         }
+
+
+        //private static void CreateSprite()
+        //{
+        //    Color fillColor = new Color(0,0,0,0);
+        //    Texture2D newTex = new Texture2D(16, 16, TextureFormat.ARGB32, false);
+        //    var fillColorArray = newTex.GetPixels();
+
+        //    for (var i = 0; i < fillColorArray.Length; ++i)
+        //    {
+        //        fillColorArray[i] = fillColor;
+        //    }
+        //    clearSprite = Sprite.Create(newTex, new Rect(0, 0, 16, 16), new Vector2(0, 1), 128f);
+
+
+        //}
 
 
         private static UIStyle defaultStyle

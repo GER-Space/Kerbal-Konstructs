@@ -340,14 +340,21 @@ namespace KerbalKonstructs.UI2
             {
                 return;
             }
+
+
+            var button = new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed);
+            button.image = null;
+            button.tint = new Color(0, 0, 0, 0);
+            button.useColor = false;
+
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("-KK-", KKStyle.windowTitle),
                 new DialogGUIFlexibleSpace(),
 
                 new DialogGUILabel(windowTitle, KKStyle.windowTitle),
                 new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
-
+                //new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
+                button
                 ));
         }
 
