@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine.UI;
-using UnityEngine;
-using KerbalKonstructs;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
+using System;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-    class LandingGuideUI :KKWindow
+    class LandingGuideUI : KKWindow
     {
         private static LandingGuideUI _instance = null;
         internal static LandingGuideUI instance
@@ -41,7 +36,7 @@ namespace KerbalKonstructs.UI
         private Texture tTGL = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownL", false);
         private Texture tTGR = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/touchdownR", false);
 
- 
+
 
         private Rect Marker1;
         private Rect Marker2;
@@ -95,7 +90,7 @@ namespace KerbalKonstructs.UI
                 soTDR = null;
                 return;
             }
-            soTDR = obj;            
+            soTDR = obj;
         }
 
         public void drawLandingGuide(StaticInstance instance)
@@ -175,7 +170,7 @@ namespace KerbalKonstructs.UI
                 flgHscale = 1f;
             }
 
-            
+
 
             Vector3 landingGuidePoint = soLandingGuide.position;
             Vector3d vesselPosition = FlightGlobals.ActiveVessel.GetWorldPos3D();

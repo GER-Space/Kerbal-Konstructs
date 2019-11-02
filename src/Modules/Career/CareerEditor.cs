@@ -1,11 +1,8 @@
-﻿using System;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using System.IO;
-using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Modules
 {
@@ -317,43 +314,43 @@ namespace KerbalKonstructs.Modules
             GUILayout.BeginHorizontal();
 
 
-                GUILayout.Label("Back / Forward:");
-                GUILayout.FlexibleSpace();
-;
+            GUILayout.Label("Back / Forward:");
+            GUILayout.FlexibleSpace();
+            ;
 
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.back * increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.forward * increment);
-                }
-                GUILayout.EndHorizontal();
+            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+            {
+                SetTransform(Vector3.back * increment);
+            }
+            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+            {
+                SetTransform(Vector3.forward * increment);
+            }
+            GUILayout.EndHorizontal();
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Left / Right:");
-                GUILayout.FlexibleSpace();
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.left * increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.right * increment);
-                }
-                GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Left / Right:");
+            GUILayout.FlexibleSpace();
+            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
+            {
+                SetTransform(Vector3.left * increment);
+            }
+            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
+            {
+                SetTransform(Vector3.right * increment);
+            }
+            GUILayout.EndHorizontal();
 
-                GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal();
 
-            
- 
+
+
 
             GUILayout.EndHorizontal();
 
             GUI.enabled = true;
 
-       
+
 
             // 
             // Altitude editing
@@ -423,7 +420,7 @@ namespace KerbalKonstructs.Modules
 
             GUI.enabled = true;
 
-         
+
 
             GUI.enabled = true;
             GUILayout.FlexibleSpace();

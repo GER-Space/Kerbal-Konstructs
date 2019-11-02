@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
-using KerbalKonstructs.Core;
+using System;
 using UnityEngine;
 
 namespace KerbalKonstructs
@@ -84,7 +81,7 @@ namespace KerbalKonstructs
             }
         }
 
-        public static string PlaceStatic(string modelName, string bodyName,  double lat, double lng, float alt , float rotation , bool isScanable = false)
+        public static string PlaceStatic(string modelName, string bodyName, double lat, double lng, float alt, float rotation, bool isScanable = false)
         {
             StaticModel model = StaticDatabase.GetModelByName(modelName);
             if (model != null)

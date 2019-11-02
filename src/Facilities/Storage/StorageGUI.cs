@@ -1,9 +1,8 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using KerbalKonstructs.Modules;
-using KerbalKonstructs.Utilities;
 using UnityEngine;
 
 namespace KerbalKonstructs.UI
@@ -21,7 +20,7 @@ namespace KerbalKonstructs.UI
         private static float storedAmount = 0f;
         private static StoredResource storedResource = null;
 
-        private static HashSet<string> blackListedResources = new HashSet<string> { "ElectricCharge", "IntakeAir"};
+        private static HashSet<string> blackListedResources = new HashSet<string> { "ElectricCharge", "IntakeAir" };
 
         private static float maxSpaceLeft = 0f;
         private static double storableUnits = 0f;
@@ -235,13 +234,13 @@ namespace KerbalKonstructs.UI
             {
                 myStoredResource = new StoredResource { resource = resource, amount = (float)amount };
                 selectedFacility.storedResources.Add(myStoredResource);
-                            }
+            }
             else
             {
                 myStoredResource.amount += (float)amount;
             }
 
-            if (Math.Round(myStoredResource.amount,4) == 0f)
+            if (Math.Round(myStoredResource.amount, 4) == 0f)
             {
                 selectedFacility.storedResources.Remove(myStoredResource);
             }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-
-namespace KerbalKonstructs.Core
+﻿namespace KerbalKonstructs.Core
 {
     class BuiltinCenters
     {
@@ -50,7 +44,7 @@ namespace KerbalKonstructs.Core
             newGroup.CelestialBody = body;
 
             newGroup.RotationAngle = (float)tgtPQS.rotation;
-            newGroup.RadialPosition = KKMath.GetRadiadFromLatLng(body , tgtPQS.lat, tgtPQS.lon);
+            newGroup.RadialPosition = KKMath.GetRadiadFromLatLng(body, tgtPQS.lat, tgtPQS.lon);
 
             //newGroup.RadiusOffset = (float)0;
             newGroup.RadiusOffset = (float)tgtPQS.alt;
@@ -60,7 +54,7 @@ namespace KerbalKonstructs.Core
 
         }
 
-            internal static void AddPQSCenter(string tgtName)
+        internal static void AddPQSCenter(string tgtName)
         {
             CelestialBody body = ConfigUtil.GetCelestialBody("HomeWorld");
             var mods = body.pqsController.GetComponentsInChildren<PQSCity>(true);
@@ -80,7 +74,7 @@ namespace KerbalKonstructs.Core
                 Log.Normal("No BasePQS found: " + tgtName);
                 return;
             }
-            
+
             GroupCenter newGroup = new GroupCenter();
             newGroup.isBuiltIn = true;
             newGroup.Group = tgtName + "_Builtin";
@@ -93,6 +87,7 @@ namespace KerbalKonstructs.Core
             newGroup.RadiusOffset = (float)tgtPQS.repositionRadiusOffset;
             //newGroup.repositionToSphere = false;
             newGroup.SeaLevelAsReference = tgtPQS.repositionToSphere;
+
             newGroup.Spawn();
 
 
@@ -102,7 +97,7 @@ namespace KerbalKonstructs.Core
             //Log.Normal("Added GroupCenter:" + newGroup.Group);
         }
 
-           
+
 
     }
 }

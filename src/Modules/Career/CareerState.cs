@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using KerbalKonstructs.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using KerbalKonstructs;
-using KerbalKonstructs.Core;
 using System.IO;
+using UnityEngine;
 using Upgradeables;
 
 namespace KerbalKonstructs.Modules
@@ -125,7 +120,7 @@ namespace KerbalKonstructs.Modules
                 }
                 //Log.Normal("Loading LS: " + site.LaunchSiteName + " " + site.isOpen);
             }
-            
+
 
 
         }
@@ -187,7 +182,8 @@ namespace KerbalKonstructs.Modules
             {
                 facNode = kkcfgNode.GetNode("Facilities");
                 facNode.ClearData();
-            } else
+            }
+            else
             {
                 facNode = kkcfgNode.AddNode("Facilities");
             }
@@ -229,7 +225,7 @@ namespace KerbalKonstructs.Modules
         }
 
 
-        internal static void FixKSCFacilities ()
+        internal static void FixKSCFacilities()
         {
             if ((HighLogic.LoadedScene == GameScenes.SPACECENTER) && (!KerbalKonstructs.InitialisedFacilities))
             {
@@ -260,7 +256,7 @@ namespace KerbalKonstructs.Modules
                                     "SpaceCenter/Administration",
                                     "SpaceCenter/FlagPole",
                                     "SpaceCenter/Observatory" })
-                            {                          
+                            {
                                 if (!ins.HasNode(kscBuilding))
                                 {
                                     Log.Normal("Could not find " + kscBuilding + " node. Creating node.");
@@ -284,7 +280,7 @@ namespace KerbalKonstructs.Modules
                         }
                     }
 
-                    
+
                     KerbalKonstructs.InitialisedFacilities = true;
                 }
             }

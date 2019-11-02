@@ -1,9 +1,7 @@
 ﻿using KerbalKonstructs.Core;
-using System;
-using System.Collections.Generic;
-using KerbalKonstructs.Utilities;
-using UnityEngine;
 using KerbalKonstructs.Modules;
+using System;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -176,7 +174,7 @@ namespace KerbalKonstructs.UI
                     {
                         sFacilityName = selectedInstance.model.title;
                     }
-                    
+
                 }
 
                 GUILayout.Box("" + sFacilityName, Yellowtext);
@@ -290,7 +288,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Space(2);
                     GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
                     GUILayout.Space(2);
-                    StaffGUI.StaffingInterface(selectedInstance);             
+                    StaffGUI.StaffingInterface(selectedInstance);
                 }
             }
 

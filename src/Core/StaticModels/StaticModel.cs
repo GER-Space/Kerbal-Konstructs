@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	public class StaticModel
-	{
+    public class StaticModel
+    {
         internal GameObject prefab;
-       // internal Dictionary<string, object> settings = new Dictionary<string, object>();
+        // internal Dictionary<string, object> settings = new Dictionary<string, object>();
         internal List<StaticModule> modules = new List<StaticModule>();
 
         internal string config;
@@ -79,7 +78,7 @@ namespace KerbalKonstructs.Core
 
 
         internal bool hasVariants = false;
-        internal Dictionary<string,ModelVariant> variants = new Dictionary<string, ModelVariant>();
+        internal Dictionary<string, ModelVariant> variants = new Dictionary<string, ModelVariant>();
 
-	}
+    }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CommNet;
+﻿using CommNet;
 #if!KSP12
 using KSP.Localization;
 #endif

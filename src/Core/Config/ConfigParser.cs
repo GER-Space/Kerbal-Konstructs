@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using UnityEngine;
 using System.IO;
-using System.IO.Compression;
+using System.Linq;
+using UnityEngine;
 
 
 namespace KerbalKonstructs.Core
@@ -31,12 +27,12 @@ namespace KerbalKonstructs.Core
 
             foreach (ConfigNode variNode in cfgNode.GetNodes("VARIANT"))
             {
-                Log.Normal("found variant: "  + variNode.GetValue("name")) ;
+                Log.Normal("found variant: " + variNode.GetValue("name"));
                 ModelVariant variant = new ModelVariant(target, variNode);
 
                 if (string.IsNullOrEmpty(variant.name))
                 {
-                    Log.UserError("model " + target.name + " has a variant without a name" );
+                    Log.UserError("model " + target.name + " has a variant without a name");
                     continue;
                 }
 
@@ -49,7 +45,7 @@ namespace KerbalKonstructs.Core
                 {
                     Log.UserError("model " + target.name + " already has a vaiant with name: " + variant.name);
                 }
-                
+
             }
 
         }
@@ -61,7 +57,7 @@ namespace KerbalKonstructs.Core
             {
                 try
                 {
-                
+
                     if (modelsetting.Value.GetValue(model) == null)
                     {
                         continue;
@@ -120,10 +116,11 @@ namespace KerbalKonstructs.Core
                             cfgNode.AddValue(modelsetting.Key, ((CelestialBody)modelsetting.Value.GetValue(model)).name);
                             break;
                     }
-                    
-                }catch
+
+                }
+                catch
                 {
-                    Log.UserError("error in writing modelconfig: " + model.name + " key: "  + modelsetting.Key);
+                    Log.UserError("error in writing modelconfig: " + model.name + " key: " + modelsetting.Key);
                 }
 
                 foreach (ModelVariant vaiant in model.variants.Values)
@@ -166,13 +163,13 @@ namespace KerbalKonstructs.Core
                 {
                     continue;
                 }
-                if (instanceSetting.Key == "FacilityType" ) 
+                if (instanceSetting.Key == "FacilityType")
                 {
                     continue;
                 }
 
                 // Remove legacy GrassColor values
-                if  ( (instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture"))
+                if ((instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture"))
                 {
                     continue;
                 }
@@ -364,7 +361,7 @@ namespace KerbalKonstructs.Core
                 // Load Settings into instance
                 ParseDecalsMapConfig(newMapDecalInstance, conf.config);
 
-                newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace('\\','/');
+                newMapDecalInstance.path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace('\\', '/');
                 newMapDecalInstance.mapTexture = KKGraphics.GetTexture(newMapDecalInstance.path + "/" + newMapDecalInstance.Image, false);
 
                 if (newMapDecalInstance.mapTexture == null)
@@ -499,7 +496,7 @@ namespace KerbalKonstructs.Core
                     }
                     parsedModels.Add(instance.model.name);
                     StaticInstance[] allInstances = group.childInstances.Where(inst => inst.model.name == instance.model.name).ToArray();
- 
+
                     ConfigNode instanceConfig = null;
                     ConfigNode staticNode = new ConfigNode("STATIC");
 
@@ -544,7 +541,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        
+
         internal static void CreateZips()
         {
 

@@ -1,6 +1,4 @@
-﻿using KerbalKonstructs.Core;
-using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -33,7 +31,7 @@ namespace KerbalKonstructs.Core
 
         public SpaceCenter spaceCenter
         {
-         get
+            get
             {
                 return GetSpaceCenter();
             }
@@ -52,7 +50,7 @@ namespace KerbalKonstructs.Core
                 _spaceCenter.spaceCenterAreaTrigger = SpaceCenterManager.KSC.spaceCenterAreaTrigger;
                 _spaceCenter.enabled = true;
                 _spaceCenter.Start();
-            }           
+            }
             return _spaceCenter;
         }
 

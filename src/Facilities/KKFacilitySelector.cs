@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using KerbalKonstructs;
+﻿using KerbalKonstructs.Modules;
 using KerbalKonstructs.UI;
-using KerbalKonstructs.Modules;
 using KSP.UI;
 using KSP.UI.Screens;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -109,7 +106,7 @@ namespace KerbalKonstructs.Core
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                if (! KerbalKonstructs.enableInflightHighlight && facType != KKFacilityType.Merchant)
+                if (!KerbalKonstructs.enableInflightHighlight && facType != KKFacilityType.Merchant)
                 {
                     return;
                 }
@@ -130,7 +127,7 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !(InputLockManager.GetControlLock("KK_KSC") == ControlTypes.UI ))
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !(InputLockManager.GetControlLock("KK_KSC") == ControlTypes.UI))
             {
                 if (spaceCenterBlackList.Contains(facType))
                 {

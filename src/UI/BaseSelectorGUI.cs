@@ -1,10 +1,6 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
 using System.Collections.Generic;
 using UnityEngine;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Modules;
-using System.Linq;
-using System.Text;
 
 namespace KerbalKonstructs.UI
 {
@@ -47,11 +43,11 @@ namespace KerbalKonstructs.UI
                 foreach (var LaunchSite in LaunchSiteManager.allLaunchSites)
                 {
                     list.Add(new DialogGUIHorizontalLayout(
-                        
+
                         new DialogGUIButton(LaunchSite.LaunchSiteName, delegate { SetVariant(LaunchSite.LaunchSiteName); }, 140.0f, 30.0f, true))
-                        
-                        
-                        ) ;
+
+
+                        );
                 }
                 list.Add(new DialogGUIFlexibleSpace());
                 list.Add(new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true));

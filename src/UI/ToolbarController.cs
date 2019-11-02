@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using UnityEngine.UI;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Utilities;
 using KSP.UI.Screens;
 
 namespace KerbalKonstructs.UI
@@ -29,19 +23,19 @@ namespace KerbalKonstructs.UI
 
         internal static void ToggleButtonOn()
         {
-            
-            if  (HighLogic.LoadedScene == GameScenes.EDITOR)
+
+            if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 LaunchSiteSelectorGUI.instance.Open();
                 return;
             }
-            if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
+            if ((HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled))
             {
                 BaseBossFlight.instance.Open();
                 return;
             }
 
-            if ( (HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
+            if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled))
             {
                 Modules.MapIconManager.instance.Open();
                 return;
@@ -65,13 +59,13 @@ namespace KerbalKonstructs.UI
                 BaseManager.instance.Close();
                 return;
             }
-            if ( (HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled) )
+            if ((HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled))
             {
                 BaseBossFlight.instance.Close();
                 return;
             }
 
-            if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled) )
+            if ((HighLogic.LoadedScene == GameScenes.TRACKSTATION) || (MapView.MapIsEnabled))
             {
                 Modules.MapIconManager.instance.Close();
                 return;

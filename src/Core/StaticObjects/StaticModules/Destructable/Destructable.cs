@@ -1,9 +1,7 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
@@ -58,8 +56,7 @@ namespace KerbalKonstructs
             List<DestructibleBuilding.CollapsibleObject> allCollapsibles = new List<DestructibleBuilding.CollapsibleObject>();
             instance.destructible.enabled = false;
 
-            CreateCollapsables(instance,instance.mesh.transform,allCollapsibles, "KSC_LaunchPad_level_2_wreck_1");
-
+            CreateCollapsables(instance, instance.mesh.transform, allCollapsibles, "KSC_LaunchPad_level_2_wreck_1");
 
             instance.destructible.CollapsibleObjects = allCollapsibles.ToArray();
             instance.destructible.CollapseReputationHit = 0;
@@ -97,17 +94,17 @@ namespace KerbalKonstructs
             float max = Math.Max(staticBounds.size.x, staticBounds.size.z);
 
             float scale = min / wrecksize;
-            float times = max / min; 
+            float times = max / min;
 
             int counter = 0;
             while (times > 0.3f)
             {
                 float extrascale = Math.Min(times, 1);
                 GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName(wreckName).prefab);
-                replacementObject.name = "wreck_" + counter; 
+                replacementObject.name = "wreck_" + counter;
                 replacementObject.transform.position = target.position;
                 replacementObject.transform.rotation = target.rotation;
-                
+
                 replacementObject.transform.parent = instance.wreck.transform;
                 Vector3 localScale = replacementObject.transform.localScale;
                 replacementObject.transform.localScale = new Vector3(localScale.x * scale * extrascale, 0.75f * Math.Min(1f, scale * extrascale), localScale.z * scale * extrascale);
@@ -134,8 +131,8 @@ namespace KerbalKonstructs
                 collapsible.replaceDelay = 0.8f;
                 collapsible.replacementObject = replacementObject;
 
-                collapsible.collapseTiltMax = new Vector3(5,0,5);
-                collapsible.collapseOffset = new Vector3(0,-staticBounds.size.y/4,0);
+                collapsible.collapseTiltMax = new Vector3(5, 0, 5);
+                collapsible.collapseOffset = new Vector3(0, -staticBounds.size.y / 4, 0);
 
                 collapsible.SecondaryFXPrefab = secondaryPrefab;
                 collapsible.Init();

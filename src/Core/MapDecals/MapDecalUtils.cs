@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 namespace KerbalKonstructs.Core
 {
     class MapDecalUtils
     {
-        internal static void GetSquadMaps ()
+        internal static void GetSquadMaps()
         {
             MapDecalsMap noHeighmap = ScriptableObject.CreateInstance<MapDecalsMap>();
             noHeighmap.map = null;
@@ -25,12 +21,12 @@ namespace KerbalKonstructs.Core
             DecalsDatabase.RegisterMap(noColormap);
 
 
-            PQSMod_MapDecal[] allMapDecals =  Resources.FindObjectsOfTypeAll<PQSMod_MapDecal>();
+            PQSMod_MapDecal[] allMapDecals = Resources.FindObjectsOfTypeAll<PQSMod_MapDecal>();
 
-            foreach (var mapDecal in allMapDecals) 
+            foreach (var mapDecal in allMapDecals)
             {
                 //Log.Normal("");
-            //    Log.Normal("Stats for: " + mapDecal.name);
+                //    Log.Normal("Stats for: " + mapDecal.name);
                 if (mapDecal.heightMap != null)
                 {
                     MapDecalsMap heightMap = ScriptableObject.CreateInstance<MapDecalsMap>();
@@ -39,7 +35,7 @@ namespace KerbalKonstructs.Core
                     heightMap.Name = "height_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(heightMap);
 
-                   // Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
+                    // Log.Normal("MapDecal: heightmap: " + mapDecal.heightMap.name);
 
                 }
 
@@ -50,10 +46,10 @@ namespace KerbalKonstructs.Core
                     colorMap.map = mapDecal.colorMap;
                     colorMap.Name = "color_" + mapDecal.name;
                     DecalsDatabase.RegisterMap(colorMap);
-              //      Log.Normal("MapDecal: colormap: " + mapDecal.colorMap.name);
+                    //      Log.Normal("MapDecal: colormap: " + mapDecal.colorMap.name);
                 }
 
-                
+
                 //Log.Normal("MapDecal: Radius: " + mapDecal.radius.ToString());
                 //Log.Normal("MapDecal: Vector: " + mapDecal.position.ToString());
                 //Log.Normal("MapDecal: Offset: " + mapDecal.absoluteOffset);
@@ -121,7 +117,7 @@ namespace KerbalKonstructs.Core
 
             }
 
-            Log.Normal("Imported " + (DecalsDatabase.allHeightMaps.Count + DecalsDatabase.allColorMaps.Count) + " Maps from around the universe" );
+            Log.Normal("Imported " + (DecalsDatabase.allHeightMaps.Count + DecalsDatabase.allColorMaps.Count) + " Maps from around the universe");
             //foreach (var map in DecalsDatabase.allDecalMaps)
             //{
             //    Log.Normal("DecalMap: " + map.name);

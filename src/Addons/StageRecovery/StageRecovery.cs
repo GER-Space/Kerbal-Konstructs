@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.Addons

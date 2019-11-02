@@ -1,13 +1,9 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
-    internal class StoredResource 
+    internal class StoredResource
     {
         internal PartResourceDefinition resource;
         internal float amount = 0f;
@@ -58,7 +54,9 @@ namespace KerbalKonstructs.Modules
                 if (foundResource == null)
                 {
                     Log.UserWarning("Resource not found: " + resourceName);
-                } else {
+                }
+                else
+                {
                     tradedResource = new StoredResource()
                     {
                         resource = foundResource,
@@ -78,7 +76,7 @@ namespace KerbalKonstructs.Modules
             foreach (StoredResource resource in storedResources)
             {
                 resourceNode = new ConfigNode("StoredResource");
-                resourceNode.SetValue("ResourceName", resource.resource.name,true);
+                resourceNode.SetValue("ResourceName", resource.resource.name, true);
                 resourceNode.SetValue("Amount", resource.amount, true);
                 cfgNode.AddNode(resourceNode);
             }

@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using UnityEngine;
-using KSP.UI.Screens;
-using System.Reflection;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Modules;
-using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
@@ -77,10 +69,11 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// constructor
         /// </summary>
-        internal MapDecalInstance (){
+        internal MapDecalInstance()
+        {
             gameObject = new GameObject();
             mapDecal = gameObject.AddComponent<PQSMod_MapDecal>();
-            Name =  "KK_MapDecal_" + DecalsDatabase.allMapDecalInstances.Length.ToString();
+            Name = "KK_MapDecal_" + DecalsDatabase.allMapDecalInstances.Length.ToString();
 
             mapDecal.radius = 0;
 
@@ -95,7 +88,7 @@ namespace KerbalKonstructs.Core
         /// Updates the static instance with new settings
         /// </summary>
 		public void Update(bool doUpdate = true)
-		{
+        {
 
             mapDecal.heightMap = DecalsDatabase.GetHeightMapByName(HeightMapName).map;
             mapDecal.colorMap = DecalsDatabase.GetColorMapByName(ColorMapName).map;
@@ -146,5 +139,5 @@ namespace KerbalKonstructs.Core
         }
 
 
-	}
+    }
 }

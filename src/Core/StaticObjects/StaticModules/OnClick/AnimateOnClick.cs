@@ -1,8 +1,7 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {

@@ -234,6 +234,8 @@ namespace KerbalKonstructs
             //KKGraphics.LoadShaders();
             //KKGraphics.GetBuiltinTexture("", 0);
 
+            //SDTest.InstallDetour();
+
         }
 
         public void Start()
@@ -269,7 +271,7 @@ namespace KerbalKonstructs
                 if ((lastSite.sitecategory == LaunchSiteCategory.Waterlaunch && !lastSite.ToggleLaunchPositioning) || (lastSite.sitecategory != LaunchSiteCategory.Waterlaunch && lastSite.ToggleLaunchPositioning))
                 {
                     Log.Normal("Trying to bring the vessel back to the spawn point.");
-                    vessel.SetPosition(lastSite.lsGameObject.transform.Find(lastSite.LaunchPadTransform).position);
+                    vessel.SetPosition(lastSite.staticInstance.mesh.transform.Find(lastSite.LaunchPadTransform).position);
                 }
             }
         }
@@ -312,7 +314,7 @@ namespace KerbalKonstructs
 
                 PSystemSetup.Instance.GetType().GetField("pqs", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, currentBody.pqsController);
                 PSystemSetup.Instance.GetType().GetField("cb", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, bodyPQS);
-                PSystemSetup.Instance.GetType().GetField("scTransform", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, currentSite.lsGameObject.transform);
+                PSystemSetup.Instance.GetType().GetField("scTransform", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(PSystemSetup.Instance, currentSite.staticInstance.transform);
                 //    currentBody.pqsController.target = currentSite.lsGameObject.transform;
                 //    currentBody.pqsController.StartUpSphere();
                 //currentBody.pqsController.ForceStart();
@@ -836,7 +838,7 @@ namespace KerbalKonstructs
                     {
                         Log.Normal("No SpaceCenterCam Found in SpaceCenter Scene");
                         // we can try the current LaunchSite as fallback
-                        playerPos = LaunchSiteManager.GetCurrentLaunchSite().lsGameObject.transform.position;
+                        playerPos = LaunchSiteManager.GetCurrentLaunchSite().staticInstance.transform.position;
                         //playerPos = SpaceCenter.Instance.transform.position;
                     }
                     //StaticDatabase.activeBodyName = SpaceCenter.Instance.cb.name;
@@ -929,11 +931,12 @@ namespace KerbalKonstructs
                     continue;
                 }
 
-               //instance.TrySpawn();
-
-                AttachFacilities(instance, instanceCfgNode);
+                //instance.TrySpawn();
 
                 LaunchSiteManager.AttachLaunchSite(instance, instanceCfgNode);
+                AttachFacilities(instance, instanceCfgNode);
+
+
 
                 instance.cfgNode = instanceCfgNode;
 
@@ -990,7 +993,7 @@ namespace KerbalKonstructs
 
                 StaticModel model = new StaticModel
                 {
-                    path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace("\\","/"),
+                    path = Path.GetDirectoryName(Path.GetDirectoryName(conf.url)).Replace("\\", "/"),
                     name = modelName,
                     config = conf.url,
                     configPath = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg"

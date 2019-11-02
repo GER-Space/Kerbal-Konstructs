@@ -1,8 +1,7 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -19,7 +18,7 @@ namespace KerbalKonstructs.Core
 
         internal GameObject prefab;
 
-       // private List<string> transforms2Activate = new List<string>();
+        // private List<string> transforms2Activate = new List<string>();
         private List<string> transforms2Deactivate = new List<string>();
 
         internal List<TextureSet> textureSets = new List<TextureSet>();
@@ -38,9 +37,9 @@ namespace KerbalKonstructs.Core
 
             variantNode.TryGetValue("newMeshName", ref newMeshName);
             variantNode.TryGetValue("deactivateTransforms", ref deactivateTransforms);
-//            variantNode.TryGetValue("activateTransforms", ref activateTransforms);
+            //            variantNode.TryGetValue("activateTransforms", ref activateTransforms);
 
-//            transforms2Activate = actiateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+            //            transforms2Activate = actiateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
             transforms2Deactivate = deactivateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 

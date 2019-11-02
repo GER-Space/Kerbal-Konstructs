@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {

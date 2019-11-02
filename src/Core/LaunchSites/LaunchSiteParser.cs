@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace KerbalKonstructs.Core
@@ -134,22 +132,22 @@ namespace KerbalKonstructs.Core
 
         private static void InitTypes()
         {
-                launchSiteFields = new Dictionary<string, FieldInfo>();
-                launchSiteProperties = new Dictionary<string, PropertyInfo>();
+            launchSiteFields = new Dictionary<string, FieldInfo>();
+            launchSiteProperties = new Dictionary<string, PropertyInfo>();
 
-                foreach (FieldInfo field in typeof(KKLaunchSite).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                {
-                    launchSiteFields.Add(field.Name, field);
-                    //    Log.Normal("Parser Facility (" + site.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
-                }
+            foreach (FieldInfo field in typeof(KKLaunchSite).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            {
+                launchSiteFields.Add(field.Name, field);
+                //    Log.Normal("Parser Facility (" + site.GetType().Name + ") " + field.Name + ": " + field.FieldType.ToString());
+            }
 
-                foreach (PropertyInfo property in typeof(KKLaunchSite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                {
-                    launchSiteProperties.Add(property.Name, property);
-                    //   Log.Normal("Parser Facility (" + site.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
-                }
+            foreach (PropertyInfo property in typeof(KKLaunchSite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                launchSiteProperties.Add(property.Name, property);
+                //   Log.Normal("Parser Facility (" + site.GetType().Name + ") " + property.Name + ": " + property.PropertyType.ToString());
+            }
 
-            
+
             initialized = true;
         }
 

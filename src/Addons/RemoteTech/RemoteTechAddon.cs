@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace KerbalKonstructs.Addons
@@ -21,13 +20,13 @@ namespace KerbalKonstructs.Addons
         /// </summary>
         internal static bool isInstalled
         {
-            get          
-                {
-                    var assembly = (from a in AssemblyLoader.loadedAssemblies
-                                         where a.name.ToLower().Equals("RemoteTech".ToLower())
-                                         select a).FirstOrDefault();
-                    return assembly != null;
-                }
+            get
+            {
+                var assembly = (from a in AssemblyLoader.loadedAssemblies
+                                where a.name.ToLower().Equals("RemoteTech".ToLower())
+                                select a).FirstOrDefault();
+                return assembly != null;
+            }
         }
 
         /// <summary>
@@ -44,8 +43,8 @@ namespace KerbalKonstructs.Addons
 
             rtType = rtAssembly.GetType("RemoteTech.API.API");
             // create lookup table for body to int
-            
-            for (int i = 0; i <FlightGlobals.Bodies.Count; i++) 
+
+            for (int i = 0; i < FlightGlobals.Bodies.Count; i++)
             {
                 bodies.Add(FlightGlobals.Bodies[i].name, i);
             }
@@ -162,8 +161,8 @@ namespace KerbalKonstructs.Addons
 
             Guid stationID = Guid.Empty;
             MethodInfo methodInfo = rtType.GetMethod("GetGroundStations");
-            IEnumerable<string> allStations = null ;
-            allStations = (IEnumerable<string>) methodInfo.Invoke(null, null);
+            IEnumerable<string> allStations = null;
+            allStations = (IEnumerable<string>)methodInfo.Invoke(null, null);
 
             foreach (string stationName in allStations)
             {

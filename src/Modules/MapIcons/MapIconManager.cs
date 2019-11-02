@@ -1,10 +1,7 @@
-﻿using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.UI;
 using KerbalKonstructs.Utilities;
 using System;
-using System.Collections.Generic;
-using KerbalKonstructs.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace KerbalKonstructs.Modules
 {
@@ -175,7 +172,7 @@ namespace KerbalKonstructs.Modules
 
                 if (KerbalKonstructs.instance.mapShowRecovery)
                 {
-                    if (GUILayout.Button(new GUIContent("$" , "Recovery Bases"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                    if (GUILayout.Button(new GUIContent("$", "Recovery Bases"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                         KerbalKonstructs.instance.mapShowRecovery = false;
                 }
                 else

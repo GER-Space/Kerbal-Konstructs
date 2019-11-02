@@ -1,10 +1,7 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
-using KerbalKonstructs.Core;
 
 
 namespace KerbalKonstructs.UI2
@@ -102,7 +99,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void PlaceToParent()
         {
-            
+
         }
 
 
@@ -117,7 +114,7 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-        
+
 
 
         internal static void Open()
@@ -155,7 +152,7 @@ namespace KerbalKonstructs.UI2
 
         internal static bool IsOpen()
         {
-                return (dialog != null);
+            return (dialog != null);
         }
 
         internal static void Toggle()

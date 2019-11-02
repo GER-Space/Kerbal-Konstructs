@@ -1,11 +1,7 @@
-﻿using System;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using System.IO;
-using KerbalKonstructs;
 
 namespace KerbalKonstructs.UI
 {
@@ -61,7 +57,8 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            callBack = delegate {
+            callBack = delegate
+            {
             };
             selectedCenter = null;
             titleText = "unset";

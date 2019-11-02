@@ -1,10 +1,9 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
@@ -65,20 +64,20 @@ namespace KerbalKonstructs
             if (animTooHigh == null)
             {
                 animTooHigh = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                                      where animationList != null
-                                      from AnimationState animationState in animationList
-                                      where animationState.name == AnimNameTooHigh
+                               where animationList != null
+                               from AnimationState animationState in animationList
+                               where animationState.name == AnimNameTooHigh
                                select animationList).FirstOrDefault();
                 //    animTooHigh.wrapMode = WrapMode.Loop;
                 isWhite.Add(AnimNameTooHigh, false);
             }
-            
+
             if (animHigh == null)
             {
                 animHigh = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                               where animationList != null
-                               from AnimationState animationState in animationList
-                               where animationState.name == AnimNameHigh
+                            where animationList != null
+                            from AnimationState animationState in animationList
+                            where animationState.name == AnimNameHigh
                             select animationList).FirstOrDefault();
                 //    animHigh.wrapMode = WrapMode.Loop;
                 isWhite.Add(AnimNameHigh, false);
@@ -86,9 +85,9 @@ namespace KerbalKonstructs
             if (animRight == null)
             {
                 animRight = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                               where animationList != null
-                               from AnimationState animationState in animationList
-                               where animationState.name == AnimNameRight
+                             where animationList != null
+                             from AnimationState animationState in animationList
+                             where animationState.name == AnimNameRight
                              select animationList).FirstOrDefault();
                 //    animRight.wrapMode = WrapMode.Loop;
                 isWhite.Add(AnimNameRight, false);
@@ -96,10 +95,10 @@ namespace KerbalKonstructs
             if (animLow == null)
             {
                 animLow = (from animationList in gameObject.GetComponentsInChildren<Animation>()
-                               where animationList != null
-                               from AnimationState animationState in animationList
-                               where animationState.name == AminNameTooLow
-                              select animationList).FirstOrDefault();
+                           where animationList != null
+                           from AnimationState animationState in animationList
+                           where animationState.name == AminNameTooLow
+                           select animationList).FirstOrDefault();
                 //    animLow.wrapMode = WrapMode.Loop;
                 isWhite.Add(AminNameTooLow, false);
             }
@@ -118,7 +117,8 @@ namespace KerbalKonstructs
             try
             {
                 touchDownOffset = float.Parse(TouchDownOffset);
-            } catch
+            }
+            catch
             {
                 touchDownOffset = 0;
                 Log.Normal("Could not Parse touchDownOffset");
@@ -154,7 +154,7 @@ namespace KerbalKonstructs
             if (FlightGlobals.ActiveVessel == null)
             {
                 SetAllOff();
-                return; 
+                return;
             }
 
             // the vessel is not active?!? we don't deal with such alien spacecraft. 
@@ -280,7 +280,7 @@ namespace KerbalKonstructs
         internal void SetRed(Animation anim, string animationName)
         {
             if (isWhite[animationName])
-            {                
+            {
                 anim[animationName].speed = -1f;
                 anim[animationName].normalizedTime = 1f;
                 isWhite[animationName] = false;
@@ -303,7 +303,7 @@ namespace KerbalKonstructs
 
         internal GlideState GetCurrentGlideState()
         {
-            glideAngle =  Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude/fromVesseltoPoint.magnitude);
+            glideAngle = Mathf.Rad2Deg * Math.Acos(horizontalVector.magnitude / fromVesseltoPoint.magnitude);
 
             //Log.NoSpam("PAPI: Glide Angle: " + Math.Round(glideAngle,1));
 

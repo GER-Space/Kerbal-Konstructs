@@ -1,10 +1,7 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
 using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
@@ -17,7 +14,7 @@ namespace KerbalKonstructs
         private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
-        private static List<string> imageExtentions = new List<string> { ".png", ".tga" , ".jpg"};
+        private static List<string> imageExtentions = new List<string> { ".png", ".tga", ".jpg" };
 
         private static Dictionary<string, Texture> builtinTextures = new Dictionary<string, Texture>();
         private static bool texturesAreCached = false;
@@ -48,7 +45,7 @@ namespace KerbalKonstructs
             loadedShaders = true;
         }
 
-        internal static bool HasShader (string name)
+        internal static bool HasShader(string name)
         {
             if (!loadedShaders)
             {
@@ -119,7 +116,7 @@ namespace KerbalKonstructs
             if (string.IsNullOrEmpty(textureName))
             {
                 Log.UserWarning("Empty texture Name");
-                return null; 
+                return null;
             }
             string textureKey;
             textureName.Replace("\\", "/");
@@ -187,7 +184,7 @@ namespace KerbalKonstructs
 
             if (!texturesAreCached)
             {
-                Texture [] foundTextures = Resources.FindObjectsOfTypeAll<Texture>();
+                Texture[] foundTextures = Resources.FindObjectsOfTypeAll<Texture>();
                 int counter = 0;
                 foreach (Texture texture in foundTextures)
                 {
@@ -251,7 +248,7 @@ namespace KerbalKonstructs
         private static string GetImageExtention(string imageName)
         {
             int pathIndex = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).LastIndexOf('/');
-            string path = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(0, pathIndex +1);
+            string path = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(0, pathIndex + 1);
             string imageShortName = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(pathIndex + 1);
 
             //Log.Normal("path: " + path);

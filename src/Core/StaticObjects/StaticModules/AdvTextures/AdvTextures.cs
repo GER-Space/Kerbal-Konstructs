@@ -1,8 +1,7 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
 using UnityEngine;
 
 
@@ -63,7 +62,7 @@ namespace KerbalKonstructs
                 Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
             }
 
-//                Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
+            //                Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
 
             if (doTileing)
             {
@@ -77,7 +76,7 @@ namespace KerbalKonstructs
                     Log.UserError("Cannot parse: \"forceTiling\" : " + forceTiling);
                     iTileing = Vector2.zero;
                 }
-                
+
 
                 tileing = staticInstance.mesh.AddComponent<TileTextures>();
                 tileing.initialTileing = iTileing;
@@ -150,22 +149,22 @@ namespace KerbalKonstructs
                 //Log.Normal("ColorValue: " + renderer.material.color.ToString());
             }
 
-            string key = (shader + "_"+ textureName + "_" + tiling + "_" + ColorValue);
+            string key = (shader + "_" + textureName + "_" + tiling + "_" + ColorValue);
 
             if (!cachedMaterials.ContainsKey(key))
             {
-           //     Log.Normal("creating new: " + key);
+                //     Log.Normal("creating new: " + key);
                 cachedMaterials.Add(key, renderer.material);
             }
             else
             {
-           //     Log.Normal("setting to: " + key);
+                //     Log.Normal("setting to: " + key);
                 renderer.sharedMaterial = cachedMaterials[key];
-            } 
+            }
         }
 
 
-        private void SetTexture(MeshRenderer renderer , string texturename, string targetname, bool isNormal = false)
+        private void SetTexture(MeshRenderer renderer, string texturename, string targetname, bool isNormal = false)
         {
             if (!String.IsNullOrEmpty(texturename))
             {
@@ -193,7 +192,7 @@ namespace KerbalKonstructs
             Material foundMaterial = KKGraphics.GetMaterial(materialName);
             if (foundMaterial != null)
             {
-               // Log.Normal("Material replaced: " + foundMaterial.name);
+                // Log.Normal("Material replaced: " + foundMaterial.name);
                 renderer.material = Instantiate(foundMaterial);
                 if (doTileing)
                 {

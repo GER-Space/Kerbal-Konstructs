@@ -1,12 +1,10 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Modules;
+using KerbalKonstructs.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
 using UnityEngine;
-using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {
@@ -84,7 +82,7 @@ namespace KerbalKonstructs.UI
                 selectedObject = KerbalKonstructs.selectedInstance;
                 updateSelection();
             }
-            
+
             facilityEditorRect = GUI.Window(0xD12B1F7, facilityEditorRect, drawFacilityEditorWindow, "", KKWindows);
 
         }
@@ -178,7 +176,8 @@ namespace KerbalKonstructs.UI
                 ChangeFacility();
                 updateSelection();
             }
-            if (facType != "None") {
+            if (facType != "None")
+            {
                 OpenCloseFields();
             }
 
@@ -227,7 +226,7 @@ namespace KerbalKonstructs.UI
                 default:
                     break;
 
-            }        
+            }
 
             GUILayout.FlexibleSpace();
             GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
@@ -286,9 +285,9 @@ namespace KerbalKonstructs.UI
                     }
 
 
-                    foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions )
+                    foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions)
                     {
-                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null )
+                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null)
                         {
                             continue;
                         }
@@ -301,7 +300,9 @@ namespace KerbalKonstructs.UI
                     }
                 }
                 GUILayout.EndScrollView();
-            } else {
+            }
+            else
+            {
                 if (facMerchant.tradedResources.Count > 0)
                 {
                     merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
@@ -360,15 +361,15 @@ namespace KerbalKonstructs.UI
             Storage facStorage = selectedObject.myFacilities[0] as Storage;
             if (facStorage.maxVolume == 0f)
             {
-                    Vector3 size = selectedObject.mesh.GetRendererBounds().extents;
-                    facStorage.maxVolume += (size.x * size.y * size.z);
+                Vector3 size = selectedObject.mesh.GetRendererBounds().extents;
+                facStorage.maxVolume += (size.x * size.y * size.z);
             }
             // round this to some straight numbers
             facStorage.maxVolume = (float)Math.Round(facStorage.maxVolume / 100, 0) * 100;
             GUILayout.BeginHorizontal();
             GUILayout.Label("MaxVolume: ", LabelGreen);
             GUILayout.FlexibleSpace();
-            facStorage.maxVolume = Math.Max(0,float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
+            facStorage.maxVolume = Math.Max(0, float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
             GUILayout.Label(" m^3", LabelWhite);
             GUILayout.EndHorizontal();
         }
@@ -468,7 +469,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Default State: ");
-                GUILayout.Label(selectedObject.myFacilities.First().defaultState, LabelWhite , GUILayout.Height(23), GUILayout.Width(50));
+                GUILayout.Label(selectedObject.myFacilities.First().defaultState, LabelWhite, GUILayout.Height(23), GUILayout.Width(50));
 
                 isDefaultOpen = GUILayout.Toggle(isDefaultOpen, "", GUILayout.Height(18));
                 if (isDefaultOpen)
@@ -501,7 +502,7 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void BusinessFields()
         {
-        
+
             MaxStaffFields();
             ProductionRateFields();
 
@@ -621,7 +622,7 @@ namespace KerbalKonstructs.UI
             LabelWhite.padding.top = 1;
         }
 
-    
+
         /// <summary>
         /// Removes add previous facility settings from Static Object
         /// </summary>
@@ -727,18 +728,18 @@ namespace KerbalKonstructs.UI
             }
 
             if (facType != "")
-                selectedObject.FacilityType =  facType;
+                selectedObject.FacilityType = facType;
 
             switch (facType)
             {
                 case "None":
                     break;
-                case "GroundStation":                   
+                case "GroundStation":
                     ((GroundStation)selectedObject.myFacilities[0]).TrackingShort = float.Parse(infTrackingShort);
                     break;
                 case "Hangar":
-                    if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity =  float.Parse(infFacMassCap);
-                    if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity =  int.Parse(infFacCraftCap);
+                    if (infFacMassCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityMassCapacity = float.Parse(infFacMassCap);
+                    if (infFacCraftCap != "") ((Hangar)selectedObject.myFacilities[0]).FacilityCraftCapacity = int.Parse(infFacCraftCap);
                     break;
                 case "Barracks":
                     if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
@@ -758,7 +759,7 @@ namespace KerbalKonstructs.UI
                     break;
             }
 
-            if (facType != "None" )
+            if (facType != "None")
             {
                 selectedObject.myFacilities[0].OpenCost = float.Parse(infOpenCost);
                 selectedObject.myFacilities[0].CloseValue = (float)Math.Round((selectedObject.myFacilities[0].OpenCost / 4), 0);
@@ -776,10 +777,11 @@ namespace KerbalKonstructs.UI
         /// </summary>
         private void updateSelection()
         {
-            if (selectedObject.hasFacilities )
+            if (selectedObject.hasFacilities)
             {
                 facType = selectedObject.myFacilities[0].FacilityType;
-            } else
+            }
+            else
             {
                 facType = "None";
             }
@@ -797,7 +799,8 @@ namespace KerbalKonstructs.UI
             if (facType != "None" && selectedObject.myFacilities[0].defaultState == "Open")
             {
                 isDefaultOpen = true;
-            } else
+            }
+            else
             {
                 isDefaultOpen = false;
             }
@@ -859,11 +862,12 @@ namespace KerbalKonstructs.UI
                 {
                     infOpenCost = selectedObject.model.cost.ToString();
                 }
-            } else
+            }
+            else
             {
                 infOpenCost = "0";
             }
-            
+
             //selectedObject.update();
             facType = selectedObject.FacilityType;
         }

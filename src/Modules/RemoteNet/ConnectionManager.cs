@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs;
 using KerbalKonstructs.Core;
 using UnityEngine;
 using CommNet;
 using KerbalKonstructs.Addons;
-using KerbalKonstructs.Utilities;
 #if!KSP12
 using KSP.Localization;
 #endif
@@ -24,13 +21,13 @@ namespace KerbalKonstructs.Modules
         static internal Dictionary<StaticInstance, Guid> openRTStations = new Dictionary<StaticInstance, Guid>();
 
 
-        internal  struct StockStation
+        internal struct StockStation
         {
             internal GameObject gameObject;
             internal string nodeName;
             internal string displaynodeName;
             internal Transform nodeTransform;
-            internal bool isKSC ;
+            internal bool isKSC;
         }
 
 
@@ -39,13 +36,13 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         internal static void ScanForStockCommNet()
         {
-                foreach (var home in UnityEngine.Object.FindObjectsOfType<CommNetHome>())
+            foreach (var home in UnityEngine.Object.FindObjectsOfType<CommNetHome>())
+            {
+                // we never touch the KSC
+                if (home.isKSC == true)
                 {
-                    // we never touch the KSC
-                    if (home.isKSC == true)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
                 StockStation stockStation = new StockStation();
                 stockStation.gameObject = home.gameObject;
                 stockStation.nodeName = home.nodeName;
@@ -58,7 +55,7 @@ namespace KerbalKonstructs.Modules
                 Log.Normal("Added stock CommNet to list: " + home.nodeName);
 
                 stockGroundStations.Add(stockStation);
-                }
+            }
         }
 
 
@@ -151,10 +148,10 @@ namespace KerbalKonstructs.Modules
             {
                 KerbalKonstructs.instance.enableCommNet = false;
                 return;
-                
+
             }
-            
-            if (!stockWasRemoved &&  HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().enableGroundStations)
+
+            if (!stockWasRemoved && HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().enableGroundStations)
             {
                 foreach (StockStation station in stockGroundStations)
                 {
@@ -310,5 +307,5 @@ namespace KerbalKonstructs.Modules
                 openCNStations.Remove(instance);
             }
         }
-    }  
+    }
 }

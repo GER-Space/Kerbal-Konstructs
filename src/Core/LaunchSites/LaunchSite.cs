@@ -1,11 +1,7 @@
 ﻿using System;
-using UnityEngine;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Modules;
-using System.Reflection;
-using System.Linq;
 using System.Collections.Generic;
-using KerbalKonstructs.UI;
+using System.Linq;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -77,7 +73,21 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float InitialCameraRotation = 90f;
         [CFGSetting]
-        public bool LaunchSiteIsHidden = false;
+        public bool LaunchSiteIsHidden
+        {
+            get
+            {
+                return (_isHidden && !_wasSeen);
+            }
+            set 
+            {
+                _isHidden = value;
+            }
+        }
+
+        private bool _isHidden = false;
+        private bool _wasSeen = false;
+
         [CFGSetting]
         public bool ILSIsActive = false;
         [CFGSetting]
@@ -113,7 +123,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                if ((staticInstance.destructible != null && staticInstance.destructible.IsDestroyed )|| staticInstance.isDestroyed)
+                if ((staticInstance.destructible != null && staticInstance.destructible.IsDestroyed) || staticInstance.isDestroyed)
                 {
                     return false;
                 }
@@ -132,6 +142,7 @@ namespace KerbalKonstructs.Core
                 openState = value;
                 if (openState == true)
                 {
+                    _wasSeen = true;
                     //LaunchSiteManager.OpenLaunchSite(this);
                     OpenCloseState = "Open";
                 }
@@ -167,8 +178,6 @@ namespace KerbalKonstructs.Core
         internal float refAlt;
         internal CelestialBody body;
 
-        internal GameObject lsGameObject => staticInstance.mesh;
-
         internal PSystemSetup.SpaceCenterFacility spaceCenterFacility = null;
 
         private List<KKLaunchSiteSelector> facSelector = new List<KKLaunchSiteSelector>();
@@ -184,10 +193,10 @@ namespace KerbalKonstructs.Core
 
             if (cfgNode != null)
             {
-               LaunchSiteParser.ParseConfig(this,cfgNode);
+                LaunchSiteParser.ParseConfig(this, cfgNode);
             }
 
-     
+
 
 
             if (!string.IsNullOrEmpty(LaunchSiteLogo))
@@ -242,8 +251,9 @@ namespace KerbalKonstructs.Core
         }
 
         // Resets the facility/LaunchSite to its default state
-        internal  void ResetToDefaultState()
+        internal void ResetToDefaultState()
         {
+            _wasSeen = false;
             if (OpenCloseState != defaultState)
             {
                 if (isOpen)
@@ -263,7 +273,7 @@ namespace KerbalKonstructs.Core
         internal void AttachSelector()
         {
             facSelector.Clear();
-            foreach (Collider colloder in lsGameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
+            foreach (Collider colloder in staticInstance.mesh.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
             {
                 KKLaunchSiteSelector selector = colloder.gameObject.AddComponent<KKLaunchSiteSelector>();
                 selector.staticInstance = staticInstance;
@@ -283,7 +293,7 @@ namespace KerbalKonstructs.Core
 
         void OnMouseDown()
         {
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && ! InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES))
+            if (HighLogic.LoadedScene == GameScenes.SPACECENTER && !InputLockManager.IsLocked(ControlTypes.KSC_FACILITIES))
             {
                 EditorFacility facility;
                 staticInstance.HighlightObject(Color.clear);
@@ -296,7 +306,7 @@ namespace KerbalKonstructs.Core
                 {
                     facility = EditorFacility.SPH;
                 }
-                
+
 
                 EditorDriver.StartupBehaviour = EditorDriver.StartupBehaviours.START_CLEAN;
                 EditorDriver.StartEditor(facility);
@@ -345,7 +355,7 @@ namespace KerbalKonstructs.Core
         {
             //if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             //{
-                staticInstance.HighlightObject(Color.clear);
+            staticInstance.HighlightObject(Color.clear);
             //}
         }
         #endregion

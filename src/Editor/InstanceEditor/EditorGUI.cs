@@ -1,10 +1,9 @@
-﻿using System;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 using System.IO;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -18,8 +17,8 @@ namespace KerbalKonstructs.UI
         }
 
 
-        internal static float windowWidth  = 330;
-        internal static float windowHeight  = 750;
+        internal static float windowWidth = 330;
+        internal static float windowHeight = 750;
 
         private static EditorGUI _instance = null;
         public static EditorGUI instance
@@ -176,7 +175,7 @@ namespace KerbalKonstructs.UI
                 grasColorModeIsAuto = false;
 
                 grassMod = selectedInstance.mesh.GetComponent<GrassColor2>();
-                grasColorEnabled = ( grassMod != null );
+                grasColorEnabled = (grassMod != null);
 
                 origCenter = selectedInstance.groupCenter;
                 origPosition = selectedInstance.transform.localPosition;
@@ -1111,11 +1110,11 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-               
+
                 if (direction.x != 0)
                 {
                     movement = selectedInstance.transform.right * direction.x;
-                    localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);                   
+                    localMovement = selectedInstance.groupCenter.gameObject.transform.InverseTransformDirection(movement);
                     selectedInstance.transform.localPosition += localMovement;
                 }
                 if (direction.y != 0)
@@ -1160,7 +1159,7 @@ namespace KerbalKonstructs.UI
             get
             {
                 body = selectedInstance.CelestialBody;
-                
+
                 northVector = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
                 eastVector = Vector3.Cross(upVector, northVector).normalized;
                 forwardVector = Vector3.ProjectOnPlane(selectedInstance.transform.forward, upVector);
@@ -1175,7 +1174,7 @@ namespace KerbalKonstructs.UI
                 return Math.Round(heading, 2);
             }
         }
-            internal void CheckEditorKeys()
+        internal void CheckEditorKeys()
         {
             if (selectedInstance != null)
             {

@@ -1,10 +1,8 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.UI2
 {
@@ -51,12 +49,12 @@ namespace KerbalKonstructs.UI2
                 {
                     list.Add(new DialogGUIHorizontalLayout(
 
-                        new DialogGUIButton(mode.ToString(), delegate { KKEditorLogic.SetMainMode(mode); }, () => CheckMode(mode) , windowWidth-20, 25.0f, false)
+                        new DialogGUIButton(mode.ToString(), delegate { KKEditorLogic.SetMainMode(mode); }, () => CheckMode(mode), windowWidth - 20, 25.0f, false)
 
                         ));
                 }
 
-                var layout = new DialogGUIVerticalLayout(windowWidth-12, 10, 4, new RectOffset(6, 6, 6, 6), TextAnchor.MiddleCenter, list.ToArray());
+                var layout = new DialogGUIVerticalLayout(windowWidth - 12, 10, 4, new RectOffset(6, 6, 6, 6), TextAnchor.MiddleCenter, list.ToArray());
                 var scroll = new DialogGUIScrollList(new Vector2(windowWidth, 23f * list.Count), new Vector2(windowWidth, 23f * list.Count), false, false, layout);
                 return scroll;
 
@@ -70,7 +68,7 @@ namespace KerbalKonstructs.UI2
         }
 
 
-    internal static void KKTitle()
+        internal static void KKTitle()
         {
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("-KK-", KKStyle.windowTitle),
@@ -147,7 +145,7 @@ namespace KerbalKonstructs.UI2
 
         internal static bool IsOpen()
         {
-                return (dialog != null);
+            return (dialog != null);
         }
 
         internal static void Toggle()

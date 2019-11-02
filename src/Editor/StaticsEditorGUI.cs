@@ -2,11 +2,8 @@
 using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using System.IO;
-using Upgradeables;
-using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -562,7 +559,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Default Grass Preset: " + defaultGrassPreset.name, GUILayout.Height(18));
-                
+
 
                 if (GUILayout.Button("Load Preset", GUILayout.Width(90), GUILayout.Height(18)))
                 {

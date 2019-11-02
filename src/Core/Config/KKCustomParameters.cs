@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using KerbalKonstructs;
-using System.Collections;
+﻿using KerbalKonstructs.Addons;
 using System.Reflection;
-using KerbalKonstructs.Addons;
 
 namespace KerbalKonstructs.Core
 {
@@ -33,9 +26,9 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Gameplay Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-	#if !KSP12
-	    public override string DisplaySection { get { return "Kerbal Konstructs"; } }
-	#endif
+#if !KSP12
+        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+#endif
         public override int SectionOrder { get { return 0; } }
         public override bool HasPresets { get { return false; } }
 
@@ -57,7 +50,7 @@ namespace KerbalKonstructs.Core
                                             "With this enabled you need to land at a base to open it", autoPersistance = true)]
         public bool disableRemoteBaseOpening = false;
 
-        [GameParameters.CustomFloatParameterUI("max facility range", toolTip = "Until which distance should a facility be usable", minValue = 50, maxValue = 8000 , stepCount = 50,  autoPersistance = true)]
+        [GameParameters.CustomFloatParameterUI("max facility range", toolTip = "Until which distance should a facility be usable", minValue = 50, maxValue = 8000, stepCount = 50, autoPersistance = true)]
         public float facilityUseRange = 300;
 
         [GameParameters.CustomParameterUI("Disable Remote Recoovery", toolTip = "Disable the usage of open bases for the calculation of the recovery value", autoPersistance = true)]
@@ -76,7 +69,7 @@ namespace KerbalKonstructs.Core
         public string blank04 = "";
         [GameParameters.CustomParameterUI("Show Icons only with LS selector", toolTip = "Show only the icons on the map, when the KK selector is opened", autoPersistance = true)]
         public bool toggleIconsWithBB = false;
-        [GameParameters.CustomFloatParameterUI("The master volume for KK sound objects", toolTip = "Set here to adjust the loudness of the AudioPlayer objects.", minValue = 0 , maxValue = 1 , asPercentage = true , stepCount = 100, autoPersistance = true)]
+        [GameParameters.CustomFloatParameterUI("The master volume for KK sound objects", toolTip = "Set here to adjust the loudness of the AudioPlayer objects.", minValue = 0, maxValue = 1, asPercentage = true, stepCount = 100, autoPersistance = true)]
         public float soundMasterVolume = 1f;
         [GameParameters.CustomParameterUI("Focus last LaunchSite", toolTip = "Switch the SpaceCenter view to the Last LaunchSite used", autoPersistance = true)]
         public bool focusLastLaunchSite = false;
@@ -88,7 +81,8 @@ namespace KerbalKonstructs.Core
                 if (RemoteTechAddon.isInstalled)
                 {
                     return true;
-                } else
+                }
+                else
                 {
                     enableRT = false;
                     return false;
@@ -128,9 +122,9 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Settings"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-	#if !KSP12
-		public override string DisplaySection { get { return "Kerbal Konstructs"; } }
-	#endif
+#if !KSP12
+        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+#endif
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return false; } }
 
@@ -146,9 +140,9 @@ namespace KerbalKonstructs.Core
         [GameParameters.CustomParameterUI("Use alterative editor camera", toolTip = "Use the legacy KK editor camera, which can go under the surface", autoPersistance = true)]
         public bool useLegacyCamera = false;
 
-        [GameParameters.CustomParameterUI("Directory for new Instances", toolTip = "Path under GameData where newly placed static configs should be saved", autoPersistance = true )]
+        [GameParameters.CustomParameterUI("Directory for new Instances", toolTip = "Path under GameData where newly placed static configs should be saved", autoPersistance = true)]
         public NewInstancePath newInstanceEnum = NewInstancePath.INTERNAL;
-        [GameParameters.CustomStringParameterUI("Directory for new Instances",lines = 2, autoPersistance = true )]
+        [GameParameters.CustomStringParameterUI("Directory for new Instances", lines = 2, autoPersistance = true)]
         public string newInstancePath = "KerbalKonstructs/NewInstances";
 
 
@@ -165,7 +159,8 @@ namespace KerbalKonstructs.Core
             if (newInstanceEnum == NewInstancePath.INTERNAL)
             {
                 newInstancePath = "KerbalKonstructs/NewInstances";
-            } else
+            }
+            else
             {
                 newInstancePath = "NewInstances";
             }
@@ -204,10 +199,10 @@ namespace KerbalKonstructs.Core
         public override string Title { get { return "Cheats"; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Kerbal Konstructs"; } }
-	#if !KSP12
-		public override string DisplaySection { get { return "Kerbal Konstructs"; } }
-    #endif
-		public override int SectionOrder { get { return 2; } }
+#if !KSP12
+        public override string DisplaySection { get { return "Kerbal Konstructs"; } }
+#endif
+        public override int SectionOrder { get { return 2; } }
         public override bool HasPresets { get { return false; } }
 
 

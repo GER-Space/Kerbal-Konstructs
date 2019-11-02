@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
     internal class FuelTanks : KKFacility
     {
 
-        private string[] resourceTypes = new string[] { "LiquidFuel", "MonoPropellant" , "Oxidizer" };
+        private string[] resourceTypes = new string[] { "LiquidFuel", "MonoPropellant", "Oxidizer" };
 
         internal override KKFacility ParseConfig(ConfigNode cfgNode)
         {
             base.ParseConfig(cfgNode);
-            Merchant fuelTankMerchant = gameObject.AddComponent<Merchant>(); 
+            Merchant fuelTankMerchant = gameObject.AddComponent<Merchant>();
             fuelTankMerchant.ParseConfig(cfgNode);
             foreach (var resourceName in resourceTypes)
             {
@@ -23,7 +19,7 @@ namespace KerbalKonstructs.Modules
                 {
                     if (partResource.name == resourceName)
                     {
-                        fuelTankMerchant.tradedResources.Add(new TradedResource { resource = partResource , multiplierSell = 1 , multiplierBuy = 1});
+                        fuelTankMerchant.tradedResources.Add(new TradedResource { resource = partResource, multiplierSell = 1, multiplierBuy = 1 });
                         break;
                     }
                 }

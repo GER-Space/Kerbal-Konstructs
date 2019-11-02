@@ -2,7 +2,6 @@
 using KerbalKonstructs.Utilities;
 using System;
 using UnityEngine;
-using UpgradeLevel = Upgradeables.UpgradeableObject.UpgradeLevel;
 
 namespace KerbalKonstructs.UI
 {

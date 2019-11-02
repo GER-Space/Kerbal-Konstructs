@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace KerbalKonstructs.Core
 {
@@ -14,10 +11,10 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         internal static bool IsInstalled(string addonName)
         {
-                var assembly = (from a in AssemblyLoader.loadedAssemblies
-                                where a.name.ToLower().Equals(addonName.ToLower())
-                                select a).FirstOrDefault();
-                return assembly != null;
+            var assembly = (from a in AssemblyLoader.loadedAssemblies
+                            where a.name.ToLower().Equals(addonName.ToLower())
+                            select a).FirstOrDefault();
+            return assembly != null;
         }
     }
 }

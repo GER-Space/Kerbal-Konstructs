@@ -238,7 +238,7 @@ namespace KerbalKonstructs.UI
                         {
                             instance.Activate();
                         }
-                        instance.isDestroyed = false;                        
+                        instance.isDestroyed = false;
                     }
                 }
             }
@@ -247,7 +247,7 @@ namespace KerbalKonstructs.UI
 
         internal static void SpawnWorker()
         {
-            ProtoCrewMember protoCrew =  HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
+            ProtoCrewMember protoCrew = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
             protoCrew.trait = "Worker";
 
 

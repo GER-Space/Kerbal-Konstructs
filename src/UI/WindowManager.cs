@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
-using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.UI
 {
@@ -47,7 +43,7 @@ namespace KerbalKonstructs.UI
         public void Start()
         {
             KKmain = KerbalKonstructs.instance;
-            
+
         }
 
         /// <summary>
@@ -112,7 +108,8 @@ namespace KerbalKonstructs.UI
             if (IsOpen(drawfunct))
             {
                 CloseWindow(drawfunct);
-            } else
+            }
+            else
             {
                 OpenWindow(drawfunct);
             }

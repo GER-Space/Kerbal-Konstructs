@@ -1,9 +1,5 @@
-﻿using System;
+﻿using System.Linq;
 using UnityEngine;
-using System.Linq;
-using KerbalKonstructs.Core;
-using KerbalKonstructs;
-using System.Reflection;
 
 
 namespace KerbalKonstructs.Core
@@ -30,7 +26,7 @@ namespace KerbalKonstructs.Core
                 active = true;
                 if (KerbalKonstructs.useLegacyCamera)
                 {
-                    
+
                     InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "KKCamControls");
 
                     cam.DeactivateUpdate();
@@ -72,7 +68,7 @@ namespace KerbalKonstructs.Core
 
         public void updateCamera()
         {
-            bool needUpdate = false; 
+            bool needUpdate = false;
             if (Input.GetMouseButton(1))
             {
                 x += Input.GetAxis("Mouse X") * cam.orbitSensitivity * 50.0f;
@@ -124,7 +120,7 @@ namespace KerbalKonstructs.Core
             {
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {
-                   
+
                     Log.Normal("Resetting to KSC");
                     Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
                     float nomHeight = 45f - (float)ConfigUtil.GetCelestialBody("HomeWorld").GetAltitude(kscRnD.gameObject.transform.position);
@@ -180,10 +176,10 @@ namespace KerbalKonstructs.Core
 
         static void SetNextMorningPoint(KKLaunchSite launchSite)
         {
-            double timeOfDawn = (( 0.95* (0.25 - launchSite.body.initialRotation / 360) - ((launchSite.refLon) / 360) + 1) % 1);
+            double timeOfDawn = ((0.95 * (0.25 - launchSite.body.initialRotation / 360) - ((launchSite.refLon) / 360) + 1) % 1);
 
             KSP.UI.UIWarpToNextMorning.timeOfDawn = (timeOfDawn + 0.05);
-            
+
             Log.Normal("Fixed the \"warp to next morning\" button: " + KSP.UI.UIWarpToNextMorning.timeOfDawn.ToString());
         }
 

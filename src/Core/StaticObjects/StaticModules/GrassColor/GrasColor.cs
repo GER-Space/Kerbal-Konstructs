@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
-using UnityEngine;
+﻿using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs
 {
@@ -12,7 +7,7 @@ namespace KerbalKonstructs
     class GrasColor : StaticModule
     {
 
-        public string GrasMeshName;
+        public string GrasMeshName = null;
         public string GrasTextureImage = "BUILTIN:/terrain_grass00_new";
         public string UsePQSColor = "False";
 
@@ -42,13 +37,13 @@ namespace KerbalKonstructs
             // only convert the old settings when there are no new
             if (staticInstance.cfgNode != null && !staticInstance.cfgNode.HasNode("GrassColor2"))
             {
-                Log.Normal("Color String: " + staticInstance.GrasColor.ToString());
+                //Log.Normal("Color String: " + staticInstance.GrasColor.ToString());
                 switch (staticInstance.GrasColor.ToString())
                 {
                     case "RGBA(0.640, 0.728, 0.171, 0.729)":
                         grass2.grassColor = GrassColor2.defaultColor;
-                        Log.Normal("setting new Color");
-                        Log.Normal("setting new Tiling");
+                        //Log.Normal("setting new Color");
+                        //Log.Normal("setting new Tiling");
                         grass2.nearGrassTiling = 0.2f;
                         grass2.farGrassTiling = 0.01f;
                         grass2.DefaultNearGrassTiling = "0.2";

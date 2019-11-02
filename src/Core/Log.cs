@@ -18,7 +18,8 @@ namespace KerbalKonstructs.Core
         {
             if (KerbalKonstructs.instance.debugMode)
             {
-                UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+                StackFrame frame = new StackFrame(1, true);
+                UnityEngine.Debug.Log("KK: [" + frame.GetMethod().DeclaringType.Name + "] " + frame.GetMethod().Name + ": " + message);
             }
         }
 
@@ -28,6 +29,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserInfo(string message)
         {
+            StackFrame frame = new StackFrame(1, true);
             UnityEngine.Debug.Log("KK: " + message);
         }
 
@@ -37,7 +39,8 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserWarning(string message)
         {
-            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+            StackFrame frame = new StackFrame(1, true);
+            UnityEngine.Debug.LogWarning("KK: [" + frame.GetMethod().DeclaringType.Name + "] " + frame.GetMethod().Name + ": " + message);
         }
 
         /// <summary>
@@ -46,6 +49,7 @@ namespace KerbalKonstructs.Core
         /// <param name="message"></param>
         internal static void UserError(string message)
         {
+            StackFrame frame = new StackFrame(1, true);
             UnityEngine.Debug.LogError("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
         }
 
@@ -53,10 +57,11 @@ namespace KerbalKonstructs.Core
         /// Logs a unity debug message
         /// </summary>
         /// <param name="message"></param>
-        internal static void Normal(string message)
+        internal static void Normal(string message, int skip = 1)
         {
 #if DEBUG
-            UnityEngine.Debug.Log("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+            StackFrame frame = new StackFrame(skip, true);
+            UnityEngine.Debug.Log("KK: [" + frame.GetMethod().DeclaringType.Name + "] " + frame.GetMethod().Name + ": " + message);
 #endif
         }
 
@@ -67,7 +72,8 @@ namespace KerbalKonstructs.Core
         internal static void Warning(string message)
         {
 #if DEBUG
-            UnityEngine.Debug.LogWarning("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+            StackFrame frame = new StackFrame(1, true);
+            UnityEngine.Debug.LogWarning("KK: [" + frame.GetMethod().DeclaringType.Name + "] " + frame.GetMethod().Name + ": " + message);
 #endif
         }
 
@@ -78,7 +84,8 @@ namespace KerbalKonstructs.Core
         internal static void Error(string message)
         {
 #if DEBUG
-            UnityEngine.Debug.LogError("KK: " + new StackFrame(1, true).GetMethod().Name + ": " + message);
+            StackFrame frame = new StackFrame(1, true);
+            UnityEngine.Debug.LogError("KK: [" + frame.GetMethod().DeclaringType.Name + "] " + frame.GetMethod().Name + ": " + message);
 #endif
         }
 
@@ -87,7 +94,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void Trace()
         {
-            StackTrace t = new StackTrace(); Log.Normal(t.ToString());
+            StackTrace t = new StackTrace(); Log.Normal(t.ToString(), 2);
         }
 
         /// <summary>
@@ -115,7 +122,7 @@ namespace KerbalKonstructs.Core
             if (alltimers.TryGetValue(id, out myWatch))
             {
                 myWatch.Stop();
-                Log.Normal("Stopwatch: \"" + id + "\" elapsed time: " + myWatch.Elapsed);
+                Log.Normal("Stopwatch: \"" + id + "\" elapsed time: " + myWatch.Elapsed, 2);
                 myWatch.Reset();
                 alltimers.Remove(id);
             }
@@ -155,7 +162,7 @@ namespace KerbalKonstructs.Core
             if ((Time.time - lastLog) > delay)
             {
                 lastLog = Time.time;
-                Log.Normal(message);
+                Log.Normal(message, 2);
             }
         }
 

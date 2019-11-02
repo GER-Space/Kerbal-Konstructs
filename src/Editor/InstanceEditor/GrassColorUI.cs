@@ -1,11 +1,7 @@
-﻿using System;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using System.Linq;
-using System.IO;
-using KerbalKonstructs;
 
 namespace KerbalKonstructs.UI
 {
@@ -228,5 +224,5 @@ namespace KerbalKonstructs.UI
             }
         }
 
-      }
+    }
 }

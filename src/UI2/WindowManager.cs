@@ -1,9 +1,6 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.UI2
 {
@@ -33,7 +30,8 @@ namespace KerbalKonstructs.UI2
             if (lastPositions.ContainsKey(name))
             {
                 return lastPositions[name];
-            } else
+            }
+            else
             {
                 Log.Normal("Window not found: " + name);
                 return new Vector2(0.5f, 0.5f);
@@ -41,15 +39,15 @@ namespace KerbalKonstructs.UI2
         }
 
 
-        internal static Vector2 ConvertPosition (Vector3 rawPos)
+        internal static Vector2 ConvertPosition(Vector3 rawPos)
         {
             float x = rawPos.x;
             float y = rawPos.y;
 
             x = (x + Screen.width / 2) / Screen.width;
-            y = (y + Screen.height/ 2) / Screen.height;
+            y = (y + Screen.height / 2) / Screen.height;
 
-            return new Vector2(x,y);
+            return new Vector2(x, y);
         }
 
         internal static void Initialize()
@@ -70,10 +68,10 @@ namespace KerbalKonstructs.UI2
                 ConfigNode node = positionsNode.AddNode("Position");
                 node.AddValue("name", pos.Key);
                 node.AddValue("position", pos.Value);
-                Log.Normal("Saving: " + pos.Key + " : " + pos.Value );
+                Log.Normal("Saving: " + pos.Key + " : " + pos.Value);
             }
 
-            if (!System.IO.Directory.Exists(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/"  ))
+            if (!System.IO.Directory.Exists(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/"))
             {
                 Log.Normal("Creating Directory: " + KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/");
                 System.IO.Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/");
@@ -109,10 +107,10 @@ namespace KerbalKonstructs.UI2
             {
                 string name = node.GetValue("name");
                 Vector2 pos = ConfigNode.ParseVector2(node.GetValue("position"));
-                Log.Normal("loading: "  + name + " : " + pos.ToString()) ;
+                Log.Normal("loading: " + name + " : " + pos.ToString());
                 lastPositions.Add(name, pos);
             }
-            
+
         }
 
 

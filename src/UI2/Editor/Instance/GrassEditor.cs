@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using UnityEngine.UI;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.UI;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 
 namespace KerbalKonstructs.UI2
@@ -54,7 +51,7 @@ namespace KerbalKonstructs.UI2
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("Grass Color Editor", HighLogic.UISkin.label),
                 new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("select preset", delegate { GrasColorPresetUI.callBack = selectedMod.UpdateCallBack ; GrasColorPresetUI.instance.Open(); } ,50, 25, false)
+                new DialogGUIButton("select preset", delegate { GrasColorPresetUI.callBack = selectedMod.UpdateCallBack; GrasColorPresetUI.instance.Open(); }, 50, 25, false)
                 ));
 
 
@@ -62,7 +59,7 @@ namespace KerbalKonstructs.UI2
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(NearGrassTexture, false, 40, SetNearGrassTexture, delegate { return GetTextureName("nearGrassTextureName"); } , TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUITextInput(NearGrassTexture, false, 40, SetNearGrassTexture, delegate { return GetTextureName("nearGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarGrassTexture", KKStyle.whiteLabel),
@@ -79,7 +76,7 @@ namespace KerbalKonstructs.UI2
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: R ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
-                    new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber , 25)),
+                    new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: G ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatG, 0, 4f, false, 140, 25, SetGrassFloatG),
@@ -116,11 +113,11 @@ namespace KerbalKonstructs.UI2
 
         internal static string GetTextureName(string fieldName)
         {
-            return typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;         
+            return typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;
         }
 
 
-        internal static void OpenTextureSelector (string fieldName, TextureUsage filter = TextureUsage.Texture)
+        internal static void OpenTextureSelector(string fieldName, TextureUsage filter = TextureUsage.Texture)
         {
             TextureSelector.fieldName = fieldName;
             TextureSelector.textureFilter = filter;
@@ -405,7 +402,7 @@ namespace KerbalKonstructs.UI2
                 {
                     Close();
                 }
-                if (staticInstance != EditorGUI.selectedInstance )
+                if (staticInstance != EditorGUI.selectedInstance)
                 {
                     Close();
                 }
@@ -444,7 +441,7 @@ namespace KerbalKonstructs.UI2
                 WindowManager.SavePosition(dialog);
                 dialog.Dismiss();
             }
-            
+
             dialog = null;
             optionDialog = null;
 
@@ -476,7 +473,7 @@ namespace KerbalKonstructs.UI2
             if (mod == null)
             {
                 Log.UserError("No Grass Mod Found");
-                return; 
+                return;
             }
             NearGrassTexture = mod.nearGrassTexture != null ? mod.nearGrassTextureName : "no texture";
             FarGrassTexture = mod.farGrassTexture != null ? mod.farGrassTextureName : "no texture";

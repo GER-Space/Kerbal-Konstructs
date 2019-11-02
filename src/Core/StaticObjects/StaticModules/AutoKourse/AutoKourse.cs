@@ -1,22 +1,20 @@
-﻿using System;
-using System.IO;
+﻿using KerbalKonstructs.Core;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 namespace BWStatics
 {
-	public class AutoKourseModule: StaticModule
-	{
+    public class AutoKourseModule : StaticModule
+    {
         public string digit0Name = "digit0_obj";
         public string digit1Name = "digit1_obj";
         public string headingAdjustment = "0";
 
-        private Transform digit0Transform ;
-        private Transform digit1Transform ;
+        private Transform digit0Transform;
+        private Transform digit1Transform;
 
         private int heading = 360;
         private int dg0;
-        private int dg1 ;
+        private int dg1;
 
         private Renderer dg0renderer;
         private Renderer dg1renderer;
@@ -32,27 +30,31 @@ namespace BWStatics
         private bool isInitialized = false;
 
 
-        public void Start() {
+        public void Start()
+        {
 
             if (!isInitialized)
             {
                 Initialize();
             }
-			try {
-				setTextures();
-			}
-			catch {
-				Debug.Log ("AutoKourseModule: Start failed in setTextures()");
-			}	
-		}
+            try
+            {
+                setTextures();
+            }
+            catch
+            {
+                Debug.Log("AutoKourseModule: Start failed in setTextures()");
+            }
+        }
 
-		public override void StaticObjectUpdate() {
+        public override void StaticObjectUpdate()
+        {
             if (!isInitialized)
             {
                 Initialize();
             }
-            setTextures ();
-		}
+            setTextures();
+        }
 
         private void Initialize()
         {
@@ -65,36 +67,38 @@ namespace BWStatics
 
 
 
-        private void setTextures() {
+        private void setTextures()
+        {
 
-            heading = GetHeading ();
-           // Log.Normal ("AutoKourseModule: heading = " + heading + " " + staticInstance.gameObject.name);
+            heading = GetHeading();
+            // Log.Normal ("AutoKourseModule: heading = " + heading + " " + staticInstance.gameObject.name);
 
-			dg0 = heading / 10 % 10;
-			dg1 = heading / 100 % 10;
+            dg0 = heading / 10 % 10;
+            dg1 = heading / 100 % 10;
 
             //Log.Normal ("AutoKourseModule: setting course " + dg1 + dg0);
-			dg0renderer.material.SetTextureOffset("_MainTex",  new Vector2(dg0 * 0.1f,0));
-			dg1renderer.material.SetTextureOffset("_MainTex",  new Vector2(dg1 * 0.1f,0));
-		}
+            dg0renderer.material.SetTextureOffset("_MainTex", new Vector2(dg0 * 0.1f, 0));
+            dg1renderer.material.SetTextureOffset("_MainTex", new Vector2(dg1 * 0.1f, 0));
+        }
 
 
-		private int GetHeading() {
-			body = staticInstance.CelestialBody;
-			upVector = body.GetSurfaceNVector(staticInstance.RefLatitude, staticInstance.RefLongitude).normalized;
-			north = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
-			east = Vector3.Cross(upVector, north).normalized;
-			forward = Vector3.ProjectOnPlane(gameObject.transform.forward, upVector);
+        private int GetHeading()
+        {
+            body = staticInstance.CelestialBody;
+            upVector = body.GetSurfaceNVector(staticInstance.RefLatitude, staticInstance.RefLongitude).normalized;
+            north = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
+            east = Vector3.Cross(upVector, north).normalized;
+            forward = Vector3.ProjectOnPlane(gameObject.transform.forward, upVector);
 
-			float heading = Vector3.Angle (forward, north);
+            float heading = Vector3.Angle(forward, north);
 
-            if (Vector3.Dot (forward, east) < 0)
+            if (Vector3.Dot(forward, east) < 0)
             {
                 heading = 360 - heading;
             }
 
-            heading = (heading + headingAdj + 360 ) % 360;
-            
+            heading = (heading + headingAdj + 360) % 360;
+
             if (heading % 10 > 5)
             {
                 heading += 10 - heading % 10;
@@ -105,8 +109,8 @@ namespace BWStatics
             }
 
             return (int)heading;
-		}
+        }
 
-	}
+    }
 }
 

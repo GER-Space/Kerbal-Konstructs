@@ -1,10 +1,8 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 
 namespace KerbalKonstructs
@@ -27,7 +25,7 @@ namespace KerbalKonstructs
             LoadSquadAnomalies();
             LoadSquadAnomaliesLevel2();
             LoadSquadAnomaliesLevel3();
-           // MangleTrackingDishes();
+            // MangleTrackingDishes();
 
         }
 
@@ -177,18 +175,18 @@ namespace KerbalKonstructs
                         StaticModule module = new StaticModule();
                         module.moduleNamespace = "KerbalKonstructs";
                         module.moduleClassname = "GrassColor2";
-                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/"+ grassMaterial.GetTexture("_BlendMaskTexture").name);
+                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name);
                         module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
                         module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
                         module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
                         module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
 
-                        Log.Normal("Instance: " + model.name + " uses Near Tiling: " + grassMaterial.GetFloat("_NearGrassTiling").ToString());
-                        Log.Normal("Instance: " + model.name + " uses Far  Tiling: " + grassMaterial.GetFloat("_FarGrassTiling").ToString());
+                        //Log.Normal("Instance: " + model.name + " uses Near Tiling: " + grassMaterial.GetFloat("_NearGrassTiling").ToString());
+                        //Log.Normal("Instance: " + model.name + " uses Far  Tiling: " + grassMaterial.GetFloat("_FarGrassTiling").ToString());
                         module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
 
                         module.moduleFields.Add("DefaultFarGrassBlendDistance", grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
-                        Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
+                        //Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);
 
@@ -247,7 +245,7 @@ namespace KerbalKonstructs
 
         }
 
-        private static void CreateModelFromGameObject(GameObject prefab, string modelName , string category)
+        private static void CreateModelFromGameObject(GameObject prefab, string modelName, string category)
         {
             StaticModel model = new StaticModel();
             model.isSquad = true;
@@ -316,7 +314,7 @@ namespace KerbalKonstructs
                 // activate them
                 foreach (Transform child in model.prefab.GetComponentsInChildren<Transform>(true))
                 {
-                        child.gameObject.SetActive(true);                    
+                    child.gameObject.SetActive(true);
                 }
                 model.prefab.SetActive(false);
 
@@ -749,7 +747,7 @@ namespace KerbalKonstructs
 
         internal static void ExtractDesertLights()
         {
-            StaticModel model = StaticDatabase.GetModelByName("SQUAD_Desert_Runway");            
+            StaticModel model = StaticDatabase.GetModelByName("SQUAD_Desert_Runway");
 
             Transform lights1 = model.prefab.transform.FindRecursive("Section1_lights");
             string modelName = "SQUAD_Runway_Lights";

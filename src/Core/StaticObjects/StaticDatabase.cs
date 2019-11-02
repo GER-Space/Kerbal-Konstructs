@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using KerbalKonstructs.Utilities;
 
 namespace KerbalKonstructs.Core
 {
-	public static class StaticDatabase
-	{
-		//Groups are stored by name within the body name
-	
+    public static class StaticDatabase
+    {
+        //Groups are stored by name within the body name
+
         internal static Dictionary<string, Dictionary<string, GroupCenter>> centersByPlanet = new Dictionary<string, Dictionary<string, GroupCenter>>();
 
         private static Dictionary<string, StaticModel> modelList = new Dictionary<string, StaticModel>();
@@ -18,7 +17,7 @@ namespace KerbalKonstructs.Core
         //make the list private, so nobody does easily add or remove from it. the array is updated in the Add and Remove functions
         // arrays are always optimized (also in foreach loops)
         private static List<StaticInstance> _allStaticInstances = new List<StaticInstance>();
-        internal static StaticInstance [] allStaticInstances  = new StaticInstance [0] ;
+        internal static StaticInstance[] allStaticInstances = new StaticInstance[0];
 
 
         internal static Dictionary<string, StaticInstance> instancedByUUID = new Dictionary<string, StaticInstance>();
@@ -45,11 +44,12 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="instance"></param>
         internal static void AddStatic(StaticInstance instance)
-		{
+        {
 
             if (string.IsNullOrEmpty(instance.UUID))
             {
                 instance.UUID = GetNewUUID();
+                instance.SaveConfig();
             }
 
             _allStaticInstances.Add(instance);
@@ -58,6 +58,7 @@ namespace KerbalKonstructs.Core
             if (instancedByUUID.ContainsKey(instance.UUID))
             {
                 instance.UUID = GetNewUUID();
+                instance.SaveConfig();
             }
             instancedByUUID.Add(instance.UUID, instance);
 
@@ -113,10 +114,10 @@ namespace KerbalKonstructs.Core
             instance.groupCenter = newGroup;
             instance.Group = newGroup.Group;
 
-            instance.transform.parent = newGroup.gameObject.transform;            
+            instance.transform.parent = newGroup.gameObject.transform;
 
             SetNewName(instance);
-            newGroup.AddInstance(instance);            
+            newGroup.AddInstance(instance);
             instance.Update();
         }
 
@@ -128,7 +129,7 @@ namespace KerbalKonstructs.Core
         private static void SetNewName(StaticInstance instance)
         {
             string modelName = instance.model.name;
-            string groupName = instance.Group; 
+            string groupName = instance.Group;
 
             int modelCount = (from obj in instance.groupCenter.childInstances where obj.model.name == instance.model.name select obj).Count();
             if (modelCount == 0)
@@ -140,7 +141,7 @@ namespace KerbalKonstructs.Core
             modelCount--;
             instance.indexInGroup = modelCount;
             instance.gameObject.name = groupName + "_" + instance.model.name + "_" + modelCount;
-         //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
+            //   Log.Normal("PQSCity.name: " + instance.pqsCity.name);
         }
 
         /// <summary>
@@ -148,14 +149,14 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="active"></param>
         internal static void ToggleActiveAllStatics(bool activate)
-		{
+        {
             Log.Debug("StaticDatabase.ToggleActiveAllStatics");
 
             foreach (GroupCenter center in allCenters.Values)
             {
                 center.SetInstancesEnabled(activate);
             }
-		}
+        }
 
         internal static void AddGroupCenter(GroupCenter center)
         {
@@ -223,7 +224,7 @@ namespace KerbalKonstructs.Core
 
 
         internal static void DeactivateAllOnPlanet(CelestialBody body)
-		{
+        {
             if (body == null || !centersByPlanet.ContainsKey(body.name))
             {
                 return;
@@ -241,22 +242,22 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="newBody"></param>
         internal static void OnBodyChanged(CelestialBody newBody)
-		{
+        {
             if (newBody != null)
-			{
+            {
                 if (newBody != lastActiveBody)
-				{
+                {
                     DeactivateAllOnPlanet(lastActiveBody);
                     lastActiveBody = newBody;
-				}
-			}
-			else
-			{
+                }
+            }
+            else
+            {
                 Log.Debug("StaticDatabase.onBodyChanged(): body is null. cacheAll(). Set activeBodyName empty " + lastActiveBody.name);
                 DeactivateAllOnPlanet(lastActiveBody);
                 lastActiveBody = null;
-			}
-		}
+            }
+        }
 
 
 
@@ -269,7 +270,7 @@ namespace KerbalKonstructs.Core
             }
 
             float maxDistance = (float)(packRange + (KerbalKonstructs.localGroupRange * 1.5));
-           // Log.Normal("MaxDistance: " + maxDistance);
+            // Log.Normal("MaxDistance: " + maxDistance);
             bool isInRange = false;
 
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
@@ -310,23 +311,23 @@ namespace KerbalKonstructs.Core
         }
 
         public static StaticInstance[] GetAllStatics()
-		{
+        {
             return allStaticInstances;
-		}
+        }
 
         internal static void RegisterModel(StaticModel model, string name)
-		{
+        {
             allStaticModels.Add(model);
             if (modelList.ContainsKey(name))
             {
-                Log.UserInfo("duplicate model name: " + name + " ,found in: "  + model.configPath + " . This might be OK.");
+                Log.UserInfo("duplicate model name: " + name + " ,found in: " + model.configPath + " . This might be OK.");
                 return;
             }
             else
             {
                 modelList.Add(name, model);
             }
-		}
+        }
 
         internal static StaticModel GetModelByName(string name)
         {
@@ -337,7 +338,7 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                return modelList[name];   
+                return modelList[name];
             }
         }
 
@@ -348,8 +349,8 @@ namespace KerbalKonstructs.Core
 
 
         internal static List<StaticInstance> GetInstancesFromModel(StaticModel model)
-		{
-			return (from obj in allStaticInstances where obj.model == model select obj).ToList();
-		}
-	}
+        {
+            return (from obj in allStaticInstances where obj.model == model select obj).ToList();
+        }
+    }
 }

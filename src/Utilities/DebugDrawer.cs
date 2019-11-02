@@ -102,7 +102,7 @@ namespace KerbalKonstructs.Utilities
         {
             Debug.Log("DebugDrawer starting");
             while (true)
-            {           
+            {
                 yield return new WaitForEndOfFrame();
                 if ((lines.Count + points.Count + transforms.Count) == 0)
                 {

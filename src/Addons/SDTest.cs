@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs;
+﻿using CustomPreLaunchChecks;
 using KerbalKonstructs.Core;
-using UnityEngine;
+using System.Collections.Generic;
 using System.IO;
-using KerbalKonstructs.Modules;
-using System.Text.RegularExpressions;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 /// <summary>
 /// Test implementation for Simga88
@@ -47,9 +44,9 @@ namespace KerbalKonstructs.Addons
         //}
 
 
-        private static void Add2Group(string groupName, Vector3 pos )
+        private static void Add2Group(string groupName, Vector3 pos)
         {
-            if (! groupMembers.ContainsKey(groupName) )
+            if (!groupMembers.ContainsKey(groupName))
             {
                 groupMembers.Add(groupName, new List<Vector3>());
             }
@@ -61,15 +58,54 @@ namespace KerbalKonstructs.Addons
             }
         }
 
+        internal static AsmUtils.Detour compileIDDetour;
+
+        public static void InstallDetour()
+        {
+            MethodBase origFunction = typeof(HierarchyUtil).GetMethod("CompileID", BindingFlags.Static | BindingFlags.Public);
+            MethodBase newFunction = typeof(SDTest).GetMethod("NewCompileID", BindingFlags.Static | BindingFlags.Public);
+
+            compileIDDetour = new AsmUtils.Detour(origFunction, newFunction);
+            compileIDDetour.Install();
+        }
+
+
+
+        public static string NewCompileID(Transform trf, string rootName)
+        {
+            GameObject instance = trf.gameObject;
+
+            string returnString = compileID(trf, "", rootName).Replace(" ", "");
+            Log.Normal("Return String: " + returnString);
+
+            return returnString;
+        }
+
+        private static string compileID(Transform trf, string tId, string rootName)
+        {
+            if (trf.name != rootName)
+            {
+                if (trf.parent != null)
+                {
+                    tId = tId + compileID(trf.parent, tId, rootName) + "/";
+                }
+                //else if (!string.IsNullOrEmpty(rootName))
+                //{
+                //    //Debug.LogError("[HierarchyUtil]: CompileID failed because it reached the scene root without finding a 'SpaceCenter' game object", trf);
+                //}
+            }
+            tId += trf.name;
+            return tId;
+        }
 
         private static void ScanGroups()
         {
             string group = "";
             string key = "";
 
-            group2Center.Add("KSCUpgrades", new Vector3(157000, -1000, -570000) ) ;
+            group2Center.Add("KSCUpgrades", new Vector3(157000, -1000, -570000));
 
-            foreach (StaticInstance instance in StaticDatabase.allStaticInstances )
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
             {
                 group = (string)instance.Group;
                 key = instance.RadialPosition.ToString();
@@ -86,8 +122,8 @@ namespace KerbalKonstructs.Addons
                         {
                             group2Center.Add(group, Vector3.zero);
                         }
-                        int count = (groupMembers.ContainsKey(group)) ? groupMembers[group].Count : 0; 
-                        group2Center[group] = group2Center[group] * count/(count+1) + instance.RadialPosition/(count + 1) ;
+                        int count = (groupMembers.ContainsKey(group)) ? groupMembers[group].Count : 0;
+                        group2Center[group] = group2Center[group] * count / (count + 1) + instance.RadialPosition / (count + 1);
                         break;
                 }
 
@@ -104,14 +140,15 @@ namespace KerbalKonstructs.Addons
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static Vector3 GetCenter (Vector3 position)
+        public static Vector3 GetCenter(Vector3 position)
         {
-            if (! initialized)
+            if (!initialized)
             {
                 ScanGroups();
             }
 
-            if (!pos2Group.ContainsKey(position.ToString()) ) {
+            if (!pos2Group.ContainsKey(position.ToString()))
+            {
                 return Vector3.zero;
             }
             string groupName = pos2Group[position.ToString()];
@@ -153,7 +190,7 @@ namespace KerbalKonstructs.Addons
                     vertexcount += mesh.vertexCount;
 
                 }
-                Log.Normal("111:" + model.configPath + " , " + model.title + " , " + modelcount + " , " + vertexcount + " , " + triangles/3);
+                Log.Normal("111:" + model.configPath + " , " + model.title + " , " + modelcount + " , " + vertexcount + " , " + triangles / 3);
                 vertexcount = 0;
                 triangles = 0;
             }
@@ -216,7 +253,7 @@ namespace KerbalKonstructs.Addons
             File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/KKTextures/" + texture.name + ".png", mainTextureblob);
         }
 
-        private static Texture2D CopyTexture (Texture2D texture)
+        private static Texture2D CopyTexture(Texture2D texture)
         {
 
             RenderTexture tmp = RenderTexture.GetTemporary(
@@ -265,6 +302,6 @@ namespace KerbalKonstructs.Addons
         }
 
 
-      
+
     }
 }

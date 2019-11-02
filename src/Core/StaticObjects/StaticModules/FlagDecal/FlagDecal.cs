@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using KerbalKonstructs.Core;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
 using UnityEngine;
 
 
 namespace KerbalKonstructs
 {
-    public class FlagDecal: StaticModule
+    public class FlagDecal : StaticModule
     {
 
         public string textureQuadName;

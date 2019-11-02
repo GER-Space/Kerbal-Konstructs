@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using CustomPreLaunchChecks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using CustomPreLaunchChecks;
 
 
 namespace KerbalKonstructs.Core
@@ -354,7 +353,7 @@ namespace KerbalKonstructs.Core
                         ////                            Log.Normal("Body: "+ FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex].name);
                         CelestialBody body = FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex];
                         Vector3 position = body.GetWorldSurfacePosition(vessel.latitude, vessel.longitude, vessel.altitude);
-                        float distance = Vector3.Distance(position, launchSite.lsGameObject.transform.position);
+                        float distance = Vector3.Distance(position, launchSite.staticInstance.gameObject.transform.position);
                         //Log.Normal("Vessel with distance: " + distance);
                         if (distance < maxDistance)
                         {
@@ -404,7 +403,7 @@ namespace KerbalKonstructs.Core
                         //{                          
                         CelestialBody body = FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex];
                         Vector3 position = body.GetWorldSurfacePosition(vessel.latitude, vessel.longitude, vessel.altitude);
-                        float distance = Vector3.Distance(position, launchSite.lsGameObject.transform.position);
+                        float distance = Vector3.Distance(position, launchSite.staticInstance.transform.position);
 
                         if (distance < maxDistance)
                         {

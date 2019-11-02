@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Modules;
+﻿using System.Collections.Generic;
 
 namespace KerbalKonstructs.Core
 {
-	public class SpaceCenterManager
-	{
-		public static List<CustomSpaceCenter> spaceCenters = new List<CustomSpaceCenter>();
-		public static SpaceCenter KSC;
+    public class SpaceCenterManager
+    {
+        public static List<CustomSpaceCenter> spaceCenters = new List<CustomSpaceCenter>();
+        public static SpaceCenter KSC;
 
-		public static void setKSC()
-		{
-			KSC = SpaceCenter.Instance;
-		}
+        public static void setKSC()
+        {
+            KSC = SpaceCenter.Instance;
+        }
 
-		public static void AddSpaceCenter(CustomSpaceCenter csc)
-		{
-			spaceCenters.Add(csc);
-		}
+        public static void AddSpaceCenter(CustomSpaceCenter csc)
+        {
+            spaceCenters.Add(csc);
+        }
 
         public static void RemoveSpaceCenter(CustomSpaceCenter csc)
         {
@@ -35,5 +31,5 @@ namespace KerbalKonstructs.Core
             }
             return null;
         }
-	}
+    }
 }

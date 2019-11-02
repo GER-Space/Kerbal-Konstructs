@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using UnityEngine.UI;
-using KerbalKonstructs;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.UI;
-using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace KerbalKonstructs.Modules
@@ -82,8 +78,8 @@ namespace KerbalKonstructs.Modules
             {
                 if (instance.facilityType != KKFacilityType.GroundStation && instance.facilityType != KKFacilityType.TrackingStation)
                 {
-                    continue;                  
-                }                   
+                    continue;
+                }
 
                 if (instance.Group == "KSCUpgrades")
                     continue;
@@ -117,7 +113,7 @@ namespace KerbalKonstructs.Modules
                 KerbalKonstructs.instance.mapShowClosed = true;
                 KerbalKonstructs.instance.mapShowOpen = true;
             }
-                
+
             if (!KerbalKonstructs.instance.mapShowGroundStation)
             {
                 return;
@@ -149,7 +145,7 @@ namespace KerbalKonstructs.Modules
                     continue;
                 }
 
-                if (groundStation.groupCenter.isHidden && !isOpen || groundStation.groupCenter.isHidden && (((GroundStation)groundStation.myFacilities[0]).OpenCost == 0) )
+                if (groundStation.groupCenter.isHidden && !isOpen || groundStation.groupCenter.isHidden && (((GroundStation)groundStation.myFacilities[0]).OpenCost == 0))
                 {
                     continue;
                 }
@@ -180,7 +176,7 @@ namespace KerbalKonstructs.Modules
                     DisplayMapIconToolTip("Tracking Station " + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-                    {                    
+                    {
                         selectedFacility = groundStation;
                         FacilityManager.selectedInstance = groundStation;
                         FacilityManager.instance.Open();
@@ -222,11 +218,11 @@ namespace KerbalKonstructs.Modules
                     if (!KerbalKonstructs.instance.mapShowClosed && !isOpen)
                         continue;
                     // don't show hidden bases when closed
-                    if (launchSite.LaunchSiteIsHidden && !isOpen )
+                    if (launchSite.LaunchSiteIsHidden && !isOpen)
                         continue;
                 }
 
-             //   launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
+                //   launchSitePosition = (Vector3)launchSite.lsGameObject.transform.position - MapView.MapCamera.GetComponent<Camera>().transform.position;
                 launchSitePosition = (Vector3)launchSite.body.GetWorldSurfacePosition(launchSite.refLat, launchSite.refLon, launchSite.refAlt) - MapView.MapCamera.GetComponent<Camera>().transform.position;
 
                 if (mapHideIconsBehindBody && IsOccluded(launchSitePosition, body))
@@ -318,7 +314,7 @@ namespace KerbalKonstructs.Modules
                 cscIsOpen = customSpaceCenter.isOpen;
 
 
-                if( (!cscIsOpen && !KerbalKonstructs.instance.mapShowClosed) || (cscIsOpen && !KerbalKonstructs.instance.mapShowOpen))
+                if ((!cscIsOpen && !KerbalKonstructs.instance.mapShowClosed) || (cscIsOpen && !KerbalKonstructs.instance.mapShowOpen))
                 {
                     continue;
                 }
@@ -356,11 +352,11 @@ namespace KerbalKonstructs.Modules
                     //Only display one tooltip at a time
                     if (customSpaceCenter.isFromFacility)
                     {
-                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.GetFacility(KKFacilityType.RecoveryBase).FacilityName  + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.GetFacility(KKFacilityType.RecoveryBase).FacilityName + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
                     }
                     else
                     {
-                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.launchSite.LaunchSiteName  + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
+                        DisplayMapIconToolTip(customSpaceCenter.staticInstance.launchSite.LaunchSiteName + "\n(Lat." + disObjectLat2.ToString("#0.00") + "/ Lon." + disObjectLon2.ToString("#0.00") + ")", pos);
                     }
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0)

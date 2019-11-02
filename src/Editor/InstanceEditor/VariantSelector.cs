@@ -1,9 +1,6 @@
-﻿using System;
+﻿using KerbalKonstructs.UI;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.UI;
 
 namespace KerbalKonstructs.Core
 {
@@ -34,7 +31,7 @@ namespace KerbalKonstructs.Core
 
             content.Add(new DialogGUIFlexibleSpace());
             content.Add(new DialogGUIVerticalLayout(VaiantList));
-                           
+
         }
 
         internal static DialogGUIBase[] VaiantList
@@ -50,7 +47,7 @@ namespace KerbalKonstructs.Core
                     list.Add(new DialogGUIButton(variant.Key, delegate { SetVariant(variant.Value.name); }, 140.0f, 30.0f, true));
                 }
                 list.Add(new DialogGUIFlexibleSpace());
-                list.Add(new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true) );
+                list.Add(new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true));
                 return list.ToArray();
             }
         }
@@ -81,7 +78,7 @@ namespace KerbalKonstructs.Core
 
             Vector2 pos = new Vector2();
 
-            pos﻿.x = (mousePos.x - (windowWidth / 2)  - EditorGUI.windowWidth/2) / Screen.width;
+            pos﻿.x = (mousePos.x - (windowWidth / 2) - EditorGUI.windowWidth / 2) / Screen.width;
             pos.y = (mousePos.y / Screen.height);
 
             return (pos);

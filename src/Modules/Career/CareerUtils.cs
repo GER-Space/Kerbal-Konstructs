@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using KerbalKonstructs.Core;
+﻿using System.Text.RegularExpressions;
 
 namespace KerbalKonstructs.Modules
 {
@@ -28,7 +26,7 @@ namespace KerbalKonstructs.Modules
                 {
                     return ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (KerbalKonstructs.instance.disableCareerStrategyLayer));
                 }
-                
+
             }
         }
 

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs;
 using UnityEngine;
 
 namespace KerbalKonstructs.Core
@@ -12,7 +9,7 @@ namespace KerbalKonstructs.Core
 
         private bool isInitialized = false;
 
-        private Dictionary<Collider,Part> includedParts = new Dictionary<Collider,Part>();
+        private Dictionary<Collider, Part> includedParts = new Dictionary<Collider, Part>();
 
         internal Action<Part> onEnterAction = delegate { };
         internal Action<Part> onStayAction = delegate { };
@@ -86,7 +83,7 @@ namespace KerbalKonstructs.Core
             else
             {
                 Part mypart = GetPartForCollider(partCollider);
-                onExitAction.Invoke(mypart);               
+                onExitAction.Invoke(mypart);
             }
         }
 
@@ -120,7 +117,7 @@ namespace KerbalKonstructs.Core
                 {
                     return rootPart;
                 }
-                
+
             }
             Log.Normal("No Part found for collider: " + collider.name);
             return null;

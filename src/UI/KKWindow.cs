@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace KerbalKonstructs.UI
+﻿namespace KerbalKonstructs.UI
 {
     abstract public class KKWindow
     {
@@ -39,7 +34,9 @@ namespace KerbalKonstructs.UI
             if (IsOpen())
             {
                 Close();
-            } else {
+            }
+            else
+            {
                 Open();
             }
         }

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using KerbalKonstructs.Utilities;
+﻿using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
-	public class MapDecalsMap : MapSO
-	{
+    public class MapDecalsMap : MapSO
+    {
         internal MapSO map = null;
         internal bool isHeightMap = false;
         internal Texture2D mapTexture = null;

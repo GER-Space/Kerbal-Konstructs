@@ -1,16 +1,13 @@
-﻿using System;
+﻿using KerbalKonstructs.Modules;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using UnityEngine;
 using System.Reflection;
-using KerbalKonstructs.Modules;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
 
-        /// <summary>
+    /// <summary>
     /// Settings that are read from the Instance Config file
     /// </summary>
     internal class CFGSetting : Attribute
@@ -155,8 +152,9 @@ namespace KerbalKonstructs.Core
                         try
                         {
                             value = (SiteType)Enum.Parse(typeof(SiteType), cfgNode.GetValue(field.Name));
-                            
-                        } catch
+
+                        }
+                        catch
                         {
                             value = SiteType.Any;
                         }
@@ -265,7 +263,7 @@ namespace KerbalKonstructs.Core
         internal static void Write2CfgNode(object source, FieldInfo field, ConfigNode cfgNode)
         {
 
-                switch (field.FieldType.ToString())
+            switch (field.FieldType.ToString())
             {
                 case "System.String":
                     cfgNode.SetValue(field.Name, (string)field.GetValue(source), true);
@@ -295,7 +293,7 @@ namespace KerbalKonstructs.Core
                     cfgNode.SetValue(field.Name, ((CelestialBody)field.GetValue(source)).name, true);
                     break;
                 case "KerbalKonstructs.Core.SiteType":
-                    cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString() , true);
+                    cfgNode.SetValue(field.Name, ((SiteType)field.GetValue(source)).ToString(), true);
                     break;
                 case "KerbalKonstructs.Core.LaunchSiteCategory":
                     cfgNode.SetValue(field.Name, ((LaunchSiteCategory)field.GetValue(source)).ToString(), true);
@@ -335,7 +333,7 @@ namespace KerbalKonstructs.Core
                     cfgNode.SetValue(property.Name, (Vector3d)property.GetValue(source, null), true);
                     break;
                 case "UnityEngine.Color":
-                    cfgNode.SetValue(property.Name, (Color)property.GetValue(source, null), true);                    
+                    cfgNode.SetValue(property.Name, (Color)property.GetValue(source, null), true);
                     break;
                 case "CelestialBody":
                     cfgNode.SetValue(property.Name, ((CelestialBody)property.GetValue(source, null)).name, true);

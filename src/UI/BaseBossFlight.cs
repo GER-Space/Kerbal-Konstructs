@@ -219,7 +219,7 @@ namespace KerbalKonstructs.UI
 
             if (MiscUtils.isCareerGame())
             {
-                
+
 
                 if (Range < 5000)
                 {

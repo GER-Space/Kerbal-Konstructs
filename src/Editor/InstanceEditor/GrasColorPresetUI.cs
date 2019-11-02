@@ -1,11 +1,7 @@
-﻿using System;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using System.IO;
-using KerbalKonstructs;
 
 namespace KerbalKonstructs.UI
 {
@@ -64,7 +60,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.instance.IsOpen() )
+            if (!StaticsEditorGUI.instance.IsOpen())
             {
                 this.Close();
             }
@@ -74,7 +70,8 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            callBack = delegate {
+            callBack = delegate
+            {
             };
             selectedPreset = null;
             base.Close();

@@ -1,14 +1,13 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
 using UnityEngine;
 
 
 namespace KerbalKonstructs
 {
-    public class TileTextures: StaticModule
+    public class TileTextures : StaticModule
     {
 
         public string textureTransformNames;
@@ -16,9 +15,9 @@ namespace KerbalKonstructs
         private List<string> targetTransforms = new List<string>();
         private string[] seperators = new string[] { " ", ",", ";" };
 
-        private Dictionary<string,Vector2> origsSale = new Dictionary<string, Vector2>();
-       // private List<String> textNameList = new List<string>{ "_MainTex", "_ParallaxMap", "_Emissive" , "_EmissionMap", "_MetallicGlossMap", "_OcclusionMap", "_SpecGlossMap", "_BumpMap"};
-        private List<String> textNameList = new List<string>{ "_MainTex" , "_BumpMap" };
+        private Dictionary<string, Vector2> origsSale = new Dictionary<string, Vector2>();
+        // private List<String> textNameList = new List<string>{ "_MainTex", "_ParallaxMap", "_Emissive" , "_EmissionMap", "_MetallicGlossMap", "_OcclusionMap", "_SpecGlossMap", "_BumpMap"};
+        private List<String> textNameList = new List<string> { "_MainTex", "_BumpMap" };
         private bool isInit = false;
 
         internal Vector2 initialTileing = Vector2.zero;

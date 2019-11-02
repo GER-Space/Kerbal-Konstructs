@@ -1,10 +1,9 @@
-﻿using System;
+﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KerbalKonstructs.Core;
 using UnityEngine;
-using KerbalKonstructs.UI;
 
 
 namespace KerbalKonstructs
@@ -95,13 +94,13 @@ namespace KerbalKonstructs
 
                 renderer.material.SetColor("_GrassColor", grassColor);
                 renderer.material.SetColor("_TarmacColor", tarmacColor);
-                if (!staticInstance.model.isSquad)
-                {
-                    renderer.material.SetFloat("_NearGrassTiling", nearGrassTiling);
-                    renderer.material.SetFloat("_FarGrassTiling", farGrassTiling);
-                }
-                Log.Normal("tiling near: " + nearGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
-                Log.Normal("tiling far: " + farGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
+                //if (!staticInstance.model.isSquad)
+                //{
+                renderer.material.SetFloat("_NearGrassTiling", nearGrassTiling);
+                renderer.material.SetFloat("_FarGrassTiling", farGrassTiling);
+                //}
+                //Log.Normal("tiling near: " + nearGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
+                //Log.Normal("tiling far: " + farGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
 
                 renderer.material.SetFloat("_FarGrassBlendDistance", farGrassBlendDistance);
 
@@ -145,7 +144,6 @@ namespace KerbalKonstructs
             {
                 FindModelGrasMaterials();
             }
-            Log.Normal("Hello");
             ReadConfig();
             if (!bool.TryParse(UsePQSColor, out usePQS))
             {
@@ -275,7 +273,6 @@ namespace KerbalKonstructs
 
         public void ReadConfig()
         {
-            Log.Normal("called");
 
             if (staticInstance.cfgNode == null || staticInstance.cfgNode.GetNodes("GrassColor2").Length == 0)
             {
@@ -298,16 +295,16 @@ namespace KerbalKonstructs
                 {
                     Log.Normal("found instance grassnode");
                     cfgNode = grassConfig;
-                    nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") :DefaultNearGrassTexture;
+                    nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") : DefaultNearGrassTexture;
                     farGrassTextureName = (grassConfig.HasValue("FarGrassTexture")) ? grassConfig.GetValue("FarGrassTexture") : DefaultFarGrassTexture;
                     tarmacTextureName = (grassConfig.HasValue("TarmacTexture")) ? grassConfig.GetValue("TarmacTexture") : DefaultTarmacTexture;
-                    blendMaskTextureName = (grassConfig.HasValue("BlendMaskTexture") ) ? grassConfig.GetValue("BlendMaskTexture") :DefaultBlendMaskTexture;
+                    blendMaskTextureName = (grassConfig.HasValue("BlendMaskTexture")) ? grassConfig.GetValue("BlendMaskTexture") : DefaultBlendMaskTexture;
                     nearGrassTiling = (grassConfig.HasValue("NearGrassTiling")) ? float.Parse(grassConfig.GetValue("NearGrassTiling")) : 1f;
-                    farGrassTiling = (grassConfig.HasValue("FarGrassTiling") ) ? float.Parse(grassConfig.GetValue("FarGrassTiling")) : 1f;
-                    farGrassBlendDistance = (grassConfig.HasValue("FarGrassBlendDistance") ) ? float.Parse(grassConfig.GetValue("FarGrassBlendDistance")) : 50f;
+                    farGrassTiling = (grassConfig.HasValue("FarGrassTiling")) ? float.Parse(grassConfig.GetValue("FarGrassTiling")) : 1f;
+                    farGrassBlendDistance = (grassConfig.HasValue("FarGrassBlendDistance")) ? float.Parse(grassConfig.GetValue("FarGrassBlendDistance")) : 50f;
 
-                    grassColor = (grassConfig.HasValue("GrassColor") ) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
-                    tarmacColor = (grassConfig.HasValue("TarmacColor") ) ? ConfigNode.ParseColor(grassConfig.GetValue("TarmacColor")) : Color.white;
+                    grassColor = (grassConfig.HasValue("GrassColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
+                    tarmacColor = (grassConfig.HasValue("TarmacColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("TarmacColor")) : Color.white;
                     break;
                 }
 

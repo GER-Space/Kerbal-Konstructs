@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
 
 
@@ -12,7 +7,7 @@ namespace KerbalKonstructs.Career
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.SPACECENTER, GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.TRACKSTATION)]
     public class KerbalKonstructsSettings : ScenarioModule
     {
-        [Persistent (isPersistant = true)]
+        [Persistent(isPersistant = true)]
         public bool initialized = false;
 
         [Persistent(isPersistant = true)]
@@ -66,8 +61,8 @@ namespace KerbalKonstructs.Career
 
             //if (CareerUtils.isCareerGame)
             //{
-                Log.Normal("KKScenario loading facility states");
-                CareerState.Load(node);
+            Log.Normal("KKScenario loading facility states");
+            CareerState.Load(node);
             //}
 
             ConnectionManager.LoadGroundStations();

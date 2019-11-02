@@ -1,13 +1,11 @@
-﻿using System;
+﻿using KerbalKonstructs.UI;
+using KerbalKonstructs.UI2;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
-using KerbalKonstructs.UI;
-using KerbalKonstructs.UI2;
-using System.Reflection;
 
 namespace KerbalKonstructs.Core
 {
@@ -76,7 +74,7 @@ namespace KerbalKonstructs.Core
         private static void Initialize()
         {
 
-            if(isInitialized)
+            if (isInitialized)
             {
                 return;
             }
@@ -91,7 +89,7 @@ namespace KerbalKonstructs.Core
                     TexturePreset preset = new TexturePreset();
                     preset.texturePath = colorNode.GetValue("TextureFile");
 
-                    if (!Enum.TryParse( colorNode.GetValue("Usage"), true, out preset.usage))
+                    if (!Enum.TryParse(colorNode.GetValue("Usage"), true, out preset.usage))
                     {
                         preset.usage = TextureUsage.Unused;
                     }
@@ -124,7 +122,7 @@ namespace KerbalKonstructs.Core
             content.Add(VaiantList);
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUILabel("NearGrassTexture", HighLogic.UISkin.label)
- 
+
 
                 )); ;
         }

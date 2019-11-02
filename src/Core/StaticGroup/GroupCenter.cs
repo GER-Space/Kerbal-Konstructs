@@ -1,14 +1,8 @@
-﻿using System;
+﻿using KerbalKonstructs.UI;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KerbalKonstructs;
-using KerbalKonstructs.Modules;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Career;
-using UnityEngine;
 using System.IO;
-using KerbalKonstructs.UI;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -61,7 +55,7 @@ namespace KerbalKonstructs.Core
         internal bool isInSavegame = false;
 
 
-        
+
 
 
         internal bool isHidden
@@ -73,7 +67,7 @@ namespace KerbalKonstructs.Core
                     return false;
                 }
 
-                bool active = false; 
+                bool active = false;
                 foreach (KKLaunchSite site in launchsites)
                 {
                     active = (active || site.isOpen);
@@ -101,6 +95,7 @@ namespace KerbalKonstructs.Core
             GameObject.DontDestroyOnLoad(gameObject);
 
             gameObject.name = Group;
+            //gameObject.name = "SpaceCenter";
 
             pqsCity = gameObject.AddComponent<PQSCity>();
 
@@ -133,21 +128,7 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (Heading >= 361f)
-            {
-                // legacy configs
-                pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
-            }
-            else
-            {
-                Vector3 forward = CelestialBody.GetRelSurfacePosition(RefLatitude, RefLongitude + CelestialBody.directRotAngle, RadiusOffset);
-                QuaternionD rotForward = Quaternion.LookRotation(forward);
-                QuaternionD rotHeading = Quaternion.Euler(0f, 0f, Heading);
-                QuaternionD halveInvert = Quaternion.Euler(-90f, -90f, -90f);
-                gameObject.transform.rotation = rotForward * rotHeading * halveInvert;
-            }
-            
-
+            pqsCity.reorientFinalAngle = 0;
             pqsCity.repositionRadial = RadialPosition; //position
 
             pqsCity.repositionRadiusOffset = RadiusOffset; //height
@@ -163,13 +144,45 @@ namespace KerbalKonstructs.Core
             pqsCity.OnSetup();
             pqsCity.Orientate();
 
-            if (Heading >= 361f)
-            {
-                Heading = heading;
-            }
-
+            UpdateRotation2Heading();
 
             StaticDatabase.AddGroupCenter(this);
+
+        }
+
+        internal void UpdateRotation2Heading()
+        {
+            if (Heading >= 361f)
+            {
+                // legacy configs
+                pqsCity.reorientFinalAngle = RotationAngle; //rotation x axis
+            }
+            else
+            {
+                // we are alligned to the 0 rotation, now we rotate until we got the real heading, then we messure the angle and then we update the internal Roation value
+                Vector3 oldForeward = gameObject.transform.forward;
+                Vector3 oldRight = gameObject.transform.right;
+                Quaternion oldRotation = gameObject.transform.rotation;
+
+                Vector3 forward = CelestialBody.GetRelSurfacePosition(RefLatitude, RefLongitude + CelestialBody.directRotAngle, RadiusOffset);
+                Quaternion rotForward = Quaternion.LookRotation(forward);
+                Quaternion rotHeading = Quaternion.Euler(0f, 0f, Heading);
+                Quaternion halveInvert = Quaternion.Euler(-90f, -90f, -90f);
+
+                Quaternion newRotation = rotForward * rotHeading * halveInvert;
+
+                gameObject.transform.rotation = newRotation;
+
+                float newfinalAngle = Vector3.Angle(oldForeward, gameObject.transform.forward);
+
+                if (Vector3.Dot(gameObject.transform.forward, oldRight) < 0)
+                {
+                    newfinalAngle = (360 - newfinalAngle) % 360;
+                }
+                RotationAngle = newfinalAngle;
+                pqsCity.reorientFinalAngle = newfinalAngle;
+            }
+            pqsCity.Orientate();
 
         }
 
@@ -212,9 +225,8 @@ namespace KerbalKonstructs.Core
             {
                 return;
             }
+            Log.Normal("Setting Group " + Group + ": active state form: " + isActive + " to: " + newState);
             isActive = newState;
-
-            Log.Normal("Setting Group " + Group + " to: " + newState);
 
             foreach (StaticInstance instance in childInstances)
             {
@@ -324,7 +336,7 @@ namespace KerbalKonstructs.Core
         {
             foreach (var groupField in ConfigUtil.groupCenterFields.Values)
             {
-                if ((groupField.GetValue(this) == null ) || (groupField.Name == "RadialPosition") || (groupField.Name == "RotationAngle"))
+                if ((groupField.GetValue(this) == null) || (groupField.Name == "RadialPosition") || (groupField.Name == "RotationAngle"))
                 {
                     continue;
                 }
@@ -448,11 +460,12 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                    myHeading = (360 - Vector3.Angle(myForward, northVector) %360);
+                    myHeading = (360 - Vector3.Angle(myForward, northVector) % 360);
                 }
-                return myHeading;
+                return myHeading % 360;
             }
         }
+
 
         /// <summary>
         /// gives a vector to the east

@@ -7,11 +7,7 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using KerbalKonstructs.Core;
 
 
 namespace KerbalKonstructs.UI
@@ -213,7 +209,7 @@ namespace KerbalKonstructs.UI
         {
             if (lineObj != null) lineObj.layer = newVal;
             if (hatObj != null) hatObj.layer = newVal;
-          //  if (labelObj != null) labelObj.layer = newVal;
+            //  if (labelObj != null) labelObj.layer = newVal;
         }
 
         public void SetLabel(string newVal)
@@ -249,7 +245,7 @@ namespace KerbalKonstructs.UI
                 Vector3d point2 = mapLengthMult * (Start + (Scale * 0.95 * Vector));
                 Vector3d point3 = mapLengthMult * (Start + (Scale * Vector));
 
-                label.fontSize = (int)(12.0 * (Width / 0.2) * Math.Min(30,Scale));
+                label.fontSize = (int)(12.0 * (Width / 0.2) * Math.Min(30, Scale));
 
                 useWidth = (float)(Width * Scale * mapWidthMult);
 

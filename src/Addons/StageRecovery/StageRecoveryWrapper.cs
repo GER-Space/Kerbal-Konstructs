@@ -3,9 +3,6 @@
 //magico13.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 //Change this to your mod's namespace!
 namespace KerbalKonstructs.Addons

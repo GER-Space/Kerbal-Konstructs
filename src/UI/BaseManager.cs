@@ -1,9 +1,8 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using KerbalKonstructs.Modules;
 
 namespace KerbalKonstructs.UI
 {

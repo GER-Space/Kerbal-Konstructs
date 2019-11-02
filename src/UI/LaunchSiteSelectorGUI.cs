@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using KerbalKonstructs.Core;
+﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Modules;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -43,7 +40,7 @@ namespace KerbalKonstructs.UI
         public bool showFavOnly = false;
 
         private static KKLaunchSite defaultSite = null;
-        internal static KKLaunchSite selectedSite ;
+        internal static KKLaunchSite selectedSite;
 
         private string launchButtonName = "";
 
@@ -79,7 +76,8 @@ namespace KerbalKonstructs.UI
                     selectedSite = LaunchSiteManager.GetDefaultSite();
                     defaultSite = selectedSite;
                 }
-            } catch
+            }
+            catch
             {
                 selectedSite = LaunchSiteManager.GetDefaultSite();
             }
@@ -183,7 +181,7 @@ namespace KerbalKonstructs.UI
                 }
 
                 isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
-                if (GUILayout.Button(new GUIContent(isSelected? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
                     category = LaunchSiteCategory.RocketPad;
                     showAllcategorys = false;
@@ -211,7 +209,7 @@ namespace KerbalKonstructs.UI
                     GUI.enabled = false;
                 }
                 isSelected = (showAllcategorys || (category == LaunchSiteCategory.Helipad));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn: UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
+                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn : UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
                 {
                     category = LaunchSiteCategory.Helipad;
                     showAllcategorys = false;
@@ -334,7 +332,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Box("Current Launchsite: " + sCurrentSite);
                     break;
             }
-            
+
             GUI.enabled = (selectedSite.isOpen && (selectedSite.LaunchSiteName != sCurrentSite));
             if (GUILayout.Button("Set as Launchsite", GUILayout.Height(46)))
             {
@@ -346,7 +344,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             {
                 GUI.enabled = false;
-                if ( (selectedSite.isOpen) &&  (EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != selectedSite.LaunchSiteName))
+                if ((selectedSite.isOpen) && (EditorDriver.editorFacility == EditorFacility.SPH) && (KerbalKonstructs.instance.defaultSPHlaunchsite != selectedSite.LaunchSiteName))
                 {
                     GUI.enabled = true;
                 }

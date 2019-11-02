@@ -1,120 +1,121 @@
-﻿using System;
-using UnityEngine;
-using KerbalKonstructs.Core;
-using KerbalKonstructs.UI;
+﻿using KerbalKonstructs.Core;
+using System;
 using System.IO;
+using UnityEngine;
 
 namespace KerbalKonstructs
 {
-	
-	public class ILSConfig
-	{
-		private static bool? detected = null;
-		private static String navUtilsAssmName = "NavUtilLib";
-		private static String navUtilsType = "NavUtilLib.Utils";
-		private static AssemblyLoader.LoadedAssembly navUtilAssm;
-		private static String NavUtilsHome = "";
-		private static String rwyHome = "Runways";
-		// This one changed since 1.1-1.2 times and don't seem to be easily extractable
-		private static String cfgNodeName = "NavUtilRunway";
+
+    public class ILSConfig
+    {
+        private static bool? detected = null;
+        private static String navUtilsAssmName = "NavUtilLib";
+        private static String navUtilsType = "NavUtilLib.Utils";
+        private static AssemblyLoader.LoadedAssembly navUtilAssm;
+        private static String NavUtilsHome = "";
+        private static String rwyHome = "Runways";
+        // This one changed since 1.1-1.2 times and don't seem to be easily extractable
+        private static String cfgNodeName = "NavUtilRunway";
 
 
-		public static void GenerateFullILSConfig(StaticInstance instance) 
-		{
-			if (!(bool)detected)
-				return;
+        public static void GenerateFullILSConfig(StaticInstance instance)
+        {
+            if (!(bool)detected)
+                return;
 
-			try {
-				string siteName = instance.launchSite.LaunchSiteName;
-				Log.Normal ("ILS: site name = " + siteName);
-				bool isRunway = (instance.launchSite.sitecategory == LaunchSiteCategory.Runway);
+            try
+            {
+                string siteName = instance.launchSite.LaunchSiteName;
+                Log.Normal("ILS: site name = " + siteName);
+                bool isRunway = (instance.launchSite.sitecategory == LaunchSiteCategory.Runway);
 
-				Transform launchpad = instance.launchSite.lsGameObject.transform.Find(
-					instance.launchSite.LaunchPadTransform);
-				Log.Normal(String.Format("ILS: launchpad transform: {0}, position: {1}",
-					launchpad, launchpad.position));
-				
-				float heading = GetHeading (launchpad);
-				int hdg = (int)heading;
-				if (hdg % 10 > 5)
-					hdg += 10 - hdg % 10;
+                Transform launchpad = instance.mesh.transform.Find(instance.launchSite.LaunchPadTransform);
+                Log.Normal(String.Format("ILS: launchpad transform: {0}, position: {1}",
+                    launchpad, launchpad.position));
 
-				int dg0 = hdg / 10 % 10;
-				int dg1 = hdg / 100 % 10;
-				String siteNameAndHdg = String.Format ("{0}-{1}{2}", siteName, dg1, dg0);
-				ConfigNode cfg = GenerateILSConfig (siteNameAndHdg, launchpad.position, heading);
-				string fileName = String.Format ("{0}/{1}/{2}.cfg", NavUtilsHome, rwyHome, siteNameAndHdg);
-				Log.Normal ("ILS: writing NavUtils config to: " + fileName);
-				Log.Normal(String.Format("ILS: launchpad lat/lon: {0}, {1}",
-					FlightGlobals.ActiveVessel.mainBody.GetLatitude(launchpad.position),
-					FlightGlobals.ActiveVessel.mainBody.GetLongitude(launchpad.position)));
+                float heading = GetHeading(launchpad);
+                int hdg = (int)heading;
+                if (hdg % 10 > 5)
+                    hdg += 10 - hdg % 10;
+
+                int dg0 = hdg / 10 % 10;
+                int dg1 = hdg / 100 % 10;
+                String siteNameAndHdg = String.Format("{0}-{1}{2}", siteName, dg1, dg0);
+                ConfigNode cfg = GenerateILSConfig(siteNameAndHdg, launchpad.position, heading);
+                string fileName = String.Format("{0}/{1}/{2}.cfg", NavUtilsHome, rwyHome, siteNameAndHdg);
+                Log.Normal("ILS: writing NavUtils config to: " + fileName);
+                Log.Normal(String.Format("ILS: launchpad lat/lon: {0}, {1}",
+                    FlightGlobals.ActiveVessel.mainBody.GetLatitude(launchpad.position),
+                    FlightGlobals.ActiveVessel.mainBody.GetLongitude(launchpad.position)));
 
 
-				if (isRunway) {
-					// If it is runway, generate config for opposite direction
-					Bounds bnd = ILSConfig.GetBounds (instance.gameObject);
-					float rwyLength = Math.Max(Math.Max(bnd.size.x, bnd.size.y), bnd.size.z);
-					Log.Normal(String.Format("ILS: runway length based on colliders: {0}", rwyLength));
-					Vector3 farEnd = launchpad.position + launchpad.forward.normalized * rwyLength;
-					Log.Normal(String.Format("ILS: runway far end: {0}", farEnd));
-					Log.Normal(String.Format("ILS: launchpad far end lat/lon: {0}, {1}",
-							FlightGlobals.ActiveVessel.mainBody.GetLatitude(farEnd),
-							FlightGlobals.ActiveVessel.mainBody.GetLongitude(farEnd)));
-					hdg = (hdg + 180) % 360;
-					dg0 = hdg / 10 % 10;
-					dg1 = hdg / 100 % 10;
-					heading += 180;
-					if (heading > 360)
-						heading -= 360;
-	
-					String siteNameAndHdg0 = String.Format ("{0}-{1}{2}", siteName, dg1, dg0);
+                if (isRunway)
+                {
+                    // If it is runway, generate config for opposite direction
+                    Bounds bnd = ILSConfig.GetBounds(instance.gameObject);
+                    float rwyLength = Math.Max(Math.Max(bnd.size.x, bnd.size.y), bnd.size.z);
+                    Log.Normal(String.Format("ILS: runway length based on colliders: {0}", rwyLength));
+                    Vector3 farEnd = launchpad.position + launchpad.forward.normalized * rwyLength;
+                    Log.Normal(String.Format("ILS: runway far end: {0}", farEnd));
+                    Log.Normal(String.Format("ILS: launchpad far end lat/lon: {0}, {1}",
+                            FlightGlobals.ActiveVessel.mainBody.GetLatitude(farEnd),
+                            FlightGlobals.ActiveVessel.mainBody.GetLongitude(farEnd)));
+                    hdg = (hdg + 180) % 360;
+                    dg0 = hdg / 10 % 10;
+                    dg1 = hdg / 100 % 10;
+                    heading += 180;
+                    if (heading > 360)
+                        heading -= 360;
 
-					cfg.GetNode(cfgNodeName).AddValue("identOfOpposite", siteNameAndHdg0);
-					ConfigNode cfg0 = GenerateILSConfig (siteNameAndHdg0, farEnd, heading);
-					cfg0.GetNode(cfgNodeName).AddValue("identOfOpposite", siteNameAndHdg);
-					String fileName0 = String.Format (
-						"{0}/{1}/{2}.cfg", NavUtilsHome, rwyHome, siteNameAndHdg0);
-					Log.Normal ("ILS: writing NavUtils config to: " + fileName0);
-					cfg0.Save(fileName0, "Generated by KerbalKonstructs");
-				}
-				cfg.Save(fileName, "Generated by KerbalKonstructs");
-				ReloadNavUtilsConfig();
-			}
-			catch (Exception e) {
-				Log.Normal ("ILS: Failed to get generate config: " + e);
-				ScreenMessages.PostScreenMessage ("Failed to generate ILS config - check logs");
-			}
-		}
+                    String siteNameAndHdg0 = String.Format("{0}-{1}{2}", siteName, dg1, dg0);
 
-		public static ConfigNode GenerateILSConfig(string siteName, Vector3 endpoint, float heading) 
-		{
-			CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
-			Vector2d localizer = GenerateLocalizerCoords ((Vector3d)endpoint, heading);
+                    cfg.GetNode(cfgNodeName).AddValue("identOfOpposite", siteNameAndHdg0);
+                    ConfigNode cfg0 = GenerateILSConfig(siteNameAndHdg0, farEnd, heading);
+                    cfg0.GetNode(cfgNodeName).AddValue("identOfOpposite", siteNameAndHdg);
+                    String fileName0 = String.Format(
+                        "{0}/{1}/{2}.cfg", NavUtilsHome, rwyHome, siteNameAndHdg0);
+                    Log.Normal("ILS: writing NavUtils config to: " + fileName0);
+                    cfg0.Save(fileName0, "Generated by KerbalKonstructs");
+                }
+                cfg.Save(fileName, "Generated by KerbalKonstructs");
+                ReloadNavUtilsConfig();
+            }
+            catch (Exception e)
+            {
+                Log.Normal("ILS: Failed to get generate config: " + e);
+                ScreenMessages.PostScreenMessage("Failed to generate ILS config - check logs");
+            }
+        }
 
-			ConfigNode ILScfg = new ConfigNode ();
-			ILScfg.name = cfgNodeName;
-			ILScfg.AddValue ("ident", siteName);
-			// Well, if we make it editable, than NavUtilities will save this runway into custom.cfg
-			// And next time there will be two duplicate runways. Not a good thing.
-			// We'll try to address it from NavUtilities side
-			// ILScfg.AddValue ("custom", "True"); // Make it editable via NavUtils menu
-			ILScfg.AddValue("shortID", siteName);
-			ILScfg.AddValue ("hdg", heading);
-			ILScfg.AddValue ("body", body.name);
-			ILScfg.AddValue ("altMSL", body.GetAltitude ((Vector3d) endpoint));
-			ILScfg.AddValue ("gsLatitude", body.GetLatitude (endpoint));
-			ILScfg.AddValue ("gsLongitude", body.GetLongitude (endpoint));
-			ILScfg.AddValue ("locLatitude", localizer.x);
-			ILScfg.AddValue ("locLongitude", localizer.y);
-			// marker distances are blankly hardcoded as of now
-			ILScfg.AddValue ("outerMarkerDist", 8000);
-			ILScfg.AddValue ("middleMarkerDist", 2000);
-			ILScfg.AddValue ("innerMarkerDist", 300);
+        public static ConfigNode GenerateILSConfig(string siteName, Vector3 endpoint, float heading)
+        {
+            CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
+            Vector2d localizer = GenerateLocalizerCoords((Vector3d)endpoint, heading);
 
-			ConfigNode wrapper = new ConfigNode ();
-			wrapper.AddNode (ILScfg);
-			return wrapper;
-		}
+            ConfigNode ILScfg = new ConfigNode();
+            ILScfg.name = cfgNodeName;
+            ILScfg.AddValue("ident", siteName);
+            // Well, if we make it editable, than NavUtilities will save this runway into custom.cfg
+            // And next time there will be two duplicate runways. Not a good thing.
+            // We'll try to address it from NavUtilities side
+            // ILScfg.AddValue ("custom", "True"); // Make it editable via NavUtils menu
+            ILScfg.AddValue("shortID", siteName);
+            ILScfg.AddValue("hdg", heading);
+            ILScfg.AddValue("body", body.name);
+            ILScfg.AddValue("altMSL", body.GetAltitude((Vector3d)endpoint));
+            ILScfg.AddValue("gsLatitude", body.GetLatitude(endpoint));
+            ILScfg.AddValue("gsLongitude", body.GetLongitude(endpoint));
+            ILScfg.AddValue("locLatitude", localizer.x);
+            ILScfg.AddValue("locLongitude", localizer.y);
+            // marker distances are blankly hardcoded as of now
+            ILScfg.AddValue("outerMarkerDist", 8000);
+            ILScfg.AddValue("middleMarkerDist", 2000);
+            ILScfg.AddValue("innerMarkerDist", 300);
+
+            ConfigNode wrapper = new ConfigNode();
+            wrapper.AddNode(ILScfg);
+            return wrapper;
+        }
 
 
         /// <summary>
@@ -122,104 +123,113 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="launchSiteName"></param>
         /// <param name="doReload"></param>
-		public static void DropILSConfig(String launchSiteName, bool doReload) {
-			String[] files = Directory.GetFiles (
-                 String.Format ("{0}/{1}",NavUtilsHome, rwyHome),
-                 String.Format ("{0}-??.cfg", launchSiteName));
-			foreach (String f in files)
-				File.Delete (f);
-			if (doReload)
-				ReloadNavUtilsConfig ();
-		}
+		public static void DropILSConfig(String launchSiteName, bool doReload)
+        {
+            String[] files = Directory.GetFiles(
+                 String.Format("{0}/{1}", NavUtilsHome, rwyHome),
+                 String.Format("{0}-??.cfg", launchSiteName));
+            foreach (String f in files)
+                File.Delete(f);
+            if (doReload)
+                ReloadNavUtilsConfig();
+        }
 
-		public static void HandleCategoryChange(StaticInstance inst)
-		{
-			// Just drop old config without reloading
-			DropILSConfig(inst.launchSite.LaunchSiteName, false);
-		}
+        public static void HandleCategoryChange(StaticInstance inst)
+        {
+            // Just drop old config without reloading
+            DropILSConfig(inst.launchSite.LaunchSiteName, false);
+        }
 
-		public static void RenameSite(String oldName, String newName) {
-			DropILSConfig (oldName, false);
-		}
+        public static void RenameSite(String oldName, String newName)
+        {
+            DropILSConfig(oldName, false);
+        }
 
         /// <summary>
         /// Checks if Navutils is installed and sets the HomeDirectory Path
         /// </summary>
         /// <returns></returns>
-		public static bool DetectNavUtils() {
-			if (detected != null)
-				return (bool)detected;
-			detected = false;
-			foreach (AssemblyLoader.LoadedAssembly asm in AssemblyLoader.loadedAssemblies) {
-				Log.Normal ("ILS: assembly: " + asm.name);
-				if (asm.name.Equals(navUtilsAssmName)) {
-					navUtilAssm = asm;
-					detected = true;
-					String code = asm.assembly.CodeBase;
-					UriBuilder uri = new UriBuilder (code);
-					NavUtilsHome = Path.GetDirectoryName(Uri.UnescapeDataString (uri.Path));
-					break;
-				}
-			}
-			return (bool)detected;
-		}
+		public static bool DetectNavUtils()
+        {
+            if (detected != null)
+                return (bool)detected;
+            detected = false;
+            foreach (AssemblyLoader.LoadedAssembly asm in AssemblyLoader.loadedAssemblies)
+            {
+                Log.Normal("ILS: assembly: " + asm.name);
+                if (asm.name.Equals(navUtilsAssmName))
+                {
+                    navUtilAssm = asm;
+                    detected = true;
+                    String code = asm.assembly.CodeBase;
+                    UriBuilder uri = new UriBuilder(code);
+                    NavUtilsHome = Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path));
+                    break;
+                }
+            }
+            return (bool)detected;
+        }
 
-		private static float GetHeading(Transform transform) {
-			CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
-			Vector3 upVector = body.GetSurfaceNVector(body.GetLatitude((Vector3d)transform.position), 
+        private static float GetHeading(Transform transform)
+        {
+            CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
+            Vector3 upVector = body.GetSurfaceNVector(body.GetLatitude((Vector3d)transform.position),
                 body.GetLongitude((Vector3d)transform.position)).normalized;
-			Vector3 north = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
-			Vector3 east = Vector3.Cross(upVector, north).normalized;
-			Vector3 forward = Vector3.ProjectOnPlane(transform.forward, upVector);
-			return Vector3.Angle (forward, north);
-		}
+            Vector3 north = Vector3.ProjectOnPlane(body.transform.up, upVector).normalized;
+            Vector3 east = Vector3.Cross(upVector, north).normalized;
+            Vector3 forward = Vector3.ProjectOnPlane(transform.forward, upVector);
+            return Vector3.Angle(forward, north);
+        }
 
 
-		private static Vector2d GenerateLocalizerCoords(Vector3d coords, float heading) {
-			
-			// As long as we depend on working NavUtilities installation, we 
-			// can call its methods instead of copypasting
+        private static Vector2d GenerateLocalizerCoords(Vector3d coords, float heading)
+        {
 
-			CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
-			Type t = navUtilAssm.assembly.GetType(navUtilsType);
-			var methodInfo = t.GetMethod ("CalcCoordinatesFromInitialPointBearingDistance",
-				new Type[] { typeof(Vector2d), typeof(double), typeof(double), typeof(double) });
-			if (methodInfo == null)
-				throw new MissingMethodException();
-			object[] parameters = new object[4];
-			parameters [0] = new Vector2d (body.GetLatitude (coords), body.GetLongitude(coords));
-			parameters [1] = heading;
-			parameters [2] = 1000; // Localizer distance; Leaving hardcoded as of now
-			parameters [3] = body.Radius;
+            // As long as we depend on working NavUtilities installation, we 
+            // can call its methods instead of copypasting
 
-			return (Vector2d)methodInfo.Invoke (null, parameters);
-		}
+            CelestialBody body = FlightGlobals.ActiveVessel.mainBody;
+            Type t = navUtilAssm.assembly.GetType(navUtilsType);
+            var methodInfo = t.GetMethod("CalcCoordinatesFromInitialPointBearingDistance",
+                new Type[] { typeof(Vector2d), typeof(double), typeof(double), typeof(double) });
+            if (methodInfo == null)
+                throw new MissingMethodException();
+            object[] parameters = new object[4];
+            parameters[0] = new Vector2d(body.GetLatitude(coords), body.GetLongitude(coords));
+            parameters[1] = heading;
+            parameters[2] = 1000; // Localizer distance; Leaving hardcoded as of now
+            parameters[3] = body.Radius;
 
-		private static void ReloadNavUtilsConfig() {
-			// Log.Normal ("ILS-KK: Reloading NavUtils runways");
-			// Sadly, it's rather complicated to update GameDatabase on the fly
-			// Also, I don't (yet) want to fiddle with NavUtilities internal data
-			ScreenMessages.PostScreenMessage ("Changes to ILS/HSI will take effect after game restart");
+            return (Vector2d)methodInfo.Invoke(null, parameters);
+        }
 
-			/*Type t = navUtilAssm.assembly.GetType ("NavUtilLib.GlobalVariables.Settings");
+        private static void ReloadNavUtilsConfig()
+        {
+            // Log.Normal ("ILS-KK: Reloading NavUtils runways");
+            // Sadly, it's rather complicated to update GameDatabase on the fly
+            // Also, I don't (yet) want to fiddle with NavUtilities internal data
+            ScreenMessages.PostScreenMessage("Changes to ILS/HSI will take effect after game restart");
+
+            /*Type t = navUtilAssm.assembly.GetType ("NavUtilLib.GlobalVariables.Settings");
 			var methodInfo = t.GetMethod ("loadNavAids");
 			if (methodInfo == null)
 				throw new MissingMethodException ();
 			methodInfo.Invoke (null, null);*/
-		}
+        }
 
-		public static Bounds GetBounds(GameObject obj) {
-			
-			Collider[] mfs = obj.GetComponentsInChildren<Collider> ();
-			if (mfs.Length == 0)
-				return new Bounds ();
-			Bounds b = mfs [0].bounds;
-			for (int i = 1; i < mfs.Length; i++)
-				b.Encapsulate (mfs [i].bounds);
-			
-			Log.Normal (String.Format ("ILS: bounds: {0}", b));
-			return b;
-		}
-	}
+        public static Bounds GetBounds(GameObject obj)
+        {
+
+            Collider[] mfs = obj.GetComponentsInChildren<Collider>();
+            if (mfs.Length == 0)
+                return new Bounds();
+            Bounds b = mfs[0].bounds;
+            for (int i = 1; i < mfs.Length; i++)
+                b.Encapsulate(mfs[i].bounds);
+
+            Log.Normal(String.Format("ILS: bounds: {0}", b));
+            return b;
+        }
+    }
 }
 
