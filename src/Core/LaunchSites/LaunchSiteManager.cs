@@ -1,12 +1,9 @@
-﻿using System;
-using System.Reflection;
-using System.Linq;
-using UnityEngine;
+﻿using KerbalKonstructs.UI;
 using KSP.UI.Screens;
-using KSP.UI;
 using System.Collections.Generic;
-using KerbalKonstructs.UI;
-using UnityEngine.UI;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 
 namespace KerbalKonstructs.Core
@@ -269,7 +266,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void OpenLaunchSite(KKLaunchSite site)
         {
-            if (site.staticInstance.destructible != null)
+            if (site.staticInstance.isSpawned && site.staticInstance.destructible != null)
             {
                 site.staticInstance.TrySpawn();
                 site.staticInstance.destructible.Reset();
@@ -321,7 +318,7 @@ namespace KerbalKonstructs.Core
 
             if (site.isSquad)
             {
-                if (site.lsGameObject.transform.Find(site.LaunchPadTransform) == null)
+                if (site.staticInstance.mesh.transform.Find(site.LaunchPadTransform) == null)
                 {
                     Log.UserWarning("Launch pad transform \"" + site.LaunchPadTransform + "\" missing for " + site.LaunchSiteName);
                     return;
@@ -346,12 +343,13 @@ namespace KerbalKonstructs.Core
 
             //site.staticInstance.gameObject.transform.name = site.LaunchSiteName;
             //site.staticInstance.gameObject.name = site.LaunchSiteName;
-            Log.Normal("Registering LaunchSite: " + site.LaunchSiteName);
+            Log.Normal("Registering LaunchSite: " + site.LaunchSiteName + " isHidden: " + site.LaunchSiteIsHidden) ;
             PSystemSetup.SpaceCenterFacility spaceCenterFacility = new PSystemSetup.SpaceCenterFacility();
             spaceCenterFacility.name = site.LaunchSiteName;
             spaceCenterFacility.facilityDisplayName = site.LaunchSiteName;
             spaceCenterFacility.facilityName = site.LaunchSiteName;
             spaceCenterFacility.facilityPQS = site.staticInstance.CelestialBody.pqsController;
+            spaceCenterFacility.hostBody = site.staticInstance.CelestialBody;
             spaceCenterFacility.facilityTransform = site.staticInstance.mesh.transform;
             if (site.LaunchSiteType == SiteType.VAB)
             {
@@ -381,7 +379,8 @@ namespace KerbalKonstructs.Core
                 spawnTransformURL = site.LaunchPadTransform
             };
             spawnPoint.Setup(spaceCenterFacility);
-            spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint [] { spawnPoint };
+            spawnPoint.SetSpawnPointLatLonAlt();
+            spaceCenterFacility.spawnPoints = new PSystemSetup.SpaceCenterFacility.SpawnPoint[] { spawnPoint };
 
             //spaceCenterFacility.Setup(new PQS[] { site.staticInstance.CelestialBody.pqsController });
 
@@ -397,10 +396,12 @@ namespace KerbalKonstructs.Core
 
             PSystemSetup.Instance.SpaceCenterFacilities = KKFacilities.ToArray();
             site.spaceCenterFacility = spaceCenterFacility;
+
             if (site.staticInstance.destructible != null)
             {
                 ScenarioDestructibles.RegisterDestructible(site.staticInstance.destructible, site.LaunchSiteName);
             }
+
             AddLaunchSite(site);
 
             if (site.staticInstance.gameObject != null)
@@ -691,7 +692,7 @@ namespace KerbalKonstructs.Core
         // Returns the distance in m from a position to a specified Launchsite
         public static float getDistanceToBase(Vector3 position, KKLaunchSite site)
         {
-            return Vector3.Distance(position, site.lsGameObject.transform.position);
+            return Vector3.Distance(position, site.staticInstance.transform.position);
         }
 
         // Returns the nearest open Launchsite to a position and range to the Launchsite in m
@@ -709,7 +710,7 @@ namespace KerbalKonstructs.Core
 
                 if (site.isOpen)
                 {
-                    var radialposition = site.lsGameObject.transform.position;
+                    var radialposition = site.staticInstance.transform.position;
                     var dist = Vector3.Distance(position, radialposition);
 
                     if (site.LaunchSiteName == "Runway")
@@ -792,10 +793,12 @@ namespace KerbalKonstructs.Core
 
             foreach (KKLaunchSite site in allLaunchSites)
             {
-                if (site.lsGameObject == null)
+                if (site.staticInstance.gameObject == null)
+                {
                     continue;
+                }
 
-                var radialposition = site.lsGameObject.transform.position;
+                var radialposition = site.staticInstance.gameObject.transform.position;
                 var dist = Vector3.Distance(position, radialposition);
 
                 if (radialposition == position)

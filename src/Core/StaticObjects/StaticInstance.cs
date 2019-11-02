@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.IO;
+﻿using KerbalKonstructs.Modules;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using KSP.UI.Screens;
+using System.Linq;
 using System.Reflection;
-using KerbalKonstructs.Utilities;
-using KerbalKonstructs.Modules;
+using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
@@ -76,12 +73,20 @@ namespace KerbalKonstructs.Core
             {
                 if (_mesh == null)
                 {
-                    _mesh = GameObject.Instantiate(model.prefab);
-                    GameObject.DontDestroyOnLoad(_mesh);
-                    _mesh.name = "Mesh";
-                    _mesh.transform.parent = transform;
-                    _mesh.transform.position = transform.position;
-                    _mesh.transform.rotation = transform.rotation;
+                    Activate();
+                    //_mesh = GameObject.(model.prefab);
+                    //GameObject.DontDestroyOnLoad(_mesh);
+                    //_mesh.name = "Mesh";
+                    //_mesh.transform.parent = transform;
+                    //_mesh.transform.position = transform.position;
+                    //_mesh.transform.rotation = transform.rotation;
+                    //foreach (MonoBehaviour behaviour in _mesh.GetComponentsInChildren<MonoBehaviour>(true))
+                    //{
+                    //    behaviour.enabled = false;
+                    //}
+                    ////gameObject.SetActive(false);
+                    //isActive = false;
+                    //isSpawned = true;
                 }
                 return _mesh;
             }
@@ -94,7 +99,7 @@ namespace KerbalKonstructs.Core
                 _mesh.transform.rotation = transform.rotation;
             }
         }
-        internal GameObject wreck ;
+        internal GameObject wreck;
         internal DestructibleBuilding destructible;
 
 
@@ -113,7 +118,7 @@ namespace KerbalKonstructs.Core
         internal bool isInSavegame = false;
 
         internal bool isDestroyed = false;
-       
+
         private static Dictionary<string, Type> staticModules = new Dictionary<string, Type>();
         private static string moduleKey;
 
@@ -232,7 +237,7 @@ namespace KerbalKonstructs.Core
                 {
                     API.OnBuildingSpawned.Invoke(gameObject);
                 }
-                
+
             }
         }
 
@@ -252,14 +257,13 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            mesh.SetActive(true);
-
             if (model.isSquad)
             {
                 InstanceUtil.MangleSquadStatic(this);
             }
             InstanceUtil.SetLayerRecursively(this, 15);
 
+            mesh.SetActive(true);
 
             //Scaling
             origScale = gameObject.transform.localScale;             // save the original scale for later use
@@ -381,7 +385,7 @@ namespace KerbalKonstructs.Core
 
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
-            if (!StaticDatabase.HasGroupCenter(groupCenterName) )
+            if (!StaticDatabase.HasGroupCenter(groupCenterName))
             {
                 Log.UserWarning("cannot load " + configPath);
                 return;
@@ -521,6 +525,11 @@ namespace KerbalKonstructs.Core
 
         internal void Activate()
         {
+            if (isActive)
+            {
+                return;
+            }
+
             TrySpawn();
 
             isActive = true;
@@ -538,7 +547,7 @@ namespace KerbalKonstructs.Core
             //    }
             //}
 
-            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
+            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 module.enabled = true;
             }
@@ -550,23 +559,30 @@ namespace KerbalKonstructs.Core
 
         internal void Deactivate()
         {
+            if (!isActive)
+            {
+                return;
+            }
+
+            //Log.Normal("Deactivate: " + gameObject.name);
 
             if (isSpawned && destructible != null)
             {
                 isDestroyed = destructible.IsDestroyed;
             }
-            
+
             isActive = false;
 
-            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>())
+            foreach (MonoBehaviour module in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 module.enabled = false;
             }
 
             gameObject.SetActive(false);
 
-
-            if (isSpawned)
+            // LaunchSites have to stay on the surface.
+            if (isSpawned && !hasLauchSites)
+            //if (isSpawned)
             {
                 Despawn();
             }

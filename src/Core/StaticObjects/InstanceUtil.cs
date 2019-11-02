@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 using UnityEngine;
-using KSP.UI.Screens;
-using KSP;
 
 namespace KerbalKonstructs.Core
 {
     internal static class InstanceUtil
     {
 
-//        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
+        //        private static List<Type> behaviosToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CollisionEventsHandler), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
 
         //private static List<Type> behavioursToRemove = new List<Type> { typeof(DestructibleBuilding), typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2) };
-        private static List<Type> behavioursToRemove = new List<Type> { typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2), typeof(PQSCity) };
+        private static List<Type> behavioursToRemove = new List<Type> { typeof(CrashObjectName), typeof(CommNet.CommNetHome), typeof(PQSCity2), typeof(PQSCity), typeof(ScenarioUpgradeableFacilities), typeof(Upgradeables.UpgradeableFacility) };
 
         internal static List<TimeOfDayAnimation.MaterialProperty> dayNightEmissives = null;
         internal static Color dotColor;
@@ -33,7 +29,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
 		internal static StaticInstance GetStaticInstanceForGameObject(GameObject gameObject)
         {
-            Log.UserWarning("Depricated call");
+            //Log.UserWarning("Depricated call");
             List<StaticInstance> objList = (from obj in StaticDatabase.allStaticInstances where obj.gameObject == gameObject select obj).ToList();
 
             if (objList.Count >= 1)
@@ -50,20 +46,21 @@ namespace KerbalKonstructs.Core
         }
 
         /// <summary>
-        /// Removes the wreck model from an KSC Object.
+        /// Removes some unneeded behaviours from squad models and sets up the Destructibles
         /// </summary>
         internal static void MangleSquadStatic(StaticInstance instance)
         {
             GameObject gameObject = instance.mesh;
+            //Log.Normal("Called for:" + instance.gameObject.name);
 
             foreach (var component in gameObject.GetComponentsInChildren<MonoBehaviour>(true))
             {
 
                 if (behavioursToRemove.Contains(component.GetType()))
                 {
-               //     Log.Normal("Removed: " + bla.GetType().ToString());
+                    //Log.Normal("Removed: " + component.GetType().ToString());
                     UnityEngine.Object.DestroyImmediate(component);
-                }               
+                }
             }
 
             //instance.gameObject.tag = String.Empty;
@@ -83,12 +80,14 @@ namespace KerbalKonstructs.Core
             //    //    GameObject.Destroy(transform.gameObject);
             //    //}
             //}
-
+            int counter = 0;
             foreach (var component in gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
             {
-                component.id = instance.UUID;
+                component.id = instance.UUID + "_" + counter;
                 component.preCompiledId = true;
                 instance.destructible = component;
+                //Log.Normal("registering destructible: " + component.id);
+                counter++;
             }
 
 
@@ -98,7 +97,7 @@ namespace KerbalKonstructs.Core
             {
                 foreach (Material mat in renderer.materials)
                 {
-                   // Log.Normal("found Material: " + gameObject.name +" " +  mat.name);
+                    // Log.Normal("found Material: " + gameObject.name +" " +  mat.name);
                     foreach (string matname in materialPropertyNames)
                     {
                         if (mat.name.Contains(matname))
@@ -127,7 +126,7 @@ namespace KerbalKonstructs.Core
                 DishController controller = gameObject.AddComponent<DishController>();
 
                 controller.fakeTimeWarp = 1f;
-                controller.maxSpeed = 2/instance.ModelScale;
+                controller.maxSpeed = 2 / instance.ModelScale;
                 controller.maxElevation = 90f;
                 controller.minElevation = 5f;
 
@@ -245,8 +244,8 @@ namespace KerbalKonstructs.Core
                 // Check if we have a similar named GC somewhere
                 int index = 0;
                 while (StaticDatabase.HasGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString()))
-                {                   
-                    groupPostion = StaticDatabase.GetGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString()).gameObject.transform.position;                  
+                {
+                    groupPostion = StaticDatabase.GetGroupCenter(instance.CelestialBody.name + "_" + instance.Group + "_" + index.ToString()).gameObject.transform.position;
                     distance = Vector3.Distance(groupPostion, instancePosition);
 
                     if (distance < KerbalKonstructs.localGroupRange)
