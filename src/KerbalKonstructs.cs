@@ -229,6 +229,9 @@ namespace KerbalKonstructs
 
             ConfigParser.LoadAllMapDecalMaps();
             BuiltinCenters.AddAllBuiltinCenters();
+
+            LaunchSiteManager.AddKSCSites();
+
             ConfigParser.LoadAllGroupCenter();
 
             ConfigParser.LoadAllMapDecals();

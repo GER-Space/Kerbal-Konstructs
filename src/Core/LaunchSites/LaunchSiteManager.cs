@@ -162,8 +162,6 @@ namespace KerbalKonstructs.Core
             var mods = body.pqsController.transform.GetComponentsInChildren<PQSCity>(true);
             PQSCity ksc2PQS = null;
 
-
-
             foreach (var m in mods)
             {
                 if (m.name == "KSC2")
@@ -188,7 +186,7 @@ namespace KerbalKonstructs.Core
             ksc2Instance.RefLatitude = KKMath.GetLatitudeInDeg(ksc2PQS.repositionRadial);
             ksc2Instance.RefLongitude = KKMath.GetLongitudeInDeg(ksc2PQS.repositionRadial);
             ksc2Instance.CelestialBody = body;
-
+            ksc2Instance.groupCenter = StaticDatabase.GetGroupCenter("KSC2_Builtin");
 
             ksc2.staticInstance = ksc2Instance;
             ksc2.LaunchSiteName = "KSC2";
@@ -213,18 +211,22 @@ namespace KerbalKonstructs.Core
             ksc2.isSquad = true;
 
             ksc2Instance.launchSite = ksc2;
+            ksc2Instance.groupCenter.launchsites.Add(ksc2);
+
             RegisterLaunchSite(ksc2);
         }
 
-        /// <summary>
-        /// contructor
-        /// </summary>
-        static LaunchSiteManager()
+
+        internal static void AddKSCSites ()
         {
             AddKSC();
             AddKSC2();
         }
 
+
+        /// <summary>
+        /// contructor
+        /// </summary>
         internal static void AttachLaunchSite(StaticInstance instance, ConfigNode instanceNode)
         {
             if (instanceNode.HasValue("LaunchPadTransform") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchPadTransform")) && instanceNode.HasValue("LaunchSiteName") && !string.IsNullOrEmpty(instanceNode.GetValue("LaunchSiteName")))
