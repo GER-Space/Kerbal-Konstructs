@@ -83,7 +83,36 @@ namespace KerbalKonstructs
             }
         }
         internal bool launchFromAnySite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().launchFromAnySite; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().launchFromAnySite = value; } }
-        internal bool disableCareerStrategyLayer { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
+        internal bool discoverAllBases 
+        {
+            get
+            {
+                if (HighLogic.CurrentGame != null)
+                {
+                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().discoverAllBases;
+                } else
+                {
+                    return false;
+                }
+            }
+            set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().discoverAllBases = value; }
+        }
+
+        internal bool disableCareerStrategyLayer
+        {
+            get
+            {
+                if (HighLogic.CurrentGame != null)
+                {
+                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer;
+                } 
+                else
+                {
+                    return false;
+                }
+            }
+            set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; }
+        }
         internal bool disableRemoteBaseOpening { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteBaseOpening; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteBaseOpening = value; } }
         internal double facilityUseRange { get { return (double)HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().facilityUseRange; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().facilityUseRange = (float)value; } }
         internal bool disableRemoteRecovery { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteRecovery; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().disableRemoteRecovery = value; } }
@@ -154,7 +183,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Unity GameObject Awake function
         /// </summary>
-        void Awake()
+        public void Awake()
         {
             instance = this;
             var TbController = new ToolbarController();
@@ -184,6 +213,8 @@ namespace KerbalKonstructs
             #region Other Mods Hooks
             StageRecovery.AttachStageRecovery();
             #endregion
+
+            KKGraphics.LoadShaderBundles();
 
             SpaceCenterManager.setKSC();
             ConnectionManager.ScanForStockCommNet();
@@ -734,7 +765,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Unity Late Update. Used for KeyCodes and fixing facility levels on new games...
         /// </summary>
-        void LateUpdate()
+        public void LateUpdate()
         {
 
             // Check if we don't have the KSC Buildings in the savegame and save them there if missing.
@@ -938,7 +969,7 @@ namespace KerbalKonstructs
 
 
 
-                instance.cfgNode = instanceCfgNode;
+                instance.grassColor2Configs = instanceCfgNode.GetNodes("GrassColor2").ToList();
 
                 // update the references
                 foreach (var facility in instance.myFacilities)

@@ -276,6 +276,7 @@ namespace KerbalKonstructs.UI
                     // Don't show hidden closed Bases
                     if (site.LaunchSiteIsHidden && (!site.isOpen))
                     {
+                        //Log.Normal("Ignoring hidden base: " + site.LaunchSiteName);
                         continue;
                     }
 

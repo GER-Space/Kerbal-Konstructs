@@ -1,7 +1,7 @@
 ﻿using KSP.UI.Screens;
 using System;
 
-namespace KerbalKonstructs.Utilities
+namespace KerbalKonstructs
 {
     public class MiscUtils
     {

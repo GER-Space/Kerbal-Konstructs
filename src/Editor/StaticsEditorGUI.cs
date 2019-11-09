@@ -74,7 +74,7 @@ namespace KerbalKonstructs.UI
         //private string grasColorBStr = "0.171";
         //private string grasColorAStr = "0.729";
 
-        internal static GrasColorPresetUI.ColorPreset defaultGrassPreset = new GrasColorPresetUI.ColorPreset();
+        internal static GrassColorPresetUI2.ColorPreset2 defaultGrassPreset = new GrassColorPresetUI2.ColorPreset2();
 
         public float fButtonWidth = 0f;
 
@@ -563,8 +563,8 @@ namespace KerbalKonstructs.UI
 
                 if (GUILayout.Button("Load Preset", GUILayout.Width(90), GUILayout.Height(18)))
                 {
-                    GrasColorPresetUI.callBack = SetDefaultColorCallBack;
-                    GrasColorPresetUI.instance.Open();
+                    GrassColorPresetUI2.callBack = SetDefaultColorCallBack;
+                    GrassColorPresetUI2.instance.Open();
                 }
                 //GUILayout.Label("R", GUILayout.Height(18));
                 //grasColorRStr = (GUILayout.TextField(grasColorRStr, 5, GUILayout.Width(48), GUILayout.Height(18)));
@@ -595,7 +595,7 @@ namespace KerbalKonstructs.UI
             //}
         }
 
-        internal void SetDefaultColorCallBack(GrasColorPresetUI.ColorPreset preset)
+        internal void SetDefaultColorCallBack(GrassColorPresetUI2.ColorPreset2 preset)
         {
 
             defaultGrassPreset = preset;

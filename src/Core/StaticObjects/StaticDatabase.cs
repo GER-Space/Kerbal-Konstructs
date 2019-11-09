@@ -49,7 +49,6 @@ namespace KerbalKonstructs.Core
             if (string.IsNullOrEmpty(instance.UUID))
             {
                 instance.UUID = GetNewUUID();
-                instance.SaveConfig();
             }
 
             _allStaticInstances.Add(instance);
@@ -58,7 +57,6 @@ namespace KerbalKonstructs.Core
             if (instancedByUUID.ContainsKey(instance.UUID))
             {
                 instance.UUID = GetNewUUID();
-                instance.SaveConfig();
             }
             instancedByUUID.Add(instance.UUID, instance);
 
@@ -271,7 +269,6 @@ namespace KerbalKonstructs.Core
 
             float maxDistance = (float)(packRange + (KerbalKonstructs.localGroupRange * 1.5));
             // Log.Normal("MaxDistance: " + maxDistance);
-            bool isInRange = false;
 
             //Log.Normal("StaticDatabase.updateCache(): activeBodyName is " + activeBodyName);
             if (playerPos == Vector3.zero)
@@ -304,8 +301,8 @@ namespace KerbalKonstructs.Core
                 foreach (GroupCenter center in centersByPlanet[lastActiveBody.name].Values)
                 {
                     //Log.Normal("Checking Group: " + center.Group + " distance: " + Vector3.Distance(center.gameObject.transform.position, vPlayerPos)); 
-                    isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
-                    center.SetInstancesEnabled(isInRange);
+                    //isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
+                    center.CheckIfInRange(Vector3.Distance(center.gameObject.transform.position, vPlayerPos), maxDistance);
                 }
             }
         }

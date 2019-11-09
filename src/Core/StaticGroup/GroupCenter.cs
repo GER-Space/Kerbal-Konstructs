@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using KerbalKonstructs;
 
 namespace KerbalKonstructs.Core
 {
@@ -70,7 +71,7 @@ namespace KerbalKonstructs.Core
                 bool active = false;
                 foreach (KKLaunchSite site in launchsites)
                 {
-                    active = (active || site.isOpen);
+                    active = (active || ! site.LaunchSiteIsHidden);
                 }
                 return (!active);
             }
@@ -219,14 +220,16 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal void SetInstancesEnabled(bool newState)
+
+
+        internal void SetInstancesEnabled(bool isInRange)
         {
-            if (newState == isActive)
+            if (isInRange == isActive)
             {
                 return;
             }
-            Log.Normal("Setting Group " + Group + ": active state form: " + isActive + " to: " + newState);
-            isActive = newState;
+            Log.Normal("Setting Group " + Group + ": active state form: " + isActive + " to: " + isInRange);
+            isActive = isInRange;
 
             foreach (StaticInstance instance in childInstances)
             {
@@ -241,6 +244,27 @@ namespace KerbalKonstructs.Core
                     instance.Deactivate();
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Checks if the Group is in Range, or nearby so the bases are seen
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="maxDistance"></param>
+        internal void CheckIfInRange(float distance, float maxDistance)
+        {
+
+            if (distance < 5000  && isHidden)
+            {
+                foreach (KKLaunchSite site in launchsites)
+                {
+                    site.WasSeen = true;
+                    MiscUtils.HUDMessage("You discovered the bases at: " + Group);
+                }
+            }
+            bool isInRange = (distance < maxDistance);
+            SetInstancesEnabled(isInRange);
         }
 
         internal static void ActivateInstance(StaticInstance instance)

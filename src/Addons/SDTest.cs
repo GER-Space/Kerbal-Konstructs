@@ -277,7 +277,7 @@ namespace KerbalKonstructs.Addons
 
             // Copy the pixels from the RenderTexture to the new Texture
             myTexture2D.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-            myTexture2D.Apply();
+            myTexture2D.Apply(false,false);
 
             // Reset the active RenderTexture
             RenderTexture.active = previous;

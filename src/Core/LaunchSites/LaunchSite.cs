@@ -77,7 +77,7 @@ namespace KerbalKonstructs.Core
         {
             get
             {
-                return (_isHidden && !_wasSeen);
+                return (_isHidden && !WasSeen && !openState  && ! KerbalKonstructs.instance.discoverAllBases);
             }
             set 
             {
@@ -86,7 +86,9 @@ namespace KerbalKonstructs.Core
         }
 
         private bool _isHidden = false;
-        private bool _wasSeen = false;
+
+        //[CFGSetting]
+        public bool WasSeen = false;
 
         [CFGSetting]
         public bool ILSIsActive = false;
@@ -128,7 +130,12 @@ namespace KerbalKonstructs.Core
                     return false;
                 }
 
-                if (openState == true || openString == "Open")
+                if (KerbalKonstructs.instance.disableCareerStrategyLayer)
+                {
+                    return true;
+                }
+
+                if (openState == true || openString == "Open" )
                 {
                     return true;
                 }
@@ -142,7 +149,7 @@ namespace KerbalKonstructs.Core
                 openState = value;
                 if (openState == true)
                 {
-                    _wasSeen = true;
+                    WasSeen = true;
                     //LaunchSiteManager.OpenLaunchSite(this);
                     OpenCloseState = "Open";
                 }
@@ -253,7 +260,7 @@ namespace KerbalKonstructs.Core
         // Resets the facility/LaunchSite to its default state
         internal void ResetToDefaultState()
         {
-            _wasSeen = false;
+            WasSeen = false;
             if (OpenCloseState != defaultState)
             {
                 if (isOpen)

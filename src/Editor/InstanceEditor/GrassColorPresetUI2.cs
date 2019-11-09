@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-    public class GrasColorPresetUI : KKWindow
+    public class GrassColorPresetUI2 : KKWindow
     {
-        internal class ColorPreset
+        internal class ColorPreset2
         {
             internal string name = "KSC Default";
             internal Color grassColor = GrassColor2.defaultColor;
@@ -18,27 +18,27 @@ namespace KerbalKonstructs.UI
         };
 
 
-        private static GrasColorPresetUI _instance = null;
+        private static GrassColorPresetUI2 _instance = null;
         private static Rect windowRect = new Rect(300, 700, 400, 340);
 
         private Vector2 scrollPointer;
 
-        private ColorPreset selectedPreset;
+        private ColorPreset2 selectedPreset;
 
         internal static bool showOnlyLocal = true;
-        internal static Action<ColorPreset> callBack = delegate { };
+        internal static Action<ColorPreset2> callBack = delegate { };
         internal static string titleText = "Select a Preset";
 
-        private static List<ColorPreset> colors2Display = new List<ColorPreset>();
+        private static List<ColorPreset2> colors2Display = new List<ColorPreset2>();
         private static bool isInitialized = false;
 
-        internal static GrasColorPresetUI instance
+        internal static GrassColorPresetUI2 instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new GrasColorPresetUI();
+                    _instance = new GrassColorPresetUI2();
 
                 }
                 return _instance;
@@ -116,7 +116,7 @@ namespace KerbalKonstructs.UI
             scrollPointer = GUILayout.BeginScrollView(scrollPointer);
             {
 
-                foreach (ColorPreset preset in colors2Display)
+                foreach (ColorPreset2 preset in colors2Display)
                 {
                     GUI.enabled = (selectedPreset != preset);
                     if (GUILayout.Button(preset.name))
@@ -159,12 +159,12 @@ namespace KerbalKonstructs.UI
 
             isInitialized = true;
             colors2Display.Clear();
-            foreach (ConfigNode colorNode in GameDatabase.Instance.GetConfigNodes("KK_ColorPreset"))
+            foreach (ConfigNode colorNode in GameDatabase.Instance.GetConfigNodes("KK_ColorPreset2"))
             {
 
                 if (colorNode.HasValue("Name") && colorNode.HasValue("GrassColor"))
                 {
-                    ColorPreset preset = new ColorPreset();
+                    ColorPreset2 preset = new ColorPreset2();
                     preset.name = colorNode.GetValue("Name");
                     Log.Normal("Adding Color to List" + preset.name);
                     preset.grassColor = ConfigNode.ParseColor(colorNode.GetValue("GrassColor"));

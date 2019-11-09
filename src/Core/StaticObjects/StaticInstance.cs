@@ -110,7 +110,7 @@ namespace KerbalKonstructs.Core
 
         public UrlDir.UrlConfig configUrl;
         public String configPath;
-        internal ConfigNode cfgNode;
+        internal List<ConfigNode> grassColor2Configs = new List<ConfigNode>();
 
 
         internal GroupCenter groupCenter = null;
@@ -221,9 +221,7 @@ namespace KerbalKonstructs.Core
 
         internal float GetDistanceToObject(Vector3 vPosition)
         {
-            float fDistance = 0f;
-            fDistance = Vector3.Distance(gameObject.transform.position, vPosition);
-            return fDistance;
+            return Vector3.Distance(gameObject.transform.position, vPosition);
         }
 
 
@@ -343,6 +341,17 @@ namespace KerbalKonstructs.Core
             //{
             //    return;
             //}
+
+            // save the Color configs when we despawn, because they could be written to disk later
+            GrassColor2[] grassArray = _mesh.GetComponents<GrassColor2>();
+            if (grassArray.Length > 0)
+            {
+                grassColor2Configs.Clear();
+                foreach (GrassColor2 grassColor in grassArray)
+                {
+                    grassColor2Configs.Add(grassColor.GiveConfig());
+                }
+            }
 
             foreach (StaticModule module in gameObject.GetComponentsInChildren<StaticModule>())
             {

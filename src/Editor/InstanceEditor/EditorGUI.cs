@@ -65,6 +65,7 @@ namespace KerbalKonstructs.UI
         internal Boolean SnapRotateMode = false;
         internal bool grasColorModeIsAuto = false;
         internal static bool grasColorEnabled = false;
+        internal static bool grassColor2Enabled = false;
 
         #endregion
 
@@ -115,7 +116,8 @@ namespace KerbalKonstructs.UI
         private static Vector3 localMovement;
         private static Vector3 origLocalPosition;
 
-        private static GrassColor2 grassMod = null;
+        private static GrasColor grassMod = null;
+        private static GrassColor2 grassMod2 = null;
 
 
         #endregion
@@ -174,8 +176,10 @@ namespace KerbalKonstructs.UI
 
                 grasColorModeIsAuto = false;
 
-                grassMod = selectedInstance.mesh.GetComponent<GrassColor2>();
+                grassMod = selectedInstance.mesh.GetComponent<GrasColor>();
+                grassMod2 = selectedInstance.mesh.GetComponent<GrassColor2>();
                 grasColorEnabled = (grassMod != null);
+                grassColor2Enabled = (grassMod2 != null);
 
                 origCenter = selectedInstance.groupCenter;
                 origPosition = selectedInstance.transform.localPosition;
@@ -627,18 +631,34 @@ namespace KerbalKonstructs.UI
                 GUILayout.Label("GrasColor: ", GUILayout.Height(23));
                 GUILayout.FlexibleSpace();
 
-                GUI.enabled = (grasColorEnabled && !UI2.GrassEditor.isOpen);
+                GUI.enabled = ((grasColorEnabled || grassColor2Enabled )&& (!UI2.GrassEditor.isOpen || GrassColorUI.instance.IsOpen() ));
                 if (GUILayout.Button("Preset", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    GrasColorPresetUI.callBack = grassMod.UpdateCallBack;
-                    GrassColorUI.selectedInstance = selectedInstance;
-                    GrassColorUI.instance.SetupFields();
-                    GrasColorPresetUI.instance.Open();
+                    if (grasColorEnabled)
+                    {
+                        GrassColorPresetUI.callBack = GrassColorUI.instance.UpdateCallBack;
+                        GrassColorUI.selectedInstance = selectedInstance;
+                        GrassColorUI.instance.SetupFields();
+                        GrassColorPresetUI.instance.Open();
+                    }
+                    if (grassColor2Enabled)
+                    {
+                        GrassColorPresetUI2.callBack = grassMod2.UpdateCallBack;
+                        GrassColorPresetUI2.instance.Open();
+                    }
                 }
 
                 if (GUILayout.Button("Edit", GUILayout.Width(90), GUILayout.Height(23)))
                 {
-                    UI2.GrassEditor.Open();
+                    if (grasColorEnabled)
+                    {
+                        GrassColorUI.instance.Open();
+                    }
+                    if (grassColor2Enabled)
+                    {
+                        UI2.GrassEditor.Open();
+                    }
+                    
                 }
 
                 GUI.enabled = true;

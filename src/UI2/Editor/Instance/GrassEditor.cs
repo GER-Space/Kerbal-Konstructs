@@ -51,7 +51,7 @@ namespace KerbalKonstructs.UI2
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("Grass Color Editor", HighLogic.UISkin.label),
                 new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("select preset", delegate { GrasColorPresetUI.callBack = selectedMod.UpdateCallBack; GrasColorPresetUI.instance.Open(); }, 50, 25, false)
+                new DialogGUIButton("select preset", delegate { GrassColorPresetUI2.callBack = selectedMod.UpdateCallBack; GrassColorPresetUI2.instance.Open(); }, 50, 25, false)
                 ));
 
 
@@ -107,9 +107,37 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("FarBlendDistance", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25))
 
+                //new DialogGUIHorizontalLayout(
+                //    new DialogGUILabel("Overall Tiling", KKStyle.whiteLabel),
+                //    new DialogGUISlider(GetOffsetTiling, 0, 200f, true, 140, 25, SetOffsetTiling),
+                //    new DialogGUITextInput("0", false, 10, SetOffsetTilingStr, GetOffsetTilingStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25))
+
                 )); ;
         }
 
+
+        internal static string GetOffsetTilingStr()
+        {
+
+            return selectedMod.tilingOffset.ToString();
+        }
+
+        internal static float GetOffsetTiling()
+        {
+
+            return (float)selectedMod.tilingOffset;
+        }
+        internal static void SetOffsetTiling(float newValue)
+        {
+
+          selectedMod.tilingOffset = (int)newValue;
+        }
+        internal static string SetOffsetTilingStr(string newValue)
+        {
+
+            selectedMod.tilingOffset = int.Parse(newValue);
+            return selectedMod.tilingOffset.ToString();
+        }
 
         internal static string GetTextureName(string fieldName)
         {

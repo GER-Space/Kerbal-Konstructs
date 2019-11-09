@@ -83,6 +83,10 @@
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.AudioModule">
       <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
       <Private>False</Private>
@@ -167,8 +171,9 @@
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
     <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrassColorPresetUI.cs" />
     <Compile Include="Editor\InstanceEditor\GrassColorUI.cs" />
-    <Compile Include="Editor\InstanceEditor\GrasColorPresetUI.cs" />
+    <Compile Include="Editor\InstanceEditor\GrassColorPresetUI2.cs" />
     <Compile Include="Editor\InstanceEditor\VariantSelector.cs" />
     <Compile Include="Editor\KKEditorLogic.cs" />
     <Compile Include="Editor\Shared\DrawObject.cs" />

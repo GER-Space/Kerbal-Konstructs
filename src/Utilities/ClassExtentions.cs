@@ -11,7 +11,51 @@ namespace KerbalKonstructs.Core
         //internal static AsmUtils.Detour getGetTagDetour;
         //internal static AsmUtils.Detour getSetTagDetour;
 
+        public static Texture2D ToTexture2D(this RenderTexture rTex)
+        {
+            Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.ARGB32, false);
+            RenderTexture oldActive = RenderTexture.active;
+            RenderTexture.active = rTex;
+            tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
+            tex.Apply(false, false);
+            RenderTexture.active = oldActive;
+            return tex;
+        }
 
+
+        public static Texture2D BlitTexture(this Texture2D texture, int textureSize = -1)
+        {
+            RenderTexture renderTarget;
+            if (textureSize == -1)
+            {
+                renderTarget = RenderTexture.GetTemporary(
+               texture.width,
+               texture.height,
+               0,
+               RenderTextureFormat.ARGB32,
+               RenderTextureReadWrite.Linear);
+            } else
+            {
+                renderTarget = RenderTexture.GetTemporary(
+               textureSize,
+               textureSize,
+               0,
+               RenderTextureFormat.ARGB32,
+               RenderTextureReadWrite.Linear);
+
+            }
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(texture, renderTarget);
+            return renderTarget.ToTexture2D();
+        }
+
+
+        public static void WritePng(this Texture2D texture, string filePath)
+        {
+            var mainTextureblob = texture.EncodeToPNG();
+            // For testing purposes, also write to a file in the project folder
+            System.IO.File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/" +filePath+".png", mainTextureblob);
+        }
 
         public static Transform FindRecursive(this Transform transform, string name)
         {

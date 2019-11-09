@@ -77,6 +77,7 @@ namespace KerbalKonstructs
                 // return the error Shader, if we have one
                 if (allShaders.ContainsKey("Hidden/InternalErrorShader"))
                 {
+                    Log.UserWarning("Cannot load shader: " + name);
                     return allShaders["Hidden/InternalErrorShader"];
                 }
                 else
@@ -85,6 +86,72 @@ namespace KerbalKonstructs
                 }
             }
         }
+
+
+        internal static void LoadShaderBundles ()
+        {
+
+            string bundleFileName ;
+
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXPlayer:
+                    bundleFileName = "kkshaders.osx";
+                    break;
+                case RuntimePlatform.LinuxPlayer:
+                    bundleFileName = "kkshaders.osx";
+                    break;
+                default:
+                    bundleFileName = "kkshaders.windows";
+                    break;
+            }
+            string bundlePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/Shaders/" + bundleFileName;
+
+            AssetBundle shadersBundle = null;
+            try
+            {
+                shadersBundle = AssetBundle.LoadFromFile(bundlePath);
+                if (shadersBundle == null)
+                {
+                    Log.Normal("Failed to load shader asset file: "+ bundlePath);
+                    return;
+                }
+                foreach (string shadername in shadersBundle.GetAllAssetNames())
+                {
+                    LoadAndRegisterShader(shadersBundle, shadername);
+                }
+            }
+            catch (System.Exception exeption)
+            {
+               Log.Error("Error loading Shader assetbundle "+ exeption);
+            }
+            finally
+            {
+                if (shadersBundle != null)
+                {
+                    shadersBundle.Unload(false);
+                }
+            }
+
+        }
+
+        private static void LoadAndRegisterShader(AssetBundle bundle , string shaderName)
+        {
+            Shader newShader = bundle.LoadAsset<Shader>(shaderName);
+            GameObject.DontDestroyOnLoad(newShader);
+            if (newShader == null || !newShader.isSupported)
+            {
+                Log.Error("could not load shader: " + shaderName + " from: " + bundle.name);
+            }
+            else
+            {
+                GameDatabase.Instance.databaseShaders.AddUnique(newShader);
+                allShaders.Add(newShader.name, newShader);
+                Log.Normal("Loaded Shader: " + newShader.name + " from file: " + shaderName);
+            }
+
+        }
+
 
         //internal static void ReplaceShader(Renderer renderer)
         //{
@@ -111,7 +178,7 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="textureName"></param>
         /// <returns></returns>
-        internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0)
+        internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0, bool createMibMaps = false)
         {
             if (string.IsNullOrEmpty(textureName))
             {
@@ -154,8 +221,9 @@ namespace KerbalKonstructs
                     tmpTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
 
 
-                    foundTexture = new Texture2D(tmpTexture.width, tmpTexture.height, TextureFormat.ARGB32, false);
+                    foundTexture = new Texture2D(tmpTexture.width, tmpTexture.height, TextureFormat.ARGB32, createMibMaps);
                     foundTexture.LoadImage﻿(System.IO.File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), false);
+                    foundTexture.Apply(createMibMaps, false);
                 }
                 else
                 {

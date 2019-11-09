@@ -123,6 +123,11 @@ namespace KerbalKonstructs.UI
         /// <returns></returns>
         public static bool IsOpen(Action drawfunct)
         {
+            if (instance == null)
+            {
+                return false;
+            }
+
             return instance.openWindows.Contains(drawfunct);
         }
 

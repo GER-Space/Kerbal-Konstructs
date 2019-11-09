@@ -210,9 +210,13 @@ namespace KerbalKonstructs.Core
 
         [GameParameters.CustomParameterUI("Launch from any Site", toolTip = "With this set to true you could launch a plane from the SHP on a rocket launchpad. or vice versa", autoPersistance = true)]
         public bool launchFromAnySite = false;
-        [GameParameters.CustomParameterUI("Open everything", toolTip = "Use every base and facility without paying money", autoPersistance = true, gameMode = GameParameters.GameMode.CAREER)]
+        [GameParameters.CustomParameterUI("Open everything", toolTip = "Set every base to open", autoPersistance = true, gameMode = GameParameters.GameMode.ANY)]
         public bool disableCareerStrategyLayer = false;
-        [GameParameters.CustomParameterUI("Leave Stock CommNet", toolTip = "Do not remove the overpowered Stock CoommNet Stations around Kerbin", autoPersistance = true, gameMode = GameParameters.GameMode.CAREER)]
+
+        [GameParameters.CustomParameterUI("Show hidden bases", toolTip = "Discover every hidden base without traveling there", autoPersistance = true, gameMode = GameParameters.GameMode.ANY)]
+        public bool discoverAllBases = false;
+
+        [GameParameters.CustomParameterUI("Leave Stock CommNet", toolTip = "Do not remove the overpowered Stock CoommNet Stations around Kerbin", autoPersistance = true, gameMode = GameParameters.GameMode.ANY)]
         public bool dontRemoveStockCommNet = true;
 
 

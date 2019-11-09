@@ -169,10 +169,10 @@ namespace KerbalKonstructs.Core
                 }
 
                 // Remove legacy GrassColor values
-                if ((instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture"))
-                {
-                    continue;
-                }
+                //if ((instanceSetting.Key == "GrasColor") || (instanceSetting.Key == "GrasTexture"))
+                //{
+                //    continue;
+                //}
 
                 // No Longer save Legacy Values
                 if (instanceSetting.Key == "RadialPosition" || instanceSetting.Key == "RadiusOffset" || instanceSetting.Key == "RotationAngle" || instanceSetting.Key == "RefLatitude" || instanceSetting.Key == "RefLongitude" || instanceSetting.Key == "IsRelativeToTerrain")
@@ -200,9 +200,22 @@ namespace KerbalKonstructs.Core
                 LaunchSiteParser.WriteConfig(instance.launchSite, lsNode);
             }
 
-            foreach (GrassColor2 grassColor2 in instance.mesh.GetComponents<GrassColor2>())
+            // save unsaved grassSettings before we write everything to the instance node
+            if (instance.isSpawned)
             {
-                grassColor2.WriteCfg(cfgNode);
+                GrassColor2[] grassArray = instance.mesh.GetComponents<GrassColor2>();
+                if (grassArray.Length > 0)
+                {
+                    instance.grassColor2Configs.Clear();
+                    foreach (GrassColor2 grassColor in grassArray)
+                    {
+                        instance.grassColor2Configs.Add(grassColor.GiveConfig());
+                    }
+                }
+            }
+            foreach (ConfigNode grassNode in instance.grassColor2Configs)
+            {
+                cfgNode.AddNode("GrassColor2", grassNode);
             }
 
         }
