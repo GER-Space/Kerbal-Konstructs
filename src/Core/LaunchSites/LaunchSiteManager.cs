@@ -186,7 +186,7 @@ namespace KerbalKonstructs.Core
             ksc2Instance.RefLatitude = KKMath.GetLatitudeInDeg(ksc2PQS.repositionRadial);
             ksc2Instance.RefLongitude = KKMath.GetLongitudeInDeg(ksc2PQS.repositionRadial);
             ksc2Instance.CelestialBody = body;
-            ksc2Instance.groupCenter = StaticDatabase.GetGroupCenter("KSC2_Builtin");
+            ksc2Instance.groupCenter = StaticDatabase.GetGroupCenter(body.name + "_KSC2_Builtin");
 
             ksc2.staticInstance = ksc2Instance;
             ksc2.LaunchSiteName = "KSC2";

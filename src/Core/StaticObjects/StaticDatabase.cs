@@ -158,6 +158,7 @@ namespace KerbalKonstructs.Core
 
         internal static void AddGroupCenter(GroupCenter center)
         {
+            //Log.Normal("Added GroupCener: " + center.Group);
             if (!HasGroupCenter(center.dbKey))
             {
                 allCenters.Add(center.dbKey, center);
