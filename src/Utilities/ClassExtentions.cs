@@ -11,6 +11,77 @@ namespace KerbalKonstructs.Core
         //internal static AsmUtils.Detour getGetTagDetour;
         //internal static AsmUtils.Detour getSetTagDetour;
 
+
+
+        /// <summary>
+        /// Libits the Channels of a Color to this maxValue
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public static Color LimitTo(this Color color, float maxValue)
+        {
+            Color finalColor = new Color(Math.Min(color.r, maxValue) ,
+                                         Math.Min(color.g, maxValue),
+                                         Math.Min(color.b, maxValue),
+                                         Math.Min(color.a, maxValue)
+                                        );
+            return finalColor;
+        }
+
+        /// <summary>
+        /// Tries to devide the first color by the second;
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="divisor"></param>
+        /// <returns></returns>
+        public static Color DivideWith(this Color first, Color divisor)
+        {
+            Color finalColor = new Color(first.r / Math.Max(divisor.r, 0.00001f), 
+                                         first.g / Math.Max(divisor.g, 0.00001f),
+                                         first.b / Math.Max(divisor.b, 0.00001f),
+                                         first.a / Math.Max(divisor.a, 0.00001f)
+                                        );
+            return finalColor;
+        }
+
+        /// <summary>
+        /// Converts a Texture to a Texture2D
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static Texture2D ToTexture2D(this Texture texture, int textureSize = -1)
+        {
+            RenderTexture renderTarget;
+            if (textureSize == -1)
+            {
+                renderTarget = RenderTexture.GetTemporary(
+               texture.width,
+               texture.height,
+               0,
+               RenderTextureFormat.ARGB32,
+               RenderTextureReadWrite.Linear);
+            }
+            else
+            {
+                renderTarget = RenderTexture.GetTemporary(
+               textureSize,
+               textureSize,
+               0,
+               RenderTextureFormat.ARGB32,
+               RenderTextureReadWrite.Linear);
+
+            }
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(texture, renderTarget);
+            return renderTarget.ToTexture2D();
+        }
+
+        /// <summary>
+        /// Converts a RenderTexture to a Texture2D
+        /// </summary>
+        /// <param name="rTex"></param>
+        /// <returns></returns>
         public static Texture2D ToTexture2D(this RenderTexture rTex)
         {
             Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.ARGB32, false);
@@ -22,7 +93,12 @@ namespace KerbalKonstructs.Core
             return tex;
         }
 
-
+        /// <summary>
+        /// Creates a fully readable copy of the source Texture with the size
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="textureSize"></param>
+        /// <returns></returns>
         public static Texture2D BlitTexture(this Texture2D texture, int textureSize = -1)
         {
             RenderTexture renderTarget;
@@ -49,8 +125,12 @@ namespace KerbalKonstructs.Core
             return renderTarget.ToTexture2D();
         }
 
-
-        public static void WritePng(this Texture2D texture, string filePath)
+        /// <summary>
+        /// Writes a Texture2D to a file
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="filePath"></param>
+        public static void WritePNG(this Texture2D texture, string filePath)
         {
             var mainTextureblob = texture.EncodeToPNG();
             // For testing purposes, also write to a file in the project folder

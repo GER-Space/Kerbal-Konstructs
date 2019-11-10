@@ -163,6 +163,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrasColor.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColor2.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColorUtils.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\GrassColor\TexturePreset.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />

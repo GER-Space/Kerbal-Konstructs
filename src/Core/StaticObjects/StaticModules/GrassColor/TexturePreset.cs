@@ -93,13 +93,22 @@ namespace KerbalKonstructs.Core
                     {
                         preset.usage = TextureUsage.Unused;
                     }
-                    Log.Normal("Adding Texture to List" + preset.texturePath + " : " + preset.usage.ToString());
+                    //Log.Normal("Adding Texture to List" + preset.texturePath + " : " + preset.usage.ToString());
 
-
+                    if (textureList.Where(x => x.texturePath == preset.texturePath).Where(x => x.usage == preset.usage).Count() > 0  )
+                    {
+                        continue;
+                    } 
 
                     textureList.Add(preset);
+
                 }
             }
+            textureList.Sort(delegate (TexturePreset first, TexturePreset second)
+            {
+                return first.texturePath.CompareTo(second.texturePath);
+            });
+
         }
 
 

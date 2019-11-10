@@ -107,65 +107,105 @@ namespace KerbalKonstructs.Core
             InstanceUtil.SetLayerRecursively(instance, 0);
             grasCamera.targetTexture = cameraRenderTexture;
             grasCamera.enabled = true;
+            //Light light = grasCamera.gameObject.AddOrGetComponent<Light>();
+            //light.type = LightType.Point;
+            //light.intensity = 1;
+            //light.color = Color.white;
+            //light.enabled = true;
             grasCamera.Render();
+            //light.enabled = false;
 
-            //Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
-            //RaycastHit castHit = new RaycastHit();
-            //if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
-            //{
-            //    Log.Normal("NO raycast hit");
-            //}
-            //else
-            //{
+            Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
+            RaycastHit castHit = new RaycastHit();
+            if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
+            {
+                Log.Normal("NO raycast hit");
+            }
+            else
+            {
 
-            //    Renderer rend = castHit.transform.GetComponentsInChildren<Renderer>(true).FirstOrDefault();
+                Renderer rend = castHit.transform.GetComponent<Renderer>();
 
-            //    if (rend == null)
-            //    {
-            //        Log.Normal("No renderer found");
-            //    }
-            //    if (rend.materials.Length == 0)
-            //    {
-            //        Log.Normal("No Raycast material found");
-            //    }
-            //    if (rend.material.shader == null)
-            //    {
-            //        Log.Normal("No shader found");
-            //    }
-            //    else
-            //    {
-            //        RenderTexture myTexture = new RenderTexture(20, 20, 24);
-            //        Graphics.Blit(null, myTexture, rend.material);
-            //        myTexture.
-            //    }
-            //}
+                if (rend != null)
+                {
+                    if (rend.materials.Length != 0)
+                    {
+                        foreach (string name in rend.material.GetTexturePropertyNames())
+                        {
+                            Texture2D lowTex = (Texture2D) rend.material.GetTexture("_lowTex");
+                        }
+                    }
+                    else
+                    {
+                        Log.Normal("No Raycast material found");
+                    }
+                }
+                else
+                {
+                    Log.Normal("No renderer found");
+                }
+            }
+
 
             // bring it back to the normal scenery
             InstanceUtil.SetLayerRecursively(instance, 15);
 
-            RenderTexture.active = cameraRenderTexture;
-            cameraTexture.ReadPixels(new Rect(0, 0, frameWidth, frameHeight), 0, 0);
+            Color newColor = GrassColorUtils.AverageColor(cameraRenderTexture.ToTexture2D().GetPixels());
+            newColor.a = 1;
 
-            grasCamera.targetTexture = null;
-            grasCamera.enabled = false;
-            RenderTexture.active = null;
-
-            Color[] cols = cameraTexture.GetPixels();
-            float r = 0, g = 0, b = 0;
-            int len = cols.Length;
-            for (int i = 0; i < len; i++)
-            {
-                r += cols[i].r;
-                g += cols[i].g;
-                b += cols[i].b;
-            }
-            Color outColor = new Color();
-            outColor.r = r / len;
-            outColor.g = g / len;
-            outColor.b = b / len;
-            //outColor.a = 0.014f;
-            return outColor;
+            return newColor;
         }
+
+
+        public Texture2D GetCameraTexture(StaticInstance instance)
+        {
+            Texture2D MidTex2 = null;
+            SetupCameraForVessel(instance);
+
+            Ray myRay = new Ray(cameraObject.transform.position, instance.CelestialBody.transform.position);
+            RaycastHit castHit = new RaycastHit();
+            if (!Physics.Raycast(myRay, out castHit, float.PositiveInfinity, 1 << 15))
+            {
+                Log.Normal("NO raycast hit");
+            }
+            else
+            {
+
+                Renderer rend = castHit.transform.GetComponent<Renderer>();
+
+                if (rend != null)
+                {
+                    if (rend.materials.Length != 0)
+                    {
+                        Texture midTex = rend.material.GetTexture("_lowTex");
+                        if (midTex != null)
+                        {
+                            MidTex2 = midTex.ToTexture2D(64);
+                            //rend.material.GetTexture("_midTex").ToTexture2D().WritePNG("Test/MidTex");
+                            //rend.material.GetTexture("_highTex").ToTexture2D().WritePNG("Test/HighTex");
+                        }
+                        else
+                        {
+                            Log.Normal("No LowTex found");
+                        }
+
+                    }
+                    else
+                    {
+                        Log.Normal("No Raycast material found");
+                    }
+                }
+                else
+                {
+                    Log.Normal("No renderer found");
+                }
+            }
+
+            InstanceUtil.SetLayerRecursively(instance, 15);
+
+            return MidTex2;
+        }
+
 
     }
 

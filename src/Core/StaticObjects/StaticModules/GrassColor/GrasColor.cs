@@ -18,10 +18,7 @@ namespace KerbalKonstructs
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = null;
 
-        private string legacyTextureName = "BUILTIN:/terrain_grass00_new";
-        private string replacementTextureName = "KerbalKonstructs/legacyGrass";
-
-        private bool usePQS = true;
+        internal bool usePQS = true;
         private bool useNormalMap = false;
 
         private bool isInitialized = false;
@@ -59,7 +56,7 @@ namespace KerbalKonstructs
         internal void SetTexture()
         {
 
-            if (staticInstance.GrasColor == Color.clear && (StaticsEditorGUI.instance != null) && !(StaticsEditorGUI.instance.IsOpen() && (EditorGUI.instance != null) && EditorGUI.instance.grasColorModeIsAuto))
+            if (staticInstance.GrasColor == Color.clear)
             {
                 return;
             }
@@ -79,14 +76,6 @@ namespace KerbalKonstructs
             }
 
             grasColor = GetColor();
-
-            //Log.Normal("Texture Setting is: " + staticInstance.GrasTexture);
-
-            //Log.Normal("Texture Setting2 is: " + grasTextureName);
-            //if (grasTextureName == legacyTextureName)
-            //{
-            //    grasTextureName = replacementTextureName;
-            //}
 
             grasTexture = KKGraphics.GetTexture(grasTextureName, false, 0 , true);
 
@@ -115,28 +104,11 @@ namespace KerbalKonstructs
 
         internal Color GetColor()
         {
-            Color underGroundColor = defaultColor;
-            if (StaticsEditorGUI.instance != null && EditorGUI.instance != null && StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto)
-            {
-                if (usePQS)
-                {
-                    underGroundColor = GetSurfaceColorPQS(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
-                }
-                else
-                {
-                    underGroundColor = GrasColorCam.instance.GetCameraColor(staticInstance);
-                }
-                underGroundColor.a = underGroundColor.b - underGroundColor.g;
-                staticInstance.GrasColor = underGroundColor;
-            }
-            else
-            {
-                underGroundColor = staticInstance.GrasColor;
-            }
-            //Log.Normal("underGroundColor: " + underGroundColor.ToString());
+            Color underGroundColor = staticInstance.GrasColor;
+
             if (underGroundColor.a < 1f)
             {
-                underGroundColor = GrassColor2.ManualCalcNewColor(underGroundColor, grasTextureName, grasTextureName);
+                underGroundColor = GrassColorUtils.ManualCalcNewColor(underGroundColor, grasTextureName, grasTextureName);
             }
             return underGroundColor;
         }
@@ -202,30 +174,13 @@ namespace KerbalKonstructs
                 grasRenderer.material.shader = KKGraphics.GetShader("KK/Diffuse_Multiply_Random");
                 if (useNormalMap)
                 {
-                    //grasRenderer.material.shader = Shader.Find("Legacy Shaders/Bumped Diffuse");
-                    //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
-                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false) && grasRenderer.material.HasProperty("_BumpMap"))
+                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false))
                     {
                         grasRenderer.material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0 , true));
                     }
                 }
             }
         }
-
-        public void findSquadGrasMaterial()
-        {
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
-            {
-                foreach (Material material in renderer.materials.Where(mat => mat.name.StartsWith("ksc_exterior_terrain_grass_02")))
-                {
-                    //                    defaultColor = material.GetColor("_Color");
-                    //Log.Normal("Added material:" + material.name + " : " + material.mainTexture.name);
-                    //material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
-                    grasMaterials.Add(material);
-                }
-            }
-        }
-
 
     }
 

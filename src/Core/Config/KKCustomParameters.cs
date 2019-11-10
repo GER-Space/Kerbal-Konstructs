@@ -135,10 +135,20 @@ namespace KerbalKonstructs.Core
         // editor settings
         [GameParameters.CustomFloatParameterUI("Visiblility Range", minValue = 5000, maxValue = 200000, stepCount = 2500, autoPersistance = true)]
         public float maxEditorVisRange = 25000;
+        [GameParameters.CustomParameterUI("Enable inflight highlighting", toolTip = "Facilities will glow when you move the curser over them", autoPersistance = true)]
+        public bool enableInflightHighlight = false;
+
+        public string blank11 = "";
+        [GameParameters.CustomStringParameterUI("", title = "Editor Settings", lines = 1)]
+        public string blank01 = "";
+
         [GameParameters.CustomParameterUI("Spawn preview models", toolTip = "just leave this to true", autoPersistance = true)]
         public bool spawnPreviewModels = true;
         [GameParameters.CustomParameterUI("Use alterative editor camera", toolTip = "Use the legacy KK editor camera, which can go under the surface", autoPersistance = true)]
         public bool useLegacyCamera = false;
+        [GameParameters.CustomParameterUI("RenderCamera for underground colors", toolTip = "Use a lighting dependent camera instead of a calculated color for getting the underground grass color", autoPersistance = true)]
+        public bool useCamUnderdroudColors = false;
+
 
         [GameParameters.CustomParameterUI("Directory for new Instances", toolTip = "Path under GameData where newly placed static configs should be saved", autoPersistance = true)]
         public NewInstancePath newInstanceEnum = NewInstancePath.INTERNAL;
@@ -168,8 +178,6 @@ namespace KerbalKonstructs.Core
             return true;
         }
 
-        [GameParameters.CustomParameterUI("Enable inflight highlighting", toolTip = "Facilities will glow when you move the curser over them", autoPersistance = true)]
-        public bool enableInflightHighlight = false;
 
 
     }

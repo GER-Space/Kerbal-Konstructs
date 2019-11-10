@@ -63,7 +63,6 @@ namespace KerbalKonstructs.UI
         //   public static Boolean editingFacility = false;
 
         internal Boolean SnapRotateMode = false;
-        internal bool grasColorModeIsAuto = false;
         internal static bool grasColorEnabled = false;
         internal static bool grassColor2Enabled = false;
 
@@ -173,8 +172,6 @@ namespace KerbalKonstructs.UI
                 SetupFields();
                 SetupVectors();
                 SetupGizmo();
-
-                grasColorModeIsAuto = false;
 
                 grassMod = selectedInstance.mesh.GetComponent<GrasColor>();
                 grassMod2 = selectedInstance.mesh.GetComponent<GrassColor2>();

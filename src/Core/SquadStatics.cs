@@ -193,7 +193,10 @@ namespace KerbalKonstructs
                         TexturePreset preset = new TexturePreset();
                         preset.usage = TextureUsage.BlendMask;
                         preset.texturePath = "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name;
-                        TextureSelector.additionalTextures.Add(preset);
+                        if (TextureSelector.additionalTextures.Where(x => x.texturePath == preset.texturePath).Count() == 0)
+                        {
+                            TextureSelector.additionalTextures.Add(preset);
+                        }
 
                     }
 

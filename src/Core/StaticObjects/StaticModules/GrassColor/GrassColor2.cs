@@ -12,7 +12,7 @@ namespace KerbalKonstructs
     {
 
         public string GrassMeshName = "Nix";
-        public string UsePQSColor = "False";
+        public string UsePQSColor = "True";
 
         public string DefaultNearGrassTexture = "BUILTIN:/terrain_grass00_new";
         public string DefaultFarGrassTexture = "BUILTIN:/terrain_grass00_new_detail";
@@ -26,7 +26,7 @@ namespace KerbalKonstructs
 
 
 
-        private bool usePQS = false;
+        internal bool usePQS = false;
         private bool isInitialized = false;
 
         private List<Renderer> grassRenderers = new List<Renderer>();
@@ -81,7 +81,7 @@ namespace KerbalKonstructs
                 Initialize();
             }
 
-            if (grassColor == Color.clear && !(StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
+            if (grassColor == Color.clear)
             {
                 return;
             }
@@ -206,76 +206,6 @@ namespace KerbalKonstructs
 
 
 
-        internal Color GetColor()
-        {
-            Color underGroundColor = defaultColor;
-            if ((StaticsEditorGUI.instance.IsOpen() && EditorGUI.instance.grasColorModeIsAuto))
-            {
-                if (usePQS)
-                {
-                    underGroundColor = GetSurfaceColorPQS(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
-                }
-                else
-                {
-                    underGroundColor = GrasColorCam.instance.GetCameraColor(staticInstance);
-                }
-                staticInstance.GrasColor = underGroundColor;
-            }
-            else
-            {
-                underGroundColor = staticInstance.GrasColor;
-            }
-            //Log.Normal("underGroundColor: " + underGroundColor.ToString());
-            return underGroundColor;
-        }
-
-        /// <summary>
-        /// Uses the PQS System to query the color of the undergound
-        /// </summary>
-        /// <param name="body"></param>
-        /// <param name="lat"></param>
-        /// <param name="lon"></param>
-        /// <returns></returns>
-        public static Color GetSurfaceColorPQS(CelestialBody body, Double lat, Double lon)
-        {
-            // Tell the PQS that our actions are not supposed to end up in the terrain
-            body.pqsController.isBuildingMaps = true;
-            body.pqsController.isFakeBuild = true;
-
-            // Create the vertex information
-            PQS.VertexBuildData data = new PQS.VertexBuildData
-            {
-                directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
-                vertHeight = body.pqsController.radius
-            };
-
-            // Fetch all enabled Mods
-            PQSMod[] mods = body.GetComponentsInChildren<PQSMod>(true).Where(m => m.modEnabled && m.sphere == body.pqsController).ToArray();
-
-            // Iterate over them and build the height at this point
-            // This is neccessary for mods that use the terrain height to 
-            // color the terrain (like HeightColorMap)
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuildHeight(data);
-            }
-
-            // Iterate over the mods again, this time build the color component 
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuild(data);
-            }
-
-            // Reset the PQS
-            body.pqsController.isBuildingMaps = false;
-            body.pqsController.isFakeBuild = false;
-
-            // The terrain color is now stored in data.vertColor. 
-            // For getting the height at this point you can use data.vertHeight
-            return data.vertColor;
-        }
-
-
         public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
@@ -361,11 +291,7 @@ namespace KerbalKonstructs
                     nearGrassTextureName = staticInstance.GrasTexture;
                     farGrassTextureName = staticInstance.GrasTexture;
 
-
-                    //Color newColor = GetNewColor(grassColor, staticInstance.GrasTexture);
-                    //Color oldColor = GetLegacyColor(staticInstance.GrasColor, staticInstance.GrasTexture);
-                    //grassColor = CalcNewColor(staticInstance.GrasColor, staticInstance.GrasTexture, staticInstance.GrasTexture);
-                    grassColor = ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
+                    grassColor = GrassColorUtils.ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
 
 
                 }
@@ -399,60 +325,7 @@ namespace KerbalKonstructs
             }
         }
 
-        internal static Color ManualCalcNewColor(Color oldColor, string oldTextrueName, string newTextureName)
-        {
-
-            if (String.IsNullOrEmpty(oldTextrueName))
-            {
-                oldTextrueName = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
-            }
-
-            if (String.IsNullOrEmpty(newTextureName))
-            {
-                oldTextrueName = "BUILTIN:/terrain_grass00_new_detail";
-            }
-
-
-            if (oldTextrueName == "BUILTIN:/terrain_grass00_new")
-            {
-                oldTextrueName = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
-            }
-
-            Texture2D oldTexture = KKGraphics.GetTexture(oldTextrueName).BlitTexture(64);
-            Texture2D newTexture = KKGraphics.GetTexture(newTextureName).BlitTexture(64);
-
-            Color oldAvgTexColor = AverageColor(oldTexture.GetPixels());
-            Color newAvgTexColor = AverageColor(newTexture.GetPixels());
-
-            //Log.Normal("oldAvgTexColor: " + oldAvgTexColor.ToString());
-            //Log.Normal("newAvgTexColor: " + newAvgTexColor.ToString());
-
-            Color legacyColor = Color.Lerp(oldColor, oldAvgTexColor, oldColor.a);
-            legacyColor.a = 1;
-
-            //Color firstNewColor = newAvgTexColor * legacyColor;
-            //Log.Normal("firstNewColor : " + firstNewColor.ToString());
-
-            float maxValue = 6f;
-
-            Color finalColor = new Color(Math.Min(legacyColor.r / Math.Max(newAvgTexColor.r, 0.0001f), maxValue), Math.Min(legacyColor.g / Math.Max(newAvgTexColor.g, 0.0001f), maxValue), Math.Min(legacyColor.b / Math.Max(newAvgTexColor.b,0.0001f), maxValue), 1f );
-
-            Log.Normal("final Color: " + finalColor.ToString());
-
-            return finalColor;
-        }
-
-
-        internal static Color AverageColor (Color[] array)
-        {
-            Color sum = Color.clear;
-            for (var i = 0; i < array.Length; i++)
-            {
-                sum += array[i];
-            }
-            return (sum / array.Length);
-
-        }
+      
 
 
     
@@ -493,7 +366,6 @@ namespace KerbalKonstructs
 
         internal void UpdateCallBack(GrassColorPresetUI2.ColorPreset2 preset)
         {
-            EditorGUI.instance.grasColorModeIsAuto = false;
 
             if (KKGraphics.GetTexture(preset.nearGrassTexture) != null)
             {

@@ -142,6 +142,7 @@ namespace KerbalKonstructs
         internal bool spawnPreviewModels { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels = value; } }
         internal static string newInstancePath { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().newInstancePath = value; } }
         internal static bool useLegacyCamera => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useLegacyCamera;
+        internal static bool useCam => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().useCamUnderdroudColors;
         internal static bool enableInflightHighlight => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().enableInflightHighlight;
 
         internal static bool focusLastLaunchSite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().focusLastLaunchSite; } }

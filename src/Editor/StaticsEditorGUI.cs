@@ -116,8 +116,7 @@ namespace KerbalKonstructs.UI
 
             if (snapTargetInstance != null)
             {
-                Color highlightColor = new Color(0, 0, 0, 0);
-                snapTargetInstance.HighlightObject(highlightColor);
+                snapTargetInstance.HighlightObject(Color.clear);
                 snapTargetInstance = null;
             }
         }
@@ -662,8 +661,7 @@ namespace KerbalKonstructs.UI
                         if (selectedObject != null)
                         {
                             selectedObjectPrevious = selectedObject;
-                            Color highlightColor = new Color(0, 0, 0, 0);
-                            allStaticInstances[ix].HighlightObject(highlightColor);
+                            allStaticInstances[ix].HighlightObject(Color.clear);
                         }
 
                         if (snapTargetInstance == allStaticInstances[ix])
@@ -674,8 +672,7 @@ namespace KerbalKonstructs.UI
 
                         //obj.selectObject(false);
 
-                        Color highlightColor2 = XKCDColors.Green_Yellow;
-                        allStaticInstances[ix].HighlightObject(highlightColor2);
+                        allStaticInstances[ix].HighlightObject(XKCDColors.Green_Yellow);
                     }
                     //GUI.enabled = true;
 

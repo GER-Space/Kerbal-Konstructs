@@ -51,7 +51,12 @@ namespace KerbalKonstructs.UI2
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("Grass Color Editor", HighLogic.UISkin.label),
                 new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("select preset", delegate { GrassColorPresetUI2.callBack = selectedMod.UpdateCallBack; GrassColorPresetUI2.instance.Open(); }, 50, 25, false)
+                new DialogGUIButton("select preset", delegate { GrassColorPresetUI2.callBack = selectedMod.UpdateCallBack; GrassColorPresetUI2.instance.Open(); }, 50, 25, false),
+                new DialogGUIFlexibleSpace(),
+                new DialogGUIButton("Pick Surface Color", delegate {
+                    selectedMod.grassColor = GrassColorUtils.GetUnderGroundColor(selectedMod);
+                    selectedMod.ApplySettings();
+                }, 80, 25, false)
                 ));
 
 
@@ -367,10 +372,12 @@ namespace KerbalKonstructs.UI2
             }
 
 
-            var button = new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed);
-            button.image = null;
-            button.tint = new Color(0, 0, 0, 0);
-            button.useColor = false;
+            var button = new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
+            {
+                image = null,
+                tint = new Color(0, 0, 0, 0),
+                useColor = false
+            };
 
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("-KK-", KKStyle.windowTitle),

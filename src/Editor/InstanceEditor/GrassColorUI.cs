@@ -55,6 +55,7 @@ namespace KerbalKonstructs.UI
             if (EditorGUI.selectedInstance != selectedInstance)
             {
                 selectedInstance = EditorGUI.selectedInstance;
+                selectedInstance.HighlightObject(Color.clear);
                 SetupFields();
             }
 
@@ -63,6 +64,7 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
+            selectedInstance.HighlightObject(XKCDColors.YellowGreen);
             selectedInstance = null;
             base.Close();
         }
@@ -109,18 +111,18 @@ namespace KerbalKonstructs.UI
                 }
 
                 GUILayout.Space(20);
-                EditorGUI.instance.grasColorModeIsAuto = GUILayout.Toggle(EditorGUI.instance.grasColorModeIsAuto, "Auto GrassColor", GUILayout.Width(70), GUILayout.Height(23));
+                if (GUILayout.Button("Pick Surface Color", GUILayout.Height(23), GUILayout.Width(120)))
+                {
+                    selectedInstance.GrasColor = GrassColorUtils.GetUnderGroundColor(selectedInstance);
+                    selectedInstance.Update();
+                    SetupFields();
+                }
                 GUILayout.FlexibleSpace();
             }
             GUILayout.EndHorizontal();
 
-
-            if (EditorGUI.instance.grasColorModeIsAuto)
-            {
-                SetupFields();
-            }
             GUILayout.Space(3);
-            GUI.enabled = (!EditorGUI.instance.grasColorModeIsAuto);
+            GUI.enabled = true;
             {
                 GUILayout.BeginHorizontal();
                 {
@@ -231,7 +233,6 @@ namespace KerbalKonstructs.UI
 
         internal void UpdateCallBack(Color newColor, string newTexture)
         {
-            EditorGUI.instance.grasColorModeIsAuto = false;
             selectedInstance.GrasColor = newColor;
 
             if (KKGraphics.GetTexture(newTexture) != null)
