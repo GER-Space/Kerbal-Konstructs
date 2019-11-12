@@ -108,7 +108,7 @@ namespace KerbalKonstructs
                 //    Vector2 blendmaskTiling = renderer.material.GetTextureScale("_BlendMaskTexture");
                 //    tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
 
-                //    //renderer.material.shader = KKGraphics.GetShader("KK/legacy_Ground_KSC");
+                //renderer.material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
                 //    renderer.material = grassMaterial;
 
                 //    renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
@@ -169,6 +169,7 @@ namespace KerbalKonstructs
                 {
                     //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                     renderer.material.SetTexture("_TarmacTexture", tarmacTexture);
+                    renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
                 }
                 if (blendMaskTexture != null)
                 {
@@ -196,10 +197,6 @@ namespace KerbalKonstructs
                 FindModelGrasMaterials();
             }
             ReadConfig();
-            if (!bool.TryParse(UsePQSColor, out usePQS))
-            {
-                Log.UserWarning("GrasColor Module: could not parse UsePQSColor to bool: " + UsePQSColor);
-            }
 
             isInitialized = true;
         }
@@ -219,13 +216,13 @@ namespace KerbalKonstructs
                 //grassRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse");
                 //grassRenderer.material.SetTexture("_MainTex", KKGraphics.GetTexture(GrasTextureImage,false,0));
 
-                grassRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Ground KSC");
-                grassRenderer.material.SetTexture("_NearGrassTexture", KKGraphics.GetTexture(DefaultNearGrassTexture));
-                grassRenderer.material.SetTexture("_FarGrassTexture", KKGraphics.GetTexture(DefaultFarGrassTexture));
-                grassRenderer.material.SetTexture("_TarmacTexture", KKGraphics.GetTexture(DefaultTarmacTexture));
-                grassRenderer.material.SetTexture("_BlendMaskTexture", KKGraphics.GetTexture(DefaultBlendMaskTexture));
+                grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
+                //grassRenderer.material.SetTexture("_NearGrassTexture", KKGraphics.GetTexture(DefaultNearGrassTexture));
+                //grassRenderer.material.SetTexture("_FarGrassTexture", KKGraphics.GetTexture(DefaultFarGrassTexture));
+                //grassRenderer.material.SetTexture("_TarmacTexture", KKGraphics.GetTexture(DefaultTarmacTexture));
+                //grassRenderer.material.SetTexture("_BlendMaskTexture", KKGraphics.GetTexture(DefaultBlendMaskTexture));
 
-                grassRenderer.material.SetFloat("_FarGrassBlendDistance", 100f);
+                //grassRenderer.material.SetFloat("_FarGrassBlendDistance", 100f);
 
                 //Log.Normal("Scale: " + grassRenderer.material.GetTextureScale("_NearGrassTexture"));
 
@@ -243,6 +240,7 @@ namespace KerbalKonstructs
                     //DefaultTarmacTexture = "BUILTIN:/" + material.GetTexture("_TarmacTexture").name;
                     //nearGrassTextureName = "BUILTIN:/" + material.GetTexture("_NearGrassTexture").name;
                     //farGrassTextureName = "BUILTIN:/" + material.GetTexture("_FarGrassTexture").name;
+                    material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
 
                     nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
                     farGrassTiling = renderer.material.GetFloat("_FarGrassTiling");
@@ -266,9 +264,9 @@ namespace KerbalKonstructs
                 nearGrassTiling = float.Parse(DefaultNearGrassTiling);
                 farGrassTiling = float.Parse(DefaultFarGrassTiling);
                 farGrassBlendDistance = float.Parse(DefaultFarGrassBlendDistance);
+                tarmacTiling = ConfigNode.ParseVector2(DefaultTarmacTiling);
                 grassColor = defaultColor;
                 tarmacColor = Color.white;
-                tarmacTiling = new Vector2(10, 10);
 
                 // try to import legacy values
                 if (staticInstance.GrasColor != Color.clear)
@@ -287,7 +285,8 @@ namespace KerbalKonstructs
                         staticInstance.GrasTexture = "BUILTIN:/terrain_grass00_new_detail";
                     }
 
-                    farGrassTiling = farGrassTiling*5;
+                    farGrassTiling = 10;
+                    nearGrassTiling = 1;
                     nearGrassTextureName = staticInstance.GrasTexture;
                     farGrassTextureName = staticInstance.GrasTexture;
 

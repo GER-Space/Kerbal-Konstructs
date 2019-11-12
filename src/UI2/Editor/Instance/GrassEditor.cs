@@ -71,14 +71,6 @@ namespace KerbalKonstructs.UI2
                     new DialogGUITextInput(FarGrassTexture, false, 40, SetFarGrassTexture, delegate { return GetTextureName("farGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                new DialogGUIHorizontalLayout(
                     new DialogGUILabel(" Grass: R ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
                     new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
@@ -90,18 +82,6 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel(" Grass: B ", KKStyle.whiteLabel),
                     new DialogGUISlider(GetGrassFloatB, 0, 4f, false, 140, 25, SetGrassFloatB),
                     new DialogGUITextInput("0", false, 10, SetGrassBStr, GetGrassBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               //new DialogGUIHorizontalLayout(
-               //     new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
-               //     new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
-               //     new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               //new DialogGUIHorizontalLayout(
-               //     new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
-               //     new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
-               //     new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               //new DialogGUIHorizontalLayout(
-               //     new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
-               //     new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
-               //     new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
                     new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
@@ -110,7 +90,27 @@ namespace KerbalKonstructs.UI2
                     new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarBlendDistance", KKStyle.whiteLabel),
-                    new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25))
+                    new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
+                    new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
+                    new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
+                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label))
 
                 //new DialogGUIHorizontalLayout(
                 //    new DialogGUILabel("Overall Tiling", KKStyle.whiteLabel),
