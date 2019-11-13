@@ -103,6 +103,10 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
                     new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
                     new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
+                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
+                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Tarmac Tiling: U: ", HighLogic.UISkin.label),
                     new DialogGUITextInput("0", false, 10, SetTarmacUStr, GetTarmacUStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25),

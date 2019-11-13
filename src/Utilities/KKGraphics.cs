@@ -16,7 +16,7 @@ namespace KerbalKonstructs
         private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
-        private static List<string> imageExtentions = new List<string> { ".png", ".tga", ".jpg" };
+        private static List<string> imageExtentions = new List<string> { ".png", ".tga", ".jpg" , ".dds" };
 
         private static Dictionary<string, Texture> builtinTextures = new Dictionary<string, Texture>();
         private static bool texturesAreCached = false;
@@ -345,21 +345,28 @@ namespace KerbalKonstructs
             {
 
                 Texture2D tmpTexture = null;
+                string fileExtension = GetImageExtention(textureName);
 
                 //// Otherwise search the game database for one loaded from GameData/
-                if (GameDatabase.Instance.ExistsTexture(textureName) && (GetImageExtention(textureName) != null))
+                if (GameDatabase.Instance.ExistsTexture(textureName) && (fileExtension != null))
                 {
                     // Get the texture URL
                     tmpTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
 
-
                     foundTexture = new Texture2D(tmpTexture.width, tmpTexture.height, TextureFormat.ARGB32, createMibMaps);
-                    foundTexture.LoadImage﻿(System.IO.File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), false);
+                    if (fileExtension == ".dds")
+                    {
+                        foundTexture = LoadTextureDXT(File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), createMibMaps);
+                    }
+                    else
+                    {
+                        foundTexture.LoadImage﻿(File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), false);
+                    }
                     foundTexture.Apply(createMibMaps, false);
                 }
                 else
                 {
-                    Log.UserWarning("AdvTexture: TextureLoader faild. Fallback to GameDatabase");
+                    Log.UserWarning("Failed: TextureLoader faild. Fallback to GameDatabase");
                     foundTexture = GameDatabase.Instance.GetTexture(textureName, asNormal);
                 }
 
@@ -373,6 +380,43 @@ namespace KerbalKonstructs
             cachedTextures.Add(textureKey, foundTexture);
             return foundTexture;
         }
+
+
+        public static Texture2D LoadTextureDXT(byte[] ddsBytes, bool createMibMaps)
+        {
+            byte[] exampleByteArray = new byte[] { ddsBytes[84], ddsBytes[85], ddsBytes[86], ddsBytes[87] };
+            string textureFormat = System.Text.Encoding.ASCII.GetString(exampleByteArray);
+
+
+
+            if (textureFormat != "DXT1" && textureFormat != "DXT5")
+            {
+                Log.Error("Invalid TextureFormat. Only DXT1 and DXT5 formats are supported by this method.");
+                return null;
+            }
+            TextureFormat format = (TextureFormat)Enum.Parse(typeof(TextureFormat), textureFormat, createMibMaps);
+            //Log.Normal("Found DXT Texture Format: " + format.ToString());
+
+            byte ddsSizeCheck = ddsBytes[4];
+            if (ddsSizeCheck != 124)
+            {
+                Log.Error("Invalid DDS DXTn texture. Unable to read");  //this header byte should be 124 for DDS image files
+                return null;
+            }
+
+            int height = ddsBytes[13] * 256 + ddsBytes[12];
+            int width = ddsBytes[17] * 256 + ddsBytes[16];
+
+            int DDS_HEADER_SIZE = 128;
+            byte[] dxtBytes = new byte[ddsBytes.Length - DDS_HEADER_SIZE];
+            Buffer.BlockCopy(ddsBytes, DDS_HEADER_SIZE, dxtBytes, 0, ddsBytes.Length - DDS_HEADER_SIZE);
+
+            Texture2D texture = new Texture2D(width, height, format, true);
+            texture.LoadRawTextureData(dxtBytes);
+
+            return (texture);
+        }
+
 
         internal static Texture2D GetBuiltinTexture(string textureName, int index)
         {
@@ -447,9 +491,12 @@ namespace KerbalKonstructs
 
         private static string GetImageExtention(string imageName)
         {
-            int pathIndex = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).LastIndexOf('/');
-            string path = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(0, pathIndex + 1);
-            string imageShortName = (KSPUtil.ApplicationRootPath + "GameData/" + imageName).Substring(pathIndex + 1);
+
+            string fullPath = KSPUtil.ApplicationRootPath + "GameData/" + imageName;
+
+            int pathIndex = (fullPath).LastIndexOf('/');
+            string path = (fullPath).Substring(0, pathIndex + 1);
+            string imageShortName = (fullPath).Substring(pathIndex + 1);
 
             //Log.Normal("path: " + path);
             //Log.Normal("imageShortName: " + imageShortName);
