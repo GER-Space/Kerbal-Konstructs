@@ -104,9 +104,10 @@ namespace KerbalKonstructs.UI2
                     new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
                     new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
-                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+                    new DialogGUILabel("Tarmac Tiling: U: ", HighLogic.UISkin.label),
+                    new DialogGUITextInput("0", false, 10, SetTarmacUStr, GetTarmacUStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25),
+                    new DialogGUILabel("V: ", HighLogic.UISkin.label),
+                    new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
@@ -118,6 +119,33 @@ namespace KerbalKonstructs.UI2
                 //    new DialogGUITextInput("0", false, 10, SetOffsetTilingStr, GetOffsetTilingStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25))
 
                 )); ;
+        }
+
+
+        internal static string SetTarmacUStr(string newUvalue)
+        {
+            float uValue = float.Parse(newUvalue);
+            selectedMod.tarmacTiling = new Vector2(uValue, selectedMod.tarmacTiling.y);
+            selectedMod.ApplySettings();
+            return selectedMod.tarmacTiling.x.ToString();
+        }
+
+        internal static string SetTarmacVStr(string newVvalue)
+        {
+            float vValue = float.Parse(newVvalue);
+            selectedMod.tarmacTiling = new Vector2(selectedMod.tarmacTiling.x, vValue);
+            selectedMod.ApplySettings();
+            return selectedMod.tarmacTiling.y.ToString();
+        }
+
+        internal static string GetTarmacUStr()
+        {
+            return selectedMod.tarmacTiling.x.ToString();
+        }
+
+        internal static string GetTarmacVStr()
+        {
+            return selectedMod.tarmacTiling.y.ToString();
         }
 
 
@@ -137,12 +165,7 @@ namespace KerbalKonstructs.UI2
 
           selectedMod.tilingOffset = (int)newValue;
         }
-        internal static string SetOffsetTilingStr(string newValue)
-        {
 
-            selectedMod.tilingOffset = int.Parse(newValue);
-            return selectedMod.tilingOffset.ToString();
-        }
 
         internal static string GetTextureName(string fieldName)
         {
