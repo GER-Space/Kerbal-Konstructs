@@ -109,6 +109,7 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("V: ", HighLogic.UISkin.label),
                     new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                 new DialogGUIHorizontalLayout(
+                    new DialogGUIButton("  R", ReloadBlendMask, 21f, 21.0f, false, HighLogic.UISkin.label),
                     new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label))
@@ -119,6 +120,13 @@ namespace KerbalKonstructs.UI2
                 //    new DialogGUITextInput("0", false, 10, SetOffsetTilingStr, GetOffsetTilingStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25))
 
                 )); ;
+        }
+
+
+        internal static void ReloadBlendMask()
+        {
+            KKGraphics.RemoveCache(selectedMod.blendMaskTextureName);
+            selectedMod.ApplySettings();
         }
 
 

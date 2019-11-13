@@ -275,13 +275,42 @@ namespace KerbalKonstructs
         }
 
 
+        /// <summary>
+        /// Remove a Cached Texture, so it is loaded from Disk during next access
+        /// </summary>
+        /// <param name="textureName"></param>
+        internal static void RemoveCache(string textureName)
+        {
+            string textureKey;
+            int index = 0;
+            textureName.Replace("\\", "/");
+            if (textureName.StartsWith("BUILTIN:"))
+            {
+                {
+                    Log.Normal("Builtin Textures don't change");
+                    return;
+                }
+
+            }
+            else
+            {
+                textureKey = Regex.Replace(textureName, "/", "_") + index.ToString();
+            }
+
+            if (cachedTextures.ContainsKey(textureKey))
+            {
+                cachedTextures.Remove(textureKey);
+            }
+        }
+
+
 
         /// <summary>
         /// return a buildin or GameDatabase Texture
         /// </summary>
         /// <param name="textureName"></param>
         /// <returns></returns>
-        internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0, bool createMibMaps = false)
+        internal static Texture2D GetTexture(string textureName, bool asNormal = false, int index = 0, bool createMibMaps = false )
         {
             if (string.IsNullOrEmpty(textureName))
             {
