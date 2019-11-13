@@ -179,13 +179,13 @@ namespace KerbalKonstructs
                         module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
                         module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
                         module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
-                        module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
+                        //module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
 
                         //Log.Normal("Instance: " + model.name + " uses Near Tiling: " + grassMaterial.GetFloat("_NearGrassTiling").ToString());
                         //Log.Normal("Instance: " + model.name + " uses Far  Tiling: " + grassMaterial.GetFloat("_FarGrassTiling").ToString());
-                        module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
+                        //module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
 
-                        module.moduleFields.Add("DefaultFarGrassBlendDistance", grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
+                        //module.moduleFields.Add("DefaultFarGrassBlendDistance", grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
                         //Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
                         model.modules = new List<StaticModule>();
                         model.modules.Add(module);

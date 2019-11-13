@@ -19,8 +19,8 @@ namespace KerbalKonstructs
         public string DefaultTarmacTexture = "BUILTIN:/ksc_exterior_terrain_asphalt";
         public string DefaultBlendMaskTexture = "BUILTIN:/blackSquare";
 
-        public string DefaultNearGrassTiling = "1";
-        public string DefaultFarGrassTiling = "1";
+        public string DefaultNearGrassTiling = "4";
+        public string DefaultFarGrassTiling = "10";
         public string DefaultFarGrassBlendDistance = "100";
         public string DefaultTarmacTiling = "10, 10";
 
@@ -242,8 +242,8 @@ namespace KerbalKonstructs
                     //farGrassTextureName = "BUILTIN:/" + material.GetTexture("_FarGrassTexture").name;
                     material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
 
-                    nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
-                    farGrassTiling = renderer.material.GetFloat("_FarGrassTiling");
+                    //nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
+                    //farGrassTiling = renderer.material.GetFloat("_FarGrassTiling");
                     tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
                     GrassMeshName = renderer.transform.name;
                 }
