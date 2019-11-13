@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System;
+using System.IO;
 
 namespace KerbalKonstructs
 {
@@ -18,6 +20,9 @@ namespace KerbalKonstructs
 
         private static Dictionary<string, Texture> builtinTextures = new Dictionary<string, Texture>();
         private static bool texturesAreCached = false;
+
+        private static Dictionary<string, Texture2D> normalMaps = new Dictionary<string, Texture2D>();
+
 
         //private static Dictionary<string, string> shaderSubstitutions = new Dictionary<string, string> {
         //    { "KSP/Diffuse", "KSP/Scenery/Diffuse" },
@@ -152,24 +157,122 @@ namespace KerbalKonstructs
 
         }
 
+        /// <summary>
+        /// Get a cached or create a Normal Map from a Texture
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        internal static Texture2D GetNormalMap(Texture2D texture)
+        {
+            if (texture == null || String.IsNullOrEmpty(texture.name))
+            {
+                Log.Error("Could not get NormalTexture for empty name or Texture");
+                return null;
+            }
 
-        //internal static void ReplaceShader(Renderer renderer)
-        //{
-        //    if (shaderSubstitutions.ContainsKey(renderer.material.shader.name))
-        //    {
-        //        Shader newShader = GetShader(shaderSubstitutions[renderer.material.shader.name]);
-        //        if (newShader != null)
-        //        {
-        //            renderer.material.shader = newShader;
-        //            if (renderer.material.mainTexture != null)
-        //            {
-        //                AdvancedTextures.CheckForExistingMaterial(renderer);
-        //            }
+            System.Security.Cryptography.MD5 md5Hash = System.Security.Cryptography.MD5.Create();
+            md5Hash.ComputeHash(System.Text.Encoding.ASCII.GetBytes(texture.name));
+            string normalHash = md5Hash.Hash.ToString();
 
-        //        }
-        //    }
-        //}
+            string filename = KSPUtil.ApplicationRootPath + "PluginData/" + normalHash + ".png";
 
+            Texture2D normalMap = null;
+
+            // first check if we loaded the map before:
+            if (normalMaps.ContainsKey(normalHash))
+            {
+                return normalMaps[normalHash];
+            }
+            else
+            {
+                if (!File.Exists(filename))
+                {
+                    CreateNormalFromTex(texture, filename);
+                }
+                if (File.Exists(filename))
+                {
+                    normalMap = LoadNormalFromFile(filename, texture.width, texture.height);
+                    normalMaps.Add(normalHash, normalMap);
+                    return normalMap;
+                }
+
+                
+            }
+            // here you should never end
+            Log.Error("Something went wrong for: " + texture.name);
+            Log.Error("Should be chached here: " + filename);
+
+            return null;
+        }
+
+
+        /// <summary>
+        /// Create and Cache a Normal Map from a Texture
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="filename"></param>
+        internal static void CreateNormalFromTex (Texture2D texture, string filename)
+        {
+            if (texture == null)
+            {
+                Log.Error("Called with no Texture");
+                return;
+            }
+            Log.Normal("Normal Map ChacheName: " + filename);
+
+            Material converter = new Material(KKGraphics.GetShader("KK/Calc/TextureToNomral"));
+            converter.mainTexture = texture;
+
+            RenderTexture renderTarget;
+                renderTarget = RenderTexture.GetTemporary(
+               texture.width,
+               texture.height,
+               0,
+               RenderTextureFormat.ARGB32,
+               RenderTextureReadWrite.Linear);
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(texture, renderTarget, converter);
+
+            renderTarget.ToTexture2D().WritePNG(filename);
+        }
+
+
+        /// <summary>
+        /// Load a Normal Map from the Disk
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        internal static Texture2D LoadNormalFromFile(string fileName, int width, int height )
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                Log.Error("Called with no Texture");
+                return null;
+            }
+
+
+            Texture2D loadedTexture = new Texture2D(width, height, TextureFormat.ARGB32, false, true);
+            loadedTexture.LoadImage﻿(System.IO.File.ReadAllBytes(fileName), false);
+            loadedTexture.Apply(false, false);
+
+            Texture2D normalTexture = new Texture2D(width, height, TextureFormat.ARGB32, false, true);
+            
+            normalTexture = new Texture2D(loadedTexture.width, loadedTexture.height, TextureFormat.ARGB32, false, true);
+            Color32[] colours = loadedTexture.GetPixels32();
+            for (int i = 0; i < colours.Length; i++)
+            {
+                Color32 c = colours[i];
+                c.a = c.r;
+                c.r = c.b = c.g;
+                colours[i] = c;
+            }
+            normalTexture.SetPixels32(colours);
+            normalTexture.Apply(true, false);
+
+            return normalTexture;
+        }
 
 
 

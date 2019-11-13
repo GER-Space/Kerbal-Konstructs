@@ -134,7 +134,7 @@ namespace KerbalKonstructs.Core
         {
             var mainTextureblob = texture.EncodeToPNG();
             // For testing purposes, also write to a file in the project folder
-            System.IO.File.WriteAllBytes(KSPUtil.ApplicationRootPath + "GameData/" +filePath+".png", mainTextureblob);
+            System.IO.File.WriteAllBytes(KSPUtil.ApplicationRootPath +filePath+".png", mainTextureblob);
         }
 
         public static Transform FindRecursive(this Transform transform, string name)
