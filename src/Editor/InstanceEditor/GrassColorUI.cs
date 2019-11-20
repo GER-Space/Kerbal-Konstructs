@@ -17,6 +17,9 @@ namespace KerbalKonstructs.UI
         internal static StaticInstance selectedInstance;
 
         private string grasColorRStr, grasColorGStr, grasColorBStr, grasColorAStr;
+
+        //private string grassColorString;
+
         string grasTextureName;
 
         internal static string titleText = "GrasColor UI";
@@ -131,6 +134,7 @@ namespace KerbalKonstructs.UI
                     grasColorRStr = (GUILayout.TextField(grasColorRStr, 7, GUILayout.Width(90), GUILayout.Height(23)));
                 }
                 GUILayout.EndHorizontal();
+
                 GUILayout.BeginHorizontal();
                 {
                     GUILayout.Label("Green: ", GUILayout.Height(23));
@@ -152,6 +156,13 @@ namespace KerbalKonstructs.UI
                     grasColorAStr = (GUILayout.TextField(grasColorAStr, 7, GUILayout.Width(80), GUILayout.Height(23)));
                 }
                 GUILayout.EndHorizontal();
+
+                if (GUILayout.Button("Edit Color", GUILayout.Height(23), GUILayout.Width(120)))
+                {
+                    UI2.ColorSelector.selectedColor = selectedInstance.GrasColor;
+                    UI2.ColorSelector.callBack = SetColorCallBack;
+                    UI2.ColorSelector.Open();
+                }
 
             }
             GUI.enabled = true;
@@ -192,12 +203,25 @@ namespace KerbalKonstructs.UI
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
+
+
+        internal void SetColorCallBack(Color newColor)
+        {
+            selectedInstance.GrasColor = newColor;
+            selectedInstance.Update();
+            SetupFields();
+        }
+
+
+
         private void ApplySettings()
         {
             selectedInstance.GrasColor.r = float.Parse(grasColorRStr);
             selectedInstance.GrasColor.g = float.Parse(grasColorGStr);
             selectedInstance.GrasColor.b = float.Parse(grasColorBStr);
             selectedInstance.GrasColor.a = float.Parse(grasColorAStr);
+
+            //selectedInstance.GrasColor = ConfigNode.ParseColor(grassColorString);
 
             if (KKGraphics.GetTexture(grasTextureName) != null)
             {
@@ -216,6 +240,8 @@ namespace KerbalKonstructs.UI
 
         internal void SetupFields()
         {
+            //grassColorString = ConfigNode.WriteColor(selectedInstance.GrasColor);
+
             grasColorRStr = selectedInstance.GrasColor.r.ToString();
             grasColorGStr = selectedInstance.GrasColor.g.ToString();
             grasColorBStr = selectedInstance.GrasColor.b.ToString();

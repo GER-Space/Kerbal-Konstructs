@@ -31,7 +31,7 @@ namespace KerbalKonstructs.UI2
 
         internal static bool showTitle = false;
         internal static bool showKKTitle = true;
-        internal static bool isModal = true;
+        internal static bool isModal = false;
 
 
         internal static bool setToParent = false;

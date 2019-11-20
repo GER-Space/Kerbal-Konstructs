@@ -106,9 +106,11 @@ namespace KerbalKonstructs
         {
             Color underGroundColor = staticInstance.GrasColor;
 
-            if (underGroundColor.a != 1f || underGroundColor.a != 0f)
+            if (underGroundColor.a != 1f && underGroundColor.a != 0f)
             {
                 underGroundColor = GrassColorUtils.ManualCalcNewColor(underGroundColor, grasTextureName, grasTextureName);
+                // convert it once and for all
+                staticInstance.GrasColor = underGroundColor;
             }
             return underGroundColor;
         }
