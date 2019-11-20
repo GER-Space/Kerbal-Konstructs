@@ -54,13 +54,13 @@ namespace KerbalKonstructs.Addons
             switch (Application.platform)
             {
                 case RuntimePlatform.OSXPlayer:
-                    bundleFileName = "kkpicker.osx";
+                    bundleFileName = "colorpickerbundle.bundle";
                     break;
                 case RuntimePlatform.LinuxPlayer:
-                    bundleFileName = "kkpicker.osx";
+                    bundleFileName = "colorpickerbundle.bundle";
                     break;
                 default:
-                    bundleFileName = "kkpicker.windows";
+                    bundleFileName = "colorpickerbundle.bundle";
                     break;
             }
             string bundlePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/Prefabs/" + bundleFileName;
@@ -74,15 +74,24 @@ namespace KerbalKonstructs.Addons
                     Log.Normal("Failed to load shader asset file: " + bundlePath);
                     return;
                 }
-                foreach (string prefabName in prefabBundle.GetAllAssetNames())
-                {
-                    Log.Normal("Loading Prefab: " + prefabName);
-                    myPrefab = prefabBundle.LoadAsset<GameObject>(prefabName);
+
+
+                    Log.Normal("Loading Prefab: " + "assets/kkcolorpicker.prefab");
+                    myPrefab = prefabBundle.LoadAsset<GameObject>("assets/kkcolorpicker.prefab");
                     pickerPrefab = myPrefab;
                     pickerPrefab.SetActive(false);
                     GameObject.DontDestroyOnLoad(pickerPrefab);
+
+
+                //foreach (string prefabName in prefabBundle.GetAllAssetNames())
+                //{
+                //    Log.Normal("Loading Prefab: " + prefabName);
+                //    myPrefab = prefabBundle.LoadAsset<GameObject>(prefabName);
+                //    pickerPrefab = myPrefab;
+                //    pickerPrefab.SetActive(false);
+                //    GameObject.DontDestroyOnLoad(pickerPrefab);
                     
-                }
+                //}
 
             }
             catch (System.Exception exeption)

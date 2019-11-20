@@ -42,6 +42,11 @@ namespace KerbalKonstructs.UI2
         internal static string TamarcTexture;
         internal static string BlendMaskTexture;
 
+        internal static string GrassColor = "1,1,1,1";
+        internal static string TarmacColor = "1,1,1,1";
+        internal static string ThirdColor = "1,1,1,0";
+        internal static string FourthcColor = "1,1,1,0";
+
         internal static string NearGrassTiling;
         internal static string FarGrassTiling;
         internal static string BlendDistance;
@@ -84,17 +89,9 @@ namespace KerbalKonstructs.UI2
                     new DialogGUITextInput(FarGrassTexture, false, 40, SetFarGrassTexture, delegate { return GetTextureName("farGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: R ", KKStyle.whiteLabel),
-                    new DialogGUISlider(GetGrassFloatR, 0, 4f, false, 140, 25, SetGrassFloatR),
-                    new DialogGUITextInput("0", false, 10, SetGrassRStr, GetGrassRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: G ", KKStyle.whiteLabel),
-                    new DialogGUISlider(GetGrassFloatG, 0, 4f, false, 140, 25, SetGrassFloatG),
-                    new DialogGUITextInput("0", false, 10, SetGrassGStr, GetGrassGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel(" Grass: B ", KKStyle.whiteLabel),
-                    new DialogGUISlider(GetGrassFloatB, 0, 4f, false, 140, 25, SetGrassFloatB),
-                    new DialogGUITextInput("0", false, 10, SetGrassBStr, GetGrassBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+                    new DialogGUILabel("Grass Color : ", KKStyle.whiteLabel),
+                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.grassColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.grassColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetGrassColor; ; ColorSelector.selectedColor = selectedMod.grassColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
                     new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
@@ -109,25 +106,16 @@ namespace KerbalKonstructs.UI2
                     new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: R ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatR, 0, 1, false, 140, 25, SetTarmacFloatR),
-                    new DialogGUITextInput("0", false, 10, SetTarmacRStr, GetTarmacRStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+                    new DialogGUILabel("Tarmac Color : ", KKStyle.whiteLabel),
+                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.tarmacColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.tarmacColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetTarmacColor; ; ColorSelector.selectedColor = selectedMod.tarmacColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: G ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatG, 0, 1, false, 140, 25, SetTarmacFloatG),
-                    new DialogGUITextInput("0", false, 10, SetTarmacGStr, GetTarmacGStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac: B ", HighLogic.UISkin.label),
-                    new DialogGUISlider(GetTarmacFloatB, 0, 1, false, 140, 25, SetTarmacFloatB),
-                    new DialogGUITextInput("0", false, 10, SetTarmacBStr, GetTarmacBStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac Tiling: U: ", HighLogic.UISkin.label),
+                    new DialogGUILabel("Tarmac Tiling: U: ", KKStyle.whiteLabel),
                     new DialogGUITextInput("0", false, 10, SetTarmacUStr, GetTarmacUStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25),
-                    new DialogGUILabel("V: ", HighLogic.UISkin.label),
+                    new DialogGUILabel("V: ", KKStyle.whiteLabel),
                     new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Texture Random Tiling", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21)
-                   ),
+                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Texture Random Tiling", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUIButton("  R", ReloadBlendMask, 21f, 21.0f, false, HighLogic.UISkin.label),
                     new DialogGUILabel("BlendMask", KKStyle.whiteLabel),
@@ -140,8 +128,23 @@ namespace KerbalKonstructs.UI2
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Texture Tiling: ", KKStyle.whiteLabel),
                     new DialogGUITextInput(ThirdTextureTiling, ThirdTextureTiling, false, 10, SetThirdTile, 25),
-                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21))
-
+                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Third Color : ", KKStyle.whiteLabel),
+                    new DialogGUITextInput("", false, 40, delegate(string colorString) { selectedMod.thirdTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.thirdTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetThirdColor; ; ColorSelector.selectedColor = selectedMod.thirdTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Fourth Texture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+                  new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Fourth Texture Tiling: ", KKStyle.whiteLabel),
+                    new DialogGUITextInput(FourthTextureTiling, FourthTextureTiling, false, 10, SetFourthTile, 25),
+                    new DialogGUIToggle(selectedMod.fourthTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.fourthTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21)),
+                new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Fourth Color : ", KKStyle.whiteLabel),
+                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.fourthTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.fourthTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetFourthColor; ; ColorSelector.selectedColor = selectedMod.fourthTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel))
 
                 //new DialogGUIHorizontalLayout(
                 //    new DialogGUILabel("Overall Tiling", KKStyle.whiteLabel),
@@ -153,9 +156,42 @@ namespace KerbalKonstructs.UI2
 
 
 
+        internal static void SetGrassColor (Color color)
+        {
+            selectedMod.grassColor = color;
+            selectedMod.ApplySettings();
+        }
+
+        internal static void SetTarmacColor(Color color)
+        {
+            selectedMod.tarmacColor = color;
+            selectedMod.ApplySettings();
+        }
+
+        internal static void SetThirdColor(Color color)
+        {
+            selectedMod.thirdTextureColor = color;
+            selectedMod.ApplySettings();
+        }
+
+        internal static void SetFourthColor(Color color)
+        {
+            selectedMod.fourthTextureColor = color;
+            selectedMod.ApplySettings();
+        }
+
+
+
         internal static string SetThirdTile(string newTile)
         {
             selectedMod.thirdTextureTiling = float.Parse(newTile);
+            selectedMod.ApplySettings();
+            return newTile;
+        }
+
+        internal static string SetFourthTile(string newTile)
+        {
+            selectedMod.fourthTextureTiling = float.Parse(newTile);
             selectedMod.ApplySettings();
             return newTile;
         }
@@ -260,139 +296,7 @@ namespace KerbalKonstructs.UI2
         }
 
 
-        //red
-        internal static float GetGrassFloatR()
-        {
-            return selectedMod.grassColor.r;
-        }
-        internal static string GetGrassRStr()
-        {
-            return selectedMod.grassColor.r.ToString();
-        }
-        internal static void SetGrassFloatR(float newFloat)
-        {
-            selectedMod.grassColor.r = newFloat;
-            selectedMod.ApplySettings();
-        }
-
-        internal static string SetGrassRStr(string newFloat)
-        {
-            selectedMod.grassColor.r = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
-        //Green
-        internal static float GetGrassFloatG()
-        {
-            return selectedMod.grassColor.g;
-        }
-        internal static string GetGrassGStr()
-        {
-            return selectedMod.grassColor.g.ToString();
-        }
-
-        internal static void SetGrassFloatG(float newFloat)
-        {
-            selectedMod.grassColor.g = newFloat;
-            selectedMod.ApplySettings();
-        }
-
-        internal static string SetGrassGStr(string newFloat)
-        {
-            selectedMod.grassColor.g = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
-        //blue
-        internal static float GetGrassFloatB()
-        {
-            return selectedMod.grassColor.b;
-        }
-        internal static string GetGrassBStr()
-        {
-            return selectedMod.grassColor.b.ToString();
-        }
-        internal static void SetGrassFloatB(float newFloat)
-        {
-            selectedMod.grassColor.b = newFloat;
-            selectedMod.ApplySettings();
-        }
-        internal static string SetGrassBStr(string newFloat)
-        {
-            selectedMod.grassColor.b = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
-        // Tarmac
-        //red
-        internal static float GetTarmacFloatR()
-        {
-            return selectedMod.tarmacColor.r;
-        }
-        internal static string GetTarmacRStr()
-        {
-            return selectedMod.tarmacColor.r.ToString();
-        }
-        internal static void SetTarmacFloatR(float newFloat)
-        {
-            selectedMod.tarmacColor.r = newFloat;
-            selectedMod.ApplySettings();
-        }
-
-        internal static string SetTarmacRStr(string newFloat)
-        {
-            selectedMod.tarmacColor.r = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
-        //Green
-        internal static float GetTarmacFloatG()
-        {
-            return selectedMod.tarmacColor.g;
-        }
-        internal static string GetTarmacGStr()
-        {
-            return selectedMod.tarmacColor.g.ToString();
-        }
-
-        internal static void SetTarmacFloatG(float newFloat)
-        {
-            selectedMod.tarmacColor.g = newFloat;
-            selectedMod.ApplySettings();
-        }
-
-        internal static string SetTarmacGStr(string newFloat)
-        {
-            selectedMod.tarmacColor.g = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
-        //blue
-        internal static float GetTarmacFloatB()
-        {
-            return selectedMod.tarmacColor.b;
-        }
-        internal static string GetTarmacBStr()
-        {
-            return selectedMod.tarmacColor.b.ToString();
-        }
-        internal static void SetTarmacFloatB(float newFloat)
-        {
-            selectedMod.tarmacColor.b = newFloat;
-            selectedMod.ApplySettings();
-        }
-        internal static string SetTarmacBStr(string newFloat)
-        {
-            selectedMod.tarmacColor.b = float.Parse(newFloat);
-            selectedMod.ApplySettings();
-            return newFloat;
-        }
-
+        
 
 
         internal static DialogGUIScrollList VaiantList

@@ -121,7 +121,7 @@ namespace KerbalKonstructs.UI2
             //obj.transform.SetParent(KSP.UI.UIMasterController.Instance.dialogCanvas.transform, false);
 
             //obj.transform.SetAsFirstSibling();
-            ///obj.SetActive(true);
+            //obj.SetActive(true);
         }
 
         internal static void Open()
