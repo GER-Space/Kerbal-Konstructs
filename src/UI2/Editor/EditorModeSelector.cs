@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using KerbalKonstructs.Addons;
 
 namespace KerbalKonstructs.UI2
 {
@@ -107,6 +108,20 @@ namespace KerbalKonstructs.UI2
                 dialog.gameObject.GetChild("Title").SetActive(false);
             }
 
+            //if (SDTest.pickerPrefab == null)
+            //    return;
+
+            //GameObject obj = GameObject.Instantiate(SDTest.pickerPrefab, Vector3.zero , Quaternion.identity);
+
+            //if (obj == null)
+            //    return;
+
+            //obj.transform.SetParent(MainCanvasUtil.MainCanvas.transform);
+
+            //obj.transform.SetParent(KSP.UI.UIMasterController.Instance.dialogCanvas.transform, false);
+
+            //obj.transform.SetAsFirstSibling();
+            ///obj.SetActive(true);
         }
 
         internal static void Open()

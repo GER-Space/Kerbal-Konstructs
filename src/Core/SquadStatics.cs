@@ -157,47 +157,45 @@ namespace KerbalKonstructs
 
 
                     // Register new GasColor Module
-                    bool hasGrasMaterial = false;
                     Material grassMaterial = null;
+                    model.modules = new List<StaticModule>();
+
                     foreach (Renderer renderer in model.prefab.GetComponentsInChildren<Renderer>(true))
                     {
+                        int materialcount = 0;
                         foreach (Material material in renderer.materials.Where(mat => mat.shader.name == "KSP/Scenery/Diffuse Ground KSC"))
                         {
-                            //Log.Normal("Found GrassColor on: " + model.name);
+                            Log.Normal("Found GrassColor on: " + model.name + " : " + renderer.transform.name + " count: " + materialcount);
                             grassMaterial = material;
-                            hasGrasMaterial = true;
-                            break;
+                            StaticModule module = new StaticModule();
+                            module.moduleNamespace = "KerbalKonstructs";
+                            module.moduleClassname = "GrassColor2";
+                            module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name);
+                            module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
+                            module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
+                            module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
+
+                            module.moduleFields.Add("DefaultTarmacTiling", ConfigNode.WriteVector(grassMaterial.GetTextureScale("_TarmacTexture")));
+
+                            module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
+                            module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
+
+                            module.moduleFields.Add("GrassMeshName",renderer.transform.name);
+
+                            module.moduleFields.Add("MaterialOffset", materialcount.ToString());
+
+                            model.modules.Add(module);
+
+                            materialcount++;
+
+                            TexturePreset preset = new TexturePreset();
+                            preset.usage = TextureUsage.BlendMask;
+                            preset.texturePath = "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name;
+                            if (TextureSelector.additionalTextures.Where(x => x.texturePath == preset.texturePath).Count() == 0)
+                            {
+                                TextureSelector.additionalTextures.Add(preset);
+                            }
                         }
-                    }
-                    if (hasGrasMaterial)
-                    {
-                        //Log.Normal("Adding GrasColor to: " + model.name);
-                        StaticModule module = new StaticModule();
-                        module.moduleNamespace = "KerbalKonstructs";
-                        module.moduleClassname = "GrassColor2";
-                        module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name);
-                        module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
-                        module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);
-                        module.moduleFields.Add("DefaultTarmacTexture", "BUILTIN:/" + grassMaterial.GetTexture("_TarmacTexture").name);
-                        //module.moduleFields.Add("DefaultNearGrassTiling", grassMaterial.GetFloat("_NearGrassTiling").ToString());
-
-                        //Log.Normal("Instance: " + model.name + " uses Near Tiling: " + grassMaterial.GetFloat("_NearGrassTiling").ToString());
-                        //Log.Normal("Instance: " + model.name + " uses Far  Tiling: " + grassMaterial.GetFloat("_FarGrassTiling").ToString());
-                        //module.moduleFields.Add("DefaultFarGrassTiling", grassMaterial.GetFloat("_FarGrassTiling").ToString());
-
-                        //module.moduleFields.Add("DefaultFarGrassBlendDistance", grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
-                        //Log.Normal("Instance: " + model.name + " uses Far Distance: " + grassMaterial.GetFloat("_FarGrassBlendDistance").ToString());
-                        model.modules = new List<StaticModule>();
-                        model.modules.Add(module);
-
-                        TexturePreset preset = new TexturePreset();
-                        preset.usage = TextureUsage.BlendMask;
-                        preset.texturePath = "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name;
-                        if (TextureSelector.additionalTextures.Where(x => x.texturePath == preset.texturePath).Count() == 0)
-                        {
-                            TextureSelector.additionalTextures.Add(preset);
-                        }
-
                     }
 
                     StaticDatabase.RegisterModel(model, modelName);

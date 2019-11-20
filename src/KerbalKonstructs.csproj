@@ -215,6 +215,7 @@
     <Compile Include="UI2\Editor\EditorModeSelector.cs" />
     <Compile Include="UI2\Editor2.cs" />
     <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
+    <Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
     <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
     <Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
     <Compile Include="UI2\Editor\Instance\ModelList.cs" />

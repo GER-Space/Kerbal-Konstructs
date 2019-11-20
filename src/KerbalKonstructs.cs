@@ -216,6 +216,7 @@ namespace KerbalKonstructs
             #endregion
 
             KKGraphics.LoadShaderBundles();
+            //SDTest.LoadBundles();
 
             SpaceCenterManager.setKSC();
             ConnectionManager.ScanForStockCommNet();

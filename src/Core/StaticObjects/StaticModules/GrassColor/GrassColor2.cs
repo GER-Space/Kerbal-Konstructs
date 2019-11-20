@@ -12,54 +12,88 @@ namespace KerbalKonstructs
     {
 
         public string GrassMeshName = "Nix";
-        public string UsePQSColor = "True";
 
         public string DefaultNearGrassTexture = "BUILTIN:/terrain_grass00_new";
-        public string DefaultFarGrassTexture = "BUILTIN:/terrain_grass00_new_detail";
-        public string DefaultTarmacTexture = "BUILTIN:/ksc_exterior_terrain_asphalt";
-        public string DefaultBlendMaskTexture = "BUILTIN:/blackSquare";
-
         public string DefaultNearGrassTiling = "4";
+
+        public string DefaultFarGrassTexture = "BUILTIN:/terrain_grass00_new_detail";
         public string DefaultFarGrassTiling = "10";
         public string DefaultFarGrassBlendDistance = "100";
+
+        public string DefaultBlendMaskTexture = "BUILTIN:/blackSquare";
+        
+        public string DefaultTarmacTexture = "BUILTIN:/ksc_exterior_terrain_asphalt";
         public string DefaultTarmacTiling = "10, 10";
+        public string DefaultTarmacTileRandom = "False";
+        public string DefaultTarmacColor = "1,1,1,1";
+
+        public string DefaultThirdTexture = "";
+        public string DefaultThirdTextureColor = "0,0,0,0";
+        public string DefaultThirdTextureTiling = "1";
+        public string DefaultThirdTextureTileRandom = "False";
 
 
+        public string DefaultFourthTexture = "";
+        public string DefaultFourthTextureColor = "0,0,0,0";
+        public string DefaultFourthTextureTiling = "1";
+        public string DefaultFourthTextureTileRandom = "False";
 
-        internal bool usePQS = false;
-        private bool isInitialized = false;
+        public string MaterialOffset = "0";
 
-        private List<Renderer> grassRenderers = new List<Renderer>();
+        // internal variables below
 
-        internal Color grassColor = Color.clear;
-        internal Color tarmacColor = Color.white;
 
-        internal Texture2D nearGrassTexture = null;
-        internal Texture2D farGrassTexture = null;
-        internal Texture2D blendMaskTexture = null;
-        internal Texture2D tarmacTexture = null;
-
+        internal Color grassColor = new Color(0.576471f, 0.611765f, 0.392157f, 1.00000f);
         internal string nearGrassTextureName = null;
         internal string farGrassTextureName = null;
-        internal string blendMaskTextureName = null;
-        internal string tarmacTextureName = null;
-
-        internal Vector2 tarmacTiling = new Vector2(10, 10);
+        internal Texture2D nearGrassTexture = null;
+        internal Texture2D farGrassTexture = null;
 
         internal float nearGrassTiling = 0.2f;
         internal float farGrassTiling = 0.01f;
         internal float farGrassBlendDistance = 100;
+        
+
+        internal string tarmacTextureName = null;
+        internal Texture2D tarmacTexture = null;
+        internal Vector2 tarmacTiling = new Vector2(10, 10);
+        internal Color tarmacColor = Color.white;
+        internal bool tarmacTileRandom = false;
+
+        internal Texture2D blendMaskTexture = null;
+        internal string blendMaskTextureName = null;
+
+        internal string thirdTextureName = null;
+        internal Texture2D thirdTexture = null;
+        internal Color thirdTextureColor = Color.clear;
+        internal float thirdTextureTiling = 1;
+        internal bool thirdTextureTileRandom = false;
+
+        internal string fourthTextureName = null;
+        internal Texture2D fourthTexture = null;
+        internal Color fourthTextureColor = Color.clear;
+        internal float fourthTextureTiling = 1;
+        internal bool fourthTextureTileRandom = false;
+
 
         internal static Color defaultColor = new Color(0.576471f, 0.611765f, 0.392157f, 1.00000f);
-        internal static Color defaultTarmacColor = Color.white;
 
         internal bool useLegacy = false;
 
-        internal int tilingOffset = 10;
+
+
+        // private ones
+        private bool isInitialized = false;
+        private List<Renderer> grassRenderers = new List<Renderer>();
+        internal List<Material> grassMaterials = new List<Material>();
 
 
         public void Awake()
         {
+            if (staticInstance != null)
+            {
+                ApplySettings();
+            }
         }
 
 
@@ -91,90 +125,85 @@ namespace KerbalKonstructs
             tarmacTexture = KKGraphics.GetTexture(tarmacTextureName);
             blendMaskTexture = KKGraphics.GetTexture(blendMaskTextureName);
 
-            //grassColor = GetColor();
-
-            foreach (Renderer renderer in grassRenderers)
+            if (!string.IsNullOrEmpty(thirdTextureName))
             {
+                thirdTexture = KKGraphics.GetTexture(thirdTextureName);
+            }
+            if (!string.IsNullOrEmpty(fourthTextureName))
+            {
+                fourthTexture = KKGraphics.GetTexture(fourthTextureName);
+            }
+  
 
-                //if (useLegacy && renderer.material.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC"))
-                //{
-                //    Material grassMaterial = new Material(KKGraphics.GetShader("KK/legacy_Ground_KSC"));
-                //    grassMaterial.CopyPropertiesFromMaterial(renderer.material);
-                //    renderer.SetPropertyBlock(null);
+            //Material material = grassMaterials.ElementAt(matOffset);
 
-                //    Log.Normal("found localscale: " + renderer.transform.localScale);
-
-
-                //    Vector2 blendmaskTiling = renderer.material.GetTextureScale("_BlendMaskTexture");
-                //    tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
-
-                //renderer.material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
-                //    renderer.material = grassMaterial;
-
-                //    renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
-                //    renderer.material.SetTextureScale("_BlendMaskTexture", new Vector2(1,1));
-                //    nearGrassTiling = 20;
-                //    farGrassTiling = 80;
-                //    //if (staticInstance.model.name == "KSC_SpaceplaneHangar_level_3")
-                //    //{
-                //    //    nearGrassTiling = 5;
-                //    //    farGrassTiling = 10;
-                //    //    renderer.material.SetTextureScale("_BlendMaskTexture", (new Vector2(1, 1)*(1f/16f)));
-                //    //    renderer.material.SetTextureOffset("_BlendMaskTexture", (new Vector2(0.5f, 0.5f)));
-                //    //}
-                //    //renderer.material.SetFloat("_TilingOffset", 10f);
-
-
-                //}
-
-                //if (!useLegacy && !renderer.material.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")) 
-                //{
-                //    Vector2 blendmaskTiling = renderer.material.GetTextureScale("_BlendMaskTexture");
-                //    tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
-                //    renderer.material.shader = KKGraphics.GetShader("KSP/Scenery/Diffuse Ground KSC");
-                //    renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
-                //}
-
+            foreach (Material material in grassMaterials)
+            {
 
                 //if (useLegacy)
                 //{
                 //    renderer.material.SetFloat("_TilingOffset", tilingOffset);
                 //}
 
-                renderer.material.SetColor("_GrassColor", grassColor);
-                renderer.material.SetColor("_TarmacColor", tarmacColor);
+                material.SetColor("_GrassColor", grassColor);
+                material.SetColor("_TarmacColor", tarmacColor);
                 //if (!staticInstance.model.isSquad)
                 //{
-                renderer.material.SetFloat("_NearGrassTiling", nearGrassTiling);
-                renderer.material.SetFloat("_FarGrassTiling", farGrassTiling);
+                material.SetFloat("_NearGrassTiling", nearGrassTiling);
+                material.SetFloat("_FarGrassTiling", farGrassTiling);
 
-                //renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
-                //}
-                //Log.Normal("tiling near: " + nearGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
-                //Log.Normal("tiling far: " + farGrassTiling + " isSquad: " + staticInstance.model.isSquad.ToString());
+                material.SetFloat("_FarGrassBlendDistance", farGrassBlendDistance);
 
-                renderer.material.SetFloat("_FarGrassBlendDistance", farGrassBlendDistance);
 
-                if (nearGrassTexture != null)
+                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                material.SetTexture("_NearGrassTexture", nearGrassTexture);
+                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                material.SetTexture("_FarGrassTexture", farGrassTexture);
+
+                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                material.SetTexture("_TarmacTexture", tarmacTexture);
+                if (tarmacTileRandom)
                 {
-                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                    renderer.material.SetTexture("_NearGrassTexture", nearGrassTexture);
+                    material.SetFloat("_TarmacTileRandom", 1f);
                 }
-                if (farGrassTexture != null)
+                else
                 {
-                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                    renderer.material.SetTexture("_FarGrassTexture", farGrassTexture);
+                    material.SetFloat("_TarmacTileRandom", 0f);
                 }
+                material.SetColor("_TarmacColor", tarmacColor);
                 if (tarmacTexture != null)
                 {
-                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                    renderer.material.SetTexture("_TarmacTexture", tarmacTexture);
-                    renderer.material.SetTextureScale("_TarmacTexture", tarmacTiling);
+                    material.SetTextureScale("_TarmacTexture", tarmacTiling);
                 }
-                if (blendMaskTexture != null)
+
+                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                material.SetTexture("_BlendMaskTexture", blendMaskTexture);
+
+
+                // third Texture (green)
+                material.SetTexture("_ThirdTexture", thirdTexture);
+                material.SetColor("_ThirdTextureColor", thirdTextureColor);
+                material.SetFloat("_ThirdTextureTiling", thirdTextureTiling);
+                if (thirdTextureTileRandom)
                 {
-                    //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                    renderer.material.SetTexture("_BlendMaskTexture", blendMaskTexture);
+                    material.SetFloat("_ThirdTextureTileRandom", 1f);
+                }
+                else
+                {
+                    material.SetFloat("_ThirdTextureTileRandom", 0);
+                }
+
+                // Fourth Texture (blue)
+                material.SetTexture("_FourthTexture", fourthTexture);
+                material.SetColor("_FourthTextureColor", fourthTextureColor);
+                material.SetFloat("_FourthTextureTiling", fourthTextureTiling);
+                if (fourthTextureTileRandom)
+                {
+                    material.SetFloat("_FourthTextureTileRandom", 1f);
+                }
+                else
+                {
+                    material.SetFloat("_FourthTextureTileRandom", 0);
                 }
 
             }
@@ -188,6 +217,8 @@ namespace KerbalKonstructs
                 return;
             }
 
+            ReadConfig();
+
             if (staticInstance.model.isSquad)
             {
                 FindSquadGrasMaterial();
@@ -196,7 +227,7 @@ namespace KerbalKonstructs
             {
                 FindModelGrasMaterials();
             }
-            ReadConfig();
+
 
             isInitialized = true;
         }
@@ -211,41 +242,34 @@ namespace KerbalKonstructs
                 Renderer grassRenderer = transform.GetComponent<Renderer>();
 
                 grassRenderers.Add(grassRenderer);
-
-
-                //grassRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse");
-                //grassRenderer.material.SetTexture("_MainTex", KKGraphics.GetTexture(GrasTextureImage,false,0));
-
-                grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
-                //grassRenderer.material.SetTexture("_NearGrassTexture", KKGraphics.GetTexture(DefaultNearGrassTexture));
-                //grassRenderer.material.SetTexture("_FarGrassTexture", KKGraphics.GetTexture(DefaultFarGrassTexture));
-                //grassRenderer.material.SetTexture("_TarmacTexture", KKGraphics.GetTexture(DefaultTarmacTexture));
-                //grassRenderer.material.SetTexture("_BlendMaskTexture", KKGraphics.GetTexture(DefaultBlendMaskTexture));
-
-                //grassRenderer.material.SetFloat("_FarGrassBlendDistance", 100f);
-
-                //Log.Normal("Scale: " + grassRenderer.material.GetTextureScale("_NearGrassTexture"));
+                grassMaterials.Add(grassRenderer.material);
+                grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+                
 
             }
         }
 
         public void FindSquadGrasMaterial()
         {
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
+            Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
+            foreach (var transform in allTransforms)
             {
-                foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
-                {
-                    grassRenderers.Add(renderer);
-                    //DefaultBlendMaskTexture = "BUILTIN:/"+material.GetTexture("_BlendMaskTexture").name;
-                    //DefaultTarmacTexture = "BUILTIN:/" + material.GetTexture("_TarmacTexture").name;
-                    //nearGrassTextureName = "BUILTIN:/" + material.GetTexture("_NearGrassTexture").name;
-                    //farGrassTextureName = "BUILTIN:/" + material.GetTexture("_FarGrassTexture").name;
-                    material.shader = KKGraphics.GetShader("KK/Ground_KSC_NoUV");
+                var renderers = transform.GetComponents<MeshRenderer>();
 
-                    //nearGrassTiling = renderer.material.GetFloat("_NearGrassTiling");
-                    //farGrassTiling = renderer.material.GetFloat("_FarGrassTiling");
-                    tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
-                    GrassMeshName = renderer.transform.name;
+                foreach (var renderer in renderers)
+                {
+                    foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
+                    {
+                        material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+
+                        grassRenderers.Add(renderer);
+                        grassMaterials.Add(material);
+
+                        tarmacTiling = renderer.material.GetTextureScale("_TarmacTexture");
+                        GrassMeshName = renderer.transform.name;
+                        break;
+
+                    }
                 }
             }
         }
@@ -265,8 +289,24 @@ namespace KerbalKonstructs
                 farGrassTiling = float.Parse(DefaultFarGrassTiling);
                 farGrassBlendDistance = float.Parse(DefaultFarGrassBlendDistance);
                 tarmacTiling = ConfigNode.ParseVector2(DefaultTarmacTiling);
+                tarmacTileRandom = bool.Parse(DefaultTarmacTileRandom);
                 grassColor = defaultColor;
                 tarmacColor = Color.white;
+
+
+                //Log.Normal("MaterialOffset:" + MaterialOffset);
+
+
+                thirdTextureName = DefaultThirdTexture;
+                thirdTextureTiling = float.Parse(DefaultThirdTextureTiling);
+                thirdTextureColor =  ConfigNode.ParseColor(DefaultThirdTextureColor);
+                thirdTextureTileRandom = bool.Parse(DefaultThirdTextureTileRandom);
+
+                fourthTextureName = DefaultFourthTexture;
+                fourthTextureTiling = float.Parse(DefaultFourthTextureTiling);
+                fourthTextureColor = ConfigNode.ParseColor(DefaultFourthTextureColor);
+                fourthTextureTileRandom = bool.Parse(DefaultFourthTextureTileRandom);
+
 
                 // try to import legacy values
                 if (staticInstance.GrasColor != Color.clear)
@@ -285,13 +325,15 @@ namespace KerbalKonstructs
                         staticInstance.GrasTexture = "BUILTIN:/terrain_grass00_new_detail";
                     }
 
-                    farGrassTiling = 10;
-                    nearGrassTiling = 1;
+                    //farGrassTiling = 10;
+                    //nearGrassTiling = 1;
                     nearGrassTextureName = staticInstance.GrasTexture;
                     farGrassTextureName = staticInstance.GrasTexture;
 
+                    
                     grassColor = GrassColorUtils.ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
 
+                    staticInstance.grassColor2Configs.Add(GiveConfig());
 
                 }
 
@@ -300,22 +342,42 @@ namespace KerbalKonstructs
 
             foreach (ConfigNode grassConfig in staticInstance.grassColor2Configs)
             {
-                Log.Normal("found instance cfgnode");
+                //Log.Normal("found instance cfgnode");
                 if (grassConfig.GetValue("GrassMeshName") == GrassMeshName)
                 {
-                    Log.Normal("found instance grassnode");
+                    if (grassConfig.HasValue("MaterialOffset") && (grassConfig.GetValue("MaterialOffset") != MaterialOffset))
+                    {
+                        continue;
+                    }
+
+                    //Log.Normal("found instance grassnode");
+                        grassColor = (grassConfig.HasValue("GrassColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
+
                     nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") : DefaultNearGrassTexture;
                     farGrassTextureName = (grassConfig.HasValue("FarGrassTexture")) ? grassConfig.GetValue("FarGrassTexture") : DefaultFarGrassTexture;
-                    tarmacTextureName = (grassConfig.HasValue("TarmacTexture")) ? grassConfig.GetValue("TarmacTexture") : DefaultTarmacTexture;
-                    blendMaskTextureName = (grassConfig.HasValue("BlendMaskTexture")) ? grassConfig.GetValue("BlendMaskTexture") : DefaultBlendMaskTexture;
+                    
                     nearGrassTiling = (grassConfig.HasValue("NearGrassTiling")) ? float.Parse(grassConfig.GetValue("NearGrassTiling")) : 1f;
                     farGrassTiling = (grassConfig.HasValue("FarGrassTiling")) ? float.Parse(grassConfig.GetValue("FarGrassTiling")) : 1f;
                     farGrassBlendDistance = (grassConfig.HasValue("FarGrassBlendDistance")) ? float.Parse(grassConfig.GetValue("FarGrassBlendDistance")) : 50f;
 
-                    grassColor = (grassConfig.HasValue("GrassColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
+                    blendMaskTextureName = (grassConfig.HasValue("BlendMaskTexture")) ? grassConfig.GetValue("BlendMaskTexture") : DefaultBlendMaskTexture;
+
+                    tarmacTextureName = (grassConfig.HasValue("TarmacTexture")) ? grassConfig.GetValue("TarmacTexture") : DefaultTarmacTexture;
                     tarmacColor = (grassConfig.HasValue("TarmacColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("TarmacColor")) : Color.white;
                     tarmacTiling = (grassConfig.HasValue("TarmacTiling")) ? ConfigNode.ParseVector2(grassConfig.GetValue("TarmacTiling")) : new Vector2(10,10);
-                    useLegacy = (grassConfig.HasValue("UseLegacyColor")) ? Boolean.Parse(grassConfig.GetValue("UseLegacyColor")) : false;
+                    tarmacTileRandom = (grassConfig.HasValue("TarmacTileRandom")) ? Boolean.Parse(grassConfig.GetValue("TarmacTileRandom")) : false;
+
+                    thirdTextureName = (grassConfig.HasValue("ThirdTexture")) ? grassConfig.GetValue("ThirdTexture") : "";
+                    thirdTextureTiling = (grassConfig.HasValue("ThirdTextureTiling")) ? float.Parse(grassConfig.GetValue("ThirdTextureTiling")) : 1f;
+                    thirdTextureColor = (grassConfig.HasValue("ThirdTextureColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("ThirdTextureColor")) : new Color(1,1,1,1);
+                    thirdTextureTileRandom = (grassConfig.HasValue("ThirdTextureTileRandom")) ? Boolean.Parse(grassConfig.GetValue("ThirdTextureTileRandom")) : false;
+
+                    fourthTextureName = (grassConfig.HasValue("FourthTexture")) ? grassConfig.GetValue("FourthTexture") : "";
+                    fourthTextureTiling = (grassConfig.HasValue("FourthTextureTiling")) ? float.Parse(grassConfig.GetValue("FourthTextureTiling")) : 1f;
+                    fourthTextureColor = (grassConfig.HasValue("FourthTextureColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("FourthTextureColor")) : new Color(1, 1, 1, 1);
+                    fourthTextureTileRandom = (grassConfig.HasValue("FourthTextureTileRandom")) ? Boolean.Parse(grassConfig.GetValue("FourthTextureTileRandom")) : false;
+
+
                     break;
                 }
 
@@ -324,40 +386,53 @@ namespace KerbalKonstructs
             }
         }
 
-      
-
-
-    
+          
 
         public ConfigNode GiveConfig()
         {
             ConfigNode grassNode = new ConfigNode("GrassColor2");
 
             grassNode.AddValue("GrassMeshName", GrassMeshName);
+            grassNode.AddValue("MaterialOffset", MaterialOffset);
+
+            grassNode.AddValue("GrassColor", grassColor);
+
             if (nearGrassTexture != null)
             {
                 grassNode.AddValue("NearGrassTexture", nearGrassTextureName);
+                grassNode.AddValue("NearGrassTiling", nearGrassTiling);
             }
             if (farGrassTexture != null)
             {
                 grassNode.AddValue("FarGrassTexture", farGrassTextureName);
+                grassNode.AddValue("FarGrassTiling", farGrassTiling);
+                grassNode.AddValue("FarGrassBlendDistance", farGrassBlendDistance);
             }
             if (tarmacTexture != null)
             {
                 grassNode.AddValue("TarmacTexture", tarmacTextureName);
+                grassNode.AddValue("TarmacColor", tarmacColor);
+                grassNode.AddValue("TarmacTiling", tarmacTiling);
+                grassNode.AddValue("TarmacTileRandom", tarmacTileRandom);
             }
 
             if (blendMaskTexture != null)
             {
                 grassNode.AddValue("BlendMaskTexture", blendMaskTextureName);
             }
-            grassNode.AddValue("NearGrassTiling", nearGrassTiling);
-            grassNode.AddValue("FarGrassTiling", farGrassTiling);
-            grassNode.AddValue("FarGrassBlendDistance", farGrassBlendDistance);
-            grassNode.AddValue("GrassColor", grassColor);
-            grassNode.AddValue("TarmacColor", tarmacColor);
-            grassNode.AddValue("TarmacTiling", tarmacTiling);
-            grassNode.AddValue("UseLegacyColor", useLegacy);
+
+            if (thirdTexture != null) {
+                grassNode.AddValue("ThirdTexture",thirdTextureName);
+                grassNode.AddValue("ThirdTextureTiling",thirdTextureTiling);
+                grassNode.AddValue("ThirdTextureColor",thirdTextureColor);
+                grassNode.AddValue("ThirdTextureTileRandom",thirdTextureTileRandom);
+            }
+            if (fourthTexture != null) {
+                grassNode.AddValue("FourthTexture",fourthTextureName);
+                grassNode.AddValue("FourthTextureTiling",fourthTextureTiling);
+                grassNode.AddValue("FourthTextureColor",fourthTextureColor);
+                grassNode.AddValue("FourthTextureTileRandom",fourthTextureTileRandom);
+            }
 
             return grassNode;
         }

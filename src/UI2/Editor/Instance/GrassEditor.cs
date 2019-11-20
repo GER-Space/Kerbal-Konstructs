@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Linq;
+
 
 
 namespace KerbalKonstructs.UI2
@@ -43,8 +46,17 @@ namespace KerbalKonstructs.UI2
         internal static string FarGrassTiling;
         internal static string BlendDistance;
 
+        internal static string ThirdTexture;
+        internal static string ThirdTextureTiling;
+
+        internal static string FourthTexture;
+        internal static string FourthTextureTiling;
+
         internal static StaticInstance staticInstance = null;
         internal static GrassColor2 selectedMod = null;
+        internal static int offset = 0;
+
+
 
         internal static void CreateContent()
         {
@@ -61,6 +73,7 @@ namespace KerbalKonstructs.UI2
 
 
             content.Add(VaiantList);
+
             content.Add(new DialogGUIVerticalLayout(
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
@@ -112,11 +125,23 @@ namespace KerbalKonstructs.UI2
                     new DialogGUITextInput("0", false, 10, SetTarmacUStr, GetTarmacUStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25),
                     new DialogGUILabel("V: ", HighLogic.UISkin.label),
                     new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
+               new DialogGUIHorizontalLayout(
+                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Texture Random Tiling", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21)
+                   ),
                 new DialogGUIHorizontalLayout(
                     new DialogGUIButton("  R", ReloadBlendMask, 21f, 21.0f, false, HighLogic.UISkin.label),
-                    new DialogGUILabel("BlendMaskTexture", KKStyle.whiteLabel),
+                    new DialogGUILabel("BlendMask", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label))
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+                  new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Third Texture", KKStyle.whiteLabel),
+                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+                  new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Third Texture Tiling: ", KKStyle.whiteLabel),
+                    new DialogGUITextInput(ThirdTextureTiling, ThirdTextureTiling, false, 10, SetThirdTile, 25),
+                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21))
+
 
                 //new DialogGUIHorizontalLayout(
                 //    new DialogGUILabel("Overall Tiling", KKStyle.whiteLabel),
@@ -124,6 +149,15 @@ namespace KerbalKonstructs.UI2
                 //    new DialogGUITextInput("0", false, 10, SetOffsetTilingStr, GetOffsetTilingStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25))
 
                 )); ;
+        }
+
+
+
+        internal static string SetThirdTile(string newTile)
+        {
+            selectedMod.thirdTextureTiling = float.Parse(newTile);
+            selectedMod.ApplySettings();
+            return newTile;
         }
 
 
@@ -160,23 +194,6 @@ namespace KerbalKonstructs.UI2
             return selectedMod.tarmacTiling.y.ToString();
         }
 
-
-        internal static string GetOffsetTilingStr()
-        {
-
-            return selectedMod.tilingOffset.ToString();
-        }
-
-        internal static float GetOffsetTiling()
-        {
-
-            return (float)selectedMod.tilingOffset;
-        }
-        internal static void SetOffsetTiling(float newValue)
-        {
-
-          selectedMod.tilingOffset = (int)newValue;
-        }
 
 
         internal static string GetTextureName(string fieldName)
@@ -383,17 +400,19 @@ namespace KerbalKonstructs.UI2
             get
             {
                 List<DialogGUIBase> list = new List<DialogGUIBase>();
-                //list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-                //list.Add(new DialogGUIFlexibleSpace());
+                list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
+                list.Add(new DialogGUIFlexibleSpace());
                 //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
 
-                foreach (var grass in EditorGUI.selectedInstance.mesh.GetComponents<GrassColor2>())
+                foreach (var grassMod in EditorGUI.selectedInstance.mesh.GetComponents<GrassColor2>())
                 {
-                    list.Add(new DialogGUIButton(grass.GrassMeshName, delegate { SelectGrass(grass); }, delegate { return (grass != selectedMod); }, 140.0f, 25.0f, false));
+
+                        list.Add(new DialogGUIButton(grassMod.GrassMeshName, delegate { SelectGrass(grassMod);  }, delegate { return (selectedMod != grassMod) ; }, 210.0f, 21.0f, false));
+
                 }
                 list.Add(new DialogGUIFlexibleSpace());
-                var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(200, 50), new Vector2(200, 25f * list.Count), false, false, layout);
+                var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleLeft, list.ToArray());
+                var scroll = new DialogGUIScrollList(new Vector2(210, 60), new Vector2(200, 25f * (list.Count-3)), false, true, layout);
                 return scroll;
             }
         }
@@ -549,15 +568,25 @@ namespace KerbalKonstructs.UI2
             FarGrassTexture = mod.farGrassTexture != null ? mod.farGrassTextureName : "no texture";
             TamarcTexture = mod.tarmacTexture != null ? mod.tarmacTextureName : "no texture";
             BlendMaskTexture = mod.blendMaskTexture != null ? mod.blendMaskTextureName : "no texture";
+
             NearGrassTiling = mod.nearGrassTiling.ToString();
             FarGrassTiling = mod.farGrassTiling.ToString();
             BlendDistance = mod.farGrassBlendDistance.ToString();
+
+            ThirdTexture = mod.thirdTexture != null ? mod.thirdTextureName : "no texture";
+            ThirdTextureTiling = mod.thirdTextureTiling.ToString();
+
+            FourthTexture = mod.fourthTexture != null ? mod.fourthTextureName : "no texture";
+            FourthTextureTiling = mod.fourthTextureTiling.ToString();
+
         }
 
 
         internal static void SelectGrass(GrassColor2 grass)
         {
             selectedMod = grass;
+            //selectedMod.matOffset = offset;
+
             ReadMod(selectedMod);
         }
 

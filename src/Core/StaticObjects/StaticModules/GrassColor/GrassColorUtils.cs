@@ -43,7 +43,7 @@ namespace KerbalKonstructs.Core
 
             Color finalColor = legacyColor.DivideWith(newAvgTexColor).LimitTo(6f);
             finalColor.a = 1;
-            Log.Normal("final Color: " + finalColor.ToString());
+            //Log.Normal("final Color: " + finalColor.ToString());
 
             return finalColor;
         }

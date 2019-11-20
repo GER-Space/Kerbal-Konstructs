@@ -43,6 +43,62 @@ namespace KerbalKonstructs.Addons
 
         //}
 
+        internal static GameObject pickerPrefab;
+
+        internal static void LoadBundles()
+        {
+
+            string bundleFileName;
+            GameObject myPrefab;
+
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXPlayer:
+                    bundleFileName = "kkpicker.osx";
+                    break;
+                case RuntimePlatform.LinuxPlayer:
+                    bundleFileName = "kkpicker.osx";
+                    break;
+                default:
+                    bundleFileName = "kkpicker.windows";
+                    break;
+            }
+            string bundlePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/Prefabs/" + bundleFileName;
+
+            AssetBundle prefabBundle = null;
+            try
+            {
+                prefabBundle = AssetBundle.LoadFromFile(bundlePath);
+                if (prefabBundle == null)
+                {
+                    Log.Normal("Failed to load shader asset file: " + bundlePath);
+                    return;
+                }
+                foreach (string prefabName in prefabBundle.GetAllAssetNames())
+                {
+                    Log.Normal("Loading Prefab: " + prefabName);
+                    myPrefab = prefabBundle.LoadAsset<GameObject>(prefabName);
+                    pickerPrefab = myPrefab;
+                    pickerPrefab.SetActive(false);
+                    GameObject.DontDestroyOnLoad(pickerPrefab);
+                    
+                }
+
+            }
+            catch (System.Exception exeption)
+            {
+                Log.Error("Error loading assetbundle " + exeption);
+            }
+            finally
+            {
+                if (prefabBundle != null)
+                {
+                    prefabBundle.Unload(false);
+                }
+            }
+
+        }
+
 
         private static void Add2Group(string groupName, Vector3 pos)
         {
