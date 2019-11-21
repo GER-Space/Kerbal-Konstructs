@@ -188,6 +188,8 @@
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\Barracks\Barracks.cs" />
     <Compile Include="Facilities\Business\Business.cs" />
+    <Compile Include="Facilities\Hangar\Hangar2.cs" />
+    <Compile Include="Facilities\Hangar\HangarKSCGUI.cs" />
     <Compile Include="Facilities\KKFacility.cs" />
     <Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
@@ -213,7 +215,6 @@
     <Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
     <Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
     <Compile Include="UI2\Editor\EditorModeSelector.cs" />
-    <Compile Include="UI2\Editor2.cs" />
     <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
     <Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
     <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
