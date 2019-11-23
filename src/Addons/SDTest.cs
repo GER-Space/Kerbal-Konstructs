@@ -43,6 +43,15 @@ namespace KerbalKonstructs.Addons
 
         //}
 
+        internal static void SpawnWorker()
+        {
+            ProtoCrewMember protoCrew = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
+            protoCrew.trait = "Worker";
+
+
+            protoCrew.rosterStatus = ProtoCrewMember.RosterStatus.Available;
+        }
+
         internal static GameObject pickerPrefab;
 
         internal static void LoadBundles()

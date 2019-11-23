@@ -44,8 +44,7 @@ namespace KerbalKonstructs.UI
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
                 //KSCManager.instance.Open();
-                InputLockManager.SetControlLock("KK_KSC");
-                KSCManager.CreatePopUp();
+                UI2.KSCManager.Open();
                 return;
             }
         }
@@ -73,12 +72,7 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                //KSCManager.instance.Close();
-                if (KSCManager.dialog != null)
-                {
-                    KSCManager.dialog.Dismiss();
-                    InputLockManager.RemoveControlLock("KK_KSC");
-                }
+                UI2.KSCManager.Close();
                 return;
             }
         }

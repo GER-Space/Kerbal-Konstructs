@@ -271,9 +271,9 @@ namespace KerbalKonstructs.Core
         {
             switch (instance.FacilityType)
             {
-                case "Hangar":
-                    HangarGUI.CacheHangaredCraft(instance);
-                    break;
+                //case "Hangar":
+                //    HangarGUI.CacheHangaredCraft(instance);
+                //    break;
                 case "LandingGuide":
                     LandingGuideUI.instance.drawLandingGuide(instance);
                     break;
@@ -290,9 +290,9 @@ namespace KerbalKonstructs.Core
         {
             switch (instance.FacilityType)
             {
-                case "Hangar":
-                    HangarGUI.CacheHangaredCraft(instance);
-                    break;
+                //case "Hangar":
+                //    HangarGUI.CacheHangaredCraft(instance);
+                //    break;
                 case "LandingGuide":
                     LandingGuideUI.instance.drawLandingGuide(null);
                     break;

@@ -1,165 +1,149 @@
-﻿using KerbalKonstructs.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
-    class Hangar : KKFacility
+    internal class Hangar : KKFacility
     {
-        [CareerSetting]
-        public string InStorage1 = "";
-        [CareerSetting]
-        public string InStorage2 = "";
-        [CareerSetting]
-        public string InStorage3 = "";
-
 
         [CFGSetting]
         public float FacilityMassCapacity;
         [CFGSetting]
         public int FacilityCraftCapacity;
 
-        internal static void DoHangaredCraftCheck()
+
+        internal struct StoredVessel
         {
-            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+            internal string vesselName;
+            internal Guid uuid;
+            internal ConfigNode vesselNode;
+        }
+
+
+        internal List<StoredVessel> storedVessels = new List<StoredVessel>();
+
+
+        internal override void LoadCareerConfig(ConfigNode cfgNode)
+        {
+            base.ParseConfig(cfgNode);
+
+            storedVessels = new List<StoredVessel>();
+
+            foreach (ConfigNode resourceNode in cfgNode.GetNodes("StoredVessel"))
             {
 
+                StoredVessel storedVessel = new StoredVessel();
 
-                if (instance.facilityType == KKFacilityType.Hangar)
+
+                storedVessel.uuid = Guid.Parse(resourceNode.GetValue("VesselID"));
+                storedVessel.vesselName = resourceNode.GetValue("VesselName");
+                storedVessel.vesselNode = resourceNode.GetNode("VESSEL");
+                storedVessels.Add(storedVessel);
+            }
+            
+        }
+
+        internal override void SaveCareerConfig(ConfigNode facilityNode)
+        {
+            base.WriteConfig(facilityNode);
+
+            foreach (StoredVessel vessel in storedVessels)
+            {
+                ConfigNode vesselNode = new ConfigNode("StoredVessel");
+                vesselNode.SetValue("VesselID", vessel.uuid.ToString(), true);
+                vesselNode.SetValue("VesselName", vessel.vesselName, true);
+                vesselNode.AddNode(vessel.vesselNode);
+
+                facilityNode.AddNode(vesselNode);
+            }
+
+        }
+
+
+        // static functions, that make live a lot easier
+
+        /// <summary>
+        /// Stores a Vessel into the specified Hangar
+        /// </summary>
+        internal static void StoreVessel (Vessel vessel, Hangar hangar) 
+        {
+
+            StoredVessel storedVessel = new StoredVessel();
+
+            storedVessel.uuid = vessel.protoVessel.vesselID;
+            storedVessel.vesselName = vessel.GetDisplayName();
+
+            //get the experience and assign the crew to the rooster
+            foreach (Part part in vessel.parts)
+            {
+                int count = part.protoModuleCrew.Count;
+                for  (int i = 0; i <count; i++ )
                 {
-                    Hangar thisHanar = instance.gameObject.GetComponent<Hangar>();
+                    part.protoModuleCrew[i].flightLog.AddEntryUnique(FlightLog.EntryType.Recover);
+                    part.protoModuleCrew[i].flightLog.AddEntryUnique(FlightLog.EntryType.Land, FlightGlobals.currentMainBody.name);
+                    part.protoModuleCrew[i].ArchiveFlightLog();
 
-
-                    string sInStorage = thisHanar.InStorage1;
-                    string sInStorage2 = thisHanar.InStorage2;
-                    string sInStorage3 = thisHanar.InStorage3;
-
-                    string bHangarHasStoredCraft1 = "None";
-                    string bHangarHasStoredCraft2 = "None";
-                    string bHangarHasStoredCraft3 = "None";
-
-                    bool bCraftExists = false;
-
-                    if (sInStorage != "None" && sInStorage != "")
-                    {
-                        foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-                        {
-                            if (vVesselStored.id.ToString() == sInStorage)
-                            {
-                                bCraftExists = true;
-                                break;
-                            }
-                        }
-
-                        if (bCraftExists)
-                            bHangarHasStoredCraft1 = "InStorage1";
-                        else
-                        {
-                            // Craft no longer exists. Clear this hangar space.
-                            Log.Debug("Craft InStorage no longer exists. Emptying this hangar space.");
-                            thisHanar.InStorage1 = "None";
-                        }
-                    }
-
-                    bCraftExists = false;
-
-                    if (sInStorage2 != "None" && sInStorage2 != "")
-                    {
-                        foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-                        {
-                            if (vVesselStored.id.ToString() == sInStorage2)
-                            {
-                                bCraftExists = true;
-                                break;
-                            }
-                        }
-
-                        if (bCraftExists)
-                            bHangarHasStoredCraft2 = "InStorage2";
-                        else
-                        {
-                            // Craft no longer exists. Clear this hangar space.
-                            Log.Debug("Craft TargetID no longer exists. Emptying this hangar space.");
-                            thisHanar.InStorage2 = "None";
-                        }
-                    }
-
-                    bCraftExists = false;
-
-                    if (sInStorage3 != "None" && sInStorage3 != "")
-                    {
-                        foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-                        {
-                            if (vVesselStored.id.ToString() == sInStorage3)
-                            {
-                                bCraftExists = true;
-                                break;
-                            }
-                        }
-
-                        if (bCraftExists)
-                            bHangarHasStoredCraft3 = "InStorage3";
-                        else
-                        {
-                            // Craft no longer exists. Clear this hangar space.
-                            Log.Debug("Craft TargetType no longer exists. Emptying this hangar space.");
-
-                            thisHanar.InStorage3 = "None";
-                        }
-                    }
-
-                    if (bHangarHasStoredCraft1 == "None" && bHangarHasStoredCraft2 == "None" && bHangarHasStoredCraft3 == "None")
-                    {
-
-                    }
-                    else
-                    {
-                        string sHangarSpace = "";
-
-                        foreach (Vessel vVesselStored in FlightGlobals.Vessels)
-                        {
-                            if (vVesselStored.id.ToString() == sInStorage)
-                                sHangarSpace = "InStorage1";
-
-                            if (vVesselStored.id.ToString() == sInStorage2)
-                                sHangarSpace = "InStorage2";
-
-                            if (vVesselStored.id.ToString() == sInStorage3)
-                                sHangarSpace = "InStorage3";
-
-                            // If a vessel is hangared
-                            if (vVesselStored.id.ToString() == sInStorage || vVesselStored.id.ToString() == sInStorage2 || vVesselStored.id.ToString() == sInStorage3)
-                            {
-                                if (vVesselStored == FlightGlobals.ActiveVessel)
-                                {
-                                    // Craft has been taken control
-                                    // Empty the hangar
-                                    Log.Debug("Craft has been been taken control of. Emptying " + sHangarSpace + " hangar space.");
-                                    typeof(Hangar).GetField(sHangarSpace).SetValue(thisHanar, "None");
-                                    //instance.setSetting(sHangarSpace, "None");
-                                }
-                                else
-                                {
-                                    Log.Debug("Hiding vessel " + vVesselStored.vesselName + ". It is in the hangar.");
-                                    // Hide the vessel - it is in the hangar
-
-                                    foreach (Part p in vVesselStored.Parts)
-                                    {
-                                        if (p != null && p.gameObject != null)
-                                            p.gameObject.SetActive(false);
-                                        else
-                                            continue;
-                                    }
-
-                                    vVesselStored.MakeInactive();
-                                    vVesselStored.enabled = false;
-                                    vVesselStored.Unload();
-                                }
-                            }
-
-                        }
-                    }
+                    // remove the crew from the ship
+                    part.RemoveCrewmember(part.protoModuleCrew[i]);
                 }
             }
+
+
+            // save the ship
+            storedVessel.vesselNode = new ConfigNode("VESSEL");
+
+            //create a backup of the current state, then save that state
+            ProtoVessel backup = vessel.BackupVessel();
+            backup.Save(storedVessel.vesselNode);
+
+            // save the stored information in the hangar
+            hangar.storedVessels.Add(storedVessel);
+
+            // remove the stored vessel from the game
+            vessel.MakeInactive();
+            vessel.Unload();
+            //vessel.Die();
+
+            FlightGlobals.RemoveVessel(vessel);
+            if (vessel != null)
+            {
+                vessel.protoVessel.Clean();
+            }
+
+            //UnityEngine.Object.Destroy(vessel.gameObject);
+
+            GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
+            HighLogic.LoadScene(GameScenes.SPACECENTER);
         }
+
+
+
+        internal static Vessel RollOutVessel(StoredVessel storedVessel, Hangar hangar)
+        {
+            if (!hangar.storedVessels.Contains(storedVessel))
+            {
+                Log.Error("no Stored Vessel found:" + storedVessel.vesselName);
+                return null;
+            }
+            hangar.storedVessels.Remove(storedVessel);
+
+            ProtoVessel protoVessel = new ProtoVessel(storedVessel.vesselNode, HighLogic.CurrentGame);
+
+
+            protoVessel.Load(HighLogic.CurrentGame.flightState);
+
+            Vessel vessel = protoVessel.vesselRef;
+
+            return vessel;
+
+        }
+
+
 
     }
 }

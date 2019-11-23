@@ -9,20 +9,20 @@ using UnityEngine.UI;
 
 namespace KerbalKonstructs.UI2
 {
-    internal class HangarKSCGUI
+    internal class KSCManager
     {
 
         internal static PopupDialog dialog;
         internal static MultiOptionDialog optionDialog;
         internal static List<DialogGUIBase> content;
 
-        internal static string windowName = "KSCHangar";
+        internal static string windowName = "KSCManager";
         internal static string windowMessage = null;
-        internal static string windowTitle = "All stored Vessels";
+        internal static string windowTitle = "Kerbal Konstructs Base Manager";
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 350f;
+        internal static float windowWidth = 250;
         internal static float windowHeight = 200f;
 
         internal static bool showTitle = false;
@@ -33,13 +33,15 @@ namespace KerbalKonstructs.UI2
         internal static bool setToParent = false;
 
         internal static bool checkForParent = false;
-        internal static Func<bool> parentWindow = KSCManager.IsOpen;
+        internal static Func<bool> parentWindow = null;
 
 
         internal static void CreateContent()
         {
-            content.Add(new DialogGUILabel("SpaceCenter,   VesselName", KKStyle.whiteLabel));
-            content.Add(VaiantList);
+            content.Add(new DialogGUILabel("Action from the KSC", HighLogic.UISkin.label));
+            content.Add(new DialogGUIButton("Show Stored Vessels", delegate { HangarKSCGUI.Open(); } , HangarKSCGUI.IsClosed, false));
+            content.Add(new DialogGUIButton("Repair All Buildings", RepairAllBuildings, 140.0f, 30.0f, true));
+            content.Add(new DialogGUIButton("Close", delegate { Close(); }, 140.0f, 30.0f, false));
         }
 
 
@@ -58,65 +60,6 @@ namespace KerbalKonstructs.UI2
                 new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
 
                 ));
-        }
-
-
-
-        internal static DialogGUIScrollList VaiantList
-        {
-            get
-            {
-                List<DialogGUIBase> list = new List<DialogGUIBase>();
-                list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-                list.Add(new DialogGUIFlexibleSpace());
-                //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
-
-                foreach (var staticInstance in StaticDatabase.allStaticInstances)
-                {
-                    if (!staticInstance.hasFacilities || staticInstance.facilityType != Modules.KKFacilityType.Hangar)
-                    {
-                        continue;
-                    }
-
-                    Modules.Hangar hangar = staticInstance.GetFacility(Modules.KKFacilityType.Hangar) as Modules.Hangar;
-                    foreach (Modules.Hangar.StoredVessel storedVessel in hangar.storedVessels)
-                    {
-                        Modules.Hangar.StoredVessel vessel = storedVessel;
-                        list.Add(new DialogGUIHorizontalLayout(
-                            new DialogGUILabel(staticInstance.groupCenterName, KKStyle.whiteLabel) ,
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUILabel(vessel.vesselName),
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUIButton("Launch", delegate { LaunchVessel(vessel, hangar); }, 60.0f, 23.0f, true))
-                            );
-                    }
-                }
-                list.Add(new DialogGUIFlexibleSpace());
-                list.Add(new DialogGUIButton("Close", delegate { Close(); }, false));
-                var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count-2), false, true, layout);
-                return scroll;
-
-            }
-        }
-
-
-
-        internal static void LaunchVessel(Modules.Hangar.StoredVessel vessel, Modules.Hangar hangar)
-        {
-            Vessel newVessel = Modules.Hangar.RollOutVessel(vessel, hangar);
-
-            if (newVessel == null)
-            {
-                Log.UserError("Count not receive Vessel from Storage. Now its gone forever!");
-
-            }
-
-            // remove the control lock. which was created by the KSC Manager window
-            InputLockManager.RemoveControlLock("KK_KSC");
-
-            GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
-            FlightDriver.StartAndFocusVessel("persistent", FlightGlobals.Vessels.IndexOf(newVessel));
         }
 
 
@@ -172,8 +115,25 @@ namespace KerbalKonstructs.UI2
             CreateContent();
             CreateMultiOptionDialog();
             CreatePopUp();
+            InputLockManager.SetControlLock("KK_KSC");
 
-            
+            //GameObject prefab = null;
+
+            //foreach (GameObject go in Resources.FindObjectsOfTypeAll<GameObject>())
+            //{
+            //    if (go.name == "CrewManagementArea")
+            //    {
+            //        prefab = GameObject.Instantiate(go, new Vector3(3,41,0), Quaternion.identity) as GameObject;
+            //    }
+            //}
+
+            //foreach (MonoBehaviour comp in prefab.GetComponentsInChildren<MonoBehaviour>(true))
+            //{
+            //    Log.Normal(comp.GetType().FullName.ToString());
+            //}
+
+            //prefab.transform.SetParent(KSP.UI.UIMasterController.Instance.appCanvas.transform);
+            //prefab.SetActive(true);
 
         }
 
@@ -187,6 +147,7 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+            InputLockManager.RemoveControlLock("KK_KSC");
         }
 
 
@@ -203,11 +164,6 @@ namespace KerbalKonstructs.UI2
             return (dialog != null);
         }
 
-        internal static bool IsClosed()
-        {
-            return (dialog == null);
-        }
-
         internal static void Toggle()
         {
             if (isOpen)
@@ -220,10 +176,27 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-
-        internal static void SetVariant(string variantName)
+        internal static void RepairAllBuildings()
         {
-            Log.Normal("Base Selected: " + variantName);
+            foreach (StaticInstance instance in StaticDatabase.allStaticInstances)
+            {
+                foreach (DestructibleBuilding building in instance.transform.gameObject.GetComponentsInChildren<DestructibleBuilding>(true))
+                {
+                    if (building.IsDestroyed)
+                    {
+                        //building.RepairCost = 0;
+                        //building.Repair();
+                        building.Reset();
+                        // reactivate the Building Spawn if the building was active before
+                        if (instance.isActive)
+                        {
+                            instance.Activate();
+                        }
+                        instance.isDestroyed = false;
+                    }
+                }
+            }
+            InputLockManager.RemoveControlLock("KK_KSC");
         }
 
 

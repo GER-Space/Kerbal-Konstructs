@@ -441,6 +441,7 @@ namespace KerbalKonstructs
         /// <param name="data"></param>
         void OnLevelWasLoad(GameScenes data)
         {
+            
 
             CameraController.ResetNearCam();
 
@@ -478,7 +479,7 @@ namespace KerbalKonstructs
                             currentBody = FlightGlobals.ActiveVessel.mainBody;
                             StaticDatabase.OnBodyChanged(FlightGlobals.currentMainBody);
                             UpdateCache();
-                            Hangar.DoHangaredCraftCheck();
+                            //Hangar.DoHangaredCraftCheck();
                         }
                         else
                         {

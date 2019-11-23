@@ -161,7 +161,7 @@ namespace KerbalKonstructs.Core
                         field.SetValue(target, value);
                         break;
                     case "KerbalKonstructs.Core.LaunchSiteCategory":
-                        LaunchSiteCategory category = LaunchSiteCategory.Other;
+                        LaunchSiteCategory category;
                         try
                         {
                             category = (LaunchSiteCategory)Enum.Parse(typeof(LaunchSiteCategory), cfgNode.GetValue(field.Name));
@@ -223,7 +223,7 @@ namespace KerbalKonstructs.Core
                         property.SetValue(target, ConfigNode.ParseColor(cfgNode.GetValue(property.Name)), null);
                         break;
                     case "KerbalKonstructs.Core.SiteType":
-                        SiteType value = SiteType.Any;
+                        SiteType value;
                         try
                         {
                             value = (SiteType)Enum.Parse(typeof(SiteType), cfgNode.GetValue(property.Name));
@@ -367,7 +367,7 @@ namespace KerbalKonstructs.Core
                 }
                 bodiesInitialized = true;
             }
-            CelestialBody returnValue = null;
+            CelestialBody returnValue;
 
             if (knownBodies.TryGetValue(name, out returnValue))
             {

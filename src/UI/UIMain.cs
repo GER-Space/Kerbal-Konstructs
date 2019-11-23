@@ -65,6 +65,7 @@ namespace KerbalKonstructs.UI
         public static GUIStyle DeadButtonRed;
         public static GUIStyle KKToolTip;
         public static GUIStyle LabelWhite;
+        public static GUIStyle LabelRed;
         public static GUIStyle DeadButton;
         public static GUIStyle LabelInfo;
         public static GUIStyle ButtonTextYellow;
@@ -144,6 +145,13 @@ namespace KerbalKonstructs.UI
             LabelWhite.fontStyle = FontStyle.Normal;
             LabelWhite.padding.bottom = 1;
             LabelWhite.padding.top = 1;
+
+            LabelRed = new GUIStyle(GUI.skin.label);
+            LabelRed.normal.textColor = XKCDColors.TomatoRed;
+            LabelRed.fontSize = 13;
+            LabelRed.fontStyle = FontStyle.Normal;
+            LabelRed.padding.bottom = 1;
+            LabelRed.padding.top = 1;
 
             LabelInfo = new GUIStyle(GUI.skin.label);
             LabelInfo.normal.background = null;

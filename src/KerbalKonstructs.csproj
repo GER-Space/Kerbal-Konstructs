@@ -188,12 +188,11 @@
     <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
     <Compile Include="Facilities\Barracks\Barracks.cs" />
     <Compile Include="Facilities\Business\Business.cs" />
-    <Compile Include="Facilities\Hangar\Hangar2.cs" />
+    <Compile Include="Facilities\Hangar\Hangar.cs" />
     <Compile Include="Facilities\Hangar\HangarKSCGUI.cs" />
     <Compile Include="Facilities\KKFacility.cs" />
     <Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
     <Compile Include="Facilities\GroundStation\GroundStation.cs" />
-    <Compile Include="Facilities\Hangar\Hangar.cs" />
     <Compile Include="Facilities\KKFacilitySelector.cs" />
     <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
     <Compile Include="Facilities\RecoveryBase\RecoveryBase.cs" />
@@ -250,7 +249,7 @@
     <Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />
     <Compile Include="Facilities\StaffGUI.cs" />
     <Compile Include="Facilities\SharedInterfaces.cs" />
-    <Compile Include="UI\KSCManager.cs" />
+    <Compile Include="UI2\KSCManager.cs" />
     <Compile Include="UI\NavGuidanceSystem.cs" />
     <Compile Include="Facilities\FacilityManager.cs" />
     <Compile Include="Editor\InstanceEditor\EditorGUI.cs" />
