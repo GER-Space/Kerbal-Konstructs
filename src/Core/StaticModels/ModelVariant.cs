@@ -23,7 +23,7 @@ namespace KerbalKonstructs.Core
 
         internal List<TextureSet> textureSets = new List<TextureSet>();
 
-        private string[] seperators = new string[] { " ", ",", ";" };
+        private string[] seperators = new string[] {",", ";" };
 
         private ConfigNode origVariantNode;
 
@@ -40,7 +40,12 @@ namespace KerbalKonstructs.Core
             //            variantNode.TryGetValue("activateTransforms", ref activateTransforms);
 
             //            transforms2Activate = actiateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
-            transforms2Deactivate = deactivateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+            String[] tmpList = deactivateTransforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries);
+            
+            foreach (string value in tmpList)
+            {
+                transforms2Deactivate.Add(value.Trim());
+            }
 
 
             model.hasVariants = true;
