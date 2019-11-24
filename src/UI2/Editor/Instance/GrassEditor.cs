@@ -42,10 +42,10 @@ namespace KerbalKonstructs.UI2
         internal static string TamarcTexture;
         internal static string BlendMaskTexture;
 
-        internal static string GrassColor = "1,1,1,1";
-        internal static string TarmacColor = "1,1,1,1";
-        internal static string ThirdColor = "1,1,1,0";
-        internal static string FourthcColor = "1,1,1,0";
+        //internal static string GrassColor = "1,1,1,1";
+        //internal static string TarmacColor = "1,1,1,1";
+        //internal static string ThirdColor = "1,1,1,0";
+        //internal static string FourthcColor = "1,1,1,0";
 
         internal static string NearGrassTiling;
         internal static string FarGrassTiling;
@@ -123,7 +123,7 @@ namespace KerbalKonstructs.UI2
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Texture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUITextInput(ThirdTexture, false, 40, SetThirdTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Texture Tiling: ", KKStyle.whiteLabel),
@@ -135,7 +135,7 @@ namespace KerbalKonstructs.UI2
                     new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetThirdColor; ; ColorSelector.selectedColor = selectedMod.thirdTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Texture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUITextInput(FourthTexture, false, 40, SetFourthTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Texture Tiling: ", KKStyle.whiteLabel),
@@ -168,10 +168,25 @@ namespace KerbalKonstructs.UI2
             selectedMod.ApplySettings();
         }
 
+        internal static string SetThirdTexture(string newTexture)
+        {
+            selectedMod.thirdTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
+        }
+
         internal static void SetThirdColor(Color color)
         {
             selectedMod.thirdTextureColor = color;
             selectedMod.ApplySettings();
+        }
+
+
+        internal static string SetFourthTexture(string newTexture)
+        {
+            selectedMod.fourthTextureName = newTexture;
+            selectedMod.ApplySettings();
+            return newTexture;
         }
 
         internal static void SetFourthColor(Color color)
