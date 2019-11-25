@@ -121,6 +121,7 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("BlendMask", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Texture", KKStyle.whiteLabel),
                     new DialogGUITextInput(ThirdTexture, false, 40, SetThirdTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
@@ -133,10 +134,11 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("Third Color : ", KKStyle.whiteLabel),
                     new DialogGUITextInput("", false, 40, delegate(string colorString) { selectedMod.thirdTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.thirdTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetThirdColor; ; ColorSelector.selectedColor = selectedMod.thirdTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
+
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Texture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FourthTexture, false, 40, SetFourthTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
+                    new DialogGUITextInput(FourthTexture, false, 40, SetFourthTexture, delegate { return GetTextureName("fourthTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("  S", delegate { OpenTextureSelector("fourthTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Texture Tiling: ", KKStyle.whiteLabel),
                     new DialogGUITextInput(FourthTextureTiling, FourthTextureTiling, false, 10, SetFourthTile, 25),
