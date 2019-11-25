@@ -95,6 +95,9 @@ namespace KerbalKonstructs.Core
             gameObject = new GameObject();
             GameObject.DontDestroyOnLoad(gameObject);
 
+            CelestialBody.CBUpdate();
+
+
             gameObject.name = Group;
             //gameObject.name = "SpaceCenter";
 
@@ -140,6 +143,8 @@ namespace KerbalKonstructs.Core
             pqsCity.modEnabled = true;
             pqsCity.transform.parent = CelestialBody.pqsController.transform;
 
+            pqsCity.repositionToSphereSurfaceAddHeight = false;
+            pqsCity.repositionToSphereSurface = false;
             SetReference();
 
             pqsCity.OnSetup();

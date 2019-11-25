@@ -242,7 +242,7 @@ namespace KerbalKonstructs.Core
 
         private void Spawn()
         {
-
+            CelestialBody.CBUpdate();
             isSpawned = true;
 
             mesh = ModelVariant.SpawnVariant(this);
@@ -391,6 +391,7 @@ namespace KerbalKonstructs.Core
         internal void Orientate()
         {
             // mangle Squads statics
+            CelestialBody.CBUpdate();
 
             InstanceUtil.CreateGroupCenterIfMissing(this);
 
@@ -412,10 +413,11 @@ namespace KerbalKonstructs.Core
             }
             else
             {
-                gameObject.transform.position = groupCenter.gameObject.transform.position;
+                gameObject.transform.position = groupCenter.gameObject.transform.position + RelativePosition; ;
                 gameObject.transform.parent = groupCenter.gameObject.transform;
-                gameObject.transform.localPosition = RelativePosition;
                 gameObject.transform.localEulerAngles = Orientation;
+                gameObject.transform.localPosition = RelativePosition;
+
             }
 
 
@@ -591,9 +593,8 @@ namespace KerbalKonstructs.Core
 
             // LaunchSites have to stay on the surface.
             if (isSpawned && !hasLauchSites)
-            //if (isSpawned)
             {
-                Despawn();
+                //Despawn();
             }
 
         }
