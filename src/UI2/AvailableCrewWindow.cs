@@ -9,20 +9,20 @@ using UnityEngine.UI;
 
 namespace KerbalKonstructs.UI2
 {
-    internal class HangarKSCGUI
+    internal class AvailableCrewWindow
     {
 
         internal static PopupDialog dialog;
         internal static MultiOptionDialog optionDialog;
         internal static List<DialogGUIBase> content;
 
-        internal static string windowName = "KSCHangar";
+        internal static string windowName = "AvailableCrewWindow";
         internal static string windowMessage = null;
-        internal static string windowTitle = "All stored Vessels";
+        internal static string windowTitle = "Available Crew for assignment";
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 350f;
+        internal static float windowWidth = 300f;
         internal static float windowHeight = 200f;
 
         internal static bool showTitle = false;
@@ -32,17 +32,18 @@ namespace KerbalKonstructs.UI2
 
         internal static bool setToParent = false;
 
-        internal static bool checkForParent = true;
-        internal static Func<bool> parentWindow = KSCManager.IsOpen;
+        internal static bool checkForParent = false;
+        internal static Func<bool> parentWindow  ;
 
 
-        private static Vessel vesselToLaunch = null;
 
 
         internal static void CreateContent()
         {
-            content.Add(new DialogGUILabel("SpaceCenter,   VesselName", KKStyle.whiteLabel));
-            content.Add(VaiantList);
+            content.Add(new DialogGUILabel("Available Crew: "));
+            content.Add(variantList);
+
+            content.Add(new DialogGUIButton("Cancel", delegate { Close(); }, false));
         }
 
 
@@ -65,7 +66,7 @@ namespace KerbalKonstructs.UI2
 
 
 
-        internal static DialogGUIScrollList VaiantList
+        internal static DialogGUIScrollList variantList
         {
             get
             {
@@ -74,76 +75,96 @@ namespace KerbalKonstructs.UI2
                 list.Add(new DialogGUIFlexibleSpace());
                 //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
 
-                foreach (var staticInstance in StaticDatabase.allStaticInstances)
-                {
-                    if (!staticInstance.hasFacilities || staticInstance.facilityType != Modules.KKFacilityType.Hangar)
-                    {
-                        continue;
-                    }
+                //vesselToLaunch.protoVessel.LoadObjects();
 
-                    Modules.Hangar hangar = staticInstance.GetFacility(Modules.KKFacilityType.Hangar) as Modules.Hangar;
-                    foreach (Modules.Hangar.StoredVessel storedVessel in hangar.storedVessels)
-                    {
-                        Modules.Hangar.StoredVessel vessel = storedVessel;
-                        list.Add(new DialogGUIHorizontalLayout(
-                            new DialogGUILabel(staticInstance.groupCenterName, KKStyle.whiteLabel) ,
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUILabel(vessel.vesselName),
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUIButton("Launch", delegate { PrepareForLaunch(vessel, hangar); }, 60.0f, 23.0f, false))
-                            );
-                    }
+                //foreach (ProtoCrewMember protoKerbal in HighLogic.CurrentGame.CrewRoster.Crew)
+                //{
+                //    Log.Normal(protoKerbal.name + " : " + protoKerbal.trait);
+
+                //}
+
+                foreach (ProtoCrewMember protoKerbal in HighLogic.CurrentGame.CrewRoster.Crew.Where(x => x.rosterStatus == ProtoCrewMember.RosterStatus.Available))
+                {
+                    list.Add(new DialogGUIHorizontalLayout(
+                        new DialogGUILabel(delegate { return GetCurrentCrewTrait(protoKerbal); }, KKStyle.whiteLabel),
+                        new DialogGUIFlexibleSpace(),
+                        new DialogGUILabel(delegate { return GetCurrentCrewExperience(protoKerbal); }, KKStyle.whiteLabel),
+                        new DialogGUIFlexibleSpace(),
+                        new DialogGUIButton(delegate { return GetCurrentCrewName(protoKerbal); }, delegate { CrewAssignment.SeatKerbal(protoKerbal); }, 140f, 25, true))
+                    );
                 }
+
+
                 list.Add(new DialogGUIFlexibleSpace());
-                list.Add(new DialogGUIButton("Close", delegate { Close(); }, false));
                 var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count-2), false, true, layout);
+                var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count - 2), false, true, layout);
                 return scroll;
 
             }
         }
 
 
-        /// <summary>
-        /// Rollout the Vessel and store it in the placeHolder variable, then open the Crew assignment dialog
-        /// </summary>
-        /// <param name="vessel"></param>
-        /// <param name="hangar"></param>
-        internal static void PrepareForLaunch(Modules.Hangar.StoredVessel vessel, Modules.Hangar hangar)
-        {
-            vesselToLaunch = null;
-            vesselToLaunch = Modules.Hangar.RollOutVessel(vessel, hangar);
 
-            if (vesselToLaunch == null)
-            {
-                Log.UserError("Count not receive Vessel from Storage. Now its gone forever!");
-                return;
-            }
-
-            CrewAssignment.vesselToLaunch = vesselToLaunch;
-            CrewAssignment.Open();
-
-           }
-
-
-
-
-
-        internal static void LaunchVessel()
+        internal static string GetCurrentCrewTrait(ProtoCrewMember crewMember)
         {
 
-            if (vesselToLaunch == null)
+           
+
+            if (crewMember == null)
             {
-                Log.UserError("This was not ment to be called lke this");
-                return;
+                return "none";
+            }
+            else
+            {
+                return crewMember.trait;
             }
 
-            // remove the control lock. which was created by the KSC Manager window
-            InputLockManager.RemoveControlLock("KK_KSC");
-
-            GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
-            FlightDriver.StartAndFocusVessel("persistent", FlightGlobals.Vessels.IndexOf(vesselToLaunch));
         }
+
+        internal static string GetCurrentCrewExperience(ProtoCrewMember crewMember)
+        {
+            
+            if (crewMember == null)
+            {
+                return "";
+            }
+            else
+            {
+                string experienceStars = "";
+                for (int i = 1; i <= crewMember.experienceLevel; i++)
+                {
+                    experienceStars += "* ";
+                }
+
+                return experienceStars;
+            }
+        }
+
+
+
+        internal static string GetCurrentCrewName(ProtoCrewMember crewMember)
+        {
+            
+            if (crewMember == null)
+            {
+                return "none";
+            }
+            else
+            {
+                return crewMember.name;
+            }
+
+        }
+
+
+        internal static void SelectCrew(ProtoPartSnapshot crewPart, int seatNumber)
+        {
+
+
+
+        }
+
+
 
 
 
@@ -199,7 +220,7 @@ namespace KerbalKonstructs.UI2
             CreateMultiOptionDialog();
             CreatePopUp();
 
-            
+
 
         }
 
@@ -221,10 +242,11 @@ namespace KerbalKonstructs.UI2
             get
             {
                 return (dialog != null);
+
             }
         }
 
-        internal static bool IsOpen()
+    internal static bool IsOpen()
         {
             return (dialog != null);
         }
@@ -246,11 +268,6 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-
-        internal static void SetVariant(string variantName)
-        {
-            Log.Normal("Base Selected: " + variantName);
-        }
 
 
     }

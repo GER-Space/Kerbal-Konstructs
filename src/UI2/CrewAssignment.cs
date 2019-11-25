@@ -9,14 +9,14 @@ using UnityEngine.UI;
 
 namespace KerbalKonstructs.UI2
 {
-    internal class HangarKSCGUI
+    internal class CrewAssignment
     {
 
         internal static PopupDialog dialog;
         internal static MultiOptionDialog optionDialog;
         internal static List<DialogGUIBase> content;
 
-        internal static string windowName = "KSCHangar";
+        internal static string windowName = "CrewAssignment";
         internal static string windowMessage = null;
         internal static string windowTitle = "All stored Vessels";
 
@@ -32,17 +32,22 @@ namespace KerbalKonstructs.UI2
 
         internal static bool setToParent = false;
 
-        internal static bool checkForParent = true;
-        internal static Func<bool> parentWindow = KSCManager.IsOpen;
+        internal static bool checkForParent = false;
+        internal static Func<bool> parentWindow = HangarKSCGUI.IsOpen;
 
 
-        private static Vessel vesselToLaunch = null;
+        internal static Vessel vesselToLaunch;
+
+        private static ProtoPartSnapshot selectedPart;
+        private static int selectedSeat = 0;
 
 
         internal static void CreateContent()
         {
-            content.Add(new DialogGUILabel("SpaceCenter,   VesselName", KKStyle.whiteLabel));
-            content.Add(VaiantList);
+            content.Add(new DialogGUILabel("Selected Vessel: " + vesselToLaunch.GetDisplayName(), KKStyle.whiteLabel));
+            content.Add(variantList);
+
+            content.Add(new DialogGUIButton("Continue with launch", delegate { Close(); HangarKSCGUI.LaunchVessel(); }, false));
         }
 
 
@@ -65,7 +70,7 @@ namespace KerbalKonstructs.UI2
 
 
 
-        internal static DialogGUIScrollList VaiantList
+        internal static DialogGUIScrollList variantList
         {
             get
             {
@@ -74,76 +79,122 @@ namespace KerbalKonstructs.UI2
                 list.Add(new DialogGUIFlexibleSpace());
                 //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
 
-                foreach (var staticInstance in StaticDatabase.allStaticInstances)
+                //vesselToLaunch.protoVessel.LoadObjects();
+
+                foreach (ProtoPartSnapshot protoPart0 in vesselToLaunch.protoVessel.protoPartSnapshots)
                 {
-                    if (!staticInstance.hasFacilities || staticInstance.facilityType != Modules.KKFacilityType.Hangar)
+                    ProtoPartSnapshot protoPart = protoPart0;
+                    if (protoPart.partPrefab == null)
                     {
                         continue;
                     }
+                    
+                    Part myPart = protoPart.partPrefab;
+                    int seatCount = myPart.CrewCapacity;
+                    Log.Normal("Part: " + myPart.name + " seats: " + seatCount);
 
-                    Modules.Hangar hangar = staticInstance.GetFacility(Modules.KKFacilityType.Hangar) as Modules.Hangar;
-                    foreach (Modules.Hangar.StoredVessel storedVessel in hangar.storedVessels)
+
+                    if (seatCount > 0)
                     {
-                        Modules.Hangar.StoredVessel vessel = storedVessel;
-                        list.Add(new DialogGUIHorizontalLayout(
-                            new DialogGUILabel(staticInstance.groupCenterName, KKStyle.whiteLabel) ,
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUILabel(vessel.vesselName),
-                            new DialogGUIFlexibleSpace(),
-                            new DialogGUIButton("Launch", delegate { PrepareForLaunch(vessel, hangar); }, 60.0f, 23.0f, false))
-                            );
+                        list.Add(new DialogGUILabel(myPart.name, KKStyle.whiteLabel));
+                        for (int i = 0; i < myPart.CrewCapacity; i++)
+                        {
+                            int seatNumber = i;
+                            list.Add(new DialogGUIHorizontalLayout(
+                                new DialogGUILabel(delegate { return GetCurrentCrewTrait(protoPart, seatNumber); }, KKStyle.whiteLabel),
+                                new DialogGUIFlexibleSpace(),
+                                new DialogGUILabel(delegate { return GetCurrentCrewExperience(protoPart, seatNumber); }, KKStyle.whiteLabel),
+                                new DialogGUIFlexibleSpace(),
+                                new DialogGUIButton(delegate { return GetCurrentCrewName(protoPart, seatNumber); }, delegate { OpenCrewSelector(protoPart, seatNumber); }, 140f, 25, false))
+                            ); 
+                        }
+
                     }
                 }
+                
+
                 list.Add(new DialogGUIFlexibleSpace());
-                list.Add(new DialogGUIButton("Close", delegate { Close(); }, false));
                 var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count-2), false, true, layout);
+                var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count - 2), false, true, layout);
                 return scroll;
 
             }
         }
 
 
-        /// <summary>
-        /// Rollout the Vessel and store it in the placeHolder variable, then open the Crew assignment dialog
-        /// </summary>
-        /// <param name="vessel"></param>
-        /// <param name="hangar"></param>
-        internal static void PrepareForLaunch(Modules.Hangar.StoredVessel vessel, Modules.Hangar hangar)
-        {
-            vesselToLaunch = null;
-            vesselToLaunch = Modules.Hangar.RollOutVessel(vessel, hangar);
 
-            if (vesselToLaunch == null)
-            {
-                Log.UserError("Count not receive Vessel from Storage. Now its gone forever!");
-                return;
-            }
-
-            CrewAssignment.vesselToLaunch = vesselToLaunch;
-            CrewAssignment.Open();
-
-           }
-
-
-
-
-
-        internal static void LaunchVessel()
+        internal static string GetCurrentCrewTrait(ProtoPartSnapshot crewPart, int seatNumber)
         {
 
-            if (vesselToLaunch == null)
+            ProtoCrewMember crewMember = crewPart.protoModuleCrew.Where(member => member.seatIdx == seatNumber).FirstOrDefault();
+
+            if (crewMember == null)
             {
-                Log.UserError("This was not ment to be called lke this");
-                return;
+                return "none";
+            }
+            else
+            {
+                return crewMember.trait;
             }
 
-            // remove the control lock. which was created by the KSC Manager window
-            InputLockManager.RemoveControlLock("KK_KSC");
-
-            GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
-            FlightDriver.StartAndFocusVessel("persistent", FlightGlobals.Vessels.IndexOf(vesselToLaunch));
         }
+
+        internal static string GetCurrentCrewExperience(ProtoPartSnapshot crewPart, int seatNumber)
+        {
+            ProtoCrewMember crewMember = crewPart.protoModuleCrew.Where(member => member.seatIdx == seatNumber).FirstOrDefault();
+            if (crewMember == null)
+            {
+                return "";
+            }
+            else
+            {
+                string experienceStars = "";
+                for (int i = 1; i <= crewMember.experienceLevel; i++)
+                {
+                    experienceStars += "* ";
+                }
+
+                return experienceStars;
+            }
+        }
+
+
+
+        internal static string GetCurrentCrewName (ProtoPartSnapshot crewPart, int seatNumber)
+        {
+
+            ProtoCrewMember crewMember = crewPart.protoModuleCrew.Where(member => member.seatIdx == seatNumber).FirstOrDefault();
+            
+            if (crewMember == null)
+            {
+                return "none";
+            } else
+            {
+                return crewMember.name;
+            }
+
+        }
+
+
+        internal static void OpenCrewSelector(ProtoPartSnapshot crewPart, int seatNumber)
+        {
+            selectedPart = crewPart;
+            selectedSeat = seatNumber;
+            AvailableCrewWindow.Open();
+
+        }
+
+
+        internal static void SeatKerbal (ProtoCrewMember crewMember)
+        {
+            crewMember.seatIdx = selectedSeat;
+            //crewMember.seatIdx = -1;
+            selectedPart.protoModuleCrew.Add(crewMember);
+            selectedPart.protoCrewNames.Add(crewMember.name);
+            vesselToLaunch.protoVessel.AddCrew(crewMember);
+            crewMember.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
+        }
+
 
 
 
@@ -199,7 +250,7 @@ namespace KerbalKonstructs.UI2
             CreateMultiOptionDialog();
             CreatePopUp();
 
-            
+
 
         }
 
@@ -213,6 +264,7 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+            vesselToLaunch = null;
         }
 
 

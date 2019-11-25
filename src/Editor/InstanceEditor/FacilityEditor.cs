@@ -394,7 +394,7 @@ namespace KerbalKonstructs.UI
         {
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Max Craft Mass: ", LabelGreen);
+                GUILayout.Label("Max craft weight: ", LabelGreen);
                 GUILayout.FlexibleSpace();
                 infFacMassCap = GUILayout.TextField(infFacMassCap, 4, GUILayout.Width(130), GUILayout.Height(18));
                 GUILayout.Label("T", LabelWhite, GUILayout.Width(20));
@@ -402,23 +402,9 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Max Craft: ", LabelGreen);
+                GUILayout.Label("Max no. of craft: ", LabelGreen);
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("" + infFacCraftCap, LabelWhite, GUILayout.Width(30));
-
-                if (GUILayout.Button("1", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "1";
-                }
-                if (GUILayout.Button("2", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "2";
-                }
-
-                if (GUILayout.Button("3", GUILayout.Width(23), GUILayout.Height(23)))
-                {
-                    infFacCraftCap = "3";
-                }
+                infFacCraftCap = GUILayout.TextField(infFacCraftCap, 4, GUILayout.Width(130), GUILayout.Height(18));
             }
             GUILayout.EndHorizontal();
         }
