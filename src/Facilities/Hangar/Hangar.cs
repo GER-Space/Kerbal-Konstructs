@@ -37,12 +37,12 @@ namespace KerbalKonstructs.Modules
             foreach (ConfigNode resourceNode in cfgNode.GetNodes("StoredVessel"))
             {
 
-                StoredVessel storedVessel = new StoredVessel();
-
-
-                storedVessel.uuid = Guid.Parse(resourceNode.GetValue("VesselID"));
-                storedVessel.vesselName = resourceNode.GetValue("VesselName");
-                storedVessel.vesselNode = resourceNode.GetNode("VESSEL");
+                StoredVessel storedVessel = new StoredVessel
+                {
+                    uuid = Guid.Parse(resourceNode.GetValue("VesselID")),
+                    vesselName = resourceNode.GetValue("VesselName"),
+                    vesselNode = resourceNode.GetNode("VESSEL")
+                };
                 storedVessels.Add(storedVessel);
             }
             
@@ -73,10 +73,11 @@ namespace KerbalKonstructs.Modules
         internal static void StoreVessel (Vessel vessel, Hangar hangar) 
         {
 
-            StoredVessel storedVessel = new StoredVessel();
-
-            storedVessel.uuid = vessel.protoVessel.vesselID;
-            storedVessel.vesselName = vessel.GetDisplayName();
+            StoredVessel storedVessel = new StoredVessel
+            {
+                uuid = vessel.protoVessel.vesselID,
+                vesselName = vessel.GetDisplayName()
+            };
 
             //get the experience and assign the crew to the rooster
             foreach (Part part in vessel.parts)

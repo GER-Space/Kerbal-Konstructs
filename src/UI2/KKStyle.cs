@@ -8,7 +8,10 @@ namespace KerbalKonstructs.UI2
     {
         internal static UIStyle DeadButtonRed;
         internal static UIStyle whiteLabel;
+        internal static UIStyle goldLabel;
         internal static UIStyle windowTitle;
+
+        internal static UIStyle defaultLabel => HighLogic.UISkin.label;
 
         //private static Sprite clearSprite;
 
@@ -38,6 +41,16 @@ namespace KerbalKonstructs.UI2
             whiteLabel.fontSize = 12;
             whiteLabel.fontStyle = FontStyle.Normal;
             whiteLabel.alignment = TextAnchor.MiddleLeft;
+
+            goldLabel = defaultStyle;
+            goldLabel.name = "goldLabel";
+            goldLabel.normal.textColor = XKCDColors.Gold;
+            goldLabel.active.textColor = XKCDColors.Gold;
+            goldLabel.highlight.textColor = XKCDColors.Gold;
+            goldLabel.disabled.textColor = XKCDColors.Gold;
+            goldLabel.fontSize = 12;
+            goldLabel.fontStyle = FontStyle.Normal;
+            goldLabel.alignment = TextAnchor.MiddleLeft;
 
             windowTitle = defaultStyle;
             windowTitle.name = "windowTitle";

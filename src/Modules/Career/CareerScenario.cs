@@ -75,6 +75,7 @@ namespace KerbalKonstructs.Career
         /// <param name="node">The name of the config node</param>
         public override void OnSave(ConfigNode node)
         {
+            UI2.WindowManager.SavePresets();
             KerbalKonstructs.gameTime = HighLogic.CurrentGame.UniversalTime;
             saveTime = KerbalKonstructs.gameTime;
 

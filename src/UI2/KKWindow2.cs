@@ -32,7 +32,7 @@ namespace KerbalKonstructs.UI2
         internal static bool isModal = true;
 
 
-        internal static bool setToParent = true;
+        internal static bool setToParent = false;
 
         internal static bool checkForParent = true;
         internal static Func<bool> parentWindow = EditorModeSelector.IsOpen;

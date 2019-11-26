@@ -223,7 +223,6 @@
     <Compile Include="UI2\KKStyle.cs" />
     <Compile Include="UI2\KKWindow2.cs" />
     <Compile Include="UI2\WindowManager.cs" />
-    <Compile Include="UI\BaseSelectorGUI.cs" />
     <Compile Include="UI\LandingGuide.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />

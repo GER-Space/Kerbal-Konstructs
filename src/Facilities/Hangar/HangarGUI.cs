@@ -18,7 +18,10 @@ namespace KerbalKonstructs.UI
 
 
             float fMaxMass = myHangar.FacilityMassCapacity;
-            if (fMaxMass < 1) fMaxMass = 25f;
+            if (fMaxMass < 1)
+            {
+                fMaxMass = 25f;
+            }
 
             int fMaxCrafts = myHangar.FacilityCraftCapacity;
 
