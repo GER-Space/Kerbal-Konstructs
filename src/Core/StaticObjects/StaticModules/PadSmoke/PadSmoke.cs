@@ -15,7 +15,7 @@ namespace KerbalKonstructs
 
         private List<string> emitterTransforms = new List<string>();
 
-        private string[] seperators = new string[] { " ", ",", ";" };
+        private string[] seperators = new string[] { ",", ";" };
 
         GameObject baseObject;
 
@@ -24,7 +24,14 @@ namespace KerbalKonstructs
         {
             //Log.Normal("PadSmoke Start");
             baseObject = gameObject;
-            emitterTransforms = smokeEmittersNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var tmpList = smokeEmittersNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string value in tmpList)
+            {
+                emitterTransforms.Add(value.Trim());
+            }
+
+
 
             Transform receiverTransform = gameObject.transform.FindRecursive(smokeReceiverName);
             Collider receiverCollider = receiverTransform.gameObject.GetComponent<Collider>();
@@ -48,9 +55,7 @@ namespace KerbalKonstructs
     {
 
         internal static bool isInitialized = false;
-
         internal static ParticleSystem pSystem = null;
-        internal static ParticleSystemRenderer pSystemRenderer = null;
 
 
 
@@ -64,10 +69,7 @@ namespace KerbalKonstructs
             {
                 foreach (Transform emTransform in baseObject.transform.FindAllRecursive(emName))
                 {
-                    //ParticleSystem emPsystem  = emTransform.gameObject.AddComponent<ParticleSystem>();
-                    //ParticleSystemRenderer emPsystemRenderer = emTransform.gameObject.AddComponent<ParticleSystemRenderer>();
                     ParticleSystem emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
-                    ParticleSystemRenderer emPsystemRenderer = Instantiate(pSystemRenderer, emTransform.position, emTransform.rotation, emTransform);
 
                     emitters.Add(emPsystem);
                     FloatingOrigin.RegisterParticleSystem(emPsystem);
@@ -84,9 +86,8 @@ namespace KerbalKonstructs
             if (!isInitialized)
             {
                 pSystem = Resources.FindObjectsOfTypeAll<ParticleSystem>().Where(ps => ps.name == "PadSmokeLvl2").First();
-                pSystemRenderer = Resources.FindObjectsOfTypeAll<ParticleSystemRenderer>().Where(ps => ps.name == "PadSmokeLvl2").First();
 
-                if (pSystem == null || pSystemRenderer == null)
+                if (pSystem == null )
                 {
                     Log.UserError("Failed to Setup Particle Systems");
                     return;
