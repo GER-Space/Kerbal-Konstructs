@@ -32,7 +32,7 @@ namespace KerbalKonstructs
         private int textureIndex = 0;
         private List<string> targetTransforms = new List<string>();
 
-        private string[] seperators = new string[] { " ", ",", ";" };
+        private string[] seperators = new string[] { ",", ";" };
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
         private bool doTileing = false;
@@ -87,7 +87,12 @@ namespace KerbalKonstructs
             }
 
 
-            targetTransforms = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> tmpList = transforms.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (string value in tmpList)
+            {
+                targetTransforms.Add(value.Trim());
+            }
 
 
             foreach (MeshRenderer renderer in gameObject.GetComponentsInChildren<MeshRenderer>(true))
