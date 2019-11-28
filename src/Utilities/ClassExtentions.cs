@@ -13,6 +13,12 @@ namespace KerbalKonstructs.Core
 
 
 
+        public static Color SetAlpha(this Color color, float alpha)
+        {
+            color.a = alpha;
+            return color;
+        }
+
         /// <summary>
         /// Libits the Channels of a Color to this maxValue
         /// </summary>
