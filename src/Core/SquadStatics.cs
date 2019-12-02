@@ -253,6 +253,7 @@ namespace KerbalKonstructs
             model.name = modelName;
             model.prefab = GameObject.Instantiate(prefab);
             GameObject.DontDestroyOnLoad(model.prefab);
+
             model.prefab.SetActive(false);
             // Fill in FakeNews errr values
             model.path = "KerbalKonstructs/" + modelName;
@@ -264,6 +265,27 @@ namespace KerbalKonstructs
             model.author = "Squad";
             model.manufacturer = "Squad";
             model.description = "Squad original " + modelName;
+
+
+            if (modelName == "KSC_FuelTank")
+            {
+                foreach (var bla in model.prefab.GetComponentsInChildren<MeshRenderer>(true))
+                {
+                    bla.enabled = true;
+                    bla.gameObject.SetActive(true);
+                }
+                model.prefab.SetActive(true);
+                Log.Normal("Fixing KSC Fuel Tank");
+                GameObject oldGameObject = model.prefab;
+                GameObject newBaseObject = new GameObject(modelName);
+                GameObject.DontDestroyOnLoad(newBaseObject);
+                newBaseObject.SetActive(false);
+                oldGameObject.transform.position = newBaseObject.transform.position;
+                oldGameObject.transform.parent = newBaseObject.transform;
+                oldGameObject.transform.localEulerAngles = new Vector3(270, 0, 0);
+                model.prefab = newBaseObject;
+            }
+
             StaticDatabase.RegisterModel(model, modelName);
         }
 
