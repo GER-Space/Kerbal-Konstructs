@@ -83,14 +83,20 @@ namespace KerbalKonstructs.Modules
             foreach (Part part in vessel.parts)
             {
                 int count = part.protoModuleCrew.Count;
-                for  (int i = 0; i <count; i++ )
-                {
-                    part.protoModuleCrew[i].flightLog.AddEntryUnique(FlightLog.EntryType.Recover);
-                    part.protoModuleCrew[i].flightLog.AddEntryUnique(FlightLog.EntryType.Land, FlightGlobals.currentMainBody.name);
-                    part.protoModuleCrew[i].ArchiveFlightLog();
 
-                    // remove the crew from the ship
-                    part.RemoveCrewmember(part.protoModuleCrew[i]);
+                if (count != 0)
+                {
+                    ProtoCrewMember[] crewList = part.protoModuleCrew.ToArray();
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        crewList[i].flightLog.AddEntryUnique(FlightLog.EntryType.Recover);
+                        crewList[i].flightLog.AddEntryUnique(FlightLog.EntryType.Land, FlightGlobals.currentMainBody.name);
+                        crewList[i].ArchiveFlightLog();
+
+                        // remove the crew from the ship
+                        part.RemoveCrewmember(crewList[i]);
+                    }
                 }
             }
 
