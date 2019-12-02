@@ -316,17 +316,22 @@ namespace KerbalKonstructs
         {
             GameScenes targetScene = fromTo.to;
 
-            if (targetScene == GameScenes.SPACECENTER && fromTo.from != GameScenes.MAINMENU)
-            {
-                Log.Normal("Requested scene is SpaceCenter");
-                FuckUpKSP();
-            }
+            //if (targetScene == GameScenes.SPACECENTER && fromTo.from != GameScenes.MAINMENU)
+            //{
+            //    Log.Normal("Requested scene is SpaceCenter");
+            //    FuckUpKSP();
+            //}
         }
 
         internal void FuckUpKSP()
         {
 
-            Log.Normal("mayham");
+            if (!KerbalKonstructs.focusLastLaunchSite)
+            {
+                return;
+            }
+
+            Log.Normal("Let the fun begin");
 
             KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
             if (currentSite == null)
