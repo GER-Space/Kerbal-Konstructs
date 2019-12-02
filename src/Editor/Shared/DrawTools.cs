@@ -35,7 +35,7 @@ namespace KerbalKonstructs.UI
         {
             get
             {
-                if (_material == null) _material = new Material(KKGraphics.GetShader("Particles/Alpha Blended"));
+                if (_material == null) _material = new Material(KKGraphics.GetShader("KSP/Particles/Alpha Blended"));
                 return _material;
             }
         }
