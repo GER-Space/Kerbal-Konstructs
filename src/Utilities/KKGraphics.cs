@@ -79,10 +79,11 @@ namespace KerbalKonstructs
             else
             {
                 Log.UserError("AdvTexture: Shader not found: " + name);
+                Log.Trace();
                 // return the error Shader, if we have one
                 if (allShaders.ContainsKey("Hidden/InternalErrorShader"))
                 {
-                    Log.UserWarning("Cannot load shader: " + name);
+                    //Log.UserWarning("Cannot load shader: " + name);
                     return allShaders["Hidden/InternalErrorShader"];
                 }
                 else
