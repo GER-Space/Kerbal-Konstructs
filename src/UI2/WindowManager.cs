@@ -12,6 +12,11 @@ namespace KerbalKonstructs.UI2
 
         internal static void SavePosition(PopupDialog dialog)
         {
+            if (dialog == null)
+            {
+                return;
+            }
+
             string name = dialog.dialogToDisplay.name;
             if (lastPositions.ContainsKey(name))
             {

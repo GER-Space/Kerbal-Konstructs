@@ -53,10 +53,12 @@ namespace KerbalKonstructs.UI
                         // Empty the hangar
                         if (HangarwayIsClear(selectedFacility))
                         {
-                            Vessel newVessel = Hangar.RollOutVessel(vessel, myHangar);
-                            newVessel.Load();
-                            newVessel.MakeActive() ;
-
+                            //Vessel newVessel = Hangar.RollOutVessel(vessel, myHangar);
+                            //newVessel.Load();
+                            //newVessel.MakeActive() ;
+                            UI2.HangarKSCGUI.useFromFlight = true;
+                            UI2.HangarKSCGUI.selectedFacility = selectedFacility;
+                            UI2.HangarKSCGUI.Open();
                         }
                         else
                         {
