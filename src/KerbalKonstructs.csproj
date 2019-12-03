@@ -268,7 +268,6 @@
     <Compile Include="Utilities\Tar.cs" />
     <Compile Include="Utilities\Zip\Crc32Helper.Managed.cs" />
     <Compile Include="Utilities\Zip\PositionPreservingWriteOnlyStreamWrapper.cs" />
-    <Compile Include="Utilities\Zip\Utilities.cs" />
     <Compile Include="Utilities\Zip\ZipArchive.cs" />
     <Compile Include="Utilities\Zip\ZipArchiveEntry.cs" />
     <Compile Include="Utilities\Zip\ZipArchiveEntry.Unity.cs" />
