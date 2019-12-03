@@ -314,7 +314,7 @@ namespace KerbalKonstructs
 
         internal void OnSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> fromTo)
         {
-            GameScenes targetScene = fromTo.to;
+            //GameScenes targetScene = fromTo.to;
 
             //if (targetScene == GameScenes.SPACECENTER && fromTo.from != GameScenes.MAINMENU)
             //{
@@ -401,7 +401,7 @@ namespace KerbalKonstructs
             FlightGlobals.ActiveVessel.SetLandedAt(sitename);
             FlightGlobals.ActiveVessel.protoVessel.landedAt = sitename;
 
-            if (sitename == "Runway" || sitename == "LaunchPad" || sitename == "KSC" || sitename == "")
+            if (sitename == "Runway" || sitename == "LaunchPad" || sitename == "KSC" || string.IsNullOrEmpty(sitename))
             {
                 return;
             }
@@ -786,7 +786,7 @@ namespace KerbalKonstructs
                 CareerState.FixKSCFacilities();
             }
 
-            if (Input.GetKeyDown(KeyCode.L) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+            if (Input.GetKeyDown(KeyCode.L) && ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))))
             {
                 UI2.EditorModeSelector.Toggle();
             }
@@ -1179,12 +1179,13 @@ namespace KerbalKonstructs
             {
                 facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), cfgNode.GetValue("FacilityType"), true);
             }
-            catch
+            catch(ArgumentException ex)
             {
                 instance.legacyfacilityID = cfgNode.GetValue("FacilityType");
                 instance.FacilityType = "None";
                 instance.facilityType = KKFacilityType.None;
                 facType = KKFacilityType.None;
+                Log.UserWarning(ex.Message);
                 //Log.UserError("Unknown Facility Type: " + cfgNode.GetValue("FacilityType") + " in file: " + instance.configPath );
             }
 
