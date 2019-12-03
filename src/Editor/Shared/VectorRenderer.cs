@@ -26,7 +26,9 @@ namespace KerbalKonstructs.UI
         private GameObject lineObj;
         private GameObject hatObj;
         private GameObject labelObj;
+#pragma warning disable CS0618 // Type or member is obsolete
         private GUIText label;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string labelStr = "";
         private Vector3 labelLocation;
 
@@ -149,12 +151,14 @@ namespace KerbalKonstructs.UI
                 {
                     lineObj = new GameObject("vecdrawLine");
                     hatObj = new GameObject("vecdrawHat");
+#pragma warning disable CS0618 // Type or member is obsolete
                     labelObj = new GameObject("vecdrawLabel", typeof(GUIText));
 
                     line = lineObj.AddComponent<LineRenderer>();
                     hat = hatObj.AddComponent<LineRenderer>();
                     //TODO: 1.1 TODO
                     label = labelObj.GetComponent<GUIText>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                     line.useWorldSpace = false;
                     hat.useWorldSpace = false;

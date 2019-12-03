@@ -144,7 +144,6 @@ namespace System.IO.Compression
         /// </summary>
         public ZipArchive Archive => _archive;
 
-        [CLSCompliant(false)]
         public uint Crc32 => _crc32;
 
         /// <summary>
