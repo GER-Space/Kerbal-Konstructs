@@ -266,6 +266,19 @@
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Addons\NavUtils\ILSConfig.cs" />
     <Compile Include="Utilities\Tar.cs" />
+    <Compile Include="Utilities\Zip\Crc32Helper.Managed.cs" />
+    <Compile Include="Utilities\Zip\PositionPreservingWriteOnlyStreamWrapper.cs" />
+    <Compile Include="Utilities\Zip\Utilities.cs" />
+    <Compile Include="Utilities\Zip\ZipArchive.cs" />
+    <Compile Include="Utilities\Zip\ZipArchiveEntry.cs" />
+    <Compile Include="Utilities\Zip\ZipArchiveEntry.Unity.cs" />
+    <Compile Include="Utilities\Zip\ZipArchiveMode.cs" />
+    <Compile Include="Utilities\Zip\ZipBlocks.cs" />
+    <Compile Include="Utilities\Zip\ZipCustomStreams.cs" />
+    <Compile Include="Utilities\Zip\ZipFile.cs" />
+    <Compile Include="Utilities\Zip\ZipFileExtensions.cs" />
+    <Compile Include="Utilities\Zip\ZipHelper.cs" />
+    <Compile Include="Utilities\Zip\ZipVersion.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

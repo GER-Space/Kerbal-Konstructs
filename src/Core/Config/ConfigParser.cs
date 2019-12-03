@@ -576,6 +576,8 @@ namespace KerbalKonstructs.Core
                     File.Delete(groupFilename);
                 }
 
+
+
                 FileStream tarFileStream = File.Create(groupFilename);
                 LegacyTarWriter writer = new LegacyTarWriter(tarFileStream);
 
