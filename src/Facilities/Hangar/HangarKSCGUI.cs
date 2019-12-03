@@ -32,9 +32,11 @@ namespace KerbalKonstructs.UI2
 
         internal static bool setToParent = false;
 
-        internal static bool checkForParent = true;
+        internal static bool checkForParent = false;
         internal static Func<bool> parentWindow = KSCManager.IsOpen;
 
+
+        internal static bool useFromFlight = false;
 
         private static ProtoVessel selectedVessel = null;
 
@@ -46,6 +48,7 @@ namespace KerbalKonstructs.UI2
 
         private static Modules.Hangar.StoredVessel selectedStoredVessel;
         private static Modules.Hangar selectedHangar;
+        internal static StaticInstance selectedFacility;
 
 
         internal static void CreateContent()
@@ -91,7 +94,15 @@ namespace KerbalKonstructs.UI2
                 list.Add(new DialogGUIFlexibleSpace());
                 //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
 
-                foreach (var staticInstance in StaticDatabase.allStaticInstances)
+                StaticInstance[] allInstances = StaticDatabase.allStaticInstances;
+
+                if (useFromFlight && selectedFacility != null)
+                {
+                    allInstances = new StaticInstance[] { selectedFacility };
+                }
+
+
+                foreach (var staticInstance in allInstances )
                 {
                     if (!staticInstance.hasFacilities || staticInstance.facilityType != Modules.KKFacilityType.Hangar)
                     {
@@ -114,6 +125,10 @@ namespace KerbalKonstructs.UI2
                 list.Add(new DialogGUIFlexibleSpace());
                 var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleLeft, list.ToArray());
                 var scroll = new DialogGUIScrollList(new Vector2(350, 200), new Vector2(330, 23f * list.Count-2), false, true, layout);
+
+                // rreset that for next time
+                useFromFlight = false;
+
                 return scroll;
 
             }
@@ -326,6 +341,7 @@ namespace KerbalKonstructs.UI2
         internal static void SelectVessel(Modules.Hangar.StoredVessel storedVessel, Modules.Hangar hangar)
         {
 
+
             if (selectedVessel != null)
             {
                 foreach (ProtoCrewMember crew in selectedVessel.GetVesselCrew())
@@ -378,9 +394,9 @@ namespace KerbalKonstructs.UI2
             }
 
             ProtoVessel vesselToLaunch = selectedVessel;
+            Log.Normal(selectedStoredVessel.vesselName);
 
             selectedHangar.storedVessels.Remove(selectedStoredVessel);
-
             selectedVessel = null;
             selectedHangar = null;
             selectedPart = null;
@@ -388,15 +404,27 @@ namespace KerbalKonstructs.UI2
             // remove the control lock. which was created by the KSC Manager window
             InputLockManager.RemoveControlLock("KK_KSC");
 
-            WindowManager.SavePosition(dialog);
-            WindowManager.SavePosition(KSCManager.dialog);
+
+
+            if (KSCManager.isOpen)
+            {
+                WindowManager.SavePosition(KSCManager.dialog);
+            }
 
             GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
-            FlightDriver.StartAndFocusVessel("persistent", FlightGlobals.Vessels.IndexOf(vesselToLaunch.vesselRef));
 
+            selectedFacility = null;
 
-            
-
+            if (!useFromFlight)
+            {
+                useFromFlight = false;
+                FlightDriver.StartAndFocusVessel("persistent", FlightGlobals.Vessels.IndexOf(vesselToLaunch.vesselRef));
+            } else
+            {
+                useFromFlight = false;
+                vesselToLaunch.vesselRef.Load();
+                vesselToLaunch.vesselRef.MakeActive();
+            }
 
         }
 
@@ -484,6 +512,7 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+            useFromFlight = false;
         }
 
 

@@ -97,8 +97,8 @@ namespace KerbalKonstructs.Core
         internal static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
 
-            //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
-            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
+            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
+            //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
             {
                 float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.staticInstance.transform.position);
                 KerbalKonstructs.instance.FuckUpKSP();

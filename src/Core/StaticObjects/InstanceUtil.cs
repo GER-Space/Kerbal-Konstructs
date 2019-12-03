@@ -137,16 +137,6 @@ namespace KerbalKonstructs.Core
                 controller.enabled = true;
             }
 
-            if (instance.model.name == "KSC_FuelTank")
-            {
-                //Log.Normal("Fixing KSC Fuel Tank");
-                GameObject oldGameObject = instance.mesh;
-                GameObject newBaseObject = new GameObject(instance.model.name);
-                oldGameObject.transform.parent = newBaseObject.transform;
-                oldGameObject.transform.localEulerAngles = new Vector3(270, 0, 0);
-                instance.mesh = newBaseObject;
-            }
-
         }
 
         /// <summary>

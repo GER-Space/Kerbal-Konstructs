@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using System.IO.Compression;
 
 
 namespace KerbalKonstructs.Core
