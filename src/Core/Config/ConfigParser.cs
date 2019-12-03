@@ -560,6 +560,33 @@ namespace KerbalKonstructs.Core
         {
 
             string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
+            string allFileName = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".zip";
+                        
+            
+            ZipFile.CreateFromDirectory(basePath, KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/"+ allFileName, System.IO.Compression.CompressionLevel.Fastest, false);
+
+            foreach (string dirname in Directory.GetDirectories(basePath))
+            {
+
+                string groupFilename = dirname + ".zip";
+
+                if (File.Exists(groupFilename))
+                {
+                    File.Delete(groupFilename);
+                }
+
+
+                ZipFile.CreateFromDirectory(dirname, groupFilename, System.IO.Compression.CompressionLevel.Fastest, true);
+
+
+                Directory.Delete(dirname, true);
+            }
+         }
+
+
+        internal static void CreateZipsOld()
+        {
+            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
 
             //string timeStamp = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".tar";
 
@@ -606,8 +633,8 @@ namespace KerbalKonstructs.Core
             }
             writerAll.Close();
             allTarFileStream.Close();
-
         }
+
 
     }
 }
