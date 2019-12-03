@@ -101,7 +101,7 @@ namespace KerbalKonstructs.Core
             //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
             {
                 float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.staticInstance.transform.position);
-                KerbalKonstructs.instance.FuckUpKSP();
+                //KerbalKonstructs.instance.FuckUpKSP();
 
                 foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
                 {

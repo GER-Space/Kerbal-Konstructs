@@ -238,7 +238,6 @@
     <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
     <Compile Include="Core\StaticModels\StaticModel.cs" />
     <Compile Include="Core\StaticObjects\StaticModule.cs" />
-    <Compile Include="Utilities\AsmUtilsOld.cs" />
     <Compile Include="Utilities\CameraController.cs" />
     <Compile Include="UI\BaseBossFlight.cs" />
     <Compile Include="UI\AirRacing.cs" />
