@@ -951,17 +951,17 @@ namespace KerbalKonstructs.UI
                 fwdVR.Vector = selectedInstance.groupCenter.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.Scale = cameraDistance;
-                fwdVR.draw();
+                fwdVR.Draw();
 
                 upVR.Vector = selectedInstance.groupCenter.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.Scale = cameraDistance;
-                upVR.draw();
+                upVR.Draw();
 
                 rightVR.Vector = selectedInstance.groupCenter.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.Scale = cameraDistance;
-                rightVR.draw();
+                rightVR.Draw();
             }
             else
             {
@@ -972,17 +972,17 @@ namespace KerbalKonstructs.UI
                 fwdVR.Vector = selectedInstance.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
                 fwdVR.Scale = cameraDistance;
-                fwdVR.draw();
+                fwdVR.Draw();
 
                 upVR.Vector = selectedInstance.transform.up;
                 upVR.Start = vectorDrawPosition;
                 upVR.Scale = cameraDistance;
-                upVR.draw();
+                upVR.Draw();
 
                 rightVR.Vector = selectedInstance.transform.right;
                 rightVR.Start = vectorDrawPosition;
                 rightVR.Scale = cameraDistance;
-                rightVR.draw();
+                rightVR.Draw();
             }
 
         }

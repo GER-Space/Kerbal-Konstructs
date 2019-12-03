@@ -655,15 +655,15 @@ namespace KerbalKonstructs.UI
 
                 fwdVR.Vector = selectedGroup.gameObject.transform.forward;
                 fwdVR.Start = vectorDrawPosition;
-                fwdVR.draw();
+                fwdVR.Draw();
 
                 upVR.Vector = selectedGroup.gameObject.transform.up;
                 upVR.Start = vectorDrawPosition;
-                upVR.draw();
+                upVR.Draw();
 
                 rightVR.Vector = selectedGroup.gameObject.transform.right;
                 rightVR.Start = vectorDrawPosition;
-                rightVR.draw();
+                rightVR.Draw();
             }
             if (referenceSystem == Space.World)
             {
@@ -676,11 +676,11 @@ namespace KerbalKonstructs.UI
 
                 northVR.Vector = northVector;
                 northVR.Start = vectorDrawPosition;
-                northVR.draw();
+                northVR.Draw();
 
                 eastVR.Vector = eastVector;
                 eastVR.Start = vectorDrawPosition;
-                eastVR.draw();
+                eastVR.Draw();
             }
         }
 

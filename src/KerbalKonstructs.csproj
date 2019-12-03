@@ -264,7 +264,6 @@
     <Compile Include="Utilities\KKGraphics.cs" />
     <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Addons\NavUtils\ILSConfig.cs" />
-    <Compile Include="Utilities\Tar.cs" />
     <Compile Include="Utilities\Zip\Crc32Helper.Managed.cs" />
     <Compile Include="Utilities\Zip\PositionPreservingWriteOnlyStreamWrapper.cs" />
     <Compile Include="Utilities\Zip\ZipArchive.cs" />

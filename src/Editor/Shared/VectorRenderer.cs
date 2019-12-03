@@ -50,7 +50,7 @@ namespace KerbalKonstructs.UI
         private bool prevIsOnMap;
         //private const int MAP_LAYER = 10; // found through trial-and-error
         //private const int FLIGHT_LAYER = 15; // Supposedly the layer for UI effects in flight camera.
-        private int FLIGHT_LAYER = KerbalKonstructs.vectorLayer; // Supposedly the layer for UI effects in flight camera.
+        private readonly int FLIGHT_LAYER = KerbalKonstructs.vectorLayer; // Supposedly the layer for UI effects in flight camera.
 
         public VectorRenderer()
         {
@@ -69,7 +69,7 @@ namespace KerbalKonstructs.UI
         /// and move to wherever that ship is within its local XYZ world (which
         /// isn't always at (0,0,0), as it turns out.):
         /// </summary>
-        public void draw()
+        public void Draw()
         {
             if (line == null || hat == null) return;
             if (!enable) return;
@@ -282,7 +282,7 @@ namespace KerbalKonstructs.UI
         {
             Color c1 = Color;
             Color c2 = Color;
-            c1.a = c1.a * (float)0.25;
+            c1.a *= (float)0.25;
             Color lCol = UnityEngine.Color.Lerp(c2, UnityEngine.Color.white, 0.7f); // "whiten" the label color a lot.
 
             if (line != null && hat != null)

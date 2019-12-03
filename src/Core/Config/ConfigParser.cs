@@ -122,6 +122,7 @@ namespace KerbalKonstructs.Core
                 catch
                 {
                     Log.UserError("error in writing modelconfig: " + model.name + " key: " + modelsetting.Key);
+                    throw;
                 }
 
                 foreach (ModelVariant vaiant in model.variants.Values)
@@ -560,7 +561,7 @@ namespace KerbalKonstructs.Core
         {
 
             string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
-            string allFileName = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".zip";
+            string allFileName = "AllExports" + DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".zip";
                         
             
             ZipFile.CreateFromDirectory(basePath, KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/"+ allFileName, System.IO.Compression.CompressionLevel.Fastest, false);
@@ -575,66 +576,10 @@ namespace KerbalKonstructs.Core
                     File.Delete(groupFilename);
                 }
 
-
                 ZipFile.CreateFromDirectory(dirname, groupFilename, System.IO.Compression.CompressionLevel.Fastest, true);
-
-
                 Directory.Delete(dirname, true);
             }
          }
-
-
-        internal static void CreateZipsOld()
-        {
-            string basePath = KSPUtil.ApplicationRootPath + "GameData/KerbalKonstructs/ExportedInstances/" + exportTime;
-
-            //string timeStamp = DateTime.Now.ToString("_yyyy-MMdd-HHmm-ss") + ".tar";
-
-            FileStream allTarFileStream = File.Create(basePath + "_AllExports.tar");
-            LegacyTarWriter writerAll = new LegacyTarWriter(allTarFileStream);
-
-
-            foreach (string dirname in Directory.GetDirectories(basePath))
-            {
-
-                string groupFilename = dirname + ".tar";
-
-                if (File.Exists(groupFilename))
-                {
-                    File.Delete(groupFilename);
-                }
-
-
-
-                FileStream tarFileStream = File.Create(groupFilename);
-                LegacyTarWriter writer = new LegacyTarWriter(tarFileStream);
-
-                writerAll.WriteDirectoryEntry(LegacyTarWriter.GetRelativePath(dirname, basePath));
-                writer.WriteDirectoryEntry(LegacyTarWriter.GetRelativePath(dirname, basePath));
-
-                foreach (string fileName in Directory.GetFiles(dirname))
-                {
-                    //Log.Normal("Proceccing Dir: " + LegacyTarWriter.GetRelativePath(dirname, basePath));
-                    if (string.IsNullOrEmpty(fileName))
-                    {
-                        Log.UserError(fileName + " not found");
-                        continue;
-                    }
-                    FileStream file = File.OpenRead(fileName);
-                    writer.Write(file, file.Length, LegacyTarWriter.GetRelativePath(file.Name, basePath), 61, 61, 511, File.GetLastWriteTime(file.Name));
-                    file.Seek(0, SeekOrigin.Begin);
-                    writerAll.Write(file, file.Length, LegacyTarWriter.GetRelativePath(file.Name, basePath), 61, 61, 511, File.GetLastWriteTime(file.Name));
-                    file.Close();
-                }
-
-                writer.Close();
-                tarFileStream.Close();
-                Directory.Delete(dirname, true);
-            }
-            writerAll.Close();
-            allTarFileStream.Close();
-        }
-
 
     }
 }

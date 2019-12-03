@@ -850,27 +850,27 @@ namespace KerbalKonstructs.UI
                 fwdVR.Vector = selectedDecal.gameObject.transform.forward;
                 fwdVR.Start = VectorDrawPosition;
                 fwdVR.Scale = Math.Max(1, selectedDecal.Radius);
-                fwdVR.draw();
+                fwdVR.Draw();
 
                 backVR.Vector = -selectedDecal.gameObject.transform.forward;
                 backVR.Start = VectorDrawPosition;
                 backVR.Scale = Math.Max(1, selectedDecal.Radius);
-                backVR.draw();
+                backVR.Draw();
 
                 upVR.Vector = selectedDecal.gameObject.transform.up;
                 upVR.Start = VectorDrawPosition;
                 upVR.Scale = Math.Min(30d, Math.Max(1, selectedDecal.Radius));
-                upVR.draw();
+                upVR.Draw();
 
                 rightVR.Vector = selectedDecal.gameObject.transform.right;
                 rightVR.Start = VectorDrawPosition;
                 rightVR.Scale = Math.Max(1, selectedDecal.Radius);
-                rightVR.draw();
+                rightVR.Draw();
 
                 leftVR.Vector = -selectedDecal.gameObject.transform.right;
                 leftVR.Start = VectorDrawPosition;
                 leftVR.Scale = Math.Max(1, selectedDecal.Radius);
-                leftVR.draw();
+                leftVR.Draw();
             }
             if (referenceSystem == Space.World)
             {
@@ -888,22 +888,22 @@ namespace KerbalKonstructs.UI
                 northVR.Vector = NorthVector;
                 northVR.Start = VectorDrawPosition;
                 northVR.Scale = Math.Max(1, selectedDecal.Radius);
-                northVR.draw();
+                northVR.Draw();
 
                 southVR.Vector = -NorthVector;
                 southVR.Start = VectorDrawPosition;
                 southVR.Scale = Math.Max(1, selectedDecal.Radius);
-                southVR.draw();
+                southVR.Draw();
 
                 eastVR.Vector = EastVector;
                 eastVR.Start = VectorDrawPosition;
                 eastVR.Scale = Math.Max(1, selectedDecal.Radius);
-                eastVR.draw();
+                eastVR.Draw();
 
                 westVR.Vector = -EastVector;
                 westVR.Start = VectorDrawPosition;
                 westVR.Scale = Math.Max(1, selectedDecal.Radius);
-                westVR.draw();
+                westVR.Draw();
             }
         }
 
