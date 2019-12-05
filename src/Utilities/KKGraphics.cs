@@ -175,7 +175,8 @@ namespace KerbalKonstructs
             md5Hash.ComputeHash(System.Text.Encoding.ASCII.GetBytes(texture.name));
             string normalHash = md5Hash.Hash.ToString();
 
-            string filename = KSPUtil.ApplicationRootPath + "PluginData/" + normalHash + ".png";
+            string storagePath = KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstrucs/Normals/";
+            string filename = storagePath + normalHash + ".png";
 
             Texture2D normalMap = null;
 
@@ -212,7 +213,7 @@ namespace KerbalKonstructs
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="filename"></param>
-        internal static void CreateNormalFromTex (Texture2D texture, string filename)
+        private static void CreateNormalFromTex (Texture2D texture, string filename)
         {
             if (texture == null)
             {
