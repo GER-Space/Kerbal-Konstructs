@@ -24,15 +24,6 @@ namespace KerbalKonstructs
         private static Dictionary<string, Texture2D> normalMaps = new Dictionary<string, Texture2D>();
 
 
-        //private static Dictionary<string, string> shaderSubstitutions = new Dictionary<string, string> {
-        //    { "KSP/Diffuse", "KSP/Scenery/Diffuse" },
-        //    { "KSP/Bumped", "KSP/Scenery/Bumped" },
-        //    { "KSP/Emissive/Diffuse", "KSP/Scenery/Emissive/Diffuse" },
-        //    { "KSP/Alpha/Translucent", "KSP/Scenery/Alpha/Translucent" },
-        //    { "KSP/Specular", "KSP/Scenery/Specular" },
-        //};
-
-
         /// <summary>
         /// Load all shaders into the system and fill our shader database.
         /// </summary>
