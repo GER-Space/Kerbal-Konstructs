@@ -22,7 +22,7 @@ namespace KerbalKonstructs.Core
                 KerbalKonstructs.instance.lastLaunchSiteUsed = value;
             }
         }
-        private static Texture defaultLaunchSiteLogo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+        
         public static float rangeNearestOpenBase = 0f;
         public static string nearestOpenBase = "";
         public static float rangeNearestBase = 0f;
@@ -308,7 +308,7 @@ namespace KerbalKonstructs.Core
         /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
         /// <param name="site"></param>
-        internal static void RegisterLaunchSite(KKLaunchSite site, bool isSquad = false)
+        internal static void RegisterLaunchSite(KKLaunchSite site)
         {
 
             if (string.IsNullOrEmpty(site.LaunchSiteName))
@@ -522,7 +522,7 @@ namespace KerbalKonstructs.Core
                     SpaceCenterManager.spaceCenters.Remove(csc);
                 }
 
-                allLaunchSites = launchSites.ToArray();
+                allLaunchSites = launchSites.OrderBy(ls => ls.staticInstance.Group).ThenBy(ls => ls.LaunchSiteName).ToArray();
                 launchSiteNames.Remove(site2delete.LaunchSiteName);
                 UnregisterLaunchSite(site2delete);
             }
@@ -539,7 +539,7 @@ namespace KerbalKonstructs.Core
             {
                 return (a.LaunchSiteName).CompareTo(b.LaunchSiteName);
             });
-            allLaunchSites = launchSites.ToArray();
+            allLaunchSites = launchSites.OrderBy(ls => ls.staticInstance.Group).ThenBy(ls => ls.LaunchSiteName).ToArray();
             launchSiteNames.Add(site2add.LaunchSiteName);
         }
 
@@ -743,7 +743,7 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (sNearestBase == "")
+            if (sNearestBase.Length == 0)
             {
                 sNearestBase = "KSC";
                 lNearestBase = lKSC;
@@ -764,7 +764,7 @@ namespace KerbalKonstructs.Core
                         MessageSystem.Instance.AddMessage(m);
                     }
                     else
-                        if (nearestOpenBase != "")
+                        if (nearestOpenBase.Length != 0)
                     {
                         // you have left ...
                         MessageSystemButton.MessageButtonColor color = MessageSystemButton.MessageButtonColor.GREEN;
@@ -804,7 +804,9 @@ namespace KerbalKonstructs.Core
                 var dist = Vector3.Distance(position, radialposition);
 
                 if (radialposition == position)
+                {
                     continue;
+                }
 
                 if (site.LaunchSiteName == "Runway" || site.LaunchSiteName == "LaunchPad")
                 {
@@ -830,12 +832,12 @@ namespace KerbalKonstructs.Core
                 }
             }
 
-            if (sNearestBase == "")
+            if (sNearestBase.Length == 0)
             {
                 sNearestBase = "KSC";
                 lTargetSite = lKSC;
             }
-            if (sLastNearest == "")
+            if (sLastNearest.Length == 0)
             {
                 sLastNearest = "KSC";
                 lLastSite = lKSC;
@@ -853,7 +855,7 @@ namespace KerbalKonstructs.Core
 
         public static void ResetLaunchSiteFacilityName()
         {
-            if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite == "")
+            if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite.Length == 0)
             {
                 return;
             }
@@ -936,7 +938,7 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         internal static KKLaunchSite GetDefaultSite()
         {
-            KKLaunchSite defaultSite = null;
+            KKLaunchSite defaultSite ;
             if (EditorDriver.editorFacility == EditorFacility.VAB)
             {
                 try

@@ -215,7 +215,7 @@ namespace KerbalKonstructs
             }
             Log.Normal("Normal Map ChacheName: " + filename);
 
-            Material converter = new Material(KKGraphics.GetShader("KK/Calc/TextureToNomral"));
+            Material converter = new Material(GetShader("KK/Calc/NormalFromTexture"));
             converter.mainTexture = texture;
 
             RenderTexture renderTarget;
