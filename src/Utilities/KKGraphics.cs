@@ -174,6 +174,7 @@ namespace KerbalKonstructs
             // first check if we loaded the map before:
             if (normalMaps.ContainsKey(normalHash))
             {
+                Log.Normal("returning Cached normalMap");
                 return normalMaps[normalHash];
             }
             else
@@ -186,6 +187,7 @@ namespace KerbalKonstructs
                 {
                     normalMap = LoadNormalFromFile(filename, texture.width, texture.height);
                     normalMaps.Add(normalHash, normalMap);
+                    Log.Normal("returning normalMap from File");
                     return normalMap;
                 }
 
@@ -227,6 +229,7 @@ namespace KerbalKonstructs
             Graphics.Blit(texture, renderTarget, converter);
 
             renderTarget.ToTexture2D().WritePNG(filename);
+            Log.Normal("Finished creation of normalMap");
         }
 
 

@@ -87,6 +87,17 @@ namespace KerbalKonstructs
                 {
                     //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                     material.mainTexture = grasTexture;
+
+                    if (!string.IsNullOrEmpty(GrasTextureNormalMap))
+                    {
+                        material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0, true));
+                    }
+                    else
+                    {
+                        Texture normalMap = KKGraphics.GetNormalMap(grasTexture);
+                        material.SetTexture("_BumpMap", normalMap);
+                    }
+
                 }
             }
         }
@@ -136,13 +147,6 @@ namespace KerbalKonstructs
                 grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage, false, 0, true);
                 //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
                 grasRenderer.material.shader = KKGraphics.GetShader("KK/Diffuse_Multiply_Random");
-                if (useNormalMap)
-                {
-                    if ((String.IsNullOrEmpty(GrasTextureNormalMap) == false))
-                    {
-                        grasRenderer.material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0 , true));
-                    }
-                }
             }
         }
 
