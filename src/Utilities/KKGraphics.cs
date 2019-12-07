@@ -185,7 +185,7 @@ namespace KerbalKonstructs
             // first check if we loaded the map before:
             if (normalMaps.ContainsKey(normalHash))
             {
-                Log.Normal("returning Cached normalMap");
+                //Log.Normal("returning Cached normalMap");
                 return normalMaps[normalHash];
             }
             else
@@ -198,7 +198,7 @@ namespace KerbalKonstructs
                 {
                     normalMap = LoadNormalFromFile(filename, texture.width, texture.height);
                     normalMaps.Add(normalHash, normalMap);
-                    Log.Normal("returning normalMap from File");
+                    //Log.Normal("returning normalMap from File");
                     return normalMap;
                 }
 
@@ -224,7 +224,7 @@ namespace KerbalKonstructs
                 Log.Error("Called with no Texture");
                 return;
             }
-            Log.Normal("Normal Map ChacheName: " + filename);
+            //Log.Normal("Normal Map ChacheName: " + filename);
 
             Material converter = new Material(GetShader("KK/Calc/NormalFromTexture"));
             converter.mainTexture = texture;
@@ -242,7 +242,7 @@ namespace KerbalKonstructs
             Graphics.Blit(texture, renderTarget, converter);
 
             renderTarget.ToTexture2D().WritePNG(filename);
-            Log.Normal("Finished creation of normalMap");
+            //Log.Normal("Finished creation of normalMap");
         }
 
 
