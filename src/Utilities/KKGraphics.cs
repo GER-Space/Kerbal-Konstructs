@@ -156,20 +156,31 @@ namespace KerbalKonstructs
         /// <returns></returns>
         internal static Texture2D GetNormalMap(Texture2D texture)
         {
-            if (texture == null || String.IsNullOrEmpty(texture.name))
+            if (texture == null || string.IsNullOrEmpty(texture.name))
             {
                 Log.Error("Could not get NormalTexture for empty name or Texture");
                 return null;
             }
 
             System.Security.Cryptography.MD5 md5Hash = System.Security.Cryptography.MD5.Create();
-            md5Hash.ComputeHash(System.Text.Encoding.ASCII.GetBytes(texture.name));
-            string normalHash = md5Hash.Hash.ToString();
+            md5Hash.Initialize();
+            byte[] crypto = md5Hash.ComputeHash(System.Text.Encoding.ASCII.GetBytes(texture.name));
+            string normalHash = string.Empty;
+            foreach (byte theByte in crypto)
+            {
+                normalHash += theByte.ToString("x2");
+            }
 
-            string storagePath = KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstrucs/Normals/";
+            string storagePath = KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/Normals/";
+
+            if (!Directory.Exists(storagePath))
+            {
+                Directory.CreateDirectory(storagePath);
+            }
+
             string filename = storagePath + normalHash + ".png";
 
-            Texture2D normalMap = null;
+            Texture2D normalMap;
 
             // first check if we loaded the map before:
             if (normalMaps.ContainsKey(normalHash))
@@ -217,6 +228,8 @@ namespace KerbalKonstructs
 
             Material converter = new Material(GetShader("KK/Calc/NormalFromTexture"));
             converter.mainTexture = texture;
+            converter.SetFloat("_Strengh", 0.35f );
+            converter.SetFloat("_Offset", 0.8f);
 
             RenderTexture renderTarget;
                 renderTarget = RenderTexture.GetTemporary(
@@ -255,7 +268,7 @@ namespace KerbalKonstructs
 
             Texture2D normalTexture = new Texture2D(width, height, TextureFormat.ARGB32, false, true);
             
-            normalTexture = new Texture2D(loadedTexture.width, loadedTexture.height, TextureFormat.ARGB32, false, true);
+            normalTexture = new Texture2D(loadedTexture.width, loadedTexture.height, TextureFormat.ARGB32, true, true);
             Color32[] colours = loadedTexture.GetPixels32();
             for (int i = 0; i < colours.Length; i++)
             {

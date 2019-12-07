@@ -80,28 +80,32 @@ namespace KerbalKonstructs.UI2
             content.Add(VaiantList);
 
             content.Add(new DialogGUIVerticalLayout(
+                 new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("Grass Color : ", KKStyle.whiteLabel),
+                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.grassColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.grassColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
+                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetGrassColor; ; ColorSelector.selectedColor = selectedMod.grassColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
                     new DialogGUITextInput(NearGrassTexture, false, 40, SetNearGrassTexture, delegate { return GetTextureName("nearGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
                 new DialogGUIHorizontalLayout(
+                    new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
+                    new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25),
+                    new DialogGUIToggle(selectedMod.nearGrassTextureGray, "GrayScale", delegate (bool state) { selectedMod.nearGrassTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
+
+                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarGrassTexture", KKStyle.whiteLabel),
                     new DialogGUITextInput(FarGrassTexture, false, 40, SetFarGrassTexture, delegate { return GetTextureName("farGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Grass Color : ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.grassColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.grassColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetGrassColor; ; ColorSelector.selectedColor = selectedMod.grassColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
-                    new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25)),
                new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarGrassTiling", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25)),
+                    new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25),
+                    new DialogGUIToggle(selectedMod.farGrassTextureGray, "GrayScale", delegate (bool state) { selectedMod.farGrassTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("FarBlendDistance", KKStyle.whiteLabel),
                     new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25)),
                 new DialogGUIHorizontalLayout(
+
                     new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
                     new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
                     new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
@@ -115,7 +119,9 @@ namespace KerbalKonstructs.UI2
                     new DialogGUILabel("V: ", KKStyle.whiteLabel),
                     new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
                new DialogGUIHorizontalLayout(
-                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Texture Random Tiling", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21)),
+                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Random", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21),
+                   new DialogGUIToggle(selectedMod.tarmacTextureGray, "Tarmac GrayScale", delegate (bool state) { selectedMod.tarmacTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
+
                 new DialogGUIHorizontalLayout(
                     new DialogGUIButton("  R", ReloadBlendMask, 21f, 21.0f, false, HighLogic.UISkin.label),
                     new DialogGUILabel("BlendMask", KKStyle.whiteLabel),
@@ -129,7 +135,8 @@ namespace KerbalKonstructs.UI2
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Texture Tiling: ", KKStyle.whiteLabel),
                     new DialogGUITextInput(ThirdTextureTiling, ThirdTextureTiling, false, 10, SetThirdTile, 25),
-                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21)),
+                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 60, 21),
+                    new DialogGUIToggle(selectedMod.thirdTextureGray, "Gray", delegate (bool state) { selectedMod.thirdTextureGray = state; selectedMod.ApplySettings(); }, 60, 21)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Third Color : ", KKStyle.whiteLabel),
                     new DialogGUITextInput("", false, 40, delegate(string colorString) { selectedMod.thirdTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.thirdTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
@@ -142,7 +149,8 @@ namespace KerbalKonstructs.UI2
                   new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Texture Tiling: ", KKStyle.whiteLabel),
                     new DialogGUITextInput(FourthTextureTiling, FourthTextureTiling, false, 10, SetFourthTile, 25),
-                    new DialogGUIToggle(selectedMod.fourthTextureTileRandom, "Random Tiling", delegate (bool state) { selectedMod.fourthTextureTileRandom = state; selectedMod.ApplySettings(); }, 120, 21)),
+                    new DialogGUIToggle(selectedMod.fourthTextureTileRandom, "Random", delegate (bool state) { selectedMod.fourthTextureTileRandom = state; selectedMod.ApplySettings(); }, 60, 21),
+                    new DialogGUIToggle(selectedMod.fourthTextureGray, "Gray", delegate (bool state) { selectedMod.fourthTextureGray = state; selectedMod.ApplySettings(); }, 60, 21)),
                 new DialogGUIHorizontalLayout(
                     new DialogGUILabel("Fourth Color : ", KKStyle.whiteLabel),
                     new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.fourthTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.fourthTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),

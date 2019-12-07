@@ -14,10 +14,12 @@ namespace KerbalKonstructs
         public string GrassMeshName = "Nix";
 
         public string DefaultNearGrassTexture = "BUILTIN:/terrain_grass00_new";
-        public string DefaultNearGrassTiling = "4";
+        public string DefaultNearGrassTiling = "0.03";
+        public string DefaultNearGrassTextureGray = "False";
 
         public string DefaultFarGrassTexture = "BUILTIN:/terrain_grass00_new_detail";
-        public string DefaultFarGrassTiling = "10";
+        public string DefaultFarGrassTiling = "0.01";
+        public string DefaultFarGrassTextureGray = "False";
         public string DefaultFarGrassBlendDistance = "100";
 
         public string DefaultBlendMaskTexture = "BUILTIN:/blackSquare";
@@ -26,17 +28,20 @@ namespace KerbalKonstructs
         public string DefaultTarmacTiling = "10, 10";
         public string DefaultTarmacTileRandom = "False";
         public string DefaultTarmacColor = "1,1,1,1";
+        public string DefaultTarmacTextureGray = "False";
 
         public string DefaultThirdTexture = "";
         public string DefaultThirdTextureColor = "0,0,0,0";
         public string DefaultThirdTextureTiling = "1";
-        public string DefaultThirdTextureTileRandom = "False";
+        public string DefaultThirdTextureTileRandom = "False"; 
+        public string DefaultThirdTextureGray = "False";
 
 
         public string DefaultFourthTexture = "";
         public string DefaultFourthTextureColor = "0,0,0,0";
         public string DefaultFourthTextureTiling = "1";
         public string DefaultFourthTextureTileRandom = "False";
+        public string DefaultFourthTextureGray = "False";
 
         public string MaterialOffset = "0";
 
@@ -48,17 +53,20 @@ namespace KerbalKonstructs
         internal string farGrassTextureName = null;
         internal Texture2D nearGrassTexture = null;
         internal Texture2D farGrassTexture = null;
-
+        
         internal float nearGrassTiling = 0.2f;
         internal float farGrassTiling = 0.01f;
         internal float farGrassBlendDistance = 100;
-        
+        internal bool nearGrassTextureGray = false;
+        internal bool farGrassTextureGray = false;
+
 
         internal string tarmacTextureName = null;
         internal Texture2D tarmacTexture = null;
         internal Vector2 tarmacTiling = new Vector2(10, 10);
         internal Color tarmacColor = Color.white;
         internal bool tarmacTileRandom = false;
+        internal bool tarmacTextureGray = false;
 
         internal Texture2D blendMaskTexture = null;
         internal string blendMaskTextureName = null;
@@ -68,12 +76,14 @@ namespace KerbalKonstructs
         internal Color thirdTextureColor = Color.clear;
         internal float thirdTextureTiling = 1;
         internal bool thirdTextureTileRandom = false;
+        internal bool thirdTextureGray = false;
 
         internal string fourthTextureName = null;
         internal Texture2D fourthTexture = null;
         internal Color fourthTextureColor = Color.clear;
         internal float fourthTextureTiling = 1;
         internal bool fourthTextureTileRandom = false;
+        internal bool fourthTextureGray = false;
 
 
         internal static Color defaultColor = new Color(0.576471f, 0.611765f, 0.392157f, 1.00000f);
@@ -159,22 +169,31 @@ namespace KerbalKonstructs
                 material.SetTexture("_NearGrassTexture", nearGrassTexture);
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                 material.SetTexture("_FarGrassTexture", farGrassTexture);
-
-                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                material.SetTexture("_TarmacTexture", tarmacTexture);
-                if (tarmacTileRandom)
+                if (farGrassTexture != null)
                 {
-                    material.SetFloat("_TarmacTileRandom", 1f);
+                    material.SetTexture("_FarGrassNormalTexture", KKGraphics.GetNormalMap(farGrassTexture));
                 }
                 else
                 {
-                    material.SetFloat("_TarmacTileRandom", 0f);
+                    material.SetTexture("_FarGrassNormalTexture", null);
                 }
-                material.SetColor("_TarmacColor", tarmacColor);
+
+                //Log.Normal("GC: Setting Texture to: " + grasTextureName);
+                material.SetTexture("_TarmacTexture", tarmacTexture);
                 if (tarmacTexture != null)
                 {
+                    material.SetTexture("_TarmacNormalTexture", KKGraphics.GetNormalMap(tarmacTexture));
                     material.SetTextureScale("_TarmacTexture", tarmacTiling);
+                    material.SetFloat("_TarmacTileRandom", tarmacTileRandom ? 1f : 0);
                 }
+                else
+                {
+                    material.SetTexture("_TarmacNormalTexture", null);
+                    material.SetFloat("_TarmacTileRandom", 0);
+                }
+
+                material.SetColor("_TarmacColor", tarmacColor);
+
 
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                 material.SetTexture("_BlendMaskTexture", blendMaskTexture);
@@ -182,30 +201,43 @@ namespace KerbalKonstructs
 
                 // third Texture (green)
                 material.SetTexture("_ThirdTexture", thirdTexture);
-                material.SetColor("_ThirdTextureColor", thirdTextureColor);
-                material.SetFloat("_ThirdTextureTiling", thirdTextureTiling);
-                if (thirdTextureTileRandom)
+                if (thirdTexture != null)
                 {
-                    material.SetFloat("_ThirdTextureTileRandom", 1f);
+                    material.SetTexture("_ThirdNormalTexture", KKGraphics.GetNormalMap(thirdTexture));
+                    material.SetFloat("_ThirdTextureTileRandom", thirdTextureTileRandom ? 1f : 0);
                 }
                 else
                 {
+                    material.SetTexture("_ThirdNormalTexture", null);
                     material.SetFloat("_ThirdTextureTileRandom", 0);
                 }
 
+                material.SetColor("_ThirdTextureColor", thirdTextureColor);
+                material.SetFloat("_ThirdTextureTiling", thirdTextureTiling);
+                
+
                 // Fourth Texture (blue)
                 material.SetTexture("_FourthTexture", fourthTexture);
-                material.SetColor("_FourthTextureColor", fourthTextureColor);
-                material.SetFloat("_FourthTextureTiling", fourthTextureTiling);
-                if (fourthTextureTileRandom)
+                if (fourthTexture != null)
                 {
-                    material.SetFloat("_FourthTextureTileRandom", 1f);
+                    material.SetFloat("_FourthTextureTileRandom", fourthTextureTileRandom ? 1f : 0f);
+                    material.SetTexture("_FourthNormalTexture", KKGraphics.GetNormalMap(fourthTexture));
                 }
                 else
                 {
                     material.SetFloat("_FourthTextureTileRandom", 0);
+                    material.SetTexture("_FourthNormalTexture", null);
                 }
 
+                material.SetColor("_FourthTextureColor", fourthTextureColor);
+                material.SetFloat("_FourthTextureTiling", fourthTextureTiling);
+
+
+                material.SetFloat("_NearGrassGrayScale", nearGrassTextureGray ? 1f : 0);
+                material.SetFloat("_FarGrassGrayScale", farGrassTextureGray ? 1f : 0);
+                material.SetFloat("_TarmacGrayScale", tarmacTextureGray ? 1f : 0);
+                material.SetFloat("_ThirdTextureGrayScale", thirdTextureGray ? 1f : 0);
+                material.SetFloat("_FourthTextureGrayScale", fourthTextureGray ? 1f : 0);
             }
         }
 
@@ -293,6 +325,11 @@ namespace KerbalKonstructs
                 grassColor = defaultColor;
                 tarmacColor = Color.white;
 
+                nearGrassTextureGray = bool.Parse(DefaultNearGrassTextureGray);
+                farGrassTextureGray = bool.Parse(DefaultFarGrassTextureGray);
+                tarmacTextureGray = bool.Parse(DefaultTarmacTextureGray);
+                thirdTextureGray = bool.Parse(DefaultThirdTextureGray);
+                fourthTextureGray = bool.Parse(DefaultFourthTextureGray);
 
                 //Log.Normal("MaterialOffset:" + MaterialOffset);
 
@@ -378,6 +415,12 @@ namespace KerbalKonstructs
                     fourthTextureTileRandom = (grassConfig.HasValue("FourthTextureTileRandom")) ? Boolean.Parse(grassConfig.GetValue("FourthTextureTileRandom")) : false;
 
 
+                    nearGrassTextureGray = grassConfig.HasValue("NearGrassGrayScale") ? bool.Parse(grassConfig.GetValue("NearGrassGrayScale")): false;
+                    farGrassTextureGray = grassConfig.HasValue("FarGrassGrayScale") ? bool.Parse(grassConfig.GetValue("FarGrassGrayScale")) : false;
+                    tarmacTextureGray = grassConfig.HasValue("TarmacGrayScale") ? bool.Parse(grassConfig.GetValue("TarmacGrayScale")) : false;
+                    thirdTextureGray = grassConfig.HasValue("ThirdTextureGrayScale") ? bool.Parse(grassConfig.GetValue("ThirdTextureGrayScale")) : false;
+                    fourthTextureGray = grassConfig.HasValue("FourthTextureGrayScale") ? bool.Parse(grassConfig.GetValue("FourthTextureGrayScale")) : false;
+
                     break;
                 }
 
@@ -401,12 +444,14 @@ namespace KerbalKonstructs
             {
                 grassNode.AddValue("NearGrassTexture", nearGrassTextureName);
                 grassNode.AddValue("NearGrassTiling", nearGrassTiling);
+                grassNode.AddValue("NearGrassGrayScale", nearGrassTextureGray);
             }
             if (farGrassTexture != null)
             {
                 grassNode.AddValue("FarGrassTexture", farGrassTextureName);
                 grassNode.AddValue("FarGrassTiling", farGrassTiling);
                 grassNode.AddValue("FarGrassBlendDistance", farGrassBlendDistance);
+                grassNode.AddValue("FarGrassGrayScale", farGrassTextureGray);
             }
             if (tarmacTexture != null)
             {
@@ -414,6 +459,7 @@ namespace KerbalKonstructs
                 grassNode.AddValue("TarmacColor", tarmacColor);
                 grassNode.AddValue("TarmacTiling", tarmacTiling);
                 grassNode.AddValue("TarmacTileRandom", tarmacTileRandom);
+                grassNode.AddValue("TarmacGrayScale", tarmacTextureGray);
             }
 
             if (blendMaskTexture != null)
@@ -426,12 +472,14 @@ namespace KerbalKonstructs
                 grassNode.AddValue("ThirdTextureTiling",thirdTextureTiling);
                 grassNode.AddValue("ThirdTextureColor",thirdTextureColor);
                 grassNode.AddValue("ThirdTextureTileRandom",thirdTextureTileRandom);
+                grassNode.AddValue("ThirdTextureGrayScale", thirdTextureGray);
             }
             if (fourthTexture != null) {
                 grassNode.AddValue("FourthTexture",fourthTextureName);
                 grassNode.AddValue("FourthTextureTiling",fourthTextureTiling);
                 grassNode.AddValue("FourthTextureColor",fourthTextureColor);
                 grassNode.AddValue("FourthTextureTileRandom",fourthTextureTileRandom);
+                grassNode.AddValue("FourthTextureGrayScale", fourthTextureGray);
             }
 
             return grassNode;

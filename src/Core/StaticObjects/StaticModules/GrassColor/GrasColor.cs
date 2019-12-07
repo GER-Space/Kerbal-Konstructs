@@ -88,7 +88,7 @@ namespace KerbalKonstructs
                     //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                     material.mainTexture = grasTexture;
 
-                    if (!string.IsNullOrEmpty(GrasTextureNormalMap))
+                    if (string.IsNullOrEmpty(GrasTextureNormalMap))
                     {
                         material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0, true));
                     }
