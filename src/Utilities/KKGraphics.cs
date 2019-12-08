@@ -221,7 +221,7 @@ namespace KerbalKonstructs
         {
             if (texture == null)
             {
-                Log.Error("Called with no Texture");
+                //Log.Error("Called with no Texture");
                 return;
             }
             //Log.Normal("Normal Map ChacheName: " + filename);
@@ -323,7 +323,7 @@ namespace KerbalKonstructs
         {
             if (string.IsNullOrEmpty(textureName))
             {
-                Log.UserWarning("Empty texture Name");
+                //Log.UserWarning("Empty texture Name");
                 return null;
             }
             string textureKey;

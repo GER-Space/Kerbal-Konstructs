@@ -56,12 +56,20 @@ namespace KerbalKonstructs
     {
 
         internal static bool isInitialized = false;
-        internal static Dictionary<string, List<ParticleSystem>> particleSystems = new Dictionary<string, List<ParticleSystem>>();
 
         private static List<string> stockNames = new List<string> { "PadSmokeLvl2", "PadSmokeLvl3" };
 
         private FieldInfo totalFXField;
+        private FieldInfo amoutfield ;
 
+        internal  struct KKEmitter
+        {
+            internal List<ParticleSystem> pSystems ;
+            internal List<KSPParticleEmitter> kspEmitters;
+        }
+
+        internal static Dictionary<string,KKEmitter> particleSystems = new Dictionary<string, KKEmitter>();
+        KSPParticleEmitter[] kspPS;
 
         /// <summary>
         /// Attaches the LaunchPadFX module and 
@@ -71,10 +79,11 @@ namespace KerbalKonstructs
         public void Setup(List<string> emitterTransformNames, GameObject baseObject, string smokeName)
         {
             InitializePSystems();
-            List<ParticleSystem> emitters = new List<ParticleSystem>();
+            List<ParticleSystem> unityEmitters = new List<ParticleSystem>();
+            List<KSPParticleEmitter> kspEmitters = new List<KSPParticleEmitter>();
 
             totalFXField = typeof(LaunchPadFX).GetField("totalFX", BindingFlags.NonPublic | BindingFlags.Instance);
-
+            amoutfield = typeof(KSPParticleEmitter).GetField("amountPerSec", BindingFlags.NonPublic | BindingFlags.Instance);
 
             foreach (string emName in emitterTransformNames)
             {
@@ -83,16 +92,31 @@ namespace KerbalKonstructs
 
                     if (particleSystems.ContainsKey(smokeName))
                     {
-                        //Log.Normal("adding Smoke: " + smokeName);
-                        foreach (ParticleSystem pSystem in particleSystems[smokeName])
+                        if (particleSystems[smokeName].pSystems != null)
                         {
-                            //Log.Normal("adding PSystem: " + pSystem.name);
-                            ParticleSystem emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
-                            emPsystem.gameObject.SetActive(true);
-                            emitters.Add(emPsystem);
-                            FloatingOrigin.RegisterParticleSystem(emPsystem);
+                            foreach (ParticleSystem pSystem in particleSystems[smokeName].pSystems)
+                            {
+                                //Log.Normal("adding PSystem: " + pSystem.name);
+                                ParticleSystem emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
+                                emPsystem.gameObject.SetActive(true);
+                                unityEmitters.Add(emPsystem);
+                                FloatingOrigin.RegisterParticleSystem(emPsystem);
+                            }
                         }
-                    } else
+                        if (particleSystems[smokeName].kspEmitters != null)
+                        {
+                            foreach (KSPParticleEmitter pSystem in particleSystems[smokeName].kspEmitters)
+                            {
+                                //Log.Normal("adding PSystem: " + pSystem.name);
+                                KSPParticleEmitter emPsystem = Instantiate(pSystem, emTransform.position, emTransform.rotation, emTransform);
+                                emPsystem.gameObject.SetActive(true);
+                                kspEmitters.Add(emPsystem);
+                            }
+                        }
+
+
+                        } 
+                    else
                     {
                         Log.UserError("Cannot find a LaunchPad Smoke with name: " + smokeName);
                     }
@@ -101,34 +125,54 @@ namespace KerbalKonstructs
                 }
             }
             // assign the emitters to the underlying component
-            ps = emitters.ToArray();
-
+            ps = unityEmitters.ToArray();
+            kspPS = kspEmitters.ToArray();
         }
 
 
         private void LateUpdate()
         {
-            for (int i = 0; i < ps.Length; i++)
+
+            foreach (ParticleSystem pSystem in ps)
             {
                 if (fxScale > 0f)
                 {
-                    ParticleSystem.MainModule main = ps[i].main;
-                    if (!ps[i].isPlaying)
+                    ParticleSystem.MainModule main = pSystem.main;
+                    if (!pSystem.isPlaying)
                     {
-                        ps[i].Play();
+                        pSystem.Play();
                     }
-                    if (!ps[i].emission.enabled)
+                    if (!pSystem.emission.enabled)
                     {
-                        ParticleSystem.EmissionModule emission = ps[i].emission;
+                        ParticleSystem.EmissionModule emission = pSystem.emission;
                         emission.enabled = true;
                     }
                     main.startColor = main.startColor.color.SetAlpha(Mathf.Lerp(0f, 0.5f, fxScale));
                 }
                 if (fxScale == 0f)
                 {
-                    ParticleSystem.EmissionModule emission = ps[i].emission;
+                    ParticleSystem.EmissionModule emission = pSystem.emission;
                     emission.enabled = false;
                 }
+            }
+
+            foreach (KSPParticleEmitter kspSystem in kspPS)
+            {
+                if (fxScale > 0f)
+                {
+                    kspSystem.emit = true;
+
+                    kspSystem.doesAnimateColor = false;
+                    kspSystem.color = kspSystem.color.SetAlpha(Mathf.Lerp(0f, 0.5f, fxScale));
+                }
+
+
+                if (fxScale == 0f)
+                {
+                    kspSystem.doesAnimateColor = true;
+                    kspSystem.emit = false;
+                }
+
             }
             // reset the emissions
 
@@ -169,7 +213,9 @@ namespace KerbalKonstructs
                     Log.Normal("found: " + psName);
 
 
-                    particleSystems.Add(psName, new List<ParticleSystem> { pSystem });
+                    KKEmitter emitter = new KKEmitter { pSystems = new List<ParticleSystem> { pSystem } };
+
+                    particleSystems.Add(psName, emitter);
                 }
             }
         }
@@ -199,7 +245,8 @@ namespace KerbalKonstructs
                     intensity = float.Parse(smokeNode.GetValue("Intensity"));
                 }
 
-                List<ParticleSystem> emitters = new List<ParticleSystem>();
+                List<ParticleSystem> psEmitters = new List<ParticleSystem>();
+                List<KSPParticleEmitter> kspEmitters = new List<KSPParticleEmitter>();
 
                 foreach (string meshname in smokeNode.GetValues("EmitterPath"))
                 {
@@ -221,7 +268,7 @@ namespace KerbalKonstructs
                     KSPParticleEmitter kspEmitter = modelObject.GetComponent<KSPParticleEmitter>();
                     if (kspEmitter != null)
                     {
-                        ps = ParseKSPEmitter(kspEmitter); 
+                        kspEmitters.Add(kspEmitter);
                     } 
                     else
                     {
@@ -229,52 +276,49 @@ namespace KerbalKonstructs
                     }
 
                     if (ps == null)
-                    {
-                        Log.UserWarning("Could not setup Smoke Emittor on: " + name  +" : " + meshname);
+                    {            
                         continue;
-
                     }
 
-                    var emSystem = ps.emission;
-                    emSystem.rateOverTime = new ParticleSystem.MinMaxCurve(emSystem.rateOverTime.constantMin * intensity, emSystem.rateOverTime.constantMax * intensity);
-
                     var main = ps.main;
-                    main.maxParticles *= (int)intensity;
+
                     main.loop = true;
                     main.playOnAwake = false;
-                    GameObject.DestroyImmediate(kspEmitter);
-                    emitters.Add(ps);
-                    
+                    if (kspEmitter == null)
+                    {
+                        psEmitters.Add(ps);
+                    }
                 }
-                Log.Normal("Initialized Smoke: " +name);
-                particleSystems.Add(name, emitters);
+
+                KKEmitter kKEmitter = new KKEmitter { kspEmitters = kspEmitters, pSystems = psEmitters };
+                particleSystems.Add(name, kKEmitter);
 
             }
         }
 
-        private static ParticleSystem ParseKSPEmitter(KSPParticleEmitter kspEmitter)
-        {
-            kspEmitter.SetDirty();
-            kspEmitter.SetupProperties();
+        //private static ParticleSystem ParseKSPEmitter(KSPParticleEmitter kspEmitter)
+        //{
+        //    kspEmitter.SetDirty();
+        //    kspEmitter.SetupProperties();
 
-            ParticleSystem ps = kspEmitter.ps;
-            var emSystem = ps.emission;
-            emSystem.rateOverTime = new ParticleSystem.MinMaxCurve(kspEmitter.minEmission, kspEmitter.maxEmission);
+        //    ParticleSystem ps = kspEmitter.ps;
+        //    var emSystem = ps.emission;
+        //    emSystem.rateOverTime = new ParticleSystem.MinMaxCurve(kspEmitter.minEmission, kspEmitter.maxEmission);
 
-            var main = ps.main;
-            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        //    var main = ps.main;
+        //    main.simulationSpace = ParticleSystemSimulationSpace.Local;
 
-            main.startLifetime = new ParticleSystem.MinMaxCurve(kspEmitter.minEnergy, kspEmitter.maxEnergy);
-            main.startSize = new ParticleSystem.MinMaxCurve(kspEmitter.minSize, kspEmitter.maxSize);
-            float minSpeed = kspEmitter.localVelocity.magnitude;
-            float maxSpeed = (kspEmitter.localVelocity + kspEmitter.rndVelocity).magnitude;
-            main.startSpeed = new ParticleSystem.MinMaxCurve(minSpeed, maxSpeed);
+        //    main.startLifetime = new ParticleSystem.MinMaxCurve(kspEmitter.minEnergy, kspEmitter.maxEnergy);
+        //    main.startSize = new ParticleSystem.MinMaxCurve(kspEmitter.minSize, kspEmitter.maxSize);
+        //    float minSpeed = kspEmitter.localVelocity.magnitude;
+        //    float maxSpeed = (kspEmitter.localVelocity + kspEmitter.rndVelocity).magnitude;
+        //    main.startSpeed = new ParticleSystem.MinMaxCurve(minSpeed, maxSpeed);
 
-            main.loop = true;
-            main.playOnAwake = false;
-            GameObject.DestroyImmediate(kspEmitter);
-            return ps;
-        }
+        //    main.loop = true;
+        //    main.playOnAwake = false;
+        //    GameObject.DestroyImmediate(kspEmitter);
+        //    return ps;
+        //}
 
     }
 }
