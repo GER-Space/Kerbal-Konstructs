@@ -92,11 +92,11 @@ namespace KerbalKonstructs
                     {
                         material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0, true));
                     }
-                    else
-                    {
-                        Texture normalMap = KKGraphics.GetNormalMap(grasTexture);
-                        material.SetTexture("_BumpMap", normalMap);
-                    }
+                    //else
+                    //{
+                    //    Texture normalMap = KKGraphics.GetNormalMap(grasTexture);
+                    //    material.SetTexture("_BumpMap", normalMap);
+                    //}
 
                 }
             }

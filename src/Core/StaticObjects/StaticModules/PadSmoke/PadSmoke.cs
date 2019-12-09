@@ -20,13 +20,9 @@ namespace KerbalKonstructs
         private string[] seperators = new string[] { ",", ";" };
         
 
-        GameObject baseObject;
-
-
         public void Start()
         {
             //Log.Normal("PadSmoke Start");
-            baseObject = gameObject;
             var tmpList = smokeEmittersNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string value in tmpList)
@@ -60,7 +56,6 @@ namespace KerbalKonstructs
         private static List<string> stockNames = new List<string> { "PadSmokeLvl2", "PadSmokeLvl3" };
 
         private FieldInfo totalFXField;
-        private FieldInfo amoutfield ;
 
         internal  struct KKEmitter
         {
@@ -83,7 +78,6 @@ namespace KerbalKonstructs
             List<KSPParticleEmitter> kspEmitters = new List<KSPParticleEmitter>();
 
             totalFXField = typeof(LaunchPadFX).GetField("totalFX", BindingFlags.NonPublic | BindingFlags.Instance);
-            amoutfield = typeof(KSPParticleEmitter).GetField("amountPerSec", BindingFlags.NonPublic | BindingFlags.Instance);
 
             foreach (string emName in emitterTransformNames)
             {
@@ -130,9 +124,8 @@ namespace KerbalKonstructs
         }
 
 
-        private void LateUpdate()
+        public void LateUpdate()
         {
-
             foreach (ParticleSystem pSystem in ps)
             {
                 if (fxScale > 0f)
@@ -147,7 +140,7 @@ namespace KerbalKonstructs
                         ParticleSystem.EmissionModule emission = pSystem.emission;
                         emission.enabled = true;
                     }
-                    main.startColor = main.startColor.color.SetAlpha(Mathf.Lerp(0f, 0.5f, fxScale));
+                    main.startColor = main.startColor.color.SetAlpha(Mathf.Clamp01(Mathf.LerpUnclamped(0f, 0.5f, fxScale)));
                 }
                 if (fxScale == 0f)
                 {
@@ -161,18 +154,15 @@ namespace KerbalKonstructs
                 if (fxScale > 0f)
                 {
                     kspSystem.emit = true;
-
                     kspSystem.doesAnimateColor = false;
-                    kspSystem.color = kspSystem.color.SetAlpha(Mathf.Lerp(0f, 0.5f, fxScale));
+                    kspSystem.color = kspSystem.color.SetAlpha(Mathf.Clamp01(Mathf.LerpUnclamped(0f, 0.5f, fxScale)));
                 }
-
 
                 if (fxScale == 0f)
                 {
                     kspSystem.doesAnimateColor = true;
                     kspSystem.emit = false;
                 }
-
             }
             // reset the emissions
 

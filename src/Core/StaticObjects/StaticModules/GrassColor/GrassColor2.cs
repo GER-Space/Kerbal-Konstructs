@@ -169,26 +169,26 @@ namespace KerbalKonstructs
                 material.SetTexture("_NearGrassTexture", nearGrassTexture);
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                 material.SetTexture("_FarGrassTexture", farGrassTexture);
-                if (farGrassTexture != null)
-                {
-                    material.SetTexture("_FarGrassNormalTexture", KKGraphics.GetNormalMap(farGrassTexture));
-                }
-                else
-                {
-                    material.SetTexture("_FarGrassNormalTexture", null);
-                }
+                //if (farGrassTexture != null)
+                //{
+                //    material.SetTexture("_FarGrassNormalTexture", KKGraphics.GetNormalMap(farGrassTexture));
+                //}
+                //else
+                //{
+                //    material.SetTexture("_FarGrassNormalTexture", null);
+                //}
 
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                 material.SetTexture("_TarmacTexture", tarmacTexture);
                 if (tarmacTexture != null)
                 {
-                    material.SetTexture("_TarmacNormalTexture", KKGraphics.GetNormalMap(tarmacTexture));
+                    //material.SetTexture("_TarmacNormalTexture", KKGraphics.GetNormalMap(tarmacTexture));
                     material.SetTextureScale("_TarmacTexture", tarmacTiling);
                     material.SetFloat("_TarmacTileRandom", tarmacTileRandom ? 1f : 0);
                 }
                 else
                 {
-                    material.SetTexture("_TarmacNormalTexture", null);
+                    //material.SetTexture("_TarmacNormalTexture", null);
                     material.SetFloat("_TarmacTileRandom", 0);
                 }
 
@@ -203,12 +203,12 @@ namespace KerbalKonstructs
                 material.SetTexture("_ThirdTexture", thirdTexture);
                 if (thirdTexture != null)
                 {
-                    material.SetTexture("_ThirdNormalTexture", KKGraphics.GetNormalMap(thirdTexture));
+                    //material.SetTexture("_ThirdNormalTexture", KKGraphics.GetNormalMap(thirdTexture));
                     material.SetFloat("_ThirdTextureTileRandom", thirdTextureTileRandom ? 1f : 0);
                 }
                 else
                 {
-                    material.SetTexture("_ThirdNormalTexture", null);
+                    //material.SetTexture("_ThirdNormalTexture", null);
                     material.SetFloat("_ThirdTextureTileRandom", 0);
                 }
 
@@ -221,12 +221,12 @@ namespace KerbalKonstructs
                 if (fourthTexture != null)
                 {
                     material.SetFloat("_FourthTextureTileRandom", fourthTextureTileRandom ? 1f : 0f);
-                    material.SetTexture("_FourthNormalTexture", KKGraphics.GetNormalMap(fourthTexture));
+                    //material.SetTexture("_FourthNormalTexture", KKGraphics.GetNormalMap(fourthTexture));
                 }
                 else
                 {
                     material.SetFloat("_FourthTextureTileRandom", 0);
-                    material.SetTexture("_FourthNormalTexture", null);
+                    //material.SetTexture("_FourthNormalTexture", null);
                 }
 
                 material.SetColor("_FourthTextureColor", fourthTextureColor);
