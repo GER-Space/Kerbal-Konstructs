@@ -34,7 +34,7 @@ namespace KerbalKonstructs
         private int textureIndex = 0;
         private List<string> targetTransforms = new List<string>();
 
-        private string[] seperators = new string[] { ",", ";" };
+        private readonly string[] seperators = new string[] { ",", ";" };
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
 
         private Color color = Color.white;
