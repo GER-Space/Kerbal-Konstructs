@@ -153,6 +153,8 @@
     <Compile Include="Core\StaticGroup\GroupCenter.cs" />
     <Compile Include="Core\StaticModels\ModelVariant.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise2.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\OnSunRiseMaster.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AnimateOnTrigger\AnimateOnTrigger.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
