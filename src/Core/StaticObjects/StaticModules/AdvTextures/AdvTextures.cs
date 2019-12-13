@@ -29,11 +29,15 @@ namespace KerbalKonstructs
         public string _OcclusionMap = null;     // ambient occlusion
         public string _SpecGlossMap = null;     // U5 metallic (standard shader - spec gloss setup)
 
+        public string _Color = "1,1,1,1";      // MainColor
+
         private int textureIndex = 0;
         private List<string> targetTransforms = new List<string>();
 
         private string[] seperators = new string[] { ",", ";" };
         private static Dictionary<string, Material> cachedMaterials = new Dictionary<string, Material>();
+
+        private Color color = Color.white;
 
         private bool doTileing = false;
 
@@ -63,6 +67,9 @@ namespace KerbalKonstructs
             }
 
             //                Log.UserError("AdvancedTexture: could not parse TileTexture " + tileTextureWithScale);
+
+
+            color = ConfigNode.ParseColor(_Color);
 
             if (doTileing)
             {
@@ -114,6 +121,8 @@ namespace KerbalKonstructs
                 {
                     ReplaceShader(renderer, newShader);
                 }
+
+                renderer.material.SetColor("_Color", color);
 
                 SetTexture(renderer, _MainTex, "_MainTex");
                 SetTexture(renderer, _ParallaxMap, "_ParallaxMap");
