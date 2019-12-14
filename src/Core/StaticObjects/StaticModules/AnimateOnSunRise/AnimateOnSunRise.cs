@@ -82,7 +82,7 @@ namespace KerbalKonstructs
             revAnimation = bool.Parse(reverseAnimation);
             warpAnimation = bool.Parse(timeWarpAnimation);
 
-            ResetAnimationState();
+            StartCoroutine("ResetAnimationState");
 
             SetupCenter();
 
@@ -132,32 +132,42 @@ namespace KerbalKonstructs
 
         internal void OnSunriseActivate()
         {
-            Log.Normal("Called");
+            //Log.Normal("Called");
             shouldBeActive = true;
         }
 
 
         internal void OnSunriseDeActivate()
         {
-            Log.Normal("Called");
+            //Log.Normal("Called");
             shouldBeActive = false;
         }
 
 
-
-        private void ResetAnimationState()
+        private IEnumerator ResetAnimationState()
         {
-            isRunning = false;
-            isActive = false;
+            isRunning = true;
+            float waitTime = animLength;
 
             if (revAnimation)
             {
-                animationComponent[animationName].normalizedTime = 1f;
+                targetAnimation.speed = animationSpeed;
+                targetAnimation.time = 0;
             }
             else
             {
-                animationComponent[animationName].time = 0;
+                targetAnimation.speed = -animationSpeed;
+                targetAnimation.time = animLength;
             }
+
+                targetAnimation.speed *= 1000f;
+                waitTime /= 1000f;
+
+            animationComponent.Play(animationName);
+            isActive = false;
+            yield return new WaitForSeconds(waitTime);
+            isRunning = false;
+
         }
 
 
@@ -178,7 +188,7 @@ namespace KerbalKonstructs
             if (revAnimation)
             {
                 targetAnimation.speed = -animationSpeed;
-                targetAnimation.normalizedTime = 1f;
+                targetAnimation.time = animLength;
             }
             else
             {
@@ -198,6 +208,7 @@ namespace KerbalKonstructs
             isRunning = false;
         }
 
+
         private IEnumerator SetInActive()
         {
             if (isRunning)
@@ -216,7 +227,7 @@ namespace KerbalKonstructs
             else
             {
                 targetAnimation.speed = -animationSpeed;
-                targetAnimation.normalizedTime = 1f;
+                targetAnimation.time = animLength;
             }
 
             if (warpAnimation)
@@ -230,7 +241,6 @@ namespace KerbalKonstructs
             yield return new WaitForSeconds(waitTime);
             isRunning = false;
         }
-
 
     }
 }
