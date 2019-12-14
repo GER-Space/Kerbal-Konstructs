@@ -153,7 +153,7 @@
     <Compile Include="Core\StaticGroup\GroupCenter.cs" />
     <Compile Include="Core\StaticModels\ModelVariant.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise2.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\OnSunRiseMaster.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AnimateOnTrigger\AnimateOnTrigger.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
@@ -169,7 +169,7 @@
     <Compile Include="Core\StaticObjects\StaticModules\GrassColor\TexturePreset.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
+    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRiseOld.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\TileTextures\TileTextures.cs" />
     <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
     <Compile Include="Editor\GroupEditor\GroupEditor.cs" />

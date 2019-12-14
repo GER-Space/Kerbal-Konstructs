@@ -45,7 +45,7 @@ namespace KerbalKonstructs
                     return;
                 }
                 active = true;
-                Log.Normal("Activating ");
+                //Log.Normal("Activating ");
                 foreach (var instance in center.childInstances)
                 {
                     instance.mesh.SendMessage("OnSunriseActivate", SendMessageOptions.DontRequireReceiver);
@@ -58,7 +58,7 @@ namespace KerbalKonstructs
                     return;
                 }
                 active = false;
-                Log.Normal("Deactivating");
+                //Log.Normal("Deactivating");
                 foreach (var instance in center.childInstances)
                 {
                     instance.mesh.SendMessage("OnSunriseDeActivate", SendMessageOptions.DontRequireReceiver);
@@ -72,7 +72,7 @@ namespace KerbalKonstructs
         {
             get
             {
-                return (Planetarium.fetch.Sun.gameObject.transform.position - center.gameObject.transform.position);
+                return (center.gameObject.transform.position - Planetarium.fetch.Sun.gameObject.transform.position);
             }
         }
 
