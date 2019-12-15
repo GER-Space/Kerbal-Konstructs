@@ -106,7 +106,7 @@ namespace KerbalKonstructs
         internal void Initialize()
         {
            
-           findModelGrasMaterials();
+           FindModelGrasMaterials();
            
 
 
@@ -135,7 +135,7 @@ namespace KerbalKonstructs
         /// <returns></returns>
 
 
-        public void findModelGrasMaterials()
+        public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrasMeshName).ToArray();
             foreach (var transform in allTransforms)

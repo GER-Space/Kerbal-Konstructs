@@ -13,7 +13,7 @@ namespace KerbalKonstructs
     {
 
         // Public .cfg fields
-        public string animationName;
+        public string animationName = "unset";
         public string reverseAnimation = "false";
         public string timeWarpAnimation = "true";
         // Very unused :

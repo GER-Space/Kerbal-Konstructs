@@ -117,7 +117,7 @@ namespace KerbalKonstructs
 
                 // Log.Normal("Processing Transform: " + renderer.transform.name);
 
-                if (newMaterial != "")
+                if (!string.IsNullOrEmpty(newMaterial) )
                 {
                     ReplaceMaterial(renderer, newMaterial);
                     continue;
@@ -157,7 +157,6 @@ namespace KerbalKonstructs
             {
                 return;
             }
-            string transformName = renderer.gameObject.name;
             string textureName = renderer.material.mainTexture.GetHashCode().ToString();
             string ColorValue = "";
             string tiling = renderer.material.GetTextureScale("_MainTex").ToString();
