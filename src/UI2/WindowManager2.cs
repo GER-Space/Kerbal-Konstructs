@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI2
 {
-    internal static class WindowManager
+    internal static class WindowManager2
     {
 
         private static Dictionary<string, Vector2> lastPositions = new Dictionary<string, Vector2>();
@@ -59,7 +59,7 @@ namespace KerbalKonstructs.UI2
         {
             KKStyle.Init();
             LoadPresets();
-            Log.Normal("UI2.WindowManager initialized");
+            Log.Normal("UI2.WindowManager2 initialized");
         }
 
 
@@ -67,12 +67,15 @@ namespace KerbalKonstructs.UI2
         {
             ConfigNode positionsNode = new ConfigNode("WindowPositions");
 
-            Log.Normal("");
+            //Log.Normal("");
             foreach (var pos in lastPositions)
             {
+                Vector2 position = pos.Value;
+                position.x = Mathf.Clamp01(position.x);
+                position.y = Mathf.Clamp01(position.y);
                 ConfigNode node = positionsNode.AddNode("Position");
                 node.AddValue("name", pos.Key);
-                node.AddValue("position", pos.Value);
+                node.AddValue("position", position);
                 Log.Normal("Saving: " + pos.Key + " : " + pos.Value);
             }
 
@@ -111,9 +114,11 @@ namespace KerbalKonstructs.UI2
             foreach (ConfigNode node in positionsNode.GetNodes("Position"))
             {
                 string name = node.GetValue("name");
-                Vector2 pos = ConfigNode.ParseVector2(node.GetValue("position"));
-                Log.Normal("loading: " + name + " : " + pos.ToString());
-                lastPositions.Add(name, pos);
+                Vector2 position = ConfigNode.ParseVector2(node.GetValue("position"));
+                position.x = Mathf.Clamp01(position.x);
+                position.y = Mathf.Clamp01(position.y);
+                Log.Normal("loading: " + name + " : " + position.ToString());
+                lastPositions.Add(name, position);
             }
 
         }

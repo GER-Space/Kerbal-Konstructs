@@ -379,7 +379,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void CreateMultiOptionDialog()
         {
-            windowRect = new Rect(WindowManager.GetPosition(windowName), new Vector2(windowWidth, windowHeight));
+            windowRect = new Rect(WindowManager2.GetPosition(windowName), new Vector2(windowWidth, windowHeight));
             optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, null, windowRect, content.ToArray());
 
         }
@@ -456,7 +456,7 @@ namespace KerbalKonstructs.UI2
 
             if (dialog != null)
             {
-                WindowManager.SavePosition(dialog);
+                WindowManager2.SavePosition(dialog);
                 dialog.Dismiss();
             }
 

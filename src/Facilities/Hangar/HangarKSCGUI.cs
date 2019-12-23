@@ -408,7 +408,7 @@ namespace KerbalKonstructs.UI2
 
             if (KSCManager.isOpen)
             {
-                WindowManager.SavePosition(KSCManager.dialog);
+                WindowManager2.SavePosition(KSCManager.dialog);
             }
 
             GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
@@ -432,7 +432,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void CreateMultiOptionDialog()
         {
-            windowRect = new Rect(WindowManager.GetPosition(windowName), new Vector2(windowWidth, windowHeight));
+            windowRect = new Rect(WindowManager2.GetPosition(windowName), new Vector2(windowWidth, windowHeight));
             optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, null, windowRect, content.ToArray());
             optionDialog.OnFixedUpdate += PlaceToParent;
         }
@@ -475,7 +475,7 @@ namespace KerbalKonstructs.UI2
         {
             if (dialog != null)
             {
-                WindowManager.SavePosition(dialog);
+                WindowManager2.SavePosition(dialog);
                 dialog.Dismiss();
             }
             dialog = null;
@@ -507,7 +507,7 @@ namespace KerbalKonstructs.UI2
         {
             if (dialog != null)
             {
-                WindowManager.SavePosition(dialog);
+                WindowManager2.SavePosition(dialog);
                 dialog.Dismiss();
             }
             dialog = null;

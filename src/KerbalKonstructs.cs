@@ -287,7 +287,7 @@ namespace KerbalKonstructs
             //LoadModelInstances();
 
             //Log.PerfStop("Object loading2");
-            UI2.WindowManager.Initialize();
+            UI2.WindowManager2.Initialize();
 
         }
 
