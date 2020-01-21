@@ -214,7 +214,7 @@ namespace KerbalKonstructs.Modules
                 GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, UIMain.KKToolTip);
             }
 
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+            GUI.DragWindow(new Rect(0, 0, 25000, 25000));
         }
 
     }
