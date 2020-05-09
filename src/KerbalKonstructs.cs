@@ -1174,19 +1174,15 @@ namespace KerbalKonstructs
                 return;
             }
 
-            KKFacilityType facType;
-            try
-            {
-                facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), cfgNode.GetValue("FacilityType"), true);
-            }
-            catch(ArgumentException ex)
+            string facTypeStr = cfgNode.GetValue("FacilityType");
+            KKFacilityType facType = KKFacilityType.None;
+            if (!String.IsNullOrEmpty(facTypeStr) && !KK_Enum.ToEnum<KKFacilityType>(facTypeStr, KKFacilityType.None, out facType))
             {
                 instance.legacyfacilityID = cfgNode.GetValue("FacilityType");
                 instance.FacilityType = "None";
                 instance.facilityType = KKFacilityType.None;
                 facType = KKFacilityType.None;
-                Log.UserWarning(ex.Message);
-                //Log.UserError("Unknown Facility Type: " + cfgNode.GetValue("FacilityType") + " in file: " + instance.configPath );
+                Log.UserError("Unknown Facility Type: '" + cfgNode.GetValue("FacilityType") + "' in file: " + instance.configPath );
             }
 
 

@@ -159,6 +159,7 @@ MOD_FILES := \
 	Utilities/CameraController.cs \
 	Utilities/ClassExtentions.cs \
 	Utilities/DebugDrawer.cs \
+	Utilities/Enum.cs \
 	Utilities/GrasColorCam.cs \
 	Utilities/KKGraphics.cs \
 	Utilities/MiscUtils.cs \
