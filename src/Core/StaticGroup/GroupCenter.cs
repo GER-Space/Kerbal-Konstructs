@@ -265,8 +265,8 @@ namespace KerbalKonstructs.Core
                 foreach (KKLaunchSite site in launchsites)
                 {
                     site.WasSeen = true;
-                    MiscUtils.HUDMessage("You discovered the bases at: " + Group);
                 }
+                MiscUtils.HUDMessage("You discovered the bases at: " + Group);
             }
             bool isInRange = (distance < maxDistance);
             SetInstancesEnabled(isInRange);
