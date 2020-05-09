@@ -781,7 +781,7 @@ namespace KerbalKonstructs.Core
         }
 
         // Returns the nearest Launchsite to a position and range in m to the Launchsite, regardless of whether it is open or closed
-        public static void getNearestBase(Vector3 position, out string sBase, out string sBase2, out float flRange, out KKLaunchSite lSite, out KKLaunchSite lSite2)
+        public static KKLaunchSite getNearestBase(GroupCenter center, Vector3 position)
         {
             SpaceCenter KSC = SpaceCenter.Instance;
             var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
@@ -793,7 +793,7 @@ namespace KerbalKonstructs.Core
             string sLastNearest = "";
 
 
-            foreach (KKLaunchSite site in allLaunchSites)
+            foreach (KKLaunchSite site in center.launchsites)
             {
                 if (site.staticInstance.gameObject == null)
                 {
@@ -845,11 +845,7 @@ namespace KerbalKonstructs.Core
 
             rangeNearestBase = (float)smallestDist;
 
-            sBase = sNearestBase;
-            sBase2 = sLastNearest;
-            flRange = rangeNearestBase;
-            lSite = lTargetSite;
-            lSite2 = lLastSite;
+            return lTargetSite;
         }
 
 

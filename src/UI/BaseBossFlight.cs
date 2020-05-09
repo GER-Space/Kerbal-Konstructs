@@ -52,14 +52,7 @@ namespace KerbalKonstructs.UI
         private GUIStyle BoxNoBorder;
         private GUIStyle LabelInfo;
 
-        internal string Base;
-        internal string Base2;
-        internal float Range;
-        internal KKLaunchSite lBase;
-        internal KKLaunchSite lBase2;
         internal string smessage = "";
-        internal string sClosed;
-        internal float fOpenCost;
 
         private bool isInitialized = false;
 
@@ -98,7 +91,6 @@ namespace KerbalKonstructs.UI
             {
                 InitializeLayout();
             }
-
 
             GUILayout.BeginHorizontal();
             {
@@ -168,29 +160,35 @@ namespace KerbalKonstructs.UI
             GUILayout.Space(2);
 
 
+			var Range = float.PositiveInfinity;
+			GroupCenter center = null;
+
             GUILayout.BeginHorizontal();
             {
                 string sNearestbase = "";
-                LaunchSiteManager.getNearestBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Base2, out Range, out lBase, out lBase2);
+				center = StaticDatabase.GetClosestLaunchCenter();
 
                 if (FlightGlobals.ActiveVessel.altitude > 75000)
                 {
                     GUILayout.Label("No base's beacon in range at this altitude.", LabelInfo);
                 }
                 else
-                if (Base == "")
+                if (center == null)
                 {
                     GUILayout.Label("No nearest base found.", LabelInfo);
                 }
                 else
                 {
+					Vector3 vPosition = FlightGlobals.ActiveVessel.GetTransform().position;
+					KKLaunchSite lBase = LaunchSiteManager.getNearestBase(center, vPosition);
+					Range = Vector3.Distance(center.gameObject.transform.position, vPosition);
                     if (Range < 10000)
                     {
-                        sNearestbase = Base + " at " + Range.ToString("#0.0") + " m";
+                        sNearestbase = center.Group + " at " + Range.ToString("#0.0") + " m";
                     }
                     else
                     {
-                        sNearestbase = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
+                        sNearestbase = center.Group + " at " + (Range / 1000).ToString("#0.0") + " km";
                     }
 
                     GUILayout.Space(5);
@@ -204,7 +202,7 @@ namespace KerbalKonstructs.UI
                         {
                             NavGuidanceSystem.setTargetSite(lBase);
 
-                            smessage = "NGS set to " + Base;
+                            smessage = "NGS set to " + center.Group;
                             MiscUtils.HUDMessage(smessage, 10, 2);
                         }
                     }
@@ -219,52 +217,53 @@ namespace KerbalKonstructs.UI
 
             if (MiscUtils.isCareerGame())
             {
-
-
                 if (Range < 5000)
                 {
-                    LaunchSiteManager.getSiteOpenCloseState(Base, out sClosed, out fOpenCost);
-                    fOpenCost /= 2f;
+					for (int i = 0; i < center.launchsites.Count; i++) {
+						KKLaunchSite site = center.launchsites[i];
+						string state = site.OpenCloseState;
+						float openCost = site.OpenCost / 2;
 
-                    if (FlightGlobals.ActiveVessel.Landed && sClosed == "Closed")
-                    {
-                        GUILayout.Space(2);
-                        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                        GUILayout.Space(2);
-                        if (GUILayout.Button("Open Base for " + fOpenCost + " funds", GUILayout.Height(23)))
-                        {
-                            double currentfunds = Funding.Instance.Funds;
+						if (FlightGlobals.ActiveVessel.Landed && state == "Closed")
+						{
+							GUILayout.Space(2);
+							GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+							GUILayout.Space(2);
+							if (GUILayout.Button($"Open {site.LaunchSiteName} for {openCost} funds", GUILayout.Height(23)))
+							{
+								double currentfunds = Funding.Instance.Funds;
 
-                            if (fOpenCost > currentfunds)
-                            {
-                                MiscUtils.HUDMessage("Insufficient funds to open this site!", 10, 0);
-                            }
-                            else
-                            {
-                                LaunchSiteManager.OpenLaunchSite(LaunchSiteManager.GetLaunchSiteByName(Base));
-                                if (MiscUtils.isCareerGame())
-                                {
-                                    Funding.Instance.AddFunds(-LaunchSiteManager.GetLaunchSiteByName(Base).OpenCost, TransactionReasons.Cheating);
-                                }
-                                smessage = Base + " opened";
-                                MiscUtils.HUDMessage(smessage, 10, 2);
-                            }
-                        }
-                    }
+								if (openCost > currentfunds)
+								{
+									MiscUtils.HUDMessage("Insufficient funds to open this site!", 10, 0);
+								}
+								else
+								{
+									LaunchSiteManager.OpenLaunchSite(site);
+									if (MiscUtils.isCareerGame())
+									{
+										Funding.Instance.AddFunds(-openCost, TransactionReasons.Cheating);
+									}
+									smessage = site.LaunchSiteName + " opened";
+									MiscUtils.HUDMessage(smessage, 10, 2);
+								}
+							}
+						}
 
-                    if (FlightGlobals.ActiveVessel.Landed && sClosed == "Open")
-                    {
-                        GUI.enabled = false;
-                        GUILayout.Button("Base is Open", GUILayout.Height(23));
-                        GUI.enabled = true;
-                    }
+						if (FlightGlobals.ActiveVessel.Landed && state == "Open")
+						{
+							GUI.enabled = false;
+							GUILayout.Button("Base is Open", GUILayout.Height(23));
+							GUI.enabled = true;
+						}
 
-                    if (FlightGlobals.ActiveVessel.Landed && (sClosed == "OpenLocked" || sClosed == "ClosedLocked"))
-                    {
-                        GUI.enabled = false;
-                        GUILayout.Button("Base cannot be opened or closed", GUILayout.Height(23));
-                        GUI.enabled = true;
-                    }
+						if (FlightGlobals.ActiveVessel.Landed && (state == "OpenLocked" || state == "ClosedLocked"))
+						{
+							GUI.enabled = false;
+							GUILayout.Button("Base cannot be opened or closed", GUILayout.Height(23));
+							GUI.enabled = true;
+						}
+					}
 
                     GUILayout.Space(2);
                     GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));

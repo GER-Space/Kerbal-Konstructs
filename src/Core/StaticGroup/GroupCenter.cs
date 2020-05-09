@@ -7,7 +7,7 @@ using KerbalKonstructs;
 
 namespace KerbalKonstructs.Core
 {
-    class GroupCenter
+    public class GroupCenter
     {
         [CFGSetting]
         public string Group;
