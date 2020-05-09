@@ -98,7 +98,7 @@ namespace KerbalKonstructs.Core
         private static void AddKSC()
         {
             StaticInstance rwInstance = new StaticInstance();
-            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             rwInstance.RefLatitude = getKSCLat;
             rwInstance.RefLongitude = getKSCLon;
             rwInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -107,7 +107,7 @@ namespace KerbalKonstructs.Core
             rwInstance.launchSite = runway;
 
             StaticInstance padInstance = new StaticInstance();
-            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             padInstance.RefLatitude = getKSCLat;
             padInstance.RefLongitude = getKSCLon;
             padInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -148,7 +148,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteLength = 0f;
             launchpad.LaunchSiteWidth = 0f;
             launchpad.InitialCameraRotation = -60f;
-            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             launchpad.SetOpen();
 
 
