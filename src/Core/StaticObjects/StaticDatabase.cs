@@ -48,6 +48,7 @@ namespace KerbalKonstructs.Core
 
             if (string.IsNullOrEmpty(instance.UUID))
             {
+                Debug.Log ($"Empty UUID on instance in group {instance.Group} at {instance.RelativePosition}");
                 instance.UUID = GetNewUUID();
             }
 
@@ -56,6 +57,8 @@ namespace KerbalKonstructs.Core
 
             if (instancedByUUID.ContainsKey(instance.UUID))
             {
+                var dup = instancedByUUID[instance.UUID];
+                Debug.Log ($"Duplicate UUID on instance in group {instance.Group} at {instance.RelativePosition} ({dup.Group}, {dup.RelativePosition}");
                 instance.UUID = GetNewUUID();
             }
             instancedByUUID.Add(instance.UUID, instance);
