@@ -93,7 +93,9 @@ namespace KerbalKonstructs.Core
             set
             {
                 _mesh = value;
-                _mesh.name = "Mesh";
+                if (String.IsNullOrEmpty(mesh.name)) {
+                    _mesh.name = "Mesh";
+                }
                 _mesh.transform.parent = gameObject.transform;
                 _mesh.transform.position = transform.position;
                 _mesh.transform.rotation = transform.rotation;
