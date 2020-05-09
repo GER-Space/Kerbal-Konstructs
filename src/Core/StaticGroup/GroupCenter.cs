@@ -257,9 +257,9 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="distance"></param>
         /// <param name="maxDistance"></param>
-        internal void CheckIfInRange(float distance, float maxDistance)
+        internal bool CheckIfInRange(float distance, float maxDistance)
         {
-
+            bool isKnown = !isHidden;
             if (distance < 5000  && isHidden)
             {
                 foreach (KKLaunchSite site in launchsites)
@@ -267,9 +267,11 @@ namespace KerbalKonstructs.Core
                     site.WasSeen = true;
                 }
                 MiscUtils.HUDMessage("You discovered the bases at: " + Group);
+                isKnown = true;
             }
             bool isInRange = (distance < maxDistance);
             SetInstancesEnabled(isInRange);
+            return isKnown;
         }
 
         internal static void ActivateInstance(StaticInstance instance)
