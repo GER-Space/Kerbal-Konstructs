@@ -122,7 +122,7 @@ namespace KerbalKonstructs.Core
                 {
 
                     Log.Normal("Resetting to KSC");
-                    Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
+                    Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "FlagPole").First();
                     float nomHeight = 45f - (float)ConfigUtil.GetCelestialBody("HomeWorld").GetAltitude(kscRnD.gameObject.transform.position);
                     scCam.transform.parent = kscRnD.gameObject.transform;
                     scCam.transform.position = kscRnD.gameObject.transform.transform.position;
