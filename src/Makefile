@@ -9,9 +9,9 @@ CPLC_DIR	:= ${GAMEDATA}/CustomPreLaunchChecks
 TARGETS		:= bin/${MODNAME}.dll
 
 RESGEN2		:= resgen2
-GMCS		:= csc
-#GMCSFLAGS	:= -optimize -warnaserror
-GMCSFLAGS	:= -optimize -unsafe
+CSC 		:= csc
+#CSCFLAGS	:= -optimize -warnaserror
+CSCFLAGS	:= -highentropyva- -noconfig -nostdlib+ -t:library -optimize -warnaserror -debug -unsafe
 GIT			:= git
 TAR			:= tar
 ZIP			:= zip
@@ -21,8 +21,8 @@ all: ${TARGETS}
 info:
 	@echo "${MODNAME} Build Information"
 	@echo "    resgen2:    ${RESGEN2}"
-	@echo "    gmcs:       ${GMCS}"
-	@echo "    gmcs flags: ${GMCSFLAGS}"
+	@echo "    csc:        ${CSC}"
+	@echo "    csc flags:  ${CSCFLAGS}"
 	@echo "    git:        ${GIT}"
 	@echo "    tar:        ${TAR}"
 	@echo "    zip:        ${ZIP}"
@@ -177,27 +177,39 @@ MOD_FILES := \
 	Utilities/Zip/ZipVersion.cs \
 	$e
 
+SYSTEM := \
+	-lib:${MANAGED} \
+	-r:${MANAGED}/mscorlib.dll \
+	-r:${MANAGED}/System.dll \
+	-r:${MANAGED}/System.Core.dll
+
+KSP := \
+	-r:Assembly-CSharp.dll \
+	-r:Assembly-CSharp-firstpass.dll
+
+UNITY := \
+	-r:UnityEngine.dll \
+	-r:UnityEngine.UI.dll \
+	-r:UnityEngine.CoreModule.dll \
+	-r:UnityEngine.PhysicsModule.dll \
+	-r:UnityEngine.IMGUIModule.dll \
+	-r:UnityEngine.AnimationModule.dll \
+	-r:UnityEngine.AssetBundleModule.dll \
+	-r:UnityEngine.TextRenderingModule.dll \
+	-r:UnityEngine.InputLegacyModule.dll \
+	-r:UnityEngine.AudioModule.dll \
+	-r:UnityEngine.ParticleSystemModule.dll \
+	-r:UnityEngine.UIModule.dll \
+	-r:UnityEngine.ImageConversionModule.dll \
+	$e
+
+CPLC := \
+	-lib:${CPLC_DIR} \
+	-r:CustomPreLaunchChecks.dll
+
 bin/${MODNAME}.dll: ${MOD_FILES}
 	@mkdir -p bin
-	${GMCS} /highentropyva- /noconfig /nostdlib+ /t:library \
-		/lib:${MANAGED} \
-		/r:${MANAGED}/mscorlib.dll,${MANAGED}/System.dll,${MANAGED}/System.Core.dll \
-		/r:Assembly-CSharp.dll,Assembly-CSharp-firstpass.dll \
-		/r:UnityEngine.dll \
-		/r:UnityEngine.UI.dll \
-		/r:UnityEngine.CoreModule.dll \
-		/r:UnityEngine.PhysicsModule.dll \
-		/r:UnityEngine.IMGUIModule.dll \
-		/r:UnityEngine.AnimationModule.dll \
-		/r:UnityEngine.AssetBundleModule.dll \
-		/r:UnityEngine.TextRenderingModule.dll \
-		/r:UnityEngine.InputLegacyModule.dll \
-		/r:UnityEngine.AudioModule.dll \
-		/r:UnityEngine.ParticleSystemModule.dll \
-		/r:UnityEngine.UIModule.dll \
-		/r:UnityEngine.ImageConversionModule.dll \
-		/lib:${CPLC_DIR} /r:CustomPreLaunchChecks.dll \
-		/out:$@ $^
+	${CSC} ${CSCFLAGS} ${SYSTEM} ${KSP} ${UNITY} ${CPLC} -out:$@ $^
 
 clean:
 	rm -f ${TARGETS}
