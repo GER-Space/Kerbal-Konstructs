@@ -147,14 +147,23 @@ namespace KerbalKonstructs
         internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
 
         // map icon settings. These are saved manually
+        [KSPField]
         public StateButton.State mapShowOpen = new StateButton.State(true);
+        [KSPField]
         public StateButton.State mapShowClosed = new StateButton.State(false);
+        [KSPField]
         public StateButton.State mapShowGroundStation = new StateButton.State(false);
+        [KSPField]
         public StateButton.State mapShowHelipads = new StateButton.State(true);
+        [KSPField]
         public StateButton.State mapShowRunways = new StateButton.State(true);
+        [KSPField]
         public StateButton.State mapShowRocketbases = new StateButton.State(true);
+        [KSPField]
         public StateButton.State mapShowWaterLaunch = new StateButton.State(true);
+        [KSPField]
         public StateButton.State mapShowOther = new StateButton.State(false);
+        [KSPField]
         public StateButton.State mapShowRecovery = new StateButton.State(false);
         [KSPField]
         public string defaultVABlaunchsite = "LaunchPad";
@@ -1491,8 +1500,18 @@ namespace KerbalKonstructs
                     {
                         if (cfg.HasValue(f.Name))
                         {
-                            //Log.Normal("setting value of: " + f.Name + " to´: " + Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType).ToString());
-                            f.SetValue(this, Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType));
+							object obj = f.GetValue(this);
+							if (obj is StateButton.State state) {
+								string val = cfg.GetValue(f.Name);
+								if (!String.IsNullOrEmpty(val)) {
+									bool b;
+									bool.TryParse(val, out b);
+									state.state = b;
+								}
+							} else {
+								//Log.Normal("setting value of: " + f.Name + " to´: " + Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType).ToString());
+								f.SetValue(this, Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType));
+							}
                         }
                     }
                 }
@@ -1524,7 +1543,12 @@ namespace KerbalKonstructs
             {
                 if (Attribute.IsDefined(f, typeof(KSPField)))
                 {
-                    cfg.AddValue(f.Name, f.GetValue(this));
+					object obj = f.GetValue(this);
+					if (obj is StateButton.State state) {
+						cfg.AddValue(f.Name, state.state);
+					} else {
+						cfg.AddValue(f.Name, obj);
+					}
                 }
             }
         }
