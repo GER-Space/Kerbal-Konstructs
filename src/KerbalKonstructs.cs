@@ -187,6 +187,7 @@ namespace KerbalKonstructs
         public void Awake()
         {
             instance = this;
+            SDTest.InstallDetour();
             var TbController = new ToolbarController();
             Log.PerfStart("Awake Function");
 
@@ -269,8 +270,6 @@ namespace KerbalKonstructs
             //SDTest.ScanParticles();
             //KKGraphics.LoadShaders();
             //KKGraphics.GetBuiltinTexture("", 0);
-
-            //SDTest.InstallDetour();
 
         }
 
