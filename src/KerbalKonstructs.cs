@@ -13,10 +13,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-
 namespace KerbalKonstructs
 {
-
     [KSPAddon(KSPAddon.Startup.MainMenu, true)]
     public class KerbalKonstructs : MonoBehaviour
     {
@@ -149,24 +147,15 @@ namespace KerbalKonstructs
         internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
 
         // map icon settings. These are saved manually
-        [KSPField]
-        public Boolean mapShowOpen = true;
-        [KSPField]
-        public Boolean mapShowClosed = false;
-        [KSPField]
-        public Boolean mapShowGroundStation = false;
-        [KSPField]
-        public Boolean mapShowHelipads = true;
-        [KSPField]
-        public Boolean mapShowRunways = true;
-        [KSPField]
-        public Boolean mapShowRocketbases = true;
-        [KSPField]
-        public Boolean mapShowWaterLaunch = true;
-        [KSPField]
-        public Boolean mapShowOther = false;
-        [KSPField]
-        public Boolean mapShowRecovery = false;
+        public StateButton.State mapShowOpen = new StateButton.State(true);
+        public StateButton.State mapShowClosed = new StateButton.State(false);
+        public StateButton.State mapShowGroundStation = new StateButton.State(false);
+        public StateButton.State mapShowHelipads = new StateButton.State(true);
+        public StateButton.State mapShowRunways = new StateButton.State(true);
+        public StateButton.State mapShowRocketbases = new StateButton.State(true);
+        public StateButton.State mapShowWaterLaunch = new StateButton.State(true);
+        public StateButton.State mapShowOther = new StateButton.State(false);
+        public StateButton.State mapShowRecovery = new StateButton.State(false);
         [KSPField]
         public string defaultVABlaunchsite = "LaunchPad";
         [KSPField]

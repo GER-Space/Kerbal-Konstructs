@@ -29,7 +29,7 @@ namespace KerbalKonstructs.Modules
 
         static StaticInstance selectedFacility = null;
 
-        internal static bool mapHideIconsBehindBody = true;
+        internal static StateButton.State mapHideIconsBehindBody = new StateButton.State(true);
 
         private static List<StaticInstance> groundStations;
         private static KKLaunchSite[] lauchSites;
@@ -108,10 +108,10 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         public void drawTrackingStations()
         {
-            if (CareerUtils.isSandboxGame)
+            if (!MiscUtils.isCareerGame())
             {
-                KerbalKonstructs.instance.mapShowClosed = true;
-                KerbalKonstructs.instance.mapShowOpen = true;
+                KerbalKonstructs.instance.mapShowClosed.state = true;
+                KerbalKonstructs.instance.mapShowOpen.state = true;
             }
 
             if (!KerbalKonstructs.instance.mapShowGroundStation)

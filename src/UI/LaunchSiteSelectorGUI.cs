@@ -1,13 +1,13 @@
 ﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
+using UnityEngine.UI;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-
-
-
-    class LaunchSiteSelectorGUI : KKWindow
+    class LaunchSiteSelectorGUI : Layout
     {
         private static LaunchSiteSelectorGUI _instance = null;
         internal static LaunchSiteSelectorGUI instance
@@ -16,28 +16,36 @@ namespace KerbalKonstructs.UI
             {
                 if (_instance == null)
                 {
-                    _instance = new LaunchSiteSelectorGUI();
-
+					_instance = UIKit.CreateUI<LaunchSiteSelectorGUI> (UIMain.appCanvasRect, "KKLaunchSiteSelectorGUI");
                 }
                 return _instance;
             }
         }
 
 
-        private LaunchSiteCategory category;
-
-
         private bool showAllcategorys = true;
-        private bool isSelected = false;
+        private LaunchSiteCategory category;
 
         public float rangekm = 0;
         public string sCurrentSite = "";
 
         public Vector2 sitesScrollPosition;
 
-        public bool showOpen = true;
-        public bool showClosed = true;
-        public bool showFavOnly = false;
+        public bool showOpen = new StateButton.State(true);
+        public bool showClosed = new StateButton.State(true);
+        public bool showFavOnly = new StateButton.State(false);
+
+		ToggleGroup stateGroup;
+		ToggleGroup categoryGroup;
+
+		IconToggle openedBases;
+		IconToggle closedBases;
+		IconToggle showFavorite;
+		IconToggle rocketbases;
+		IconToggle helipads;
+		IconToggle runways;
+		IconToggle waterLaunch;
+		IconToggle other;
 
         private static KKLaunchSite defaultSite = null;
         internal static KKLaunchSite selectedSite;
@@ -46,22 +54,140 @@ namespace KerbalKonstructs.UI
 
         Rect windowRect = new Rect(((Screen.width - Camera.main.rect.x) / 2) + Camera.main.rect.x - 125, (Screen.height / 2 - 250), 400, 460);
 
-        public override void Draw()
-        {
-            DrawSelector();
-        }
+		public override void CreateUI()
+		{
+			base.CreateUI();
 
-        public override void Close()
+			gameObject.AddComponent<Touchable>();
+			
+			this.Horizontal()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.SetSkin("KK.Default")
+
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.ToggleGroup(out stateGroup)
+					.Finish()
+				.Add<IconToggle>(out openedBases, "mapOpenBases")
+					.Group(stateGroup)
+					.Tooltip(KKLocalization.Opened)
+					.OnSprite(UIMain.tOpenBasesOn)
+					.OffSprite(UIMain.tOpenBasesOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<IconToggle>(out closedBases, "mapClosedBases")
+					.Group(stateGroup)
+					.Tooltip(KKLocalization.Opened)
+					.OnSprite(UIMain.tClosedBasesOn)
+					.OffSprite(UIMain.tClosedBasesOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.Finish()
+				.Add<IconToggle>(out showFavorite, "mapFavorites")
+					.Tooltip(KKLocalization.OnlyFavorites)
+					.OnSprite(UIMain.tFavesOn)
+					.OffSprite(UIMain.tFavesOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.ToggleGroup(out categoryGroup)
+					.Finish()
+				.Add<IconToggle>(out rocketbases, "mapLaunchpads")
+					.Group(categoryGroup)
+					.OnValueChanged((on) => { if (on) { SetCategory(LaunchSiteCategory.RocketPad); } })
+					.Tooltip(KKLocalization.Rocketpads)
+					.OnSprite(UIMain.tLaunchpadsOn)
+					.OffSprite(UIMain.tLaunchpadsOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<IconToggle>(out runways, "mapRunways")
+					.Group(categoryGroup)
+					.OnValueChanged((on) => { if (on) { SetCategory(LaunchSiteCategory.Runway); } })
+					.Tooltip(KKLocalization.Runways)
+					.OnSprite(UIMain.tRunwaysOn)
+					.OffSprite(UIMain.tRunwaysOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<IconToggle>(out helipads, "mapHelipads")
+					.Group(categoryGroup)
+					.OnValueChanged((on) => { if (on) { SetCategory(LaunchSiteCategory.Helipad); } })
+					.Tooltip(KKLocalization.Helipads)
+					.OnSprite(UIMain.tHelipadsOn)
+					.OffSprite(UIMain.tHelipadsOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<IconToggle>(out waterLaunch, "mapWater")
+					.Group(categoryGroup)
+					.OnValueChanged((on) => { if (on) { SetCategory(LaunchSiteCategory.Waterlaunch); } })
+					.Tooltip(KKLocalization.WaterLaunch)
+					.OnSprite(UIMain.tWaterOn)
+					.OffSprite(UIMain.tWaterOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<IconToggle>(out other, "mapOther")
+					.Group(categoryGroup)
+					.OnValueChanged((on) => { if (on) { SetCategory(LaunchSiteCategory.Other); } })
+					.Tooltip(KKLocalization.Other)
+					.OnSprite(UIMain.tOtherOn)
+					.OffSprite(UIMain.tOtherOff)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.FlexibleLayout(true, true)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.ALL)
+					.OnClick(ShowAll)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Finish()
+				;
+		}
+
+		void ShowAll ()
+		{
+			showAllcategorys = true;
+			UpdateIoggles();
+		}
+
+		void SetCategory(LaunchSiteCategory cat)
+		{
+			category = cat;
+			showAllcategorys = false;
+			UpdateIoggles();
+		}
+
+		void UpdateIoggles()
+		{
+			openedBases.SetIsOnWithoutNotify(showOpen);
+			closedBases.SetIsOnWithoutNotify(showClosed);
+			showFavorite.SetIsOnWithoutNotify(showFavOnly);
+			rocketbases.SetIsOnWithoutNotify(showAllcategorys || (category == LaunchSiteCategory.RocketPad));
+			helipads.SetIsOnWithoutNotify(showAllcategorys || (category == LaunchSiteCategory.Helipad));
+			runways.SetIsOnWithoutNotify(showAllcategorys || (category == LaunchSiteCategory.Runway));
+			waterLaunch.SetIsOnWithoutNotify(showAllcategorys || (category == LaunchSiteCategory.Waterlaunch));
+			other.SetIsOnWithoutNotify(showAllcategorys || (category == LaunchSiteCategory.Other));
+		}
+
+        public void Close()
         {
             InputLockManager.RemoveControlLock("KKEditorLock");
             InputLockManager.RemoveControlLock("KKEditorLock2");
             BaseManager.instance.Close();
-            base.Close();
+			gameObject.SetActive (false);
         }
 
 
-        public override void Open()
+        public void Open()
         {
+			gameObject.SetActive (true);
             try
             {
 
@@ -85,8 +211,6 @@ namespace KerbalKonstructs.UI
             BaseManager.selectedSite = selectedSite;
             BaseManager.instance.Open();
             LaunchSiteManager.setLaunchSite(selectedSite);
-
-            base.Open();
         }
 
 
@@ -136,116 +260,6 @@ namespace KerbalKonstructs.UI
 
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Space(5);
-
-
-                if (GUILayout.Button(new GUIContent(showOpen ? UIMain.tOpenBasesOn : UIMain.tOpenBasesOff, "Open"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    if (showOpen)
-                    {
-                        showOpen = false;
-                        showClosed = true;
-                    }
-                    else
-                    {
-                        showOpen = true;
-                    }
-                }
-
-                if (GUILayout.Button(new GUIContent(showClosed ? UIMain.tClosedBasesOn : UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    if (showClosed)
-                    {
-                        showClosed = false;
-                        showOpen = true;
-                    }
-                    else
-                    {
-                        showClosed = true;
-                    }
-                }
-
-                GUILayout.FlexibleSpace();
-
-
-                if (GUILayout.Button(new GUIContent(showFavOnly ? UIMain.tFavesOn : UIMain.tFavesOff, "Only Favourites"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    showFavOnly = !showFavOnly;
-                }
-
-                GUILayout.FlexibleSpace();
-
-                if (EditorDriver.editorFacility == EditorFacility.SPH)
-                {
-                    GUI.enabled = false;
-                }
-
-                isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tLaunchpadsOn : UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    category = LaunchSiteCategory.RocketPad;
-                    showAllcategorys = false;
-                }
-
-                GUI.enabled = true;
-                GUILayout.Space(2);
-
-                if (EditorDriver.editorFacility == EditorFacility.VAB)
-                {
-                    GUI.enabled = false;
-                }
-                isSelected = (showAllcategorys || (category == LaunchSiteCategory.RocketPad));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tRunwaysOn : UIMain.tRunwaysOff, "Runways"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    category = LaunchSiteCategory.Runway;
-                    showAllcategorys = false;
-                }
-
-                GUI.enabled = true;
-                GUILayout.Space(2);
-
-                if (EditorDriver.editorFacility == EditorFacility.VAB)
-                {
-                    GUI.enabled = false;
-                }
-                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Helipad));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tHelipadsOn : UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    category = LaunchSiteCategory.Helipad;
-                    showAllcategorys = false;
-                }
-
-                GUI.enabled = true;
-                GUILayout.Space(2);
-
-                if (EditorDriver.editorFacility == EditorFacility.VAB)
-                {
-                    GUI.enabled = false;
-                }
-
-                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Waterlaunch));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tWaterOn : UIMain.tWaterOff, "WalterLaunch"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    category = LaunchSiteCategory.Waterlaunch;
-                    showAllcategorys = false;
-                }
-
-                GUI.enabled = true;
-                GUILayout.Space(2);
-
-                isSelected = (showAllcategorys || (category == LaunchSiteCategory.Other));
-                if (GUILayout.Button(new GUIContent(isSelected ? UIMain.tOtherOn : UIMain.tOtherOff, "Other"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    category = LaunchSiteCategory.Other;
-                    showAllcategorys = false;
-                }
-
-                GUILayout.FlexibleSpace();
-
-                if (GUILayout.Button("ALL", GUILayout.Width(32), GUILayout.Height(32)))
-                {
-                    showAllcategorys = true;
-                }
             }
             GUILayout.EndHorizontal();
 

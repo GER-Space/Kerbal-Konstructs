@@ -138,10 +138,13 @@ MOD_FILES := \
 	UI/AirRacing.cs \
 	UI/BaseBossFlight.cs \
 	UI/BaseManager.cs \
+	UI/IconToggle.cs \
 	UI/KKWindow.cs \
 	UI/LandingGuide.cs \
 	UI/LaunchSiteSelectorGUI.cs \
+	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \
+	UI/StateButton.cs \
 	UI/ToolbarController.cs \
 	UI/UIMain.cs \
 	UI/WindowManager.cs \

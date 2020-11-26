@@ -2,19 +2,20 @@
 using KerbalKonstructs.Utilities;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
+
+using KodeUI;
 
 namespace KerbalKonstructs.Modules
 {
-    class MapIconManager : KKWindow
+    class MapIconManager : Layout
     {
         private static MapIconManager _instance = null;
         internal static MapIconManager instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new MapIconManager();
+            get {
+                if (_instance == null) {
+					_instance = UIKit.CreateUI<MapIconManager> (UIMain.appCanvasRect, "KKMapIconManager");
 
                 }
                 return _instance;
@@ -37,11 +38,136 @@ namespace KerbalKonstructs.Modules
         public Boolean bHideOccluded = false;
         public Boolean bHideOccluded2 = false;
 
+		StateButton openedBases;
+		StateButton closedBases;
+		StateButton trackingStations;
+		StateButton rocketbases;
+		StateButton helipads;
+		StateButton runways;
+		StateButton waterLaunch;
+		StateButton other;
+		StateButton recovery;
+		UIButton closeButton;
 
         Vector3 ObjectPos = new Vector3(0, 0, 0);
 
+		public override void CreateUI()
+		{
+			base.CreateUI();
 
-        public override void Draw()
+			gameObject.AddComponent<Draggable>();
+			
+			this.Horizontal()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.X(250).Y(-40)
+				.SetSkin("KK.Default")
+
+				.Add<StateButton>(out openedBases, "mapOpenBases")
+					.Tooltip(KKLocalization.Opened)
+					.OnSprite(UIMain.tOpenBasesOn)
+					.OffSprite(UIMain.tOpenBasesOff)
+					.StateVar(KerbalKonstructs.instance.mapShowOpen)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out closedBases, "mapClosedBases")
+					.Tooltip(KKLocalization.Opened)
+					.OnSprite(UIMain.tClosedBasesOn)
+					.OffSprite(UIMain.tClosedBasesOff)
+					.StateVar(KerbalKonstructs.instance.mapShowClosed)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.Finish()
+				.Add<StateButton>(out trackingStations, "mapTracking")
+					.Tooltip(KKLocalization.TrackingStations)
+					.OnSprite(UIMain.tTrackingOn)
+					.OffSprite(UIMain.tTrackingOff)
+					.StateVar(KerbalKonstructs.instance.mapShowGroundStation)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.Finish()
+				.Add<StateButton>(out rocketbases, "mapLaunchpads")
+					.Tooltip(KKLocalization.Rocketpads)
+					.OnSprite(UIMain.tLaunchpadsOn)
+					.OffSprite(UIMain.tLaunchpadsOff)
+					.StateVar(KerbalKonstructs.instance.mapShowRocketbases)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out helipads, "mapHelipads")
+					.Tooltip(KKLocalization.Helipads)
+					.OnSprite(UIMain.tHelipadsOn)
+					.OffSprite(UIMain.tHelipadsOff)
+					.StateVar(KerbalKonstructs.instance.mapShowHelipads)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out runways, "mapRunways")
+					.Tooltip(KKLocalization.Runways)
+					.OnSprite(UIMain.tRunwaysOn)
+					.OffSprite(UIMain.tRunwaysOff)
+					.StateVar(KerbalKonstructs.instance.mapShowRunways)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out waterLaunch, "mapWater")
+					.Tooltip(KKLocalization.WaterLaunch)
+					.OnSprite(UIMain.tWaterOn)
+					.OffSprite(UIMain.tWaterOff)
+					.StateVar(KerbalKonstructs.instance.mapShowWaterLaunch)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out other, "mapOther")
+					.Tooltip(KKLocalization.Other)
+					.OnSprite(UIMain.tOtherOn)
+					.OffSprite(UIMain.tOtherOff)
+					.StateVar(KerbalKonstructs.instance.mapShowOther)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<StateButton>(out recovery, "mapRecovery")
+					.Tooltip(KKLocalization.Other)
+					.StateVar(KerbalKonstructs.instance.mapShowRecovery)
+					.Text("$")
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIEmpty>()
+					.PreferredSize(8, 32)
+					.Finish()
+				.Add<StateButton>(out other, "mapHide")
+					.Tooltip(KKLocalization.Occlude)
+					.OnSprite(UIMain.tHideOn)
+					.OffSprite(UIMain.tHideOff)
+					.StateVar(MapIconDraw.mapHideIconsBehindBody)
+					.PreferredSize(32, 32)
+					.Finish()
+				.Add<UIButton>(out closeButton, "mapCloseButton")
+					.OnClick(Close)
+					.Text("X")
+					.PreferredSize(20, 20)
+					.Finish()
+				.Finish()
+				;
+			openedBases.SetActive(MiscUtils.isCareerGame());
+			closedBases.SetActive(MiscUtils.isCareerGame());
+		}
+
+		public void Close()
+		{
+			gameObject.SetActive(false);
+		}
+
+		public void Open()
+		{
+			openedBases.SetActive(MiscUtils.isCareerGame());
+			closedBases.SetActive(MiscUtils.isCareerGame());
+			gameObject.SetActive(true);
+		}
+
+        /*public override void Draw()
         {
             if (MapView.MapIsEnabled)
             {
@@ -51,171 +177,6 @@ namespace KerbalKonstructs.Modules
             {
                 this.Close();
             }
-        }
-
-        public void DrawManager()
-        {
-            mapManagerRect = GUI.Window(0xB00B2E7, mapManagerRect, DrawMapManagerWindow, "", UIMain.navStyle);
-        }
-
-        void DrawMapManagerWindow(int windowID)
-        {
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-
-                GUI.enabled = (MiscUtils.isCareerGame());
-                if (!MiscUtils.isCareerGame())
-                {
-                    GUILayout.Button(UIMain.tOpenBasesOff, GUILayout.Width(32), GUILayout.Height(32));
-                    GUILayout.Button(UIMain.tClosedBasesOff, GUILayout.Width(32), GUILayout.Height(32));
-                    GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-                    //GUILayout.Button(UIMain.tTrackingOff, GUILayout.Width(32), GUILayout.Height(32));
-                }
-                else
-                {
-                    if (KerbalKonstructs.instance.mapShowOpen)
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tOpenBasesOn, "Opened"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowOpen = false;
-                    }
-                    else
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tOpenBasesOff, "Opened"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowOpen = true;
-                    }
-
-                    if (KerbalKonstructs.instance.mapShowClosed)
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOn, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowClosed = false;
-                    }
-                    else
-                    {
-                        if (GUILayout.Button(new GUIContent(UIMain.tClosedBasesOff, "Closed"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                            KerbalKonstructs.instance.mapShowClosed = true;
-                    }
-                }
-                GUI.enabled = true;
-
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-                if (KerbalKonstructs.instance.mapShowGroundStation)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tTrackingOn, "Tracking Stations"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowGroundStation = false;
-                }
-                else
-                {
-
-                    if (GUILayout.Button(new GUIContent(UIMain.tTrackingOff, "Tracking Stations"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowGroundStation = true;
-                }
-
-
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-
-                if (KerbalKonstructs.instance.mapShowRocketbases)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tLaunchpadsOn, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRocketbases = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tLaunchpadsOff, "Rocketpads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRocketbases = true;
-                }
-
-                if (KerbalKonstructs.instance.mapShowHelipads)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tHelipadsOn, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowHelipads = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tHelipadsOff, "Helipads"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowHelipads = true;
-                }
-
-                if (KerbalKonstructs.instance.mapShowRunways)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tRunwaysOn, "Runways"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRunways = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tRunwaysOff, "Runways"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRunways = true;
-                }
-
-                if (KerbalKonstructs.instance.mapShowWaterLaunch)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tWaterOn, "WaterLaunch"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowWaterLaunch = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tWaterOff, "WaterLaunch"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowWaterLaunch = true;
-                }
-
-                if (KerbalKonstructs.instance.mapShowOther)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tOtherOn, "Other"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowOther = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tOtherOff, "Other"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowOther = true;
-                }
-
-                if (KerbalKonstructs.instance.mapShowRecovery)
-                {
-                    if (GUILayout.Button(new GUIContent("$", "Recovery Bases"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRecovery = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent("$", "Recovery Bases"), UIMain.ButtonInactive, GUILayout.Width(32), GUILayout.Height(32)))
-                        KerbalKonstructs.instance.mapShowRecovery = true;
-                }
-
-
-
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-
-
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-
-                if (MapIconDraw.mapHideIconsBehindBody)
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tHideOn, "Occlude"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        MapIconDraw.mapHideIconsBehindBody = false;
-                }
-                else
-                {
-                    if (GUILayout.Button(new GUIContent(UIMain.tHideOff, "Occlude"), UIMain.ButtonKK, GUILayout.Width(32), GUILayout.Height(32)))
-                        MapIconDraw.mapHideIconsBehindBody = true;
-                }
-
-                GUILayout.Box(" ", UIMain.BoxNoBorder, GUILayout.Height(34));
-
-                if (GUILayout.Button("X", UIMain.ButtonRed, GUILayout.Height(20), GUILayout.Width(20)))
-                {
-                    this.Close();
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            if (GUI.tooltip != "")
-            {
-                var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-                GUI.Box(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y + 20, labelSize.x + 5, labelSize.y + 6), GUI.tooltip, UIMain.KKToolTip);
-            }
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-
+        }*/
     }
 }
