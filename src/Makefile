@@ -177,6 +177,8 @@ MOD_FILES := \
 	Utilities/Zip/ZipVersion.cs \
 	$e
 
+include KodeUI/KodeUI.inc
+
 SYSTEM := \
 	-lib:${MANAGED} \
 	-r:${MANAGED}/mscorlib.dll \
@@ -192,6 +194,7 @@ UNITY := \
 	-r:UnityEngine.UI.dll \
 	-r:UnityEngine.CoreModule.dll \
 	-r:UnityEngine.PhysicsModule.dll \
+	-r:UnityEngine.Physics2DModule.dll \
 	-r:UnityEngine.IMGUIModule.dll \
 	-r:UnityEngine.AnimationModule.dll \
 	-r:UnityEngine.AssetBundleModule.dll \
@@ -207,7 +210,7 @@ CPLC := \
 	-lib:${CPLC_DIR} \
 	-r:CustomPreLaunchChecks.dll
 
-bin/${MODNAME}.dll: ${MOD_FILES}
+bin/${MODNAME}.dll: ${MOD_FILES} ${KodeUI}
 	@mkdir -p bin
 	${CSC} ${CSCFLAGS} ${SYSTEM} ${KSP} ${UNITY} ${CPLC} -out:$@ $^
 
