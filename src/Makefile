@@ -140,11 +140,13 @@ MOD_FILES := \
 	UI/BaseBossFlight.cs \
 	UI/BaseManager.cs \
 	UI/IconToggle.cs \
+	UI/InfoLine.cs \
 	UI/KKWindow.cs \
 	UI/LandingGuide.cs \
 	UI/LaunchSiteCategoryIcon.cs \
 	UI/LaunchSiteFilter.cs \
 	UI/LaunchSiteSelectorGUI.cs \
+	UI/Layout.cs \
 	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \
 	UI/StateButton.cs \

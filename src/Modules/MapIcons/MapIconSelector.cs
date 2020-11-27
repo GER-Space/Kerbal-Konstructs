@@ -46,7 +46,7 @@ namespace KerbalKonstructs.UI
 					.FlexibleLayout(true, false)
 					.Finish()
 				.Add<UIButton>()
-					.Text(KKLocalization.CreateAWaypoint)
+					.Text(KKLocalization.CreateWaypoint)
 					.OnClick(CreateWayPoint)
 					.FlexibleLayout(true, false)
 					.Finish()

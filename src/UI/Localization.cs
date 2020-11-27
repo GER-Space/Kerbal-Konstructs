@@ -31,8 +31,27 @@ namespace KerbalKonstructs {
 		public static string Occlude { get; } = "Occlude";
 		public static string OnlyFavorites { get; } = "Only Favorites";
 		public static string ALL { get; } = "ALL";
-		public static string CreateAWaypoint { get; } = "Create a Waypoint";
+		public static string CreateWaypoint { get; } = "Create Waypoint";
+		public static string DeleteWaypoint { get; } = "Delete Waypoint";
 		public static string OpenBaseManager { get; } = "Open BaseManager";
 		public static string Close { get; } = "Close";
+		public static string BaseManager { get; } = "Base Manager";
+		public static string Altitude { get; } = "Altitude";
+		public static string Longitude { get; } = "Longitude";
+		public static string Latitude { get; } = "Latitude";
+		public static string MaxLength { get; } = "Max Length";
+		public static string MaxWidth { get; } = "Max Width";
+		public static string MaxHeight { get; } = "Max Height";
+		public static string MaxMass { get; } = "Max Mass";
+		public static string MaxParts { get; } = "Max Parts";
+		public static string Stats { get; } = "Stats";
+		public static string Log { get; } = "Log";
+		public static string Unlimited { get; } = "unlimited";
+		public static string HasBeenSetAsLaunchsite { get; } = "<<1>> has been set as the launchsite.";
+		public static string OpenBaseForFunds { get; } = "Open base for <<1>> funds.";
+		public static string CloseBaseForFunds { get; } = "Close base for <<1>> funds.";
+		public static string InsuficientFundsToOpenBase { get; } = "Insufficient funds to open this base!";
+		public static string SetLaunchsite { get; } = "Set as launchsite";
+		public static string NoLog { get; } = "No log.";
 	}
 }

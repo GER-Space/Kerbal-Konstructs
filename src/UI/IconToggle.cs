@@ -50,6 +50,15 @@ namespace KerbalKonstructs.UI
 
 		public override void Style()
 		{
+			image.sprite = style.sprite;
+			image.color = style.color ?? UnityEngine.Color.white;
+			image.type = style.type ?? UnityEngine.UI.Image.Type.Sliced;
+
+			toggle.colors = style.stateColors ?? ColorBlock.defaultColorBlock;
+			toggle.transition = style.transition ?? Selectable.Transition.ColorTint;
+			if (style.stateSprites.HasValue) {
+				toggle.spriteState = style.stateSprites.Value;
+			}
 		}
 
 		public IconToggle OnSprite(Sprite sprite)
@@ -93,7 +102,9 @@ namespace KerbalKonstructs.UI
 
 		protected override void OnEnable()
 		{
-			UpdateImage(isOn);
+			if (toggle) {
+				UpdateImage(isOn);
+			}
 		}
 	}
 }
