@@ -1,13 +1,14 @@
 ﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    class LaunchSiteFilter : Layout
+    class LaunchsiteFilter : Layout
     {
         public bool showAllcategorys { get; private set; }
         public LaunchSiteCategory category { get; private set; }
@@ -15,6 +16,9 @@ namespace KerbalKonstructs.UI
         public bool showOpen { get; private set; }
         public bool showClosed { get; private set; }
         public bool showFavOnly { get; private set; }
+
+		public class LaunchsiteFilterEvent : UnityEvent { }
+		public LaunchsiteFilterEvent onFilterChanged;
 
 		ToggleGroup stateGroup;
 		ToggleGroup categoryGroup;
@@ -30,6 +34,8 @@ namespace KerbalKonstructs.UI
 
 		public override void CreateUI()
 		{
+			onFilterChanged = new LaunchsiteFilterEvent();
+
 			showAllcategorys = true;
 			showOpen = new StateButton.State(true);
 			showClosed = new StateButton.State(true);
@@ -121,7 +127,7 @@ namespace KerbalKonstructs.UI
 				.Add<UIButton>()
 					.Text(KKLocalization.ALL)
 					.OnClick(ShowAll)
-					.PreferredSize(32, 32)
+					.PreferredSize(-1, 32)
 					.Finish()
 				.Finish()
 				;
@@ -133,11 +139,18 @@ namespace KerbalKonstructs.UI
 			UpdateIoggles();
 		}
 
+		public LaunchsiteFilter OnFilterChanged(UnityAction action)
+		{
+			onFilterChanged.AddListener(action);
+			return this;
+		}
+
 		void SetCategory(LaunchSiteCategory cat)
 		{
 			category = cat;
 			showAllcategorys = false;
 			UpdateIoggles();
+			onFilterChanged.Invoke();
 		}
 
 		void UpdateIoggles()

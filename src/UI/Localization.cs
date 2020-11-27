@@ -48,10 +48,15 @@ namespace KerbalKonstructs {
 		public static string Log { get; } = "Log";
 		public static string Unlimited { get; } = "unlimited";
 		public static string HasBeenSetAsLaunchsite { get; } = "<<1>> has been set as the launchsite.";
+		public static string HasBeenSetAsDefault { get; } = "<<1>> has been set as the default.";
 		public static string OpenBaseForFunds { get; } = "Open base for <<1>> funds.";
 		public static string CloseBaseForFunds { get; } = "Close base for <<1>> funds.";
 		public static string InsuficientFundsToOpenBase { get; } = "Insufficient funds to open this base!";
 		public static string SetLaunchsite { get; } = "Set as launchsite";
+		public static string SetDefault { get; } = "Set as Default";
+		public static string UseDefault { get; } = "Use Default";
 		public static string NoLog { get; } = "No log.";
+		public static string LaunchsiteSelector { get; } = "Launchsite Selector";
+		public static string CurrentLaunchsite { get; } = "Current Launchsite";
 	}
 }

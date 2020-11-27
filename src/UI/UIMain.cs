@@ -15,8 +15,8 @@ namespace KerbalKonstructs.UI
         public static Sprite runWayIcon;
         public static Sprite waterLaunchIcon;
 
-        public static Texture2D tNormalButton;
-        public static Texture2D tHoverButton;
+        public static Sprite tNormalButton;
+        public static Sprite tHoverButton;
 
         public static Sprite tOpenBasesOn;
         public static Sprite tOpenBasesOff;
@@ -37,23 +37,23 @@ namespace KerbalKonstructs.UI
         public static Sprite tHideOn;
         public static Sprite tHideOff;
 
-        public static Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
+        public static Sprite tHorizontalSep;
 
         public static Sprite tFavesOn;
         public static Sprite tFavesOff;
 
-        internal static Texture iconWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        internal static Texture iconCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
-        internal static Texture iconTerrain = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/terrain", false);
+        internal static Sprite iconWorld;
+        internal static Sprite iconCubes;
+        internal static Sprite iconTerrain;
 
         internal static Sprite iconRecoveryBase;
 
-        public static Texture tIconClosed;
-        public static Texture tIconOpen;
-        public static Texture tLeftOn;
-        public static Texture tLeftOff;
-        public static Texture tRightOn;
-        public static Texture tRightOff;
+        public static Sprite tIconClosed;
+        public static Sprite tIconOpen;
+        public static Sprite tLeftOn;
+        public static Sprite tLeftOff;
+        public static Sprite tRightOn;
+        public static Sprite tRightOff;
 
         public static GUIStyle Yellowtext;
         public static GUIStyle TextAreaNoBorder;
@@ -108,14 +108,14 @@ namespace KerbalKonstructs.UI
             ButtonKK = new GUIStyle(GUI.skin.button);
             ButtonKK.padding.left = 0;
             ButtonKK.padding.right = 0;
-            ButtonKK.normal.background = tNormalButton;
-            ButtonKK.hover.background = tHoverButton;
+            ButtonKK.normal.background = tNormalButton.texture;
+            ButtonKK.hover.background = tHoverButton.texture;
 
             ButtonInactive = new GUIStyle(GUI.skin.button);
             ButtonInactive.padding.left = 0;
             ButtonInactive.padding.right = 0;
-            ButtonInactive.normal.background = tNormalButton;
-            ButtonInactive.hover.background = tHoverButton;
+            ButtonInactive.normal.background = tNormalButton.texture;
+            ButtonInactive.hover.background = tHoverButton.texture;
             ButtonInactive.normal.textColor = XKCDColors.Grey;
             ButtonInactive.active.textColor = XKCDColors.Grey;
             ButtonInactive.focused.textColor = XKCDColors.Grey;
@@ -243,11 +243,15 @@ namespace KerbalKonstructs.UI
 
 			iconRecoveryBase = MakeSprite("KerbalKonstructs/Assets/recoveryBase");
 
-            tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
-            tHoverButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonHover", false);
+            tNormalButton = MakeSprite("KerbalKonstructs/Assets/mapButtonNormal");
+            tHoverButton = MakeSprite("KerbalKonstructs/Assets/mapButtonHover");
 
 			tFavesOn = MakeSprite("KerbalKonstructs/Assets/mapFavouritesOn");
 			tFavesOff = MakeSprite("KerbalKonstructs/Assets/mapFavouritesOff");
+
+			iconWorld = MakeSprite("KerbalKonstructs/Assets/world");
+			iconCubes = MakeSprite("KerbalKonstructs/Assets/cubes");
+			iconTerrain = MakeSprite("KerbalKonstructs/Assets/terrain");
 
             tOpenBasesOn = MakeSprite("KerbalKonstructs/Assets/mapOpenBasesOn");
             tOpenBasesOff = MakeSprite("KerbalKonstructs/Assets/mapOpenBasesOff");
@@ -268,12 +272,14 @@ namespace KerbalKonstructs.UI
             tWaterOn = MakeSprite("KerbalKonstructs/Assets/mapWaterOn");
             tWaterOff = MakeSprite("KerbalKonstructs/Assets/mapWaterOff");
 
-            tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-            tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-            tLeftOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/lefton", false);
-            tLeftOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/leftoff", false);
-            tRightOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/righton", false);
-            tRightOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/rightoff", false);
+			tHorizontalSep = MakeSprite("KerbalKonstructs/Assets/horizontalsep2");
+
+            tIconClosed = MakeSprite("KerbalKonstructs/Assets/siteclosed");
+            tIconOpen = MakeSprite("KerbalKonstructs/Assets/siteopen");
+            tLeftOn = MakeSprite("KerbalKonstructs/Assets/lefton");
+            tLeftOff = MakeSprite("KerbalKonstructs/Assets/leftoff");
+            tRightOn = MakeSprite("KerbalKonstructs/Assets/righton");
+            tRightOff = MakeSprite("KerbalKonstructs/Assets/rightoff");
         }
 
 		static Canvas appCanvas;

@@ -300,7 +300,7 @@ namespace KerbalKonstructs.Core
 			}
 		}
 
-		public string Tooltip
+		public string Name
 		{
 			get {
 				if (LaunchSiteName == "Runway") {
@@ -312,6 +312,8 @@ namespace KerbalKonstructs.Core
 				}
 			}
 		}
+
+		public string Tooltip { get { return Name; } }
 
 		public Sprite Icon
 		{

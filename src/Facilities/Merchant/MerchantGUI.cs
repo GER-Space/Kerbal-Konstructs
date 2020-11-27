@@ -69,7 +69,7 @@ namespace KerbalKonstructs.UI
                     //{
                     //    continue;
                     //}
-                    GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
+                    GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorderW, GUILayout.Height(4));
                     GUILayout.BeginHorizontal();
                     {
                         GUILayout.Label(myResource.resource.name, GUILayout.Height(23), GUILayout.Width(120));
@@ -144,7 +144,7 @@ namespace KerbalKonstructs.UI
                 }
             }
             GUILayout.EndScrollView();
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorderW, GUILayout.Height(4));
             if (!String.IsNullOrEmpty(selectedFacility.FacilityName))
             {
                 GUILayout.BeginHorizontal();

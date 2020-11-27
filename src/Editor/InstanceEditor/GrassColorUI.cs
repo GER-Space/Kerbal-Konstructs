@@ -103,7 +103,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.BeginHorizontal();
             {
@@ -167,14 +167,14 @@ namespace KerbalKonstructs.UI
             }
             GUI.enabled = true;
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorder, GUILayout.Height(4));
 
 
             GUILayout.Label("Grass Texture: ", GUILayout.Height(23));
             grasTextureName = (GUILayout.TextField(grasTextureName, 200, GUILayout.Width(280), GUILayout.Height(23)));
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorder, GUILayout.Height(4));
             GUILayout.BeginHorizontal();
             {
                 if (GUILayout.Button("Apply", GUILayout.Height(23), GUILayout.Width(80)))
@@ -184,7 +184,7 @@ namespace KerbalKonstructs.UI
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorder, GUILayout.Height(4));
             GUILayout.BeginHorizontal();
             {
                 if (GUILayout.Button("Cancel", GUILayout.Height(23)))

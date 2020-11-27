@@ -293,14 +293,14 @@ namespace KerbalKonstructs.UI
             GUILayout.FlexibleSpace();
             GUI.enabled = (referenceSystem == Space.World);
 
-            if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
+            if (GUILayout.Button(new GUIContent(UIMain.iconCubes.texture, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
             {
                 referenceSystem = Space.Self;
                 UpdateVectors();
             }
 
             GUI.enabled = (referenceSystem == Space.Self);
-            if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
+            if (GUILayout.Button(new GUIContent(UIMain.iconWorld.texture, "World"), GUILayout.Height(23), GUILayout.Width(23)))
             {
                 referenceSystem = Space.World;
                 UpdateVectors();

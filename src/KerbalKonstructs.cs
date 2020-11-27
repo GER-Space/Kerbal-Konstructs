@@ -495,7 +495,7 @@ namespace KerbalKonstructs
                     {
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
-                        LaunchSiteSelectorGUI.instance.Close();
+                        LaunchsiteSelectorGUI.instance.Close();
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
                         //if (currentSite.LaunchSiteType == SiteType.Any)
@@ -517,7 +517,7 @@ namespace KerbalKonstructs
                             Log.Normal("LS not valid: " + LaunchSiteManager.getCurrentLaunchSite());
                             currentSite = LaunchSiteManager.GetDefaultSite();
                         }
-                        LaunchSiteManager.setLaunchSite(currentSite);
+                        LaunchSiteManager.setLauncsite(currentSite);
                         if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
                         {
                             LaunchSiteManager.AlterMHSelector();
@@ -604,7 +604,7 @@ namespace KerbalKonstructs
         public IEnumerator WaitAndReset(GameEvents.VesselSpawnInfo info)
         {
             yield return new WaitForSeconds(2);
-            //LaunchSiteManager.ResetLaunchSites();
+            //LaunchSiteManager.ResetLauncsite();
             LaunchSiteManager.RegisterMHLaunchSites(info.callingFacility.facilityType);
 
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();

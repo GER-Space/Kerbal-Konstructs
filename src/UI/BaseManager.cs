@@ -377,7 +377,7 @@ namespace KerbalKonstructs.UI
 
 		void SetLaunchsite()
 		{
-			LaunchSiteManager.setLaunchSite(selectedSite);
+			LaunchSiteManager.setLauncsite(selectedSite);
 			string message = Localizer.Format(KKLocalization.HasBeenSetAsLaunchsite, SiteName);
 			MiscUtils.HUDMessage(message, 10, 0);
 		}
@@ -401,7 +401,7 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-        void UpdateUI()
+        internal void UpdateUI()
         {
 			siteName.Text(SiteName);
 			siteLogo.Image(selectedSite.logo);

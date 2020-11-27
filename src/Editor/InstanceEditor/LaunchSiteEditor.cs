@@ -212,7 +212,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 
@@ -384,7 +384,7 @@ namespace KerbalKonstructs.UI
             GUILayout.Label("NOTE: The SC angle is for a better initial vew on your SpaceCenter on the SC scene");
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep.texture, BoxNoBorder, GUILayout.Height(4));
 
             GUILayout.Space(2);
 

@@ -7,7 +7,7 @@ using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    class LaunchSiteIcon : UIObject
+    class LaunchSiteCategoryIcon : UIObject
     {
 		Image icon;
 
@@ -20,7 +20,7 @@ namespace KerbalKonstructs.UI
 		{
 		}
 
-		void Category (LaunchSiteCategory category)
+		LaunchSiteCategoryIcon Category (LaunchSiteCategory category)
 		{
 			switch (category) {
 				case LaunchSiteCategory.Runway:
@@ -42,6 +42,7 @@ namespace KerbalKonstructs.UI
 					icon.sprite = null;
 					break;
 			}
+			return this;
 		}
     }
 }

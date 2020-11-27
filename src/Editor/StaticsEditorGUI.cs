@@ -640,7 +640,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Button("" + allStaticInstances[ix].Group, UIMain.DeadButton3, GUILayout.Width(120), GUILayout.Height(23));
                     if (allStaticInstances[ix].hasLauchSites)
                     {
-                        LaunchSiteSelectorGUI.ShowCategory(allStaticInstances[ix].launchSite);
+                        //XXX LaunchSiteSelectorGUI.ShowCategory(allStaticInstances[ix].launchSite);
                     }
                     else
                     {

@@ -143,9 +143,11 @@ MOD_FILES := \
 	UI/InfoLine.cs \
 	UI/KKWindow.cs \
 	UI/LandingGuide.cs \
-	UI/LaunchSiteCategoryIcon.cs \
-	UI/LaunchSiteFilter.cs \
-	UI/LaunchSiteSelectorGUI.cs \
+	UI/LaunchsiteCategoryIcon.cs \
+	UI/LaunchsiteFilter.cs \
+	UI/LaunchsiteItem.cs \
+	UI/LaunchsiteItemView.cs \
+	UI/LaunchsiteSelectorGUI.cs \
 	UI/Layout.cs \
 	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \

@@ -849,7 +849,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        public static void ResetLaunchSiteFacilityName()
+        public static void ResetLauncsite()
         {
             if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite.Length == 0)
             {
@@ -871,10 +871,10 @@ namespace KerbalKonstructs.Core
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
-        public static void setLaunchSite(KKLaunchSite site)
+        public static void setLauncsite(KKLaunchSite site)
         {
 
-            ResetLaunchSiteFacilityName();
+            ResetLauncsite();
 
             ////Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
             //// without detouring some internal functions we have to fake the facility name... which is pretty bad
