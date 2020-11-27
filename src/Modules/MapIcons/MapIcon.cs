@@ -90,6 +90,7 @@ namespace KerbalKonstructs.Modules
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
+			MapIconSelector.eventData = eventData;
 			iconObject.OnClick();
 		}
 

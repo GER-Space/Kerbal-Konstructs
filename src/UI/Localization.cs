@@ -31,5 +31,8 @@ namespace KerbalKonstructs {
 		public static string Occlude { get; } = "Occlude";
 		public static string OnlyFavorites { get; } = "Only Favorites";
 		public static string ALL { get; } = "ALL";
+		public static string CreateAWaypoint { get; } = "Create a Waypoint";
+		public static string OpenBaseManager { get; } = "Open BaseManager";
+		public static string Close { get; } = "Close";
 	}
 }
