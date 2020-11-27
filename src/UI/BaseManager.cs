@@ -173,7 +173,7 @@ namespace KerbalKonstructs.UI
                     GUILayout.Space(2);
                     GUILayout.Box(tVerticalSep, BoxNoBorder, GUILayout.Width(4), GUILayout.Height(135));
                     GUILayout.FlexibleSpace();
-                    GUILayout.Box(selectedSite.logo, BoxNoBorder, GUILayout.Height(135), GUILayout.Width(135));
+                    GUILayout.Box(selectedSite.logo.texture, BoxNoBorder, GUILayout.Height(135), GUILayout.Width(135));
                     GUILayout.FlexibleSpace();
                     GUILayout.Box(tVerticalSep, BoxNoBorder, GUILayout.Width(4), GUILayout.Height(135));
                     GUILayout.Space(2);

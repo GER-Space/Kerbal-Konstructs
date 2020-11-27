@@ -129,6 +129,7 @@ MOD_FILES := \
 	Modules/Career/CareerScenario.cs \
 	Modules/Career/CareerState.cs \
 	Modules/Career/CareerUtils.cs \
+	Modules/MapIcons/MapIcon.cs \
 	Modules/MapIcons/MapIconDraw.cs \
 	Modules/MapIcons/MapIconManager.cs \
 	Modules/MapIcons/MapIconSelector.cs \
@@ -141,6 +142,8 @@ MOD_FILES := \
 	UI/IconToggle.cs \
 	UI/KKWindow.cs \
 	UI/LandingGuide.cs \
+	UI/LaunchSiteCategoryIcon.cs \
+	UI/LaunchSiteFilter.cs \
 	UI/LaunchSiteSelectorGUI.cs \
 	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
@@ -7,12 +8,12 @@ namespace KerbalKonstructs.UI
         internal static bool layoutIsInitialized = false;
 
 
-        public static Texture VABIcon;
-        public static Texture ANYIcon;
-        public static Texture TrackingStationIcon;
-        public static Texture heliPadIcon;
-        public static Texture runWayIcon;
-        public static Texture waterLaunchIcon;
+        public static Sprite VABIcon;
+        public static Sprite ANYIcon;
+        public static Sprite TrackingStationIcon;
+        public static Sprite heliPadIcon;
+        public static Sprite runWayIcon;
+        public static Sprite waterLaunchIcon;
 
         public static Texture2D tNormalButton;
         public static Texture2D tHoverButton;
@@ -45,7 +46,7 @@ namespace KerbalKonstructs.UI
         internal static Texture iconCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
         internal static Texture iconTerrain = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/terrain", false);
 
-        internal static Texture iconRecoveryBase = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/recoveryBase", false);
+        internal static Sprite iconRecoveryBase;
 
         public static Texture tIconClosed;
         public static Texture tIconOpen;
@@ -207,9 +208,18 @@ namespace KerbalKonstructs.UI
 
         }
 
-		static Sprite MakeSprite(string path)
+		static Dictionary<string, Sprite> spriteCache = new Dictionary<string, Sprite>();
+
+		public static Sprite MakeSprite(string path)
 		{
 			Texture2D tex = GameDatabase.Instance.GetTexture(path, false);
+			if (tex == null) {
+				return null;
+			}
+			Sprite sprite;
+			if (spriteCache.TryGetValue(path, out sprite)) {
+				return sprite;
+			}
 			var rect = new Rect (0, 0, tex.width, tex.height);
 			var pivot = new Vector2 (0.5f, 0.5f);
 			float pixelsPerUnity = 100;
@@ -217,19 +227,21 @@ namespace KerbalKonstructs.UI
 			var type = SpriteMeshType.Tight;
 			var border = Vector4.zero;
 
-			Debug.Log($"[UIMain] MakeSprite p:{path} t:{tex}");
-
-			return Sprite.Create (tex, rect, pivot, pixelsPerUnity, extrude, type, border);
+			sprite = Sprite.Create (tex, rect, pivot, pixelsPerUnity, extrude, type, border);
+			spriteCache[path] = sprite;
+			return sprite;
 		}
 
         public static void SetTextures()
         {
-            VABIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/VABMapIcon", false);
-            heliPadIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscHelipadIcon", false);
-            ANYIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/ANYMapIcon", false);
-            TrackingStationIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/TrackingMapIcon", false);
-            runWayIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/kscRunwayIcon", false);
-            waterLaunchIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/boatlaunchIcon", false);
+            VABIcon = MakeSprite("KerbalKonstructs/Assets/VABMapIcon");
+            heliPadIcon = MakeSprite("KerbalKonstructs/Assets/kscHelipadIcon");
+            ANYIcon = MakeSprite("KerbalKonstructs/Assets/ANYMapIcon");
+            TrackingStationIcon = MakeSprite("KerbalKonstructs/Assets/TrackingMapIcon");
+            runWayIcon = MakeSprite("KerbalKonstructs/Assets/kscRunwayIcon");
+            waterLaunchIcon = MakeSprite("KerbalKonstructs/Assets/boatlaunchIcon");
+
+			iconRecoveryBase = MakeSprite("KerbalKonstructs/Assets/recoveryBase");
 
             tNormalButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonNormal", false);
             tHoverButton = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapButtonHover", false);

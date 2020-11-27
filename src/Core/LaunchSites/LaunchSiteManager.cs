@@ -121,7 +121,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
             runway.sitecategory = LaunchSiteCategory.Runway;
-            runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
+            runway.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/KSCRunway");
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
             runway.refLat = (float)rwInstance.RefLatitude;
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
             launchpad.sitecategory = LaunchSiteCategory.RocketPad;
-            launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
+            launchpad.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/KSCLaunchpad");
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.body = ConfigUtil.GetCelestialBody("HomeWorld");
             launchpad.refLat = getKSCLat;
@@ -193,7 +193,7 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchPadTransform = "launchpad/PlatformPlane";
 
             ksc2.LaunchSiteAuthor = "KerbalKonstructs";
-            ksc2.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+            ksc2.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/DefaultSiteLogo");
             ksc2.LaunchSiteType = SiteType.VAB;
             ksc2.sitecategory = LaunchSiteCategory.RocketPad;
             ksc2.LaunchSiteDescription = "The hidden KSC2";
