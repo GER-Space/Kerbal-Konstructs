@@ -49,6 +49,18 @@ namespace KerbalKonstructs.UI {
 				view.Launchsite (this[index]);
 			}
 
+			public void Update(KKLaunchSite launchsite)
+			{
+				for (int index = 0, count = Count; index < Count; index++) {
+					var item = this[index];
+					if (item.launchsite == launchsite) {
+						var child = Content.rectTransform.GetChild (index);
+						var view = child.GetComponent<LaunchsiteItemView> ();
+						view.Launchsite(item);
+					}
+				}
+			}
+
 			public List (ToggleGroup group)
 			{
 				this.group = group;

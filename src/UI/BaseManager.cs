@@ -32,7 +32,6 @@ namespace KerbalKonstructs.UI
         public static Sprite tSetLaunchsite;
         public static Sprite tOpenedLaunchsite;
         public static Sprite tClosedLaunchsite;
-        public static Sprite tHorizontalSep;
         public static Sprite tMakeFavourite;
         public static Sprite tVerticalSep;
         public static Sprite tIsFave;
@@ -101,7 +100,6 @@ namespace KerbalKonstructs.UI
 				tSetLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/setaslaunchsite");
 				tOpenedLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/openedlaunchsite");
 				tClosedLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/closedlaunchsite");
-				tHorizontalSep = UIMain.MakeSprite("KerbalKonstructs/Assets/horizontalsep");
 				tMakeFavourite = UIMain.MakeSprite("KerbalKonstructs/Assets/makefavourite");
 				tVerticalSep = UIMain.MakeSprite("KerbalKonstructs/Assets/verticalsep");
 				tIsFave = UIMain.MakeSprite("KerbalKonstructs/Assets/isFavourite");
@@ -126,11 +124,7 @@ namespace KerbalKonstructs.UI
 				.SetSkin ("KK.Default")
 
 				.Add<FixedSpace>() .Size(1) .Finish()
-				.Add<UIImage>()
-					.Image(tHorizontalSep)
-					.FlexibleLayout(true, false)
-					.PreferredHeight(4)
-					.Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Finish()
 				.Add<FixedSpace>() .Size(2) .Finish()
 				.Add<UIText>(out siteName)//yellow text
 					.Alignment(TextAlignmentOptions.Center)
@@ -254,11 +248,7 @@ namespace KerbalKonstructs.UI
 						.Finish()
 					.Finish()
 				.Add<FixedSpace>() .Size(3) .Finish()
-				.Add<UIImage>()
-					.Image(tHorizontalSep)
-					.FlexibleLayout(true, false)
-					.PreferredHeight(4)
-					.Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Finish()
 				.Add<FixedSpace>() .Size(1) .Finish()
 				.Finish();
 
@@ -298,20 +288,7 @@ namespace KerbalKonstructs.UI
 					.Finish ()
 				.Finish();
 
-			titlebar
-				.Add<UIText>()
-					.Text("-KK-")
-					.AutoSize()
-					.Anchor(AnchorPresets.TopLeft)
-					.Pivot(new Vector2(-0.25f, 1.25f))
-					.Finish()
-				.Add<UIButton>()
-					.OnClick(Close)
-					.Anchor(AnchorPresets.TopRight)
-					.Pivot(new Vector2(1.25f, 1.25f))
-					.SizeDelta(16, 16)
-					.Finish();
-				;
+			UIMain.SetTitlebar(titlebar, Close);
 		}
 
 		void SetIsFolded(bool on)

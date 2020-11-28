@@ -58,11 +58,7 @@ namespace KerbalKonstructs.UI
 				.SetSkin("KK.Default")
 
 				.Add<FixedSpace>() .Size(1) .Finish()
-				.Add<UIImage>()
-					.Image(UIMain.tHorizontalSep)
-					.PreferredHeight(4)
-					.FlexibleLayout(true, false)
-					.Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Finish()
 				.Add<FixedSpace>() .Size(2) .Finish()
 				.Add<LaunchsiteFilter>(out launchsiteFilter)
 					.OnFilterChanged(BuildLaunchsites)
@@ -103,28 +99,11 @@ namespace KerbalKonstructs.UI
 						.FlexibleLayout(true, false)
 						.Finish()
 					.Finish()
-				.Add<UIImage>()
-					.Image(UIMain.tHorizontalSep)
-					.PreferredHeight(4)
-					.FlexibleLayout(true, false)
-					.Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Finish()
 				.Add<FixedSpace>() .Size(2) .Finish()
 				.Finish();
 
-			titlebar
-				.Add<UIText>()
-					.Text("-KK-")
-					.AutoSize()
-					.Anchor(AnchorPresets.TopLeft)
-					.Pivot(new Vector2(-0.25f, 1.25f))
-					.Finish()
-				.Add<UIButton>()
-					.OnClick(Close)
-					.Anchor(AnchorPresets.TopRight)
-					.Pivot(new Vector2(1.25f, 1.25f))
-					.SizeDelta(16, 16)
-					.Finish();
-				;
+			UIMain.SetTitlebar(titlebar, Close);
 
 			ToggleGroup launchsiteGroup;
 			launchsiteList.VerticalScrollbar = ls_scrollbar;

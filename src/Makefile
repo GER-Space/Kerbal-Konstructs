@@ -139,6 +139,8 @@ MOD_FILES := \
 	UI/AirRacing.cs \
 	UI/BaseBossFlight.cs \
 	UI/BaseManager.cs \
+	UI/FacilityItem.cs \
+	UI/FacilityItemView.cs \
 	UI/IconToggle.cs \
 	UI/InfoLine.cs \
 	UI/KKWindow.cs \

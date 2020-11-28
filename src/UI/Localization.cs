@@ -50,13 +50,38 @@ namespace KerbalKonstructs {
 		public static string HasBeenSetAsLaunchsite { get; } = "<<1>> has been set as the launchsite.";
 		public static string HasBeenSetAsDefault { get; } = "<<1>> has been set as the default.";
 		public static string OpenBaseForFunds { get; } = "Open base for <<1>> funds.";
+		public static string OpenSiteForFunds { get; } = "Open <<1>> for <<2>> funds.";
 		public static string CloseBaseForFunds { get; } = "Close base for <<1>> funds.";
 		public static string InsuficientFundsToOpenBase { get; } = "Insufficient funds to open this base!";
+		public static string InsuficientFundsToOpenSite { get; } = "Insufficient funds to open this site!";
 		public static string SetLaunchsite { get; } = "Set as launchsite";
 		public static string SetDefault { get; } = "Set as Default";
 		public static string UseDefault { get; } = "Use Default";
 		public static string NoLog { get; } = "No log.";
 		public static string LaunchsiteSelector { get; } = "Launchsite Selector";
 		public static string CurrentLaunchsite { get; } = "Current Launchsite";
+
+		public static string InflightBaseBoss { get; } = "Inflight Base Boss";
+		public static string FlightTools { get; } = "Flight Tools";
+		public static string LandingGuide { get; } = "Landing Guide";
+		public static string NGS { get; } = "NGS";
+		public static string SelectedBase { get; } = "Selected Base";
+		public static string NoBasesBeacon { get; } = "No base's beacon in range at this altitude.";
+		public static string NoNearestBase { get; } = "No nearest base found.";
+		public static string NearestBase { get; } = "Nearest Base";
+		public static string NGSSetTo { get; } = "NGS set to <<1>>";
+		public static string BaseStatus { get; } = "Base Status";
+		public static string BaseIsOpen { get; } = "Base is Open";
+		public static string BaseCannotBeOpened { get; } = "Base cannot be opened or closed";
+		public static string SiteOpened { get; } = "<<1>> opened.";
+		public static string BasesCanBeOpened { get; } = "Bases can be opened or closed only when landed within 5km of the base.";
+		public static string OperationalFacilities { get; } = "Operational Facilities";
+		public static string NoFacilitiesWithin { get; } = "No facilities within 5000m";
+		public static string NearbyFacilitiesCanBeShown { get; } = "Nearby facilities can be shown only when landed.";
+		public static string ScanForFacilities { get; } = "Scan For Facilities";
+		public static string OtherFeatures { get; } = "Other Features";
+		public static string StartAirRacing { get; } = "Start Air Racing!";
+		public static string BasicOrbitalData { get; } = "Basic Orbital Data";
+		public static string FacilityStatus { get; } = "Facility Status";
 	}
 }

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
@@ -293,6 +296,24 @@ namespace KerbalKonstructs.UI
 				}
 				return _appCanvasRect;
 			}
+		}
+
+		public static void SetTitlebar(Titlebar titlebar, UnityAction close)
+		{
+			titlebar
+				.Add<UIText>()
+					.Text("-KK-")
+					.AutoSize()
+					.Anchor(AnchorPresets.TopLeft)
+					.Pivot(new Vector2(-0.25f, 1.25f))
+					.Finish()
+				.Add<UIButton>()
+					.OnClick(close)
+					.Anchor(AnchorPresets.TopRight)
+					.Pivot(new Vector2(1.25f, 1.25f))
+					.SizeDelta(16, 16)
+					.Finish();
+				;
 		}
     }
 }
