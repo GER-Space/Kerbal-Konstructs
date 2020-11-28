@@ -300,20 +300,23 @@ namespace KerbalKonstructs.UI
 
 		public static void SetTitlebar(Titlebar titlebar, UnityAction close)
 		{
+			UIText kk;
 			titlebar
-				.Add<UIText>()
+				.Horizontal()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.ChildAlignment(TextAnchor.MiddleCenter)
+				.Add<UIText>(out kk)
 					.Text("-KK-")
 					.AutoSize()
-					.Anchor(AnchorPresets.TopLeft)
-					.Pivot(new Vector2(-0.25f, 1.25f))
+					.DebugLayout()
 					.Finish()
 				.Add<UIButton>()
 					.OnClick(close)
-					.Anchor(AnchorPresets.TopRight)
-					.Pivot(new Vector2(1.25f, 1.25f))
-					.SizeDelta(16, 16)
+					.PreferredSize(16, 16)
 					.Finish();
 				;
+			kk.transform.SetAsFirstSibling();
 		}
     }
 }
