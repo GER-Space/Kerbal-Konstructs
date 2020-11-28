@@ -57,9 +57,7 @@ namespace KerbalKonstructs.UI
 				.Pivot(PivotPresets.TopLeft)
 				.SetSkin("KK.Default")
 
-				.Add<FixedSpace>() .Size(1) .Finish()
-				.Add<HorizontalSep>("HorizontalSep") .Finish()
-				.Add<FixedSpace>() .Size(2) .Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Space(1, 2) .Finish()
 				.Add<LaunchsiteFilter>(out launchsiteFilter)
 					.OnFilterChanged(BuildLaunchsites)
 					.Finish()
@@ -99,8 +97,7 @@ namespace KerbalKonstructs.UI
 						.FlexibleLayout(true, false)
 						.Finish()
 					.Finish()
-				.Add<HorizontalSep>("HorizontalSep") .Finish()
-				.Add<FixedSpace>() .Size(2) .Finish()
+				.Add<HorizontalSep>("HorizontalSep") .SpaceBelow(2) .Finish()
 				.Finish();
 
 			UIMain.SetTitlebar(titlebar, Close);

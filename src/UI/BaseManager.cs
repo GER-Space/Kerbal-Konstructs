@@ -123,9 +123,7 @@ namespace KerbalKonstructs.UI
 				.Pivot(PivotPresets.TopLeft)
 				.SetSkin ("KK.Default")
 
-				.Add<FixedSpace>() .Size(1) .Finish()
-				.Add<HorizontalSep>("HorizontalSep") .Finish()
-				.Add<FixedSpace>() .Size(2) .Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Space(1, 2) .Finish()
 				.Add<UIText>(out siteName)//yellow text
 					.Alignment(TextAlignmentOptions.Center)
 					.FlexibleLayout(true, false)
@@ -247,9 +245,7 @@ namespace KerbalKonstructs.UI
 						.FlexibleLayout(true, false)
 						.Finish()
 					.Finish()
-				.Add<FixedSpace>() .Size(3) .Finish()
-				.Add<HorizontalSep>("HorizontalSep") .Finish()
-				.Add<FixedSpace>() .Size(1) .Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Space(3, 1) .Finish()
 				.Finish();
 
 			ShowStats();

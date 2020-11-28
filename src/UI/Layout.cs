@@ -15,10 +15,12 @@ namespace KerbalKonstructs.UI {
 		}
 	}
 
-	public class HorizontalSep : UIImage, ILayoutElement
+	public class HorizontalSep : VerticalLayout, ILayoutElement
 	{
 		Vector2 minSize;
 		Vector2 preferredSize;
+		float aboveSize;
+		float belowSize;
 
 		public void CalculateLayoutInputHorizontal()
 		{
@@ -32,7 +34,7 @@ namespace KerbalKonstructs.UI {
 
 		public void CalculateLayoutInputVertical()
 		{
-			float height = 0;
+			float height = aboveSize + belowSize;
 			if (image.sprite) {
 				height = image.sprite.rect.height;
 			}
@@ -48,13 +50,57 @@ namespace KerbalKonstructs.UI {
 		public float preferredHeight { get { return preferredSize.y; } }
 		public float flexibleHeight  { get { return -1; } }
 
+		FixedSpace above;
+		FixedSpace below;
+		UIEmpty separator;
+		Image image;
 
 		public override void CreateUI ()
 		{
 			base.CreateUI();
-			this.FlexibleLayout(false, false)
-				.PreferredHeight(4);
-			DebugLayout();
+
+
+			this.FlexibleLayout(true, false)
+				.Add<FixedSpace>(out above) .Finish()
+				.Add<HorizontalLayout>()
+					.Add<FlexibleSpace>() .Finish()
+					.Add<UIEmpty>(out separator) .Finish()
+					.Add<FlexibleSpace>() .Finish()
+					.Finish()
+				.Add<FixedSpace>(out below) .Finish()
+				;
+
+			image = separator.gameObject.AddComponent<Image>();
+		}
+
+		public override void Style()
+		{
+			image.sprite = style.sprite;
+			image.color = style.color ?? UnityEngine.Color.white;
+			image.type = style.type ?? UnityEngine.UI.Image.Type.Simple;
+		}
+
+		public HorizontalSep SpaceAbove(float space)
+		{
+			aboveSize = space;
+			above.Size(space);
+			return this;
+		}
+
+		public HorizontalSep SpaceBelow(float space)
+		{
+			belowSize = space;
+			below.Size(space);
+			return this;
+		}
+
+		public HorizontalSep Space(float above, float below)
+		{
+			aboveSize = above;
+			belowSize = below;
+			this.above.Size(above);
+			this.below.Size(below);
+			return this;
 		}
 	}
 
