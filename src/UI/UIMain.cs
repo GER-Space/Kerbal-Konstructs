@@ -301,6 +301,7 @@ namespace KerbalKonstructs.UI
 		public static void SetTitlebar(Titlebar titlebar, UnityAction close)
 		{
 			UIText kk;
+			UIButton cb;
 			titlebar
 				.Horizontal()
 				.ControlChildSize(true, true)
@@ -311,12 +312,13 @@ namespace KerbalKonstructs.UI
 					.AutoSize()
 					.DebugLayout()
 					.Finish()
-				.Add<UIButton>()
+				.Add<UIButton>(out cb)
 					.OnClick(close)
 					.PreferredSize(16, 16)
 					.Finish();
 				;
 			kk.transform.SetAsFirstSibling();
+			cb.transform.SetAsLastSibling();
 		}
     }
 }

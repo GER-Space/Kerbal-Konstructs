@@ -38,7 +38,6 @@ namespace KerbalKonstructs.UI
 		UIText basesCanBeOpened;
 		VerticalLayout facilitiesGroup;
 		UIButton facilityScan;
-		UIButton openFacility;
 		UIText noFacilitiesWithin;
 		UIText nearbyFacilities;
 
@@ -62,8 +61,6 @@ namespace KerbalKonstructs.UI
 		public override void CreateUI()
 		{
 			base.CreateUI();
-			SetSkin("KK.Default");
-			UIMain.SetTitlebar(titlebar, Close);
 
 			ScrollView launchsiteList;
 			UIScrollbar ls_scrollbar;
@@ -77,6 +74,8 @@ namespace KerbalKonstructs.UI
 				.PreferredSizeFitter(true, true)
 				.Anchor(AnchorPresets.TopLeft)
 				.Pivot(PivotPresets.TopLeft)
+				.SetSkin("KK.Default")
+
 				.Add<FixedSpace>() .Size(1) .Finish()
 				.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
 				.Add<FixedSpace>() .Size(5) .Finish()
@@ -186,10 +185,6 @@ namespace KerbalKonstructs.UI
 							.Finish()
 						.Finish()
 					.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
-					.Add<UIButton>(out openFacility)
-						.OnClick(OpenFacility)
-						.FlexibleLayout(true, false)
-						.Finish()
 					.Add<UIText>(out noFacilitiesWithin)
 						.Text(KKLocalization.NoFacilitiesWithin)
 						.Finish()
@@ -227,6 +222,8 @@ namespace KerbalKonstructs.UI
 				.ToggleGroup (out launchsiteGroup)
 				.Finish();
 
+			UIMain.SetTitlebar(titlebar, Close);
+
 			launchsiteItems = new LaunchsiteItem.List (launchsiteGroup);
 			launchsiteItems.Content = launchsiteList.Content;
 			launchsiteItems.onSelected = OnLaunchsiteSelected;
@@ -249,6 +246,23 @@ namespace KerbalKonstructs.UI
 			facilityItems.onSelected = OnFacilitySelected;
 
 			rectTransform.anchoredPosition3D = new Vector2(10, -25);
+
+			GameEvents.onVesselSituationChange.Add (onVesselSituationChange);
+		}
+
+		protected override void OnDestroy()
+		{
+			GameEvents.onVesselSituationChange.Remove (onVesselSituationChange);
+		}
+
+		void onVesselSituationChange(GameEvents.HostedFromToAction<Vessel, Vessel.Situations> vs)
+		{
+			if (vs.host == FlightGlobals.ActiveVessel) {
+				if (!FlightGlobals.ActiveVessel.Landed) {
+					allFacilities.Clear();
+					UpdateFaclilitiesGroup();
+				}
+			}
 		}
 
         public void Close()
@@ -290,9 +304,11 @@ namespace KerbalKonstructs.UI
 
 		void OnFacilitySelected(FacilityItem facility)
 		{
-			Debug.Log($"[BaseBossFlight] OnFacilitySelected {facility}");
 			selectedFacility = facility;
-			UpdateFacility();
+
+			KerbalKonstructs.SelectInstance(selectedFacility.facility, false);
+			FacilityManager.selectedInstance = selectedFacility.facility;
+			FacilityManager.instance.Open();
 		}
 
 		void BuildLaunchsites()
@@ -313,16 +329,11 @@ namespace KerbalKonstructs.UI
 		void BuildFacilities()
 		{
 			facilityItems.Clear();
-			int index = 0;
 			for (int i = 0, count = allFacilities.Count; i < count; i++) {
 				var facility = allFacilities[i];
-				if (selectedFacility != null && facility == selectedFacility.facility) {
-					index = facilityItems.Count;
-				}
 				facilityItems.Add (new FacilityItem (facility));
 			}
 			UIKit.UpdateListContent (facilityItems);
-			facilityItems.Select (index);
 		}
 
 		void OpenSite()
@@ -344,16 +355,6 @@ namespace KerbalKonstructs.UI
 				launchsiteItems.Update(selectedSite);
 				UpdateLaunchsite();
 			}
-		}
-
-		void OpenFacility()
-		{
-			KerbalKonstructs.SelectInstance(selectedFacility.facility, false);
-			FacilityManager.selectedInstance = selectedFacility.facility;
-			FacilityManager.instance.Open();
-			//FIXME does not work due to opening happing in FacilityManager (need a callback)
-			facilityItems.Update(selectedFacility);
-			UpdateFacility();
 		}
 
 		void StartAirRacing()
@@ -401,20 +402,6 @@ namespace KerbalKonstructs.UI
 			}
 		}
 
-		void UpdateFacility()
-		{
-			if (selectedFacility != null) {
-				openFacility.Text(Localizer.Format(KKLocalization.OpenSiteForFunds, selectedFacility.Name, selectedFacility.Cost));
-				openFacility.interactable = !selectedFacility.isOpen;
-			} else {
-				openFacility.Text("");
-				openFacility.interactable = false;
-			}
-			noFacilitiesWithin.SetActive(false);
-			openFacility.SetActive(true);
-			nearbyFacilities.SetActive(false);
-		}
-
 		void UpdateFaclilitiesGroup()
 		{
 			BuildFacilities();
@@ -422,14 +409,13 @@ namespace KerbalKonstructs.UI
             if (FlightGlobals.ActiveVessel.Landed) {
                 if (allFacilities.Count == 0) {
 					noFacilitiesWithin.SetActive(true);
-					openFacility.SetActive(false);
 					nearbyFacilities.SetActive(false);
                 } else {
-					UpdateFacility();
+					noFacilitiesWithin.SetActive(false);
+					nearbyFacilities.SetActive(false);
 				}
             } else {
 				noFacilitiesWithin.SetActive(false);
-				openFacility.SetActive(false);
 				nearbyFacilities.SetActive(true);
             }
 		}
