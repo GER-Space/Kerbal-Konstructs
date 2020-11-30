@@ -39,8 +39,19 @@ namespace KerbalKonstructs.UI
 		UIButton setDefault;
 		UIButton useDefault;
 
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
+
+		protected override void OnDestroy()
+		{
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
+		}
+
 		public override void CreateUI()
 		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
 			base.CreateUI();
 
 			gameObject.AddComponent<Touchable>();

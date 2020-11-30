@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    internal class StorageGUI
+    internal class StorageGUI : VerticalLayout
     {
 
         internal static Storage selectedFacility = null;
@@ -29,6 +31,14 @@ namespace KerbalKonstructs.UI
         private static Vector2 facilityscroll;
         private static float increment = 10f;
 
+		public override void CreateUI()
+		{
+			base.CreateUI();
+		}
+
+		public void UpdateUI(StaticInstance instance)
+		{
+		}
 
         /// <summary>
         /// Subwindows called by FacilityManager

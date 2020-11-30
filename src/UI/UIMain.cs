@@ -58,6 +58,11 @@ namespace KerbalKonstructs.UI
         public static Sprite tRightOn;
         public static Sprite tRightOff;
 
+        public static Sprite tKerbal;
+        public static Sprite tNoKerbal;
+        public static Sprite tXPGained;
+        public static Sprite tXPUngained;
+
         public static GUIStyle Yellowtext;
         public static GUIStyle TextAreaNoBorder;
         public static GUIStyle BoxNoBorder;
@@ -283,6 +288,12 @@ namespace KerbalKonstructs.UI
             tLeftOff = MakeSprite("KerbalKonstructs/Assets/leftoff");
             tRightOn = MakeSprite("KerbalKonstructs/Assets/righton");
             tRightOff = MakeSprite("KerbalKonstructs/Assets/rightoff");
+
+			tKerbal = MakeSprite("KerbalKonstructs/Assets/billeted");
+			tNoKerbal = MakeSprite("KerbalKonstructs/Assets/unbilleted");
+			tXPGained = MakeSprite("KerbalKonstructs/Assets/xpgained");
+			tXPUngained = MakeSprite("KerbalKonstructs/Assets/xpungained");
+
         }
 
 		static Canvas appCanvas;

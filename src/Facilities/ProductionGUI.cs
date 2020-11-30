@@ -4,9 +4,11 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    public class ProductionGUI
+    public class ProductionGUI : VerticalLayout
     {
         public static GUIStyle Yellowtext;
         public static GUIStyle KKWindow;
@@ -36,7 +38,14 @@ namespace KerbalKonstructs.UI
         private static float currentTime;
         private static float daysPast;
 
+		public override void CreateUI()
+		{
+			base.CreateUI();
+		}
 
+		public void UpdateUI(StaticInstance selectedFacility, string facilityType)
+		{
+		}
 
         internal static void InitializeLayout()
         {
@@ -47,10 +56,10 @@ namespace KerbalKonstructs.UI
             DeadButton.hover.background = null;
             DeadButton.active.background = null;
             DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
+            DeadButton.normal.textColor = UnityEngine.Color.white;
+            DeadButton.hover.textColor = UnityEngine.Color.white;
+            DeadButton.active.textColor = UnityEngine.Color.white;
+            DeadButton.focused.textColor = UnityEngine.Color.white;
             DeadButton.fontSize = 14;
             DeadButton.fontStyle = FontStyle.Bold;
 
@@ -59,24 +68,24 @@ namespace KerbalKonstructs.UI
             DeadButtonRed.hover.background = null;
             DeadButtonRed.active.background = null;
             DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
+            DeadButtonRed.normal.textColor = UnityEngine.Color.red;
+            DeadButtonRed.hover.textColor = UnityEngine.Color.yellow;
+            DeadButtonRed.active.textColor = UnityEngine.Color.red;
+            DeadButtonRed.focused.textColor = UnityEngine.Color.red;
             DeadButtonRed.fontSize = 12;
             DeadButtonRed.fontStyle = FontStyle.Bold;
 
             BoxNoBorder = new GUIStyle(GUI.skin.box);
             BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
+            BoxNoBorder.normal.textColor = UnityEngine.Color.white;
 
             Yellowtext = new GUIStyle(GUI.skin.box);
-            Yellowtext.normal.textColor = Color.yellow;
+            Yellowtext.normal.textColor = UnityEngine.Color.yellow;
             Yellowtext.normal.background = null;
 
             LabelInfo = new GUIStyle(GUI.skin.label);
             LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
+            LabelInfo.normal.textColor = UnityEngine.Color.white;
             LabelInfo.fontSize = 13;
             LabelInfo.fontStyle = FontStyle.Bold;
             LabelInfo.padding.left = 3;

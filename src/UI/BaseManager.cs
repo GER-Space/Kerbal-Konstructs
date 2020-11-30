@@ -92,8 +92,14 @@ namespace KerbalKonstructs.UI
 			UpdateUI();
 		}
 
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
+
 		public override void CreateUI()
 		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
 			if (tFolded == null) {
 				tTitleIcon = UIMain.MakeSprite("KerbalKonstructs/Assets/titlebaricon");
 				tSmallClose = UIMain.MakeSprite("KerbalKonstructs/Assets/littleclose");
@@ -286,6 +292,12 @@ namespace KerbalKonstructs.UI
 
 			UIMain.SetTitlebar(titlebar, Close);
 		}
+
+		protected override void OnDestroy()
+		{
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
+		}
+
 
 		void SetIsFolded(bool on)
 		{

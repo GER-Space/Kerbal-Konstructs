@@ -51,9 +51,14 @@ namespace KerbalKonstructs {
 		public static string HasBeenSetAsDefault { get; } = "<<1>> has been set as the default.";
 		public static string OpenBaseForFunds { get; } = "Open base for <<1>> funds.";
 		public static string OpenSiteForFunds { get; } = "Open <<1>> for <<2>> funds.";
+		public static string OpenFacilityForFunds { get; } = "Open for <<1>> funds.";
+		public static string CloseFacilityForFunds { get; } = "Close for <<1>> funds.";
+		public static string AlwaysOpen { get; } = "Always Open";
+		public static string CannotClose { get; } = "Cannot Close";
 		public static string CloseBaseForFunds { get; } = "Close base for <<1>> funds.";
 		public static string InsuficientFundsToOpenBase { get; } = "Insufficient funds to open this base!";
 		public static string InsuficientFundsToOpenSite { get; } = "Insufficient funds to open this site!";
+		public static string InsuficientFundsToOpenFacility { get; } = "Insufficient funds to open this facility!";
 		public static string SetLaunchsite { get; } = "Set as launchsite";
 		public static string SetDefault { get; } = "Set as Default";
 		public static string UseDefault { get; } = "Use Default";
@@ -83,5 +88,55 @@ namespace KerbalKonstructs {
 		public static string StartAirRacing { get; } = "Start Air Racing!";
 		public static string BasicOrbitalData { get; } = "Basic Orbital Data";
 		public static string FacilityStatus { get; } = "Facility Status";
+
+		public static string Alt { get; } = "Alt.";
+		public static string Lat { get; } = "Lat.";
+		public static string Lon { get; } = "Lon.";
+
+		public static string FacilityManager { get; } = "Facility Manager";
+		public static string FacilityPurposeHangar { get; } = "Craft can be stored in this building for launching from the base at a later date. The building has limited space.";
+		public static string FacilityPurposeBarracks { get; } = "This facility provides a temporary home for base-staff. Other facilities can draw staff from the pool available at this facility.";
+		public static string FacilityPurposeResearch { get; } = "This facility carries out research and generates Science.";
+		public static string FacilityPurposeBusiness { get; } = "This facility carries out business related to the space program in order to generate Funds.";
+		public static string FacilityPurposeGroundStation { get; } = "This facility can be a GroundStation for RemoteTech/CommNet.";
+		public static string FacilityPurposeMerchant { get; } = "You can buy and sell Resources here.";
+		public static string FacilityPurposeStorage { get; } = "You can store Resources here.";
+
+		public static string GroundStation { get; } = "Ground Station";
+
+		public static string HangarMessage { get; } = "Where necessary craft are disassembled for storage or reassembled before being rolled out. Please note that for game purposes, this procedure is instantaneous.";
+		public static string HangarMaxCraft { get; } = "Max Craft";
+		public static string HangarMaxMassPerCraft { get; } = "Max Mass/Craft";
+		public static string HangarNoCraft { get; } = "No currently held in this facility.";
+		public static string HangarStoredCraft { get; } = "Stored Craft (<<1>>/<<2>>)";
+		public static string HangarBlocked { get; } = "Cannot roll craft out. Clear the way first!";
+		public static string HangarStoreVessel { get; } = "Store Vessel";
+		public static string HangarTooHeavy { get; } = "Vessel too heavy";
+		public static string HangarIsFull { get; } = "Hangar is Full!";
+		public static string HangarTooFar { get; } = "You are <<1>>m too far away to store your craft!";
+
+		public static string Range { get; } = "Range";
+		public static string MemberOfGroup { get; } = "Member of Group";
+
+		public static string StaffNoStaffRequired { get; } = "This facility does not require staff assigned to it.";
+		public static string StaffNoRoom { get; } = "There's no room left in a barracks or apartment for this kerbal to go.";
+		//public static string StaffMustHaveCaretaker { get; } = "An open facility must have one resident caretaker.";
+		public static string StaffNoFacilityWithStaff { get; } = "No facility with available staff is nearby.";
+		public static string StaffNoUnassignedStaffAvailable { get; } = "No unassigned staff available.";
+		public static string StaffFullyStaffed { get; } = "Facility is fully staffed.";
+		public static string StaffRefundForFiring { get; } = "Refund for firing";
+		public static string StaffReputationLost { get; } = "Rep lost";
+		public static string StaffCostToHire { get; } = "Cost to hire next kerbal";
+		public static string StaffAllStaffAssigned { get; } = "All staff are assigned to duties. Staff must be unassigned in order to fire them.";
+		public static string StaffMustHaveCaretaker { get; } = "This facility must have at least one caretaker.";
+		public static string StaffInsufficientFunds { get; } = "Insufficient funds to hire staff!";
+		public static string StaffFacilityIsFull { get; } = "Facility is full.";
+		public static string StaffAssign { get; } = "Assign";
+		public static string StaffUnassign { get; } = "Unassign";
+		public static string StaffHire { get; } = "Hire";
+		public static string StaffFire { get; } = "Fire";
+		public static string Staff { get; } = "Staff";
+		public static string StaffUnassigned { get; } = "Unassigned";
+		public static string StaffAssigned { get; } = "Assigned Staff";
 	}
 }

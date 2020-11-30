@@ -58,8 +58,14 @@ namespace KerbalKonstructs.UI
 
         List<StaticInstance> allFacilities = new List<StaticInstance>();
 
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
+
 		public override void CreateUI()
 		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
 			base.CreateUI();
 
 			ScrollView launchsiteList;
@@ -253,6 +259,7 @@ namespace KerbalKonstructs.UI
 		protected override void OnDestroy()
 		{
 			GameEvents.onVesselSituationChange.Remove (onVesselSituationChange);
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
 		}
 
 		void onVesselSituationChange(GameEvents.HostedFromToAction<Vessel, Vessel.Situations> vs)

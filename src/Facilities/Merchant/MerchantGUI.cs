@@ -6,9 +6,11 @@ using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    internal class MerchantGUI
+    internal class MerchantGUI : VerticalLayout
     {
 
         internal static Merchant selectedFacility = null;
@@ -18,6 +20,15 @@ namespace KerbalKonstructs.UI
 
         private static Vector2 facilityscroll;
         private static float increment = 10f;
+
+		public override void CreateUI()
+		{
+			base.CreateUI();
+		}
+
+		public void UpdateUI(StaticInstance instance)
+		{
+		}
 
         internal static void MerchantInterface(StaticInstance instance)
         {

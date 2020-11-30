@@ -121,6 +121,8 @@ MOD_FILES := \
 	Facilities/Research/Research.cs \
 	Facilities/SharedInterfaces.cs \
 	Facilities/StaffGUI.cs \
+	Facilities/StaffItem.cs \
+	Facilities/StaffItemView.cs \
 	Facilities/Storage/Storage.cs \
 	Facilities/Storage/StorageGUI.cs \
 	KerbalKonstructs.cs \
@@ -151,8 +153,10 @@ MOD_FILES := \
 	UI/LaunchsiteItemView.cs \
 	UI/LaunchsiteSelectorGUI.cs \
 	UI/Layout.cs \
+	UI/ListView.cs \
 	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \
+	UI/PositionLine.cs \
 	UI/StateButton.cs \
 	UI/ToolbarController.cs \
 	UI/UIMain.cs \
