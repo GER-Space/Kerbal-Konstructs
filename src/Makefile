@@ -138,6 +138,13 @@ MOD_FILES := \
 	Modules/RemoteNet/ConnectionManager.cs \
 	Modules/RemoteNet/KKCommNetHome.cs \
 	Properties/AssemblyInfo.cs \
+	ResourceManager/IResourceContainer.cs \
+	ResourceManager/PartResourceContainer.cs \
+	ResourceManager/ResourceInfo.cs \
+	ResourceManager/ResourceManager.cs \
+	ResourceManager/ResourceSet.cs \
+	ResourceManager/ResourceSetContainer.cs \
+	ResourceManager/ResourceXferControl.cs \
 	UI/AirRacing.cs \
 	UI/BaseBossFlight.cs \
 	UI/BaseManager.cs \
