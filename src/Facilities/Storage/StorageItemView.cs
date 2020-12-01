@@ -14,8 +14,8 @@ namespace KerbalKonstructs.UI {
 		StorageItem storage;
 
 		public class StorageItemViewEvent : UnityEvent<StorageItem> { }
-		StorageItemViewEvent onIncrementEvent;
-		StorageItemViewEvent onDecrementEvent;
+		StorageItemViewEvent onFromVesselEvent;
+		StorageItemViewEvent onToVesselEvent;
 
 		UIText resourceName;
 		InfoLine stored;
@@ -27,8 +27,8 @@ namespace KerbalKonstructs.UI {
 		{
 			base.CreateUI ();
 
-			onIncrementEvent = new StorageItemViewEvent ();
-			onDecrementEvent = new StorageItemViewEvent ();
+			onFromVesselEvent = new StorageItemViewEvent ();
+			onToVesselEvent = new StorageItemViewEvent ();
 
 			var storedMin = new Vector2(0, 0);
 			var storedMax = new Vector2(0.48f, 1);
@@ -58,33 +58,33 @@ namespace KerbalKonstructs.UI {
 						.Finish()
 					.Finish()
 				.Add<TransferButtons>(out transferButtons)
-					.OnIncrement(onIncrement)
-					.OnDecrement(onDecrement)
+					.OnFromVessel(onFromVessel)
+					.OnToVessel(onToVessel)
 					.Finish()
 				.Finish();
 		}
 
-		void onIncrement ()
+		void onFromVessel ()
 		{
-			Debug.Log($"[StorageItemView] onIncrement {storage.name}");
-			onIncrementEvent.Invoke (storage);
+			Debug.Log($"[StorageItemView] onFromVessel {storage.name}");
+			onFromVesselEvent.Invoke (storage);
 		}
 
-		void onDecrement ()
+		void onToVessel ()
 		{
-			Debug.Log($"[StorageItemView] onDecrement {storage.name}");
-			onDecrementEvent.Invoke (storage);
+			Debug.Log($"[StorageItemView] onToVessel {storage.name}");
+			onToVesselEvent.Invoke (storage);
 		}
 
-		public StorageItemView OnIncrement (UnityAction<StorageItem> action)
+		public StorageItemView OnFromVessel (UnityAction<StorageItem> action)
 		{
-			onIncrementEvent.AddListener (action);
+			onFromVesselEvent.AddListener (action);
 			return this;
 		}
 
-		public StorageItemView OnDecrement (UnityAction<StorageItem> action)
+		public StorageItemView OnToVessel (UnityAction<StorageItem> action)
 		{
-			onDecrementEvent.AddListener (action);
+			onToVesselEvent.AddListener (action);
 			return this;
 		}
 

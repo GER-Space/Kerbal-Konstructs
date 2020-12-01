@@ -53,8 +53,8 @@ namespace KerbalKonstructs.UI {
 
 		public class List : List<StorageItem>, UIKit.IListObject
 		{
-			public UnityAction<StorageItem> onIncrement { get; set; }
-			public UnityAction<StorageItem> onDecrement { get; set; }
+			public UnityAction<StorageItem> onFromVessel { get; set; }
+			public UnityAction<StorageItem> onToVessel { get; set; }
 			public Layout Content { get; set; }
 			public Storage Storage { get; set; }
 			public Vessel Vessel { get; set; }
@@ -67,8 +67,8 @@ namespace KerbalKonstructs.UI {
 			{
 				Content
 					.Add<StorageItemView> ("StorageItem")
-						.OnIncrement (onIncrement)
-						.OnDecrement (onDecrement)
+						.OnFromVessel (onFromVessel)
+						.OnToVessel (onToVessel)
 						.Storage (this[index])
 						.Finish ()
 					;

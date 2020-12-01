@@ -11,79 +11,78 @@ namespace KerbalKonstructs.UI
 	{
 		public class TransferButtonEvent : UnityEvent { };
 
-		TransferButtonEvent onIncrement;
-		TransferButtonEvent onDecrement;
+		TransferButtonEvent onFromVessel;
+		TransferButtonEvent onToVessel;
 
 		public override void CreateUI()
 		{
-			onIncrement = new TransferButtonEvent();
-			onDecrement = new TransferButtonEvent();
+			onFromVessel = new TransferButtonEvent();
+			onToVessel = new TransferButtonEvent();
 
 			base.CreateUI();
 
-			var incrementMin = new Vector2(0, 0);
-			var incrementMax = new Vector2(0.48f, 1);
-			var decrementMin = new Vector2(0.52f, 0);
-			var decrementMax = new Vector2(1, 1);
+			var fromVesselMin = new Vector2(0, 0);
+			var fromVesselMax = new Vector2(0.48f, 1);
+			var toVesselMin = new Vector2(0.52f, 0);
+			var toVesselMax = new Vector2(1, 1);
 
 			this.DoPreferredWidth (false)
 				.DoPreferredHeight (true)
-				.Anchor(incrementMin, incrementMax)
 				.FlexibleLayout(true, false)
 				.Add<VerticalLayout>()
 					.ChildAlignment(TextAnchor.MiddleCenter)
-					.Anchor(incrementMin, incrementMax)
+					.Anchor(fromVesselMin, fromVesselMax)
 					.Add<HorizontalLayout>()
 						.Add<UIButton>()
 							.Text("+")
-							.OnClick(Increment)
+							.OnClick(FromVessel)
 							.Finish()
 						.Add<UIRepeatButton>()
 							.Rate(10)
 							.Text("++")
-							.OnClick(Increment)
+							.OnClick(FromVessel)
 							.Finish()
 						.Finish()
 					.Finish()
 				.Add<VerticalLayout>()
 					.ChildAlignment(TextAnchor.MiddleCenter)
-					.Anchor(decrementMin, decrementMax)
+					.Anchor(toVesselMin, toVesselMax)
 					.Add<HorizontalLayout>()
 						.Add<UIButton>()
 							.Text("-")
-							.OnClick(Decrement)
+							.OnClick(ToVessel)
 							.Finish()
 						.Add<UIRepeatButton>()
 							.Rate(10)
 							.Text("--")
-							.OnClick(Decrement)
+							.OnClick(ToVessel)
 							.Finish()
 						.Finish()
 					.Finish()
 				;
 		}
 
-		void Increment()
+		void FromVessel()
 		{
-			Debug.Log("[TransferButtons] Increment");
-			onIncrement.Invoke();
+			Debug.Log("[TransferButtons] FromVessel");
+			onFromVessel.Invoke();
 		}
 
-		void Decrement()
+		void ToVessel()
 		{
-			Debug.Log("[TransferButtons] Decrement");
-			onDecrement.Invoke();
+			Debug.Log("[TransferButtons] ToVessel");
+			onToVessel.Invoke();
 		}
 
-		public TransferButtons OnIncrement(UnityAction action)
+		public TransferButtons OnFromVessel(UnityAction action)
 		{
-			onIncrement.AddListener(action);
+			onFromVessel.AddListener(action);
 			return this;
 		}
 
-		public TransferButtons OnDecrement(UnityAction action)
+		public TransferButtons OnToVessel(UnityAction action)
 		{
-			onDecrement.AddListener(action);
+			onToVessel.AddListener(action);
 			return this;
 		}
 

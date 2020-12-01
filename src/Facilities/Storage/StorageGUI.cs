@@ -49,8 +49,8 @@ namespace KerbalKonstructs.UI
 
 			storageItems = new StorageItem.List();
 			storageItems.Content = storageList.Content;
-			storageItems.onIncrement = OnIncrement;
-			storageItems.onDecrement = OnDecrement;
+			storageItems.onFromVessel = OnFromVessel;
+			storageItems.onToVessel = OnToVessel;
 		}
 
 		public void UpdateUI(StaticInstance instance)
@@ -88,12 +88,12 @@ namespace KerbalKonstructs.UI
 			UIKit.UpdateListContent(storageItems);
 		}
 
-		void OnIncrement(StorageItem storageItem)
+		void OnFromVessel(StorageItem storageItem)
 		{
 			// vessel to storage
 			double increment = stackSize.Increment;
 			double storableUnits = Math.Min(increment, storageItem.maxAmount - storageItem.storedAmount);
-			Debug.Log($"[StorageGUI] OnIncrement {storageItem.name} {increment} {storableUnits}");
+			Debug.Log($"[StorageGUI] OnFromVessel {storageItem.name} {increment} {storableUnits}");
 			// Transfer uses +ve for in, -ve for out
 			storableUnits += storageItem.vesselResource.Transfer(-storableUnits);
 			Debug.Log($"	{storableUnits}");
@@ -101,12 +101,12 @@ namespace KerbalKonstructs.UI
 			storageItems.Update(storageItem);
 		}
 
-		void OnDecrement(StorageItem storageItem)
+		void OnToVessel(StorageItem storageItem)
 		{
 			// storage to vessel
 			double increment = stackSize.Increment;
 			double retrievableUnits = Math.Min(increment, storageItem.storedAmount);
-			Debug.Log($"[StorageGUI] OnDecrement {storageItem.name} {increment} {retrievableUnits}");
+			Debug.Log($"[StorageGUI] OnToVessel {storageItem.name} {increment} {retrievableUnits}");
 			// Transfer uses +ve for in, -ve for out
 			retrievableUnits -= storageItem.vesselResource.Transfer(retrievableUnits);
 			Debug.Log($"	{retrievableUnits}");
