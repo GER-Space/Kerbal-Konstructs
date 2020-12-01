@@ -11,8 +11,35 @@ namespace KerbalKonstructs.UI
 	{
 		public class TransferButtonEvent : UnityEvent { };
 
+		public bool fromVesselInteractable
+		{
+			get {
+				return fromVessel.interactable && fromVesselRepeat.interactable;
+			}
+			set {
+				fromVessel.interactable = value;
+				fromVesselRepeat.interactable = value;
+			}
+		}
+
+		public bool toVesselInteractable
+		{
+			get {
+				return toVessel.interactable && toVesselRepeat.interactable;
+			}
+			set {
+				toVessel.interactable = value;
+				toVesselRepeat.interactable = value;
+			}
+		}
+
 		TransferButtonEvent onFromVessel;
 		TransferButtonEvent onToVessel;
+
+		UIButton fromVessel;
+		UIRepeatButton fromVesselRepeat;
+		UIButton toVessel;
+		UIRepeatButton toVesselRepeat;
 
 		public override void CreateUI()
 		{
@@ -33,11 +60,11 @@ namespace KerbalKonstructs.UI
 					.ChildAlignment(TextAnchor.MiddleCenter)
 					.Anchor(fromVesselMin, fromVesselMax)
 					.Add<HorizontalLayout>()
-						.Add<UIButton>()
+						.Add<UIButton>(out fromVessel)
 							.Text("+")
 							.OnClick(FromVessel)
 							.Finish()
-						.Add<UIRepeatButton>()
+						.Add<UIRepeatButton>(out fromVesselRepeat)
 							.Rate(10)
 							.Text("++")
 							.OnClick(FromVessel)
@@ -48,11 +75,11 @@ namespace KerbalKonstructs.UI
 					.ChildAlignment(TextAnchor.MiddleCenter)
 					.Anchor(toVesselMin, toVesselMax)
 					.Add<HorizontalLayout>()
-						.Add<UIButton>()
+						.Add<UIButton>(out toVessel)
 							.Text("-")
 							.OnClick(ToVessel)
 							.Finish()
-						.Add<UIRepeatButton>()
+						.Add<UIRepeatButton>(out toVesselRepeat)
 							.Rate(10)
 							.Text("--")
 							.OnClick(ToVessel)

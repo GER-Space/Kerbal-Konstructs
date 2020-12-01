@@ -112,8 +112,6 @@ namespace KerbalKonstructs.UI
             if (KerbalKonstructs.selectedInstance != null)
                 KerbalKonstructs.DeselectObject(true, true);
 
-
-            MerchantGUI.lastInstance = null;
 			SetActive(false);
         }
 
@@ -121,7 +119,6 @@ namespace KerbalKonstructs.UI
         public void Open()
         {
 			if (selectedInstance != null && selectedInstance.hasFacilities && selectedInstance.myFacilities.Count > 0) {
-				MerchantGUI.lastInstance = null;
 				SetActive(true);
 				UpdateUI();
 			}

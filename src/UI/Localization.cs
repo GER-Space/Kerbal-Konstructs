@@ -146,5 +146,10 @@ namespace KerbalKonstructs {
 		public static string StorageStored { get; } = "Stored";
 		public static string StorageVolume { get; } = "Volume";
 		public static string StorageHeld { get; } = "Held";
+		public static string BuySellResources { get; } = "Buy or sell these resources:";
+		public static string ThanksForTrading { get; } = "Thanks for trading at";
+		public static string MerchantHeld { get; } = "Held";
+		public static string MerchantSellFor { get; } = "Sell for";
+		public static string MerchantBuyFor { get; } = "Buy for";
 	}
 }

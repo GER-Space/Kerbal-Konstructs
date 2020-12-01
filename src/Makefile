@@ -116,6 +116,8 @@ MOD_FILES := \
 	Facilities/LandingGuide/LandingGuideClasses.cs \
 	Facilities/Merchant/Merchant.cs \
 	Facilities/Merchant/MerchantGUI.cs \
+	Facilities/Merchant/MerchantItem.cs \
+	Facilities/Merchant/MerchantItemView.cs \
 	Facilities/ProductionGUI.cs \
 	Facilities/RecoveryBase/RecoveryBase.cs \
 	Facilities/Research/Research.cs \

@@ -287,14 +287,13 @@ namespace KerbalKonstructs.UI
 
                     foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions)
                     {
-                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null)
-                        {
-                            continue;
-                        }
+						if (facMerchant.GetResource(availableResource.name) != null) {
+							continue;
+						}
 
                         if (GUILayout.Button(availableResource.name, GUILayout.Height(23)))
                         {
-                            facMerchant.tradedResources.Add(new TradedResource() { resource = availableResource });
+							facMerchant.AddResource(new TradedResource() { resource = availableResource });
                             showResourceSelection = false;
                         }
                     }
@@ -303,17 +302,18 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-                if (facMerchant.tradedResources.Count > 0)
+				var tradedResources = facMerchant.Resources;
+                if (tradedResources.Count > 0)
                 {
                     merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
                     {
-                        foreach (TradedResource tradedResource in facMerchant.tradedResources)
+                        foreach (TradedResource tradedResource in tradedResources)
                         {
                             GUILayout.BeginHorizontal();
                             {
                                 if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
                                 {
-                                    facMerchant.tradedResources.Remove(tradedResource);
+                                    facMerchant.RemoveResource(tradedResource);
                                 }
                                 GUILayout.Label("Name: ", GUILayout.Height(18));
                                 GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Height(18), GUILayout.Width(120));

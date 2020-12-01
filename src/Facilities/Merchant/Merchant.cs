@@ -7,19 +7,53 @@ using KerbalKonstructs.Core;
 
 namespace KerbalKonstructs.Modules
 {
-    internal class TradedResource 
+    public class TradedResource
     {
-        internal PartResourceDefinition resource;
-        internal float multiplierBuy = 1f;
-        internal float multiplierSell = 0.9f;
-        internal bool canBeBought = true;
-        internal bool canBeSold = true;
+        public PartResourceDefinition resource;
+        public double multiplierBuy = 1;
+        public double multiplierSell = 0.9;
+        public bool canBeBought = true;
+        public bool canBeSold = true;
     }
 
 
     public class Merchant : KKFacility
     {
-        internal HashSet<TradedResource> tradedResources = new HashSet<TradedResource>();
+        Dictionary<int, TradedResource> tradedResByID;
+        Dictionary<string, TradedResource> tradedResources;
+
+		public List<TradedResource> Resources
+		{
+			get {
+				return new List<TradedResource>(tradedResources.Values);
+			}
+		}
+
+		public void AddResource (TradedResource resource)
+		{
+			tradedResByID[resource.resource.id] = resource;
+			tradedResources[resource.resource.name] = resource;
+		}
+
+		public void RemoveResource (TradedResource resource)
+		{
+			tradedResByID.Remove(resource.resource.id);
+			tradedResources.Remove(resource.resource.name);
+		}
+
+		public TradedResource GetResource(int id)
+		{
+			TradedResource resource;
+			tradedResByID.TryGetValue (id, out resource);
+			return resource;
+		}
+
+		public TradedResource GetResource(string name)
+		{
+			TradedResource resource;
+			tradedResources.TryGetValue (name, out resource);
+			return resource;
+		}
 
         /// <summary>
         /// Override to the normal config parser, so we can load the resources
@@ -29,30 +63,37 @@ namespace KerbalKonstructs.Modules
         internal override KKFacility ParseConfig(ConfigNode cfgNode)
         {
             base.ParseConfig(cfgNode);
-            tradedResources = new HashSet<TradedResource>();
+			tradedResByID = new Dictionary<int, TradedResource>();
+			tradedResources = new Dictionary<string, TradedResource>();
 
             string resourceName = null;
             PartResourceDefinition foundResource = null;
             TradedResource tradedResource = null;
 
 
-            foreach (ConfigNode resourceNode in cfgNode.GetNodes("TradedResource"))
-            {
+            foreach (ConfigNode resourceNode in cfgNode.GetNodes("TradedResource")) {
                 resourceName = resourceNode.GetValue("ResourceName");
                 foundResource = PartResourceLibrary.Instance.GetDefinition(resourceName);
-                if (foundResource == null)
-                {
+                if (foundResource == null) {
                     Log.UserWarning("Resource not found: " + resourceName);
                 } else {
-                    tradedResource = new TradedResource()
-                    {
+					double multiplierBuy;
+					double multiplierSell;
+					bool canBeBought;
+					bool canBeSold;
+
+					double.TryParse(resourceNode.GetValue("MultiplierBuy"), out multiplierBuy);
+					double.TryParse(resourceNode.GetValue("MultiplierSell"), out multiplierSell);
+					bool.TryParse(resourceNode.GetValue("CanBeBought"), out canBeBought);
+					bool.TryParse(resourceNode.GetValue("CanBeSold"), out canBeSold);
+                    tradedResource = new TradedResource() {
                         resource = foundResource,
-                        multiplierBuy = float.Parse(resourceNode.GetValue("MultiplierBuy")),
-                        multiplierSell = float.Parse(resourceNode.GetValue("MultiplierSell")),
-                        canBeBought = bool.Parse(resourceNode.GetValue("CanBeBought")),
-                        canBeSold = bool.Parse(resourceNode.GetValue("CanBeSold"))
+                        multiplierBuy = multiplierSell,
+                        multiplierSell = multiplierSell,
+                        canBeBought = canBeBought,
+                        canBeSold = canBeSold
                     };
-                    tradedResources.Add(tradedResource);
+					AddResource (tradedResource);
                 }
             }
             return this;
@@ -64,18 +105,17 @@ namespace KerbalKonstructs.Modules
 
             base.WriteConfig(cfgNode);
 
-            foreach (TradedResource resource in tradedResources)
-            {
-                resourceNode = new ConfigNode("TradedResource");
-                resourceNode.SetValue("ResourceName", resource.resource.name,true);
-                resourceNode.SetValue("MultiplierBuy", resource.multiplierBuy, true);
-                resourceNode.SetValue("MultiplierSell", resource.multiplierSell, true);
-                resourceNode.SetValue("CanBeBought", resource.canBeBought, true);
-                resourceNode.SetValue("CanBeSold", resource.canBeSold, true);
-                cfgNode.AddNode(resourceNode);
-            }
-
+			if (tradedResources != null) {
+				foreach (TradedResource resource in tradedResources.Values) {
+					resourceNode = new ConfigNode("TradedResource");
+					resourceNode.SetValue("ResourceName", resource.resource.name,true);
+					resourceNode.SetValue("MultiplierBuy", resource.multiplierBuy, true);
+					resourceNode.SetValue("MultiplierSell", resource.multiplierSell, true);
+					resourceNode.SetValue("CanBeBought", resource.canBeBought, true);
+					resourceNode.SetValue("CanBeSold", resource.canBeSold, true);
+					cfgNode.AddNode(resourceNode);
+				}
+			}
         }
-
     }
 }
