@@ -61,6 +61,18 @@ namespace KerbalKonstructs.UI
 					.FlexibleLayout(true, false)
 					.Finish()
 				.Finish();
+
+			MapView.OnExitMapView += OnExitMapView;
+		}
+
+		protected override void OnDestroy()
+		{
+			MapView.OnExitMapView -= OnExitMapView;
+		}
+
+		void OnExitMapView()
+		{
+			Close();
 		}
 
 		public override void Style()

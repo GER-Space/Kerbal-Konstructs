@@ -153,6 +153,18 @@ namespace KerbalKonstructs.Modules
 				;
 			openedBases.SetActive(MiscUtils.isCareerGame());
 			closedBases.SetActive(MiscUtils.isCareerGame());
+
+			MapView.OnExitMapView += OnExitMapView;
+		}
+
+		protected override void OnDestroy()
+		{
+			MapView.OnExitMapView -= OnExitMapView;
+		}
+
+		void OnExitMapView()
+		{
+			Close();
 		}
 
 		public void Close()
