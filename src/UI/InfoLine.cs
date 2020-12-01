@@ -19,11 +19,9 @@ namespace KerbalKonstructs.UI
 			this.Add<UIText>(out label)
 					.Alignment(TextAlignmentOptions.Left)
 					.Finish()
-				.Add<UIEmpty>()
-					.FlexibleLayout(true, false)
-					.Finish()
 				.Add<UIText>(out info)
 					.Alignment(TextAlignmentOptions.Right)
+					.FlexibleLayout(true, false)
 					.Finish()
 				.Finish();
 		}

@@ -114,7 +114,6 @@ namespace KerbalKonstructs.UI
 
 
             MerchantGUI.lastInstance = null;
-            StorageGUI.lastInstance = null;
 			SetActive(false);
         }
 
@@ -123,7 +122,6 @@ namespace KerbalKonstructs.UI
         {
 			if (selectedInstance != null && selectedInstance.hasFacilities && selectedInstance.myFacilities.Count > 0) {
 				MerchantGUI.lastInstance = null;
-				StorageGUI.lastInstance = null;
 				SetActive(true);
 				UpdateUI();
 			}

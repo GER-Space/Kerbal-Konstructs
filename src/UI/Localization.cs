@@ -138,5 +138,13 @@ namespace KerbalKonstructs {
 		public static string Staff { get; } = "Staff";
 		public static string StaffUnassigned { get; } = "Unassigned";
 		public static string StaffAssigned { get; } = "Assigned Staff";
+
+		public static string StackSize { get; } = "Stack size:";
+		public static string VolumeUsed { get; } = "Volume used";
+		public static string StoreRetrieveResources { get; } = "Store or retrieve these resources:";
+		public static string ThanksForUsing { get; } = "Thanks for using";
+		public static string StorageStored { get; } = "Stored";
+		public static string StorageVolume { get; } = "Volume";
+		public static string StorageHeld { get; } = "Held";
 	}
 }

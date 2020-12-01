@@ -125,6 +125,8 @@ MOD_FILES := \
 	Facilities/StaffItemView.cs \
 	Facilities/Storage/Storage.cs \
 	Facilities/Storage/StorageGUI.cs \
+	Facilities/Storage/StorageItem.cs \
+	Facilities/Storage/StorageItemView.cs \
 	KerbalKonstructs.cs \
 	Modules/Career/CareerEditor.cs \
 	Modules/Career/CareerObjects.cs \
@@ -164,8 +166,10 @@ MOD_FILES := \
 	UI/Localization.cs \
 	UI/NavGuidanceSystem.cs \
 	UI/PositionLine.cs \
+	UI/StackSize.cs \
 	UI/StateButton.cs \
 	UI/ToolbarController.cs \
+	UI/TransferButtons.cs \
 	UI/UIMain.cs \
 	UI/WindowManager.cs \
 	UI2/Editor/EditorModeSelector.cs \
