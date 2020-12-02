@@ -151,5 +151,12 @@ namespace KerbalKonstructs {
 		public static string MerchantHeld { get; } = "Held";
 		public static string MerchantSellFor { get; } = "Sell for";
 		public static string MerchantBuyFor { get; } = "Buy for";
+
+		public static string Funds { get; } = "Funds";
+		public static string Science { get; } = "Science";
+		public static string ProductionProduces { get; } = "Produces";
+		public static string ProductionCurrent { get; } = "Current";
+		public static string ProductionRate { get; } = "Production Rate";
+		public static string TransferToKSC { get; } = "Transfer <<1>> to KSC";
 	}
 }

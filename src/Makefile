@@ -118,6 +118,8 @@ MOD_FILES := \
 	Facilities/Merchant/MerchantGUI.cs \
 	Facilities/Merchant/MerchantItem.cs \
 	Facilities/Merchant/MerchantItemView.cs \
+	Facilities/IBarracks.cs \
+	Facilities/IProduction.cs \
 	Facilities/ProductionGUI.cs \
 	Facilities/RecoveryBase/RecoveryBase.cs \
 	Facilities/Research/Research.cs \

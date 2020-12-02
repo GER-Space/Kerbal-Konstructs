@@ -265,7 +265,7 @@ namespace KerbalKonstructs.UI
 						break;
 					case KKFacilityType.Research:
 					case KKFacilityType.Business:
-						production.UpdateUI(selectedInstance, facilityType);
+						production.UpdateUI(selectedInstance);
 						break;
 					case KKFacilityType.Merchant:
 						merchant.UpdateUI(selectedInstance);

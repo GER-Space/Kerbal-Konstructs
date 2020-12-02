@@ -62,7 +62,9 @@ namespace KerbalKonstructs.UI {
 
 		public StaffItemView OnSelected (UnityAction<StaffItem> action)
 		{
-			onSelected.AddListener (action);
+			if (action != null) {
+				onSelected.AddListener (action);
+			}
 			return this;
 		}
 

@@ -34,11 +34,11 @@ namespace KerbalKonstructs.UI
 		InfoLine fireTipRep;
 		UIText noStaffRequired;
 
-		Barracks barracks;
+		IBarracks barracks;
+		IProduction production;
 		int maxStaff;
 		int currentStaff;
 
-		const float hireFundCost = 5000;
 		const float fireRefund = 2500;
 		const float fireRepCost = 1;
 
@@ -86,10 +86,12 @@ namespace KerbalKonstructs.UI
 						.Add<UIButton>()
 							.Text(KKLocalization.StaffAssign)
 							.OnClick(AssignStaff)
+							.FlexibleLayout(true, false)
 							.Finish()
 						.Add<UIButton>()
-							.Text(KKLocalization.StaffAssign)
+							.Text(KKLocalization.StaffUnassign)
 							.OnClick(UnassignStaff)
+							.FlexibleLayout(true, false)
 							.Finish()
 						.Finish()
 					.Finish()
@@ -110,13 +112,11 @@ namespace KerbalKonstructs.UI
 			} else {
 				double currentfunds = Funding.Instance.Funds;
 
-				if (hireFundCost > currentfunds) {
+				if (Barracks.hireFundCost > currentfunds) {
 					MiscUtils.HUDMessage(KKLocalization.StaffInsufficientFunds, 10, 3);
 				} else {
-					barracks.StaffCurrent = currentStaff + 1;
-					Funding.Instance.AddFunds(-hireFundCost, TransactionReasons.Cheating);
-					barracks.ProductionRateCurrent = barracks.ProductionRateCurrent + 1f;
-					UpdateUI(barracks.staticInstance);
+					barracks.HireStaff();
+					UpdateUI();
 				}
 			}
 
@@ -127,53 +127,52 @@ namespace KerbalKonstructs.UI
 			if (currentStaff < 2) {
 				MiscUtils.HUDMessage(KKLocalization.StaffMustHaveCaretaker, 10, 3);
 			} else {
-				if (barracks.ProductionRateCurrent < 1) {
+				if (barracks.StaffAvailable < 1) {
 					MiscUtils.HUDMessage(KKLocalization.StaffAllStaffAssigned, 10, 3);
 				} else {
-					barracks.StaffCurrent = currentStaff - 1;
-					barracks.ProductionRateCurrent = barracks.ProductionRateCurrent - 1f;
-					Funding.Instance.AddFunds(fireRefund, TransactionReasons.Cheating);
-					Reputation.Instance.AddReputation(-fireRepCost, TransactionReasons.Cheating);
-					UpdateUI(barracks.staticInstance);
+					barracks.FireStaff();
+					UpdateUI();
 				}
 			}
 		}
 
 		void AssignStaff()
 		{
+			//FIXME this should be in IProduction
 			if (currentStaff == maxStaff) {
 				MiscUtils.HUDMessage(KKLocalization.StaffFullyStaffed, 10, 3);
 			} else {
-				float fAvailable = TotalBarracksPool(barracks.staticInstance);
+				float fAvailable = TotalBarracksPool(production.StaticInstance);
 
 				if (fAvailable < 1) {
 					MiscUtils.HUDMessage(KKLocalization.StaffNoUnassignedStaffAvailable, 10, 3);
 				} else {
-					StaticInstance soNearestBarracks = NearestBarracks(barracks.staticInstance);
+					StaticInstance nearestBarracks = NearestBarracks(production.StaticInstance);
 
-					if (soNearestBarracks != null) {
-						DrawFromBarracks(soNearestBarracks);
+					if (nearestBarracks != null) {
+						DrawFromBarracks(nearestBarracks);
 
-						barracks.StaffCurrent = currentStaff + 1;
+						production.StaffCurrent = currentStaff + 1;
 					} else {
 						MiscUtils.HUDMessage(KKLocalization.StaffNoFacilityWithStaff, 10, 3);
 					}
-					UpdateUI(barracks.staticInstance);
+					UpdateUI();
 				}
 			}
 		}
 
 		void UnassignStaff()
 		{
+			//FIXME this should be in IProduction
 			if (currentStaff < 2) {
 				MiscUtils.HUDMessage(KKLocalization.StaffMustHaveCaretaker, 10, 3);
 			} else {
-				StaticInstance availableSpace = NearestBarracks(barracks.staticInstance, false);
+				StaticInstance availableSpace = NearestBarracks(production.StaticInstance, false);
 
 				if (availableSpace != null) {
 					UnassignToBarracks(availableSpace);
-					barracks.StaffCurrent = currentStaff - 1;
-					UpdateUI(barracks.staticInstance);
+					production.StaffCurrent = currentStaff - 1;
+					UpdateUI();
 				} else {
 					MiscUtils.HUDMessage(KKLocalization.StaffNoRoom, 10, 3);
 				}
@@ -198,7 +197,7 @@ namespace KerbalKonstructs.UI
 
                 Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
 
-                fKerbals = fKerbals + foundBarracks.ProductionRateCurrent;
+                fKerbals = fKerbals + foundBarracks.StaffAvailable;
 
 
             }
@@ -231,7 +230,7 @@ namespace KerbalKonstructs.UI
                 Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
                 if (bUnassigned)
                 {
-                    fKerbals = foundBarracks.ProductionRateCurrent;
+                    fKerbals = foundBarracks.StaffAvailable;
 
                     if (fKerbals < 1) continue;
                     else
@@ -244,7 +243,7 @@ namespace KerbalKonstructs.UI
                 {
                     if (foundBarracks.StaffCurrent == 1) continue;
 
-                    if ((foundBarracks.StaffCurrent - 1f) == foundBarracks.ProductionRateCurrent)
+                    if ((foundBarracks.StaffCurrent - 1f) == foundBarracks.StaffAvailable)
                         continue;
                     else
                     {
@@ -259,14 +258,14 @@ namespace KerbalKonstructs.UI
 
         public static void DrawFromBarracks(StaticInstance staticInstance)
         {
-            Barracks foundBarracks = staticInstance.gameObject.GetComponent<Barracks>();
-            foundBarracks.ProductionRateCurrent--;
+            IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
+            foundBarracks.StaffAvailable--;
         }
 
         public static void UnassignToBarracks(StaticInstance staticInstance)
         {
-            Barracks foundBarracks = staticInstance.gameObject.GetComponent<Barracks>();
-            foundBarracks.ProductionRateCurrent++;
+            IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
+            foundBarracks.StaffAvailable++;
         }
 
 		void BuildStaffList(int currentStaff, int maxStaff)
@@ -283,29 +282,22 @@ namespace KerbalKonstructs.UI
 			staffList.Items(staffItems);
 		}
 
-        public void UpdateUI(StaticInstance staticInstance)
-        {
-            barracks = staticInstance.myFacilities[0] as Barracks;
-
-            bool isBarraks = false;
+		void UpdateUI()
+		{
 			// assume we don't have any staffing
 			maxStaff = 0;
 			currentStaff = 0;
 
-            if (staticInstance.FacilityType == "Barracks") {
-                isBarraks = true;
-			} else {
-                if (staticInstance.model.DefaultFacilityType == "Barracks") {
-					isBarraks = true;
-				}
-			}
-
             // check if we can access the staffing variables
-            if (staticInstance.FacilityType == "Barracks" || staticInstance.FacilityType == "Business" || staticInstance.FacilityType == "Research") {
-                currentStaff = (int) barracks.StaffCurrent;//XXX
-                maxStaff = (int) barracks.StaffMax;//XXX
-
-                if (maxStaff < 1) {
+			if (barracks != null) {
+				currentStaff = barracks.StaffCurrent;
+				maxStaff = barracks.StaffMax;
+			} else if (production != null) {
+				currentStaff = production.StaffCurrent;
+				maxStaff = production.StaffMax;
+			}
+                /* FIXME this should be moved into barracks/production loading
+				if (maxStaff < 1) {
                     maxStaff = staticInstance.model.DefaultStaffMax;
 
                     if (maxStaff < 1) {
@@ -314,27 +306,26 @@ namespace KerbalKonstructs.UI
                         barracks.StaffMax = maxStaff;
                     }
                 }
-            }
+				*/
 
 
             if (maxStaff > 0)
             {
                 float CountEmpty = maxStaff - currentStaff;
-                int unassigned = (int) barracks.ProductionRateCurrent;//XXX
 
 				BuildStaffList(currentStaff, maxStaff);
 
 				staffList.SetActive(true);
 				noStaffRequired.SetActive(false);
-				barracksGroup.SetActive(isBarraks);
-				nonbarracksGroup.SetActive(!isBarraks);
-				if (isBarraks) {
+				barracksGroup.SetActive(barracks != null);
+				nonbarracksGroup.SetActive(barracks == null);
+				if (barracks != null) {
 					staff.Info($"{currentStaff} / {maxStaff}");
-					unassignedStaff.Info($"{unassigned} / {currentStaff}");
+					unassignedStaff.Info($"{barracks.StaffAvailable} / {currentStaff}");
 
-					hireTip.Info($"{hireFundCost:F0}");
-					fireTipCost.Info($"{fireRefund:F0}");
-					fireTipRep.Info($"{fireRepCost:F0}");
+					hireTip.Info($"{Barracks.hireFundCost:F0}");
+					fireTipCost.Info($"{Barracks.fireRefund:F0}");
+					fireTipRep.Info($"{Barracks.fireRepCost:F0}");
 				} else {
 					assignedStaff.Info($"{currentStaff} / {maxStaff}");
 				}
@@ -344,6 +335,13 @@ namespace KerbalKonstructs.UI
 				barracksGroup.SetActive(false);
 				nonbarracksGroup.SetActive(false);
             }
+		}
+
+        public void UpdateUI(StaticInstance staticInstance)
+        {
+            barracks = staticInstance.myFacilities[0] as IBarracks;
+			production = staticInstance.myFacilities[0] as IProduction;
+			UpdateUI();
         }
     }
 }
