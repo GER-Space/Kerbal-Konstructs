@@ -42,14 +42,25 @@ namespace KerbalKonstructs.UI
 			production.TransmitProduction();
 		}
 
-		public void UpdateUI(StaticInstance selectedFacility)
+		void UpdateUI()
 		{
-			production = selectedFacility.myFacilities[0] as IProduction;
-
 			produces.Info(production.Produces);
 			current.Info($"{production.UpdateProduction():F0}");
 			transfer.Text(Localizer.Format(KKLocalization.TransferToKSC, production.Produces));
 			productionRate.Info($"{production.CurrentRate:F2}/d");
+		}
+
+		public void UpdateUI(StaticInstance selectedFacility)
+		{
+			production = selectedFacility.myFacilities[0] as IProduction;
+			UpdateUI();
+		}
+
+		void Update()
+		{
+			if (production != null) {
+				UpdateUI();
+			}
 		}
     }
 }

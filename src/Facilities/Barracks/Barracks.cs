@@ -51,7 +51,7 @@ namespace KerbalKonstructs.Modules
 		public bool ReturnStaff()
 		{
 			if (StaffAvailable < StaffCurrent) {
-				StaffAvailable -= 1;
+				StaffAvailable += 1;
 				return true;
 			}
 			return false;

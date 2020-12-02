@@ -152,7 +152,7 @@ namespace KerbalKonstructs.UI
 					if (nearestBarracks != null) {
 						DrawFromBarracks(nearestBarracks);
 
-						production.StaffCurrent = currentStaff + 1;
+						production.AssignStaff();
 					} else {
 						MiscUtils.HUDMessage(KKLocalization.StaffNoFacilityWithStaff, 10, 3);
 					}
@@ -171,7 +171,7 @@ namespace KerbalKonstructs.UI
 
 				if (availableSpace != null) {
 					UnassignToBarracks(availableSpace);
-					production.StaffCurrent = currentStaff - 1;
+					production.UnassignStaff();
 					UpdateUI();
 				} else {
 					MiscUtils.HUDMessage(KKLocalization.StaffNoRoom, 10, 3);
@@ -259,13 +259,13 @@ namespace KerbalKonstructs.UI
         public static void DrawFromBarracks(StaticInstance staticInstance)
         {
             IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
-            foundBarracks.StaffAvailable--;
+            foundBarracks.DrawStaff();
         }
 
         public static void UnassignToBarracks(StaticInstance staticInstance)
         {
             IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
-            foundBarracks.StaffAvailable++;
+            foundBarracks.ReturnStaff();
         }
 
 		void BuildStaffList(int currentStaff, int maxStaff)

@@ -5,7 +5,7 @@ namespace KerbalKonstructs.Modules
 	public interface IProduction
 	{
 		int StaffMax { get; set; }
-		int StaffCurrent { get; set; }
+		int StaffCurrent { get; }
 		string Produces { get; } // what the facility produces
 		double ProductionRate { get; set; }// how much per staff-day
 		double ProductionMax { get; set; }// how much can be stored
@@ -13,7 +13,7 @@ namespace KerbalKonstructs.Modules
 		double UpdateProduction ();
 		void TransmitProduction();
 
-		StaticInstance StaticInstance { get; }
+		StaticInstance StaticInstance { get; } //FIXME should not need
 		bool AssignStaff();
 		bool UnassignStaff();
 	}
