@@ -28,10 +28,21 @@ namespace KerbalKonstructs.UI
 
 		void BuildDecalList()
 		{
+			CelestialBody body = FlightGlobals.currentMainBody;
+			Vector3 position = FlightGlobals.ActiveVessel.GetTransform().position;
+			float range = KerbalKonstructs.localGroupRange;
+			range *= range;
+
 			decalItems.Clear();
-			for (int i = 0; i < DecalsDatabase.allMapDecalInstances.Length; i++) {
+
+			for (int i = DecalsDatabase.allMapDecalInstances.Length; i--> 0; ) {
 				var decal = DecalsDatabase.allMapDecalInstances[i];
-				decalItems.Add(new MapDecalItem(decal));
+				if (decal.CelestialBody == body) {
+					Vector3 dist = position - decal.mapDecal.transform.position;
+					if (dist.sqrMagnitude < range) {
+						decalItems.Add(new MapDecalItem(decal));
+					}
+				}
 			}
 			UIKit.UpdateListContent(decalItems);
 		}
