@@ -1,21 +1,3 @@
-/*
-This file is part of Extraplanetary Launchpads.
-
-Extraplanetary Launchpads is free software: you can redistribute it and/or
-modify it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Extraplanetary Launchpads is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Extraplanetary Launchpads.  If not, see
-<http://www.gnu.org/licenses/>.
-*/
-
 namespace KerbalKonstructs {
 
 	public static class KKLocalization
@@ -140,6 +122,7 @@ namespace KerbalKonstructs {
 		public static string StaffAssigned { get; } = "Assigned Staff";
 
 		public static string StackSize { get; } = "Stack size:";
+		public static string Increment { get; } = "Increment:";
 		public static string VolumeUsed { get; } = "Volume used";
 		public static string StoreRetrieveResources { get; } = "Store or retrieve these resources:";
 		public static string ThanksForUsing { get; } = "Thanks for using";
@@ -158,5 +141,46 @@ namespace KerbalKonstructs {
 		public static string ProductionCurrent { get; } = "Current";
 		public static string ProductionRate { get; } = "Production Rate";
 		public static string TransferToKSC { get; } = "Transfer <<1>> to KSC";
+
+		public static string StaticsEditor { get; } = "Statics Editor";
+		public static string EditorSpawnNew { get; } = "Spawn New";
+		public static string EditorLocalInstances { get; } = "Local Instances";
+		public static string EditorMapDecals { get; } = "Edit MapDecals";
+		public static string EditorGroups { get; } = "Edit Groups";
+
+		public static string EditorExport { get; } = "Export";
+		public static string EditorExportTooltip { get; } = "Export everyting into zip files.";
+		public static string EditorSave { get; } = "Save";
+		public static string EditorSaveTooltip { get; } = "Save all new and edited instances.";
+		public static string EditThisInstance { get; } = "Edit this instance.";
+		public static string SetAsSnapTarget { get; } = "Set as snap target.";
+
+		public static string FilterByCategory { get; } = "Filter by category";
+		public static string FilterByTitle { get; } = "Filter by title";
+		public static string FilterByGroup { get; } = "Filter by group";
+		public static string SortByCategory { get; } = "Sort by category";
+		public static string SortByTitle { get; } = "Sort by title";
+		public static string SortByMesh { get; } = "Sort by mesh";
+
+		public static string SpawnGroup { get; } = "Spawn Group";
+		public static string ActiveGroup { get; } = "Active Group";
+		public static string SetActiveGroup { get; } = "Set Active Group";
+		public static string CloneToActiveGroup { get; } = "Clone Group to Active";
+
+		public static string GroupEditor { get; } = "Group Editor";
+		public static string GroupName { get; } = "Group Name";
+		public static string ReferenceSystem { get; } = "Reference System";
+		public static string SpaceModel { get; } = "Model";
+		public static string SpaceWorld { get; } = "World";
+		public static string BackForward { get; } = "Back / Forward";
+		public static string LeftRight { get; } = "Left / Right";
+		public static string SouthNorth { get; } = "South / North";
+		public static string WestEast { get; } = "West / East";
+		public static string Rotation { get; } = "Rotation";
+		public static string Heading { get; } = "Heading";
+		public static string SealevelAsReference { get; } = "Sealevel as reference";
+		public static string SaveAndClose { get; } = "Save & Close";
+		public static string DestroyGroup { get; } = "Destroy Group";
+		public static string SpawnDecal { get; } = "Spawn new MapDecal";
 	}
 }

@@ -824,8 +824,6 @@ namespace KerbalKonstructs.UI
         {
             if (StaticsEditorGUI.instance.snapTargetInstance == selectedInstance)
                 StaticsEditorGUI.instance.snapTargetInstance = null;
-            if (StaticsEditorGUI.instance.selectedObjectPrevious == selectedInstance)
-                StaticsEditorGUI.instance.selectedObjectPrevious = null;
             if (selectedObjectPrevious == selectedInstance)
                 selectedObjectPrevious = null;
 
@@ -839,7 +837,7 @@ namespace KerbalKonstructs.UI
             KerbalKonstructs.instance.DeleteInstance(selectedInstance);
             selectedInstance = null;
 
-            StaticsEditorGUI.ResetInstancesList();
+            //XXX StaticsEditorGUI.ResetInstancesList();
 
             return;
         }

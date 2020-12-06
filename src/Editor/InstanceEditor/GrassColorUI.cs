@@ -50,7 +50,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.instance.IsOpen() || !EditorGUI.instance.IsOpen() || !EditorGUI.grasColorEnabled || EditorGUI.selectedInstance == null)
+            if (!StaticsEditorGUI.IsOpen() || !EditorGUI.instance.IsOpen() || !EditorGUI.grasColorEnabled || EditorGUI.selectedInstance == null)
             {
                 this.Close();
             }

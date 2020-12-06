@@ -455,7 +455,9 @@ namespace KerbalKonstructs.Core
         RocketPad,
         Helipad,
         Waterlaunch,
-        Other
+        Other,
+
+		None = -1
     }
 
     public enum SiteType

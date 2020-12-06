@@ -63,13 +63,13 @@ namespace KerbalKonstructs.UI
 
 		public PositionLine Latitude(double latitude)
 		{
-			this.latitude.Text($"{latitude:F1}°");
+			this.latitude.Text($"{latitude:F3}°");
 			return this;
 		}
 
 		public PositionLine Longitude(double longitude)
 		{
-			this.longitude.Text($"{longitude:F1}°");
+			this.longitude.Text($"{longitude:F3}°");
 			return this;
 		}
 	}

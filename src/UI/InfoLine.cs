@@ -23,7 +23,7 @@ namespace KerbalKonstructs.UI
 					.Alignment(TextAlignmentOptions.Right)
 					.FlexibleLayout(true, false)
 					.Finish()
-				.Finish();
+				;
 		}
 
 		public override void Style()

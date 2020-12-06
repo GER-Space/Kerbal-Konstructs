@@ -40,6 +40,8 @@ namespace KerbalKonstructs.UI
         public static Sprite tHideOn;
         public static Sprite tHideOff;
 
+        public static Sprite tFocus;
+
         public static Sprite tHorizontalSep;
 
         public static Sprite tFavesOn;
@@ -279,6 +281,8 @@ namespace KerbalKonstructs.UI
             tHideOff = MakeSprite("KerbalKonstructs/Assets/mapHideOff");
             tWaterOn = MakeSprite("KerbalKonstructs/Assets/mapWaterOn");
             tWaterOff = MakeSprite("KerbalKonstructs/Assets/mapWaterOff");
+
+            tFocus = MakeSprite("KerbalKonstructs/Assets/focuson");
 
 			tHorizontalSep = MakeSprite("KerbalKonstructs/Assets/horizontalsep2");
 

@@ -612,7 +612,7 @@ namespace KerbalKonstructs.UI
         {
             StaticInstance instance = new StaticInstance();
 
-            GroupCenter groupCenter = StaticsEditorGUI.GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
+            GroupCenter groupCenter = null;//XXX StaticsEditorGUI.GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position);
             if (groupCenter == null)
             {
                 MiscUtils.HUDMessage("No Local GroupCenter found. Create one, then try again");

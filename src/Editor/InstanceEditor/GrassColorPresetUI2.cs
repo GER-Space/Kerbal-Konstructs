@@ -60,7 +60,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.instance.IsOpen())
+            if (!StaticsEditorGUI.IsOpen())
             {
                 this.Close();
             }

@@ -84,21 +84,33 @@ MOD_FILES := \
 	Core/StaticObjects/StaticModules/TileTextures/TileTextures.cs \
 	Core/StaticObjects/StaticModules/Water/WaterSurface.cs \
 	Editor/GroupEditor/GroupEditor.cs \
+	Editor/GroupEditor/GroupItem.cs \
+	Editor/GroupEditor/GroupItemView.cs \
 	Editor/GroupEditor/GroupSelectorUI.cs \
+	Editor/GroupEditor/GroupView.cs \
 	Editor/InstanceEditor/EditorGUI.cs \
 	Editor/InstanceEditor/FacilityEditor.cs \
 	Editor/InstanceEditor/GrassColorPresetUI.cs \
 	Editor/InstanceEditor/GrassColorPresetUI2.cs \
 	Editor/InstanceEditor/GrassColorUI.cs \
+	Editor/InstanceEditor/InstanceView.cs \
+	Editor/InstanceEditor/InstanceItem.cs \
+	Editor/InstanceEditor/InstanceItemView.cs \
 	Editor/InstanceEditor/LaunchSiteEditor.cs \
 	Editor/InstanceEditor/VariantSelector.cs \
 	Editor/KKEditorLogic.cs \
 	Editor/MapDecalEditor.cs \
+	Editor/MapDecalItem.cs \
+	Editor/MapDecalItemView.cs \
+	Editor/MapDecalView.cs \
 	Editor/ModelInfo.cs \
+	Editor/ModelItem.cs \
+	Editor/ModelItemView.cs \
 	Editor/Shared/DrawObject.cs \
 	Editor/Shared/DrawTools.cs \
 	Editor/Shared/EditorGizmo.cs \
 	Editor/Shared/VectorRenderer.cs \
+	Editor/SpawnView.cs \
 	Editor/StaticsEditorGUI.cs \
 	ExternalAPI/API.cs \
 	ExternalAPI/extLaunchSiteManager.cs \
@@ -123,7 +135,6 @@ MOD_FILES := \
 	Facilities/ProductionGUI.cs \
 	Facilities/RecoveryBase/RecoveryBase.cs \
 	Facilities/Research/Research.cs \
-	Facilities/SharedInterfaces.cs \
 	Facilities/StaffGUI.cs \
 	Facilities/StaffItem.cs \
 	Facilities/StaffItemView.cs \
@@ -157,7 +168,9 @@ MOD_FILES := \
 	UI/FacilityItem.cs \
 	UI/FacilityItemView.cs \
 	UI/IconToggle.cs \
+	UI/IncrementSize.cs \
 	UI/InfoLine.cs \
+	UI/InputLine.cs \
 	UI/KKWindow.cs \
 	UI/LandingGuide.cs \
 	UI/LaunchsiteCategoryIcon.cs \
@@ -168,10 +181,14 @@ MOD_FILES := \
 	UI/Layout.cs \
 	UI/ListView.cs \
 	UI/Localization.cs \
+	UI/MiniToggle.cs \
 	UI/NavGuidanceSystem.cs \
+	UI/PositionButtons.cs \
 	UI/PositionLine.cs \
+	UI/ReferenceSystem.cs \
 	UI/StackSize.cs \
 	UI/StateButton.cs \
+	UI/ToggleText.cs \
 	UI/ToolbarController.cs \
 	UI/TransferButtons.cs \
 	UI/UIMain.cs \
@@ -246,7 +263,7 @@ bin/${MODNAME}.dll: ${MOD_FILES} ${KodeUI}
 	${CSC} ${CSCFLAGS} ${SYSTEM} ${KSP} ${UNITY} ${CPLC} -out:$@ $^
 
 clean:
-	rm -f ${TARGETS}
+	rm -f ${TARGETS} bin/*.pdb
 	test -d bin && rmdir bin || true
 
 install: all
