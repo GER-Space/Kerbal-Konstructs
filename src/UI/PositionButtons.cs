@@ -11,28 +11,6 @@ namespace KerbalKonstructs.UI
 	{
 		public class PositionButtonEvent : UnityEvent { };
 
-		public bool fromVesselInteractable
-		{
-			get {
-				return increment.interactable && incrementRepeat.interactable;
-			}
-			set {
-				increment.interactable = value;
-				incrementRepeat.interactable = value;
-			}
-		}
-
-		public bool toVesselInteractable
-		{
-			get {
-				return decrement.interactable && decrementRepeat.interactable;
-			}
-			set {
-				decrement.interactable = value;
-				decrementRepeat.interactable = value;
-			}
-		}
-
 		PositionButtonEvent onIncrement;
 		PositionButtonEvent onDecrement;
 
@@ -49,7 +27,8 @@ namespace KerbalKonstructs.UI
 
 			base.CreateUI();
 
-			this.FlexibleLayout(true, false)
+			this.ChildAlignment(TextAnchor.MiddleCenter)
+				.FlexibleLayout(true, false)
 				.Add<UIText>(out label)
 					.Finish()
 				.Add<FlexibleSpace>() .Finish()

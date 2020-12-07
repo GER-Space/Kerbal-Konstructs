@@ -49,13 +49,13 @@ namespace KerbalKonstructs.UI
 						.OnClick(() => Increment = 10)
 						.Finish()
 					.Add<UIButton>()
-						.Text("25")
-						.OnClick(() => Increment = 25)
+						.Text("100")
+						.OnClick(() => Increment = 100)
 						.Finish()
 					.Finish()
 				;
 
-			Increment = 10;
+			Increment = 1;
 		}
 
 		public override void Style()

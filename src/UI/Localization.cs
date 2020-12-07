@@ -122,7 +122,7 @@ namespace KerbalKonstructs {
 		public static string StaffAssigned { get; } = "Assigned Staff";
 
 		public static string StackSize { get; } = "Stack size:";
-		public static string Increment { get; } = "Increment:";
+		public static string Increment { get; } = "Increment";
 		public static string VolumeUsed { get; } = "Volume used";
 		public static string StoreRetrieveResources { get; } = "Store or retrieve these resources:";
 		public static string ThanksForUsing { get; } = "Thanks for using";
@@ -182,5 +182,24 @@ namespace KerbalKonstructs {
 		public static string SaveAndClose { get; } = "Save & Close";
 		public static string DestroyGroup { get; } = "Destroy Group";
 		public static string SpawnDecal { get; } = "Spawn new MapDecal";
+
+		public static string MapDecalEditor { get; } = "MapDecal Editor";
+		public static string MapDecalName { get; } = "MapDecal Name";
+		public static string MapDecalOrder { get; } = "Order";
+		public static string MapDecalRadius { get; } = "Radius";
+		public static string AbsoluteOffset { get; } = "Absolute Offset";
+		public static string UseAbsolute { get; } = "Use Absolute";
+		public static string SnapSurface { get; } = "Snap Surface";
+		public static string HeightMap { get; } = "Height Map";
+		public static string HeightMapDeformity { get; } = "Height Map Deformity";
+		public static string SmoothHeight { get; } = "Smooth Height";
+		public static string ColorMap { get; } = "Color Map";
+		public static string SmoothColor { get; } = "Smooth Color";
+		public static string RemoveScatter { get; } = "Remove Scatter Objects";
+		public static string UseAlphaHeightSmoothing { get; } = "Use Alpha Height Smoothing";
+		public static string CullBlack { get; } = "Cull Black";
+		public static string Group { get; } = "Group";
+		public static string Deselect { get; } = "Deselect";
+		public static string DeleteInstance { get; } = "Delete Instance";
 	}
 }

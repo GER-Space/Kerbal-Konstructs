@@ -26,7 +26,7 @@ namespace KerbalKonstructs.UI {
 		{
 			float width = 0;
 			if (image.sprite) {
-				width = image.sprite.rect.width;
+				width += image.sprite.rect.width;
 			}
 			preferredSize.x = width;
 			minSize.x = width;
@@ -36,7 +36,7 @@ namespace KerbalKonstructs.UI {
 		{
 			float height = aboveSize + belowSize;
 			if (image.sprite) {
-				height = image.sprite.rect.height;
+				height += image.sprite.rect.height;
 			}
 			preferredSize.y = height;
 			minSize.y = height;

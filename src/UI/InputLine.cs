@@ -9,6 +9,7 @@ namespace KerbalKonstructs.UI
 	public class InputLine : HorizontalLayout
 	{
 		UIText label;
+		FixedSpace space;
 		UIInputField input;
 
 		public string text
@@ -21,9 +22,11 @@ namespace KerbalKonstructs.UI
 		{
 			base.CreateUI();
 
-			this.Add<UIText>(out label)
+			this.ChildAlignment(TextAnchor.MiddleCenter)
+				.Add<UIText>(out label)
 					.Alignment(TextAlignmentOptions.Left)
 					.Finish()
+				.Add<FixedSpace>(out space) .Size(5) .Finish()
 				.Add<UIInputField>(out input)
 					.FlexibleLayout(true, false)
 					.Finish()
@@ -59,6 +62,15 @@ namespace KerbalKonstructs.UI
 		public InputLine OnFocusLost(UnityAction<string> evt)
 		{
 			input.OnFocusLost(evt);
+			return this;
+		}
+
+		public InputLine InputWidth(float width)
+		{
+			space.LayoutElement.flexibleWidth = 1;
+			input.LayoutElement.flexibleWidth = -1;
+			input.PreferredWidth(width);
+			input.MinSize(width, -1);
 			return this;
 		}
 

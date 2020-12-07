@@ -3,10 +3,14 @@ using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    public class MapDecalEditor : KKWindow
+	using OptionData = TMP_Dropdown.OptionData;
+    public class MapDecalEditor : Window
     {
 
         private static MapDecalEditor _instance = null;
@@ -14,63 +18,31 @@ namespace KerbalKonstructs.UI
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new MapDecalEditor();
-
+                if (_instance == null) {
+                    _instance = UIKit.CreateUI<MapDecalEditor> (UIMain.appCanvasRect, "KKMapDecalEditor");
                 }
                 return _instance;
             }
         }
 
-        #region Variable Declarations
         private List<Transform> transformList = new List<Transform>();
         private CelestialBody body;
 
 
 
-        #region Texture Definitions
         // Texture definitions
         internal Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep2", false);
-        internal Texture tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        internal Texture tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        internal Texture tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
         internal Texture textureWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
         internal Texture textureCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
 
-        #endregion
 
-
-        #region GUI Windows
         // GUI Windows
         internal Rect toolRect = new Rect(300, 35, 380, 840);
 
-        #endregion
-
-        #region GUI elements
-        // GUI elements
-        internal GUIStyle listStyle = new GUIStyle();
-        internal GUIStyle navStyle = new GUIStyle();
-
-        internal GUIStyle DeadButton;
-        internal GUIStyle DeadButtonRed;
-        internal GUIStyle KKWindows;
-        internal GUIStyle BoxNoBorder;
-
-
-        // ComboBox siteTypeMenu;
-        #endregion
-        private Vector2 selectHeightMapScroll;
-        private Vector2 selectColorMapScroll;
-
-        #region Holders
         // Holders
 
         internal static MapDecalInstance selectedDecal = null;
         internal static MapDecalInstance selectedDecalPrevious = null;
-
-        internal float increment = 1f;
-
 
         private VectorRenderer upVR = new VectorRenderer();
         private VectorRenderer fwdVR = new VectorRenderer();
@@ -94,653 +66,428 @@ namespace KerbalKonstructs.UI
         private static double altitude = 0;
         private static double latitude, longitude = 0;
 
-        private bool selectHeightMap = false;
-        private bool selectColorMap = false;
-
-        private bool guiInitialized = false;
         private string smessage = "";
 
-        #endregion
+		InputLine mapDecalName;
+		IncrementSize increment;
+		PositionEdit positionEdit;
+		ValueAdjuster placementOrder;
+		ValueAdjuster radius;
+		FieldToggle useAbsolute;
+		ValueAdjuster absoluteOffset;
+		UIDropdown heightmapSelector;
+		UIDropdown colormapSelector;
+		List<OptionData> heightmapNames;
+		ValueAdjuster heighMapDeformity;
+		ValueAdjuster smoothHeight;
+		List<OptionData> colormapNames;
+		ValueAdjuster smoothColor;
+		FieldToggle removeScatter;
+		FieldToggle useAlphaHeightSmoothing;
+		FieldToggle cullBlack;
+		InputLine groupName;
 
-        #endregion
-
-        public override void Draw()
+        public void Close()
         {
-            if (MapView.MapIsEnabled)
-            {
-                return;
-            }
-
-            DrawEditor(selectedDecal);
-        }
-
-
-        public override void Close()
-        {
-            if (KerbalKonstructs.camControl.active)
-            {
+            if (KerbalKonstructs.camControl.active) {
                 KerbalKonstructs.camControl.disable();
             }
 
             CloseVectors();
             EditorGizmo.CloseGizmo();
-            base.Close();
             selectedDecal = null;
+			SetActive(false);
         }
 
-        #region draw Methods
-
-        /// <summary>
-        /// Wrapper to draw editors
-        /// </summary>
-        /// <param name="mapDecalInstance"></param>
-        public void DrawEditor(MapDecalInstance mapDecalInstance)
-        {
-            if (!guiInitialized)
-            {
-                InitializeLayout();
-                guiInitialized = true;
-            }
-            if (mapDecalInstance == null)
-            {
-                return;
-            }
-
-            if (selectedDecal != selectedDecalPrevious)
-            {
-                UpdateSelection(selectedDecal);
-                selectedDecalPrevious = selectedDecal;
-                position = selectedDecal.gameObject.transform.position;
-                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-                SetupVectors();
-                EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
-                if (!KerbalKonstructs.camControl.active)
-                {
-                    KerbalKonstructs.camControl.enable(selectedDecal.gameObject);
-                }
-            }
-
-            toolRect = GUI.Window(0xB00B1E3, toolRect, MapDecalEditorWindow, "", KKWindows);
-
-            //if (editingLaunchSite)
-            //{
-            //    siteEditorRect = GUI.Window(0xB00B1E4, siteEditorRect, drawLaunchSiteEditorWindow, "", KKWindows);
-            //}
-
-        }
-
-        #endregion
-
-        private void InitializeLayout()
-        {
-            listStyle.normal.textColor = Color.white;
-            listStyle.onHover.background =
-            listStyle.hover.background = new Texture2D(2, 2);
-            listStyle.padding.left =
-            listStyle.padding.right =
-            listStyle.padding.top =
-            listStyle.padding.bottom = 4;
-
-            navStyle.padding.left = 0;
-            navStyle.padding.right = 0;
-            navStyle.padding.top = 1;
-            navStyle.padding.bottom = 3;
-
-            KKWindows = new GUIStyle(GUI.skin.window)
-            {
-                padding = new RectOffset(8, 8, 3, 3)
-            };
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            Log.Normal("MapDecalEditor UI initialized");
-        }
-
-
-        #region Editor
-
-        #region Decal Editor
-
-        /// <summary>
-        /// Instance Editor window
-        /// </summary>
-        /// <param name="windowID"></param>
-        void MapDecalEditorWindow(int windowID)
-        {
-
-            //initialize values
-            //referenceVector = (Vector3d)selectedDecal.position;
-            //isScanable = bool.Parse((string)selectedDecal.getSetting("isScanable"));
-
-            // make this new when converted to PQSCity2
-            // fill the variables here for later use
-            if (position == Vector3d.zero)
-            {
-                position = selectedDecal.gameObject.transform.position;
-                Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-            }
-            UpdateVectors();
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("MapDecal Editor", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-                {
-                    //KerbalKonstructs.instance.saveObjects();
-                    //KerbalKonstructs.instance.deselectObject(true, true);
-                    this.Close();
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Name:");
-                GUILayout.FlexibleSpace();
-                selectedDecal.Name = GUILayout.TextField(selectedDecal.Name, GUILayout.Width(220));
-                GUILayout.FlexibleSpace();
-
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.BeginHorizontal();
-            {
-                //GUILayout.FlexibleSpace();
-                GUILayout.Label("Increment: ");
-                GUILayout.TextField(increment.ToString(), GUILayout.Width(48));
-                GUILayout.FlexibleSpace();
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            {
-                if (GUILayout.Button("0.01", GUILayout.Height(18)))
-                {
-                    increment = 0.01f;
-                }
-                if (GUILayout.Button("0.1", GUILayout.Height(18)))
-                {
-                    increment = 0.1f;
-                }
-                if (GUILayout.Button("1", GUILayout.Height(18)))
-                {
-                    increment = 1f;
-                }
-                if (GUILayout.Button("10", GUILayout.Height(18)))
-                {
-                    increment = 10f;
-                }
-                if (GUILayout.Button("100", GUILayout.Height(18)))
-                {
-                    increment = 100f;
-                }
-                if (GUILayout.Button("250", GUILayout.Height(16)))
-                {
-                    increment = 250f;
-                }
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            //
-            // Set reference butons
-            //
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Reference System: ");
-                GUILayout.FlexibleSpace();
-                GUI.enabled = (referenceSystem == Space.World);
-
-                if (GUILayout.Button(new GUIContent(textureCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
-                {
-                    referenceSystem = Space.Self;
-                    UpdateVectors();
-                }
-
-                GUI.enabled = (referenceSystem == Space.Self);
-                if (GUILayout.Button(new GUIContent(textureWorld, "World"), GUILayout.Height(23), GUILayout.Width(23)))
-                {
-                    referenceSystem = Space.World;
-                    UpdateVectors();
-                }
-                GUI.enabled = true;
-
-                GUILayout.Label(referenceSystem.ToString());
-            }
-            GUILayout.EndHorizontal();
-            //
-            // Position editing
-            //
-            GUILayout.BeginHorizontal();
-            {
-                if (referenceSystem == Space.Self)
-                {
-                    GUILayout.Label("Back / Forward:");
-                    GUILayout.FlexibleSpace();
-
-
-                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.back * increment);
-                    }
-                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.forward * increment);
-                    }
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Left / Right:");
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.left * increment);
-                    }
-                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.right * increment);
-                    }
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Down / Up:");
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.down * increment);
-                    }
-                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        SetTransform(Vector3.up * increment);
-                    }
-
-                }
-                else
-                {
-                    GUILayout.Label("West / East :");
-                    GUILayout.FlexibleSpace();
-
-
-                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        Setlatlng(0d, -increment);
-                    }
-                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        Setlatlng(0d, increment);
-                    }
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("South / North:");
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        Setlatlng(-increment, 0d);
-                    }
-                    if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                    {
-                        Setlatlng(increment, 0d);
-                    }
-
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUI.enabled = true;
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Latitude");
-                GUILayout.TextField(latitude.ToString("#0.0000000"));
-                GUILayout.Label("Longitude");
-                GUILayout.TextField(longitude.ToString("#0.0000000"));
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            //
-            // Rotation
-            //
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Heading:");
-                GUILayout.FlexibleSpace();
-                GUILayout.TextField(selectedDecal.Angle.ToString(), 9, GUILayout.Width(80));
-
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(-increment);
-                }
-                if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(-increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(increment);
-                }
-                if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(increment);
-                }
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            //
-            // Order
-            //
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Placement order:");
-                GUILayout.FlexibleSpace();
-                GUILayout.TextField(selectedDecal.Order.ToString(), 9, GUILayout.Width(80));
-
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Order = Math.Max(100000, selectedDecal.Order - 1);
-                }
-                if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Order = Math.Max(100000, selectedDecal.Order - 1);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Order += 1;
-                }
-                if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Order += 1;
-                }
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            //
-            // Radius
-            //
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Radius:");
-                GUILayout.FlexibleSpace();
-                GUILayout.TextField(selectedDecal.Radius.ToString(), 9, GUILayout.Width(80));
-
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(1, selectedDecal.Radius);
-                }
-                if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Radius -= increment;
-                    selectedDecal.Radius = Math.Max(1, selectedDecal.Radius);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Radius += increment;
-                }
-                if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    selectedDecal.Radius += increment;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            // 
-            // Altitude editing
-            //
-            GUILayout.BeginHorizontal();
-            {
-                selectedDecal.UseAbsolut = GUILayout.Toggle(selectedDecal.UseAbsolut, "UseAbsolut", GUILayout.Width(250), GUILayout.Height(23));
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Snap Surface", GUILayout.Width(110), GUILayout.Height(21)))
-                {
-                    altitude = (selectedDecal.CelestialBody.pqsController.GetSurfaceHeight(selectedDecal.CelestialBody.GetRelSurfaceNVector(latitude, longitude)) - selectedDecal.CelestialBody.Radius + 1);
-                    selectedDecal.mapDecal.transform.position = selectedDecal.CelestialBody.GetWorldSurfacePosition(latitude, longitude, altitude);
-                    ;
-                    selectedDecal.AbsolutOffset = (float)altitude;
-                }
-
-
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Absolut offset:");
-                GUILayout.FlexibleSpace();
-                selectedDecal.AbsolutOffset = float.Parse(GUILayout.TextField(selectedDecal.AbsolutOffset.ToString(), 25, GUILayout.Width(75)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.down * increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    SetTransform(Vector3.up * increment);
-                }
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Height Map", GUILayout.Height(23)))
-            {
-                selectHeightMap = true;
-            }
-            GUILayout.TextField(selectedDecal.HeightMapName, GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-
-
-            if (selectHeightMap)
-            {
-                selectHeightMapScroll = GUILayout.BeginScrollView(selectHeightMapScroll);
-
-                foreach (var newmap in DecalsDatabase.allHeightMaps)
-                {
-                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
-                    {
-                        selectedDecal.HeightMapName = newmap.Name;
-                        selectHeightMap = false;
-                    }
-
-                }
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("HeightMapDeformity:");
-                GUILayout.FlexibleSpace();
-                selectedDecal.HeightMapDeformity = double.Parse(GUILayout.TextField(selectedDecal.HeightMapDeformity.ToString(), 25, GUILayout.Width(75)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.HeightMapDeformity -= increment;
-                    //selectedDecal.HeightMapDeformity = Math.Max(0, selectedDecal.HeightMapDeformity);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.HeightMapDeformity += increment;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("SmoothHeight:");
-                GUILayout.FlexibleSpace();
-                selectedDecal.SmoothHeight = float.Parse(GUILayout.TextField(selectedDecal.SmoothHeight.ToString(), 25, GUILayout.Width(75)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.SmoothHeight -= increment;
-                    selectedDecal.SmoothHeight = Math.Max(0, selectedDecal.SmoothHeight);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.SmoothHeight += increment;
-                }
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Color Map", GUILayout.Height(23)))
-            {
-                selectColorMap = true;
-            }
-            GUILayout.TextField(selectedDecal.ColorMapName, GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-
-
-            if (selectColorMap)
-            {
-                selectColorMapScroll = GUILayout.BeginScrollView(selectColorMapScroll);
-
-                foreach (var newmap in DecalsDatabase.allColorMaps)
-                {
-                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
-                    {
-                        selectedDecal.ColorMapName = newmap.Name;
-                        selectColorMap = false;
-                    }
-
-                }
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("SmoothColor:");
-                GUILayout.FlexibleSpace();
-                selectedDecal.SmoothColor = float.Parse(GUILayout.TextField(selectedDecal.SmoothColor.ToString(), 25, GUILayout.Width(75)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.SmoothColor -= increment;
-                    selectedDecal.SmoothColor = Math.Max(0, selectedDecal.SmoothColor);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
-                    selectedDecal.SmoothColor += increment;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-
-            selectedDecal.RemoveScatter = GUILayout.Toggle(selectedDecal.RemoveScatter, "Remove the Scatter Objects (trees/rocks)", GUILayout.Width(250), GUILayout.Height(23));
-            selectedDecal.UseAlphaHeightSmoothing = GUILayout.Toggle(selectedDecal.UseAlphaHeightSmoothing, "UseAlphaHeightSmoothing", GUILayout.Width(250), GUILayout.Height(23));
-            selectedDecal.CullBlack = GUILayout.Toggle(selectedDecal.CullBlack, "Cullblack", GUILayout.Width(250), GUILayout.Height(23));
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Group: ", GUILayout.Height(23));
-                GUILayout.FlexibleSpace();
-                selectedDecal.Group = GUILayout.TextField(selectedDecal.Group, 30, GUILayout.Width(185), GUILayout.Height(23));
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.FlexibleSpace();
-
-            GUILayout.BeginHorizontal();
-            {
-                if (GUILayout.Button("Apply & Save", GUILayout.Width(180), GUILayout.Height(23)))
-                {
-                    SaveSettings();
-                    smessage = "Saved changes to this object.";
-                    MiscUtils.HUDMessage(smessage, 10, 2);
-                }
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Deselect", GUILayout.Width(120), GUILayout.Height(23)))
-                {
-                    smessage = "discarding changes";
-                    MiscUtils.HUDMessage(smessage, 10, 2);
-                    this.Close();
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.FlexibleSpace();
-
-                if (GUILayout.Button("Delete Instance", GUILayout.Height(21), GUILayout.Width(120)))
-                {
-                    DeleteInstance();
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            if (GUI.tooltip != "")
-            {
-                var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-                GUI.Box(new Rect(Event.current.mousePosition.x - (25 + (labelSize.x / 2)), Event.current.mousePosition.y - 40, labelSize.x + 10, labelSize.y + 5), GUI.tooltip);
-            }
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-
-
-        #endregion
-
-
-
-        #endregion
-
-        #region Utility Functions
-
-        /// <summary>
-        /// Deletes an selected MapDecalInstance
-        /// </summary>
-        internal void DeleteInstance()
-        {
+		public void Open()
+		{
+			SetActive(true);
+			UpdateUI();
+			Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
+			SetupVectors();
+			EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
+			if (!KerbalKonstructs.camControl.active) {
+				KerbalKonstructs.camControl.enable(selectedDecal.gameObject);
+			}
+		}
+
+		public override void CreateUI()
+		{
+			base.CreateUI();
+
+			this.Title(KKLocalization.MapDecalEditor)
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.SetSkin("KK.Default")
+
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<InputLine>(out mapDecalName)
+					.Label(KKLocalization.MapDecalName)
+					.OnSubmit(SetMapDecalName)
+					.OnFocusLost(RestoreMapDecalName)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<IncrementSize>(out increment)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<PositionEdit>(out positionEdit)
+					.Increment(increment)
+					.OnPositionChange(OnPositionChange)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<ValueAdjuster>(out placementOrder)
+					.Label(KKLocalization.MapDecalOrder)
+					.OnIncrement(OnOrderIncrement)
+					.OnDecrement(OnOrderDecrement)
+					.OnValueSet(OnOrderSet)
+					//.Format("F0")
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<ValueAdjuster>(out radius)
+					.Label(KKLocalization.MapDecalRadius)
+					.OnIncrement(OnRadiusIncrement)
+					.OnDecrement(OnRadiusDecrement)
+					.OnValueSet(OnRadiusSet)
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<HorizontalLayout>()
+					.Add<FieldToggle>(out useAbsolute)
+						.Text(KKLocalization.UseAbsolute)
+						.Finish()
+					.Add<UIButton>()
+						.Text(KKLocalization.SnapSurface)
+						.OnClick(SnapSurface)
+						.Finish()
+					.Finish()
+				.Add<ValueAdjuster>(out absoluteOffset)
+					.Label(KKLocalization.AbsoluteOffset)
+					.OnIncrement(OnAbsoluteOffsetIncrement)
+					.OnDecrement(OnAbsoluteOffsetDecrement)
+					.OnValueSet(OnAbsoluteOffsetSet)
+					//.Format("G4")
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<HorizontalLayout>()
+					.ChildAlignment(TextAnchor.MiddleCenter)
+					.Add<UIText>()
+						.Text(KKLocalization.HeightMap)
+						.Finish()
+					.Add<UIDropdown>(out heightmapSelector)
+						.OnValueChanged(SelectHeightmap)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<ValueAdjuster>(out heighMapDeformity)
+					.Label(KKLocalization.HeightMapDeformity)
+					.OnIncrement(OnHeightMapDeformityIncrement)
+					.OnDecrement(OnHeightMapDeformityDecrement)
+					.OnValueSet(OnHeightMapDeformitySet)
+					//.Format("F3")
+					.InputWidth(100)
+					.Finish()
+				.Add<ValueAdjuster>(out smoothHeight)
+					.Label(KKLocalization.SmoothHeight)
+					.OnIncrement(OnSmoothHeightIncrement)
+					.OnDecrement(OnSmoothHeightDecrement)
+					.OnValueSet(OnSmoothHeightSet)
+					//.Format("F3")
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<HorizontalLayout>()
+					.ChildAlignment(TextAnchor.MiddleCenter)
+					.Add<UIText>()
+						.Text(KKLocalization.ColorMap)
+						.Finish()
+					.Add<UIDropdown>(out colormapSelector)
+						.OnValueChanged(SelectColormap)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<ValueAdjuster>(out smoothColor)
+					.Label(KKLocalization.SmoothColor)
+					.OnIncrement(OnSmoothColorIncrement)
+					.OnDecrement(OnSmoothColorDecrement)
+					.OnValueSet(OnSmoothColorSet)
+					//.Format("F3")
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+
+				.Add<HorizontalSep>("HorizontalSep2") .Space(1, 2) .Finish()
+				.Add<FieldToggle>(out removeScatter)
+					.Text(KKLocalization.RemoveScatter)
+					.Finish()
+				.Add<FieldToggle>(out useAlphaHeightSmoothing)
+					.Text(KKLocalization.UseAlphaHeightSmoothing)
+					.Finish()
+				.Add<FieldToggle>(out cullBlack)
+					.Text(KKLocalization.CullBlack)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep2") .Space(1, 2) .Finish()
+				.Add<InputLine>(out groupName)
+					.OnSubmit(SetGroupName)
+					.OnFocusLost(RestoreGroupName)
+					.Label(KKLocalization.Group)
+					.Finish()
+
+				.Add<UIButton>()
+					.Text(KKLocalization.EditorSave)
+					.OnClick(Save)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.Deselect)
+					.OnClick(Deselect)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.DeleteInstance)
+					.OnClick(DeleteInstance)
+					.Finish()
+				.Finish();
+
+			UIMain.SetTitlebar(titlebar, Close);
+
+			heightmapNames = new List<OptionData>();
+			colormapNames = new List<OptionData>();
+		}
+
+		void BuildHeightmapList()
+		{
+			heightmapNames.Clear();
+			int index = 0;
+			for (int i = 0; i < DecalsDatabase.allHeightMaps.Count; i++) {
+				var map = DecalsDatabase.allHeightMaps[i];
+				heightmapNames.Add (new OptionData(map.Name));
+				if (map.Name == selectedDecal.HeightMapName) {
+					index = i;
+				}
+			}
+			heightmapSelector.Options (heightmapNames);
+			heightmapSelector.SetValueWithoutNotify(index);
+		}
+
+		void BuildColormapList()
+		{
+			colormapNames.Clear();
+			int index = 0;
+			for (int i = 0; i < DecalsDatabase.allColorMaps.Count; i++) {
+				var map = DecalsDatabase.allColorMaps[i];
+				colormapNames.Add (new OptionData(map.Name));
+				if (map.Name == selectedDecal.ColorMapName) {
+					index = i;
+				}
+			}
+			colormapSelector.Options (colormapNames);
+			colormapSelector.SetValueWithoutNotify(index);
+		}
+
+		public void UpdateUI()
+		{
+			RestoreMapDecalName();
+			positionEdit.Body(selectedDecal.CelestialBody)
+				.SetPosition(selectedDecal.Latitude, selectedDecal.Longitude,
+							 selectedDecal.AbsolutOffset, selectedDecal.Angle);
+			placementOrder.Value = selectedDecal.Order;
+			radius.Value = selectedDecal.Radius;
+			useAbsolute.Field(selectedDecal, "UseAbsolut");
+			absoluteOffset.Value = selectedDecal.AbsolutOffset;
+			BuildHeightmapList();
+			heighMapDeformity.Value = selectedDecal.HeightMapDeformity;
+			smoothHeight.Value = selectedDecal.SmoothHeight;
+			BuildColormapList();
+			smoothColor.Value = selectedDecal.SmoothColor;
+			removeScatter.Field(selectedDecal, "RemoveScatter");
+			useAlphaHeightSmoothing.Field(selectedDecal, "UseAlphaHeightSmoothing");
+			cullBlack.Field(selectedDecal, "CullBlack");
+			RestoreGroupName();
+		}
+
+		void SetMapDecalName(string name)
+		{
+			selectedDecal.Name = name;
+		}
+
+		void RestoreMapDecalName(string name = null)
+		{
+			mapDecalName.text = selectedDecal.Name;
+		}
+
+		void SetGroupName(string name)
+		{
+			selectedDecal.Group = name;
+		}
+
+		void RestoreGroupName(string name = null)
+		{
+			mapDecalName.text = selectedDecal.Group;
+		}
+
+		void OnPositionChange()
+		{
+			var transform = selectedDecal.mapDecal.transform;
+			transform.localPosition = positionEdit.Position;
+			transform.localRotation = positionEdit.Rotation;
+			selectedDecal.Latitude = positionEdit.Latitude;
+			selectedDecal.Longitude = positionEdit.Longitude;
+			selectedDecal.Angle = (float) positionEdit.Heading;
+		}
+
+		void OnOrderIncrement()
+		{
+			selectedDecal.Order += 1;
+			placementOrder.Value = selectedDecal.Order;
+		}
+
+		void OnOrderDecrement()
+		{
+			selectedDecal.Order = Math.Max(100000, selectedDecal.Order - 1);
+			placementOrder.Value = selectedDecal.Order;
+		}
+
+		void OnOrderSet()
+		{
+			selectedDecal.Order = (int) Math.Max(100000, placementOrder.Value - 1);
+			placementOrder.Value = selectedDecal.Order;
+		}
+
+		void OnRadiusIncrement()
+		{
+			selectedDecal.Radius += increment.Increment;
+			radius.Value = selectedDecal.Radius;
+		}
+
+		void OnRadiusDecrement()
+		{
+			selectedDecal.Radius -= increment.Increment;
+			selectedDecal.Radius = Math.Max(1, selectedDecal.Radius);
+			radius.Value = selectedDecal.Radius;
+		}
+
+		void OnRadiusSet()
+		{
+			selectedDecal.Radius = Math.Max(1, radius.Value);
+			radius.Value = selectedDecal.Radius;
+		}
+
+		void SnapSurface()
+		{
+			Vector3d nVec = positionEdit.NVector;
+			double surfaceHeight = selectedDecal.CelestialBody.pqsController.GetSurfaceHeight(nVec);
+			double altitude = surfaceHeight - selectedDecal.CelestialBody.Radius + 1;
+			selectedDecal.mapDecal.transform.position = selectedDecal.CelestialBody.GetWorldSurfacePosition(positionEdit.Latitude, positionEdit.Longitude, altitude);
+			selectedDecal.AbsolutOffset = (float)altitude;
+			absoluteOffset.Value = selectedDecal.AbsolutOffset;
+			positionEdit.Altitude = altitude;
+			OnPositionChange();
+		}
+
+		void OnAbsoluteOffsetIncrement()
+		{
+			selectedDecal.AbsolutOffset += increment.Increment;
+			absoluteOffset.Value = selectedDecal.AbsolutOffset;
+		}
+
+		void OnAbsoluteOffsetDecrement()
+		{
+			selectedDecal.AbsolutOffset -= increment.Increment;
+			absoluteOffset.Value = selectedDecal.AbsolutOffset;
+		}
+
+		void OnAbsoluteOffsetSet()
+		{
+			selectedDecal.AbsolutOffset = (float) absoluteOffset.Value;
+			absoluteOffset.Value = selectedDecal.AbsolutOffset;
+		}
+
+		void SelectHeightmap(int index)
+		{
+			selectedDecal.HeightMapName = heightmapNames[index].text;
+		}
+
+		void OnHeightMapDeformityIncrement()
+		{
+			selectedDecal.HeightMapDeformity += increment.Increment;
+			heighMapDeformity.Value = selectedDecal.HeightMapDeformity;
+		}
+
+		void OnHeightMapDeformityDecrement()
+		{
+			selectedDecal.HeightMapDeformity -= increment.Increment;
+			heighMapDeformity.Value = selectedDecal.HeightMapDeformity;
+		}
+
+		void OnHeightMapDeformitySet()
+		{
+			selectedDecal.HeightMapDeformity = (float) heighMapDeformity.Value;
+			heighMapDeformity.Value = selectedDecal.HeightMapDeformity;
+		}
+
+		void OnSmoothHeightIncrement()
+		{
+			selectedDecal.SmoothHeight += increment.Increment;
+			smoothHeight.Value = selectedDecal.SmoothHeight;
+		}
+
+		void OnSmoothHeightDecrement()
+		{
+			selectedDecal.SmoothHeight -= increment.Increment;
+			selectedDecal.SmoothHeight = Math.Max(0, selectedDecal.SmoothHeight);
+			smoothHeight.Value = selectedDecal.SmoothHeight;
+		}
+
+		void OnSmoothHeightSet()
+		{
+			selectedDecal.SmoothHeight = (float) Math.Max(0, smoothHeight.Value);
+			smoothHeight.Value = selectedDecal.SmoothHeight;
+		}
+
+		void SelectColormap(int index)
+		{
+			selectedDecal.ColorMapName = colormapNames[index].text;
+		}
+
+		void OnSmoothColorIncrement()
+		{
+			selectedDecal.SmoothColor += increment.Increment;
+			smoothColor.Value = selectedDecal.SmoothColor;
+		}
+
+		void OnSmoothColorDecrement()
+		{
+			selectedDecal.SmoothColor -= increment.Increment;
+			selectedDecal.SmoothColor = Math.Max(0, selectedDecal.SmoothColor);
+			smoothColor.Value = selectedDecal.SmoothColor;
+		}
+
+		void OnSmoothColorSet()
+		{
+			selectedDecal.SmoothColor = (float) Math.Max(0, smoothColor.Value);
+			smoothColor.Value = selectedDecal.SmoothColor;
+		}
+
+		void Save()
+		{
+			SaveSettings();
+			smessage = "Saved changes to this object.";
+			MiscUtils.HUDMessage(smessage, 10, 2);
+		}
+
+		void Deselect()
+		{
+			smessage = "discarding changes";
+			MiscUtils.HUDMessage(smessage, 10, 2);
+			Close();
+		}
+
+		void DeleteInstance()
+		{
             if (selectedDecalPrevious == selectedDecal)
                 selectedDecalPrevious = null;
 
@@ -752,10 +499,8 @@ namespace KerbalKonstructs.UI
 
             DecalsDatabase.DeleteMapDecalInstance(selectedDecal);
 
-            this.Close();
-        }
-
-
+            Close();
+		}
 
         /// <summary>
         /// the starting position of direction vectors (a bit right and up from the Objects position)
@@ -994,57 +739,6 @@ namespace KerbalKonstructs.UI
 
         }
 
-        /// <summary>
-        /// sets the latitude and lognitude from the deltas of north and east and creates a new reference vector
-        /// </summary>
-        /// <param name="north"></param>
-        /// <param name="east"></param>
-        internal void Setlatlng(double north, double east)
-        {
-            body = selectedDecal.CelestialBody;
-            double latOffset = north / (body.Radius * KKMath.deg2rad);
-            latitude += latOffset;
-            double lonOffset = east / (body.Radius * KKMath.deg2rad);
-            longitude += lonOffset * Math.Cos(Mathf.Deg2Rad * latitude);
-
-            Vector3d newpos = body.GetWorldSurfacePosition(latitude, longitude, altitude);
-            selectedDecal.mapDecal.transform.position = newpos;
-
-            referenceVector = body.GetRelSurfaceNVector(latitude, longitude).normalized * body.Radius;
-
-            UpdateMoveGizmo();
-        }
-
-
-        /// <summary>
-        /// changes the rotation by a defined amount
-        /// </summary>
-        /// <param name="increment"></param>
-        internal void SetRotation(double increment)
-        {
-            //selectedDecal.mapDecal.transform.Rotate(Vector3.up, (float)increment);
-            selectedDecal.Angle += (float)increment;
-            selectedDecal.Angle = (selectedDecal.Angle + 360) % 360;
-
-        }
-
-
-        /// <summary>
-        /// Updates the StaticObject position with a new transform
-        /// </summary>
-        /// <param name="direction"></param>
-        internal void SetTransform(Vector3 direction)
-        {
-            direction = selectedDecal.gameObject.transform.TransformVector(direction);
-            double northInc = Vector3d.Dot(NorthVector, direction);
-            double eastInc = Vector3d.Dot(EastVector, direction);
-            double upInc = Vector3d.Dot(UpVector, direction);
-
-            altitude += upInc;
-            selectedDecal.AbsolutOffset += (float)upInc;
-            Setlatlng(northInc, eastInc);
-        }
-
         internal void OnMoveCallBack(Vector3 vector)
         {
             // Log.Normal("OnMove: " + vector.ToString());
@@ -1115,7 +809,5 @@ namespace KerbalKonstructs.UI
         {
             selectedDecal = instance;
         }
-
-        #endregion
     }
 }

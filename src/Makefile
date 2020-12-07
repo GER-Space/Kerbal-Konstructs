@@ -167,6 +167,7 @@ MOD_FILES := \
 	UI/BaseManager.cs \
 	UI/FacilityItem.cs \
 	UI/FacilityItemView.cs \
+	UI/FieldToggle.cs \
 	UI/IconToggle.cs \
 	UI/IncrementSize.cs \
 	UI/InfoLine.cs \
@@ -184,6 +185,7 @@ MOD_FILES := \
 	UI/MiniToggle.cs \
 	UI/NavGuidanceSystem.cs \
 	UI/PositionButtons.cs \
+	UI/PositionEdit.cs \
 	UI/PositionLine.cs \
 	UI/ReferenceSystem.cs \
 	UI/StackSize.cs \
@@ -192,6 +194,7 @@ MOD_FILES := \
 	UI/ToolbarController.cs \
 	UI/TransferButtons.cs \
 	UI/UIMain.cs \
+	UI/ValueAdjuster.cs \
 	UI/WindowManager.cs \
 	UI2/Editor/EditorModeSelector.cs \
 	UI2/Editor/Group/GroupEditorToolbar.cs \
