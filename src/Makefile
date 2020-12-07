@@ -98,18 +98,18 @@ MOD_FILES := \
 	Editor/InstanceEditor/InstanceItemView.cs \
 	Editor/InstanceEditor/LaunchSiteEditor.cs \
 	Editor/InstanceEditor/VariantSelector.cs \
-	Editor/KKEditorLogic.cs \
-	Editor/MapDecalEditor.cs \
-	Editor/MapDecalItem.cs \
-	Editor/MapDecalItemView.cs \
-	Editor/MapDecalView.cs \
-	Editor/ModelInfo.cs \
-	Editor/ModelItem.cs \
-	Editor/ModelItemView.cs \
+	Editor/MapDecalEditor/MapDecalEditor.cs \
+	Editor/MapDecalEditor/MapDecalItem.cs \
+	Editor/MapDecalEditor/MapDecalItemView.cs \
+	Editor/MapDecalEditor/MapDecalView.cs \
 	Editor/Shared/DrawObject.cs \
 	Editor/Shared/DrawTools.cs \
 	Editor/Shared/EditorGizmo.cs \
 	Editor/Shared/VectorRenderer.cs \
+	Editor/KKEditorLogic.cs \
+	Editor/ModelInfo.cs \
+	Editor/ModelItem.cs \
+	Editor/ModelItemView.cs \
 	Editor/SpawnView.cs \
 	Editor/StaticsEditorGUI.cs \
 	ExternalAPI/API.cs \
