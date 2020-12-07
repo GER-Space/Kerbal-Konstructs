@@ -19,8 +19,12 @@ namespace KerbalKonstructs.UI
 		PositionButtons xAxisButtons;
 		InputLine latitudeInput;
 		InputLine longitudeInput;
+		ValueAdjuster altitudeAdjust;
+		HorizontalSep separator;
 		ValueAdjuster headingAdjust;
 		ReferenceSystem referenceSystem;
+
+		VectorDisplay vectorDisplay;
 
 		public Space space { get { return referenceSystem.space; } }
 
@@ -82,11 +86,17 @@ namespace KerbalKonstructs.UI
 		Planetarium.CelestialFrame worldFrame;
 		Vector3d position;
 
+		protected override void OnDisable()
+		{
+			vectorDisplay.CloseVectors();
+		}
+
 		public override void CreateUI()
 		{
 			base.CreateUI();
 
 			onPositionChange = new PositionEditEvent();
+			vectorDisplay = new VectorDisplay();
 
 			this.ChildForceExpand(true, false)
 				.Add<ReferenceSystem>(out referenceSystem)
@@ -114,7 +124,14 @@ namespace KerbalKonstructs.UI
 						.InputWidth(100)
 						.Finish()
 					.Finish()
-				.Add<HorizontalSep>("HorizontalSep2") .Finish()
+				.Add<ValueAdjuster>(out altitudeAdjust)
+					.Label(KKLocalization.Altitude)
+					.OnIncrement(OnAltitudeIncrement)
+					.OnDecrement(OnAltitudeDecrement)
+					.OnValueSet(OnAltitudeSet)
+					.InputWidth(100)
+					.Finish()
+				.Add<HorizontalSep>(out separator, "HorizontalSep2") .Finish()
 				.Add<ValueAdjuster>(out headingAdjust)
 					.Label(KKLocalization.Heading)
 					.OnIncrement(OnHeadingIncrement)
@@ -149,6 +166,19 @@ namespace KerbalKonstructs.UI
 		void OnSpaceChanged(ReferenceSystem system)
 		{
 			SetPositionLabels();
+			UpdateVectors();
+		}
+
+		void UpdateVectors()
+		{
+			vectorDisplay.Space = referenceSystem.space;
+			vectorDisplay.Position = position;
+			if (referenceSystem.space == Space.Self) {
+				vectorDisplay.Frame = objectFrame;
+			} else {
+				vectorDisplay.Frame = worldFrame;
+			}
+			vectorDisplay.Draw();
 		}
 
 		void OnXIncrement()
@@ -239,6 +269,29 @@ namespace KerbalKonstructs.UI
 			longitudeInput.text = $"{longitude * 180 / Math.PI}";
 		}
 
+		void OnAltitudeIncrement()
+		{
+			altitudeAdjust.Value += increment.Increment;
+			altitude = altitudeAdjust.Value;
+			SetPosition();
+			onPositionChange.Invoke();
+		}
+
+		void OnAltitudeDecrement()
+		{
+			altitudeAdjust.Value -= increment.Increment;
+			altitude = altitudeAdjust.Value;
+			SetPosition();
+			onPositionChange.Invoke();
+		}
+
+		void OnAltitudeSet()
+		{
+			altitude = altitudeAdjust.Value;
+			SetPosition();
+			onPositionChange.Invoke();
+		}
+
 		void OnHeadingIncrement()
 		{
 			headingAdjust.Value += increment.Increment;
@@ -276,6 +329,7 @@ namespace KerbalKonstructs.UI
 		public PositionEdit Body(CelestialBody body)
 		{
 			this.body = body;
+			vectorDisplay.Body = body;
 			return this;
 		}
 
@@ -300,6 +354,8 @@ namespace KerbalKonstructs.UI
 			Planetarium.CelestialFrame.SetFrame(lon, lat, 0, ref worldFrame);
 			Planetarium.CelestialFrame.SetFrame(lon, lat, rot, ref objectFrame);
 			position = objectFrame.Z * (body.Radius + altitude);
+
+			UpdateVectors();
 		}
 
 		void SetPosition(Vector3d offset)
@@ -328,6 +384,7 @@ namespace KerbalKonstructs.UI
 			this.altitude = altitude;
 			RestoreLatitude();
 			RestoreLongitude();
+			altitudeAdjust.Value = altitude;
 			headingAdjust.Value = heading;
 			SetPosition();
 			return this;
@@ -337,6 +394,38 @@ namespace KerbalKonstructs.UI
 		{
 			onPositionChange.AddListener(action);
 			return this;
+		}
+
+		public PositionEdit DoAltitude(bool doAltitude)
+		{
+			altitudeAdjust.SetActive(doAltitude);
+			separator.SetActive(!doAltitude);
+			return this;
+		}
+
+		public void Adjust(Vector3d dir)
+		{
+			if (referenceSystem.space == Space.Self) {
+				dir = objectFrame.LocalToWorld(dir.xzy);
+			} else {
+				dir = worldFrame.LocalToWorld(dir.xzy);
+			}
+			SetPosition(dir * increment.Increment);
+			RestoreLatitude();
+			RestoreLongitude();
+			onPositionChange.Invoke();
+		}
+
+		public PositionEdit VectorScale(double scale)
+		{
+			vectorDisplay.Scale = scale;
+			return this;
+		}
+
+		void Update()
+		{
+			//FIXME remove need for Update
+			vectorDisplay.Draw();
 		}
 	}
 }

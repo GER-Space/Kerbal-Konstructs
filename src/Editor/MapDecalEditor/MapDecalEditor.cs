@@ -44,20 +44,6 @@ namespace KerbalKonstructs.UI
         internal static MapDecalInstance selectedDecal = null;
         internal static MapDecalInstance selectedDecalPrevious = null;
 
-        private VectorRenderer upVR = new VectorRenderer();
-        private VectorRenderer fwdVR = new VectorRenderer();
-        private VectorRenderer rightVR = new VectorRenderer();
-        private VectorRenderer backVR = new VectorRenderer();
-        private VectorRenderer leftVR = new VectorRenderer();
-
-        private VectorRenderer northVR = new VectorRenderer();
-        private VectorRenderer eastVR = new VectorRenderer();
-        private VectorRenderer southVR = new VectorRenderer();
-        private VectorRenderer westVR = new VectorRenderer();
-
-
-        private static Space referenceSystem = Space.World;
-
         private static Vector3d position = Vector3d.zero;
         private Vector3d referenceVector = Vector3d.zero;
         private Vector3d savedReferenceVector = Vector3d.zero;
@@ -93,7 +79,6 @@ namespace KerbalKonstructs.UI
                 KerbalKonstructs.camControl.disable();
             }
 
-            CloseVectors();
             EditorGizmo.CloseGizmo();
             selectedDecal = null;
 			SetActive(false);
@@ -104,7 +89,6 @@ namespace KerbalKonstructs.UI
 			SetActive(true);
 			UpdateUI();
 			Planetarium.fetch.CurrentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-			SetupVectors();
 			EditorGizmo.SetupMoveGizmo(selectedDecal.gameObject, Quaternion.identity, OnMoveCallBack, WhenMovedCallBack);
 			if (!KerbalKonstructs.camControl.active) {
 				KerbalKonstructs.camControl.enable(selectedDecal.gameObject);
@@ -136,6 +120,7 @@ namespace KerbalKonstructs.UI
 				.Add<HorizontalSep>("HorizontalSep2") .Finish()
 				.Add<PositionEdit>(out positionEdit)
 					.Increment(increment)
+					.DoAltitude(false)
 					.OnPositionChange(OnPositionChange)
 					.Finish()
 				.Add<HorizontalSep>("HorizontalSep2") .Finish()
@@ -296,6 +281,7 @@ namespace KerbalKonstructs.UI
 							 selectedDecal.AbsolutOffset, selectedDecal.Angle);
 			placementOrder.Value = selectedDecal.Order;
 			radius.Value = selectedDecal.Radius;
+			positionEdit.VectorScale (selectedDecal.Radius);
 			useAbsolute.Field(selectedDecal, "UseAbsolut");
 			absoluteOffset.Value = selectedDecal.AbsolutOffset;
 			BuildHeightmapList();
@@ -361,6 +347,7 @@ namespace KerbalKonstructs.UI
 		{
 			selectedDecal.Radius += increment.Increment;
 			radius.Value = selectedDecal.Radius;
+			positionEdit.VectorScale (selectedDecal.Radius);
 		}
 
 		void OnRadiusDecrement()
@@ -502,277 +489,25 @@ namespace KerbalKonstructs.UI
             Close();
 		}
 
-        /// <summary>
-        /// the starting position of direction vectors (a bit right and up from the Objects position)
-        /// </summary>
-        private Vector3 VectorDrawPosition
-        {
-            get
-            {
-                return (selectedDecal.gameObject.transform.position + 1 * selectedDecal.gameObject.transform.up + selectedDecal.gameObject.transform.right);
-            }
-        }
-
-
-        /// <summary>
-        /// returns the heading the selected object
-        /// </summary>
-        /// <returns></returns>
-        public float Heading
-        {
-            get
-            {
-                Vector3 myForward = Vector3.ProjectOnPlane(selectedDecal.gameObject.transform.forward, UpVector);
-                float myHeading;
-
-                if (Vector3.Dot(myForward, EastVector) > 0)
-                {
-                    myHeading = Vector3.Angle(myForward, NorthVector);
-                }
-                else
-                {
-                    myHeading = 360 - Vector3.Angle(myForward, NorthVector);
-                }
-                return myHeading;
-            }
-        }
-
-        /// <summary>
-        /// gives a vector to the east
-        /// </summary>
-        private Vector3 EastVector
-        {
-            get
-            {
-                return Vector3.Cross(UpVector, NorthVector).normalized;
-            }
-        }
-
-        /// <summary>
-        /// vector to north
-        /// </summary>
-        private Vector3 NorthVector
-        {
-            get
-            {
-                body = FlightGlobals.ActiveVessel.mainBody;
-                return Vector3.ProjectOnPlane(body.transform.up, UpVector).normalized;
-            }
-        }
-
         private Vector3 UpVector
         {
-            get
-            {
+            get {
                 body = FlightGlobals.ActiveVessel.mainBody;
                 return (Vector3)body.GetSurfaceNVector(latitude, longitude).normalized;
             }
         }
 
-        /// <summary>
-        /// Sets the vectors active and updates thier position and directions
-        /// </summary>
-        private void UpdateVectors()
-        {
-            if (selectedDecal == null)
-            {
-                return;
-            }
-
-            if (referenceSystem == Space.Self)
-            {
-                fwdVR.SetShow(true);
-                upVR.SetShow(true);
-                rightVR.SetShow(true);
-                backVR.SetShow(true);
-                leftVR.SetShow(true);
-
-                northVR.SetShow(false);
-                eastVR.SetShow(false);
-                southVR.SetShow(false);
-                westVR.SetShow(false);
-
-                fwdVR.Vector = selectedDecal.gameObject.transform.forward;
-                fwdVR.Start = VectorDrawPosition;
-                fwdVR.Scale = Math.Max(1, selectedDecal.Radius);
-                fwdVR.Draw();
-
-                backVR.Vector = -selectedDecal.gameObject.transform.forward;
-                backVR.Start = VectorDrawPosition;
-                backVR.Scale = Math.Max(1, selectedDecal.Radius);
-                backVR.Draw();
-
-                upVR.Vector = selectedDecal.gameObject.transform.up;
-                upVR.Start = VectorDrawPosition;
-                upVR.Scale = Math.Min(30d, Math.Max(1, selectedDecal.Radius));
-                upVR.Draw();
-
-                rightVR.Vector = selectedDecal.gameObject.transform.right;
-                rightVR.Start = VectorDrawPosition;
-                rightVR.Scale = Math.Max(1, selectedDecal.Radius);
-                rightVR.Draw();
-
-                leftVR.Vector = -selectedDecal.gameObject.transform.right;
-                leftVR.Start = VectorDrawPosition;
-                leftVR.Scale = Math.Max(1, selectedDecal.Radius);
-                leftVR.Draw();
-            }
-            if (referenceSystem == Space.World)
-            {
-                northVR.SetShow(true);
-                eastVR.SetShow(true);
-                southVR.SetShow(true);
-                westVR.SetShow(true);
-
-                fwdVR.SetShow(false);
-                upVR.SetShow(false);
-                rightVR.SetShow(false);
-                backVR.SetShow(false);
-                leftVR.SetShow(false);
-
-                northVR.Vector = NorthVector;
-                northVR.Start = VectorDrawPosition;
-                northVR.Scale = Math.Max(1, selectedDecal.Radius);
-                northVR.Draw();
-
-                southVR.Vector = -NorthVector;
-                southVR.Start = VectorDrawPosition;
-                southVR.Scale = Math.Max(1, selectedDecal.Radius);
-                southVR.Draw();
-
-                eastVR.Vector = EastVector;
-                eastVR.Start = VectorDrawPosition;
-                eastVR.Scale = Math.Max(1, selectedDecal.Radius);
-                eastVR.Draw();
-
-                westVR.Vector = -EastVector;
-                westVR.Start = VectorDrawPosition;
-                westVR.Scale = Math.Max(1, selectedDecal.Radius);
-                westVR.Draw();
-            }
-        }
-
-        /// <summary>
-        /// creates the Vectors for later display
-        /// </summary>
-        private void SetupVectors()
-        {
-            // draw vectors
-            fwdVR.Color = new Color(0, 0, 1);
-            fwdVR.Vector = selectedDecal.gameObject.transform.forward;
-            fwdVR.Scale = Math.Max(1, selectedDecal.Radius);
-            fwdVR.Start = VectorDrawPosition;
-            fwdVR.SetLabel("forward");
-            fwdVR.Width = 0.01d;
-            fwdVR.SetLayer(5);
-
-            backVR.Color = new Color(0.972f, 1, 0.627f);
-            backVR.Vector = -selectedDecal.gameObject.transform.forward;
-            backVR.Scale = Math.Max(1, selectedDecal.Radius);
-            backVR.Start = VectorDrawPosition;
-            backVR.Width = 0.01d;
-            backVR.SetLayer(5);
-
-            upVR.Color = new Color(0, 1, 0);
-            upVR.Vector = selectedDecal.gameObject.transform.up;
-            upVR.Scale = 30d;
-            upVR.Start = VectorDrawPosition;
-            upVR.SetLabel("up");
-            upVR.Width = 0.01d;
-
-            rightVR.Color = new Color(1, 0, 0);
-            rightVR.Vector = selectedDecal.gameObject.transform.right;
-            rightVR.Scale = Math.Max(1, selectedDecal.Radius);
-            rightVR.Start = VectorDrawPosition;
-            rightVR.SetLabel("right");
-            rightVR.Width = 0.01d;
-
-            leftVR.Color = new Color(0.972f, 1, 0.627f);
-            leftVR.Vector = -selectedDecal.gameObject.transform.right;
-            leftVR.Scale = Math.Max(1, selectedDecal.Radius);
-            leftVR.Start = VectorDrawPosition;
-            leftVR.Width = 0.01d;
-
-            northVR.Color = new Color(0.9f, 0.3f, 0.3f);
-            northVR.Vector = NorthVector;
-            northVR.Scale = Math.Max(1, selectedDecal.Radius);
-            northVR.Start = VectorDrawPosition;
-            northVR.SetLabel("north");
-            northVR.Width = 0.01d;
-
-            southVR.Color = new Color(0.972f, 1, 0.627f);
-            southVR.Vector = -NorthVector;
-            southVR.Scale = Math.Max(1, selectedDecal.Radius);
-            southVR.Start = VectorDrawPosition;
-            southVR.Width = 0.01d;
-
-            eastVR.Color = new Color(0.3f, 0.3f, 0.9f);
-            eastVR.Vector = EastVector;
-            eastVR.Scale = Math.Max(1, selectedDecal.Radius);
-            eastVR.Start = VectorDrawPosition;
-            eastVR.SetLabel("east");
-            eastVR.Width = 0.01d;
-
-            westVR.Color = new Color(0.972f, 1, 0.627f);
-            westVR.Vector = -EastVector;
-            westVR.Scale = Math.Max(1, selectedDecal.Radius);
-            westVR.Start = VectorDrawPosition;
-            westVR.Width = 0.01d;
-
-        }
-
-        /// <summary>
-        /// stops the drawing of the vectors
-        /// </summary>
-        private void CloseVectors()
-        {
-            northVR.SetShow(false);
-            eastVR.SetShow(false);
-            fwdVR.SetShow(false);
-            upVR.SetShow(false);
-            rightVR.SetShow(false);
-
-            backVR.SetShow(false);
-            leftVR.SetShow(false);
-            westVR.SetShow(false);
-            southVR.SetShow(false);
-
-        }
-
         internal void OnMoveCallBack(Vector3 vector)
         {
-            // Log.Normal("OnMove: " + vector.ToString());
-            //moveGizmo.transform.position += 3* vector;
-
             selectedDecal.gameObject.transform.position = EditorGizmo.moveGizmo.transform.position;
             position = EditorGizmo.moveGizmo.transform.position;
             FlightGlobals.currentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-
-            //selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            //selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            //latitude = selectedDecal.Latitude;
-            //longitude = selectedDecal.Longitude;
-
-            //float oldY = selectedInstance.gameObject.transform.localPosition.y;
-
-            //selectedInstance.gameObject.transform.position += (vector * Time.deltaTime);
-
-            //Vector3 newPos = selectedInstance.gameObject.transform.localPosition;
-            //selectedInstance.gameObject.transform.localPosition = new Vector3(newPos.x, oldY, newPos.z);
-
-            //moveGizmo.transform.position = selectedInstance.gameObject.transform.position;
-
         }
 
         internal void WhenMovedCallBack(Vector3 vector)
         {
-            //Log.Normal("WhenMoved: " + vector.ToString());
-            //            selectedDecal.Latitude = KKMath.GetLatitudeInDeg(selectedDecal.gameObject.transform.localPosition);
-            //            selectedDecal.Longitude = KKMath.GetLongitudeInDeg(selectedDecal.gameObject.transform.localPosition);
             position = EditorGizmo.moveGizmo.transform.position;
             FlightGlobals.currentMainBody.GetLatLonAlt(position, out latitude, out longitude, out altitude);
-            //      latitude = selectedDecal.Latitude;
-            //      longitude = selectedDecal.Longitude;
 
             double upInc = Vector3d.Dot(UpVector, vector);
             selectedDecal.AbsolutOffset += (float)upInc;

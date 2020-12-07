@@ -195,6 +195,7 @@ MOD_FILES := \
 	UI/TransferButtons.cs \
 	UI/UIMain.cs \
 	UI/ValueAdjuster.cs \
+	UI/VectorDisplay.cs \
 	UI/WindowManager.cs \
 	UI2/Editor/EditorModeSelector.cs \
 	UI2/Editor/Group/GroupEditorToolbar.cs \
