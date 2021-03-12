@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.ResourceManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,173 +7,93 @@ using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    internal class MerchantGUI
+    internal class MerchantGUI : VerticalLayout
     {
+		StackSize stackSize;
+		ListView merchantList;
+		MerchantItem.List merchantItems;
+		InfoLine thanksForTrading;
 
-        internal static Merchant selectedFacility = null;
-        internal static StaticInstance lastInstance = null;
+		public override void CreateUI()
+		{
+			base.CreateUI();
 
-        internal static Vessel currentVessel = null;
+			this.ChildForceExpand(true, false)
+				.Add<FixedSpace>() .Size(4) .Finish()
+				.Add<StackSize>(out stackSize) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.BuySellResources)
+					.Finish()
+				.Add<ListView>(out merchantList)
+					.PreferredHeight(120)
+					.Finish()
+				.Add<InfoLine>(out thanksForTrading)
+					.Label(KKLocalization.ThanksForTrading)
+					.Finish()
+				;
 
-        private static Vector2 facilityscroll;
-        private static float increment = 10f;
+			merchantItems = new MerchantItem.List();
+			merchantItems.Content = merchantList.Content;
+			merchantItems.onFromVessel = OnFromVessel;
+			merchantItems.onToVessel = OnToVessel;
+		}
 
-        internal static void MerchantInterface(StaticInstance instance)
-        {
-            if (instance != lastInstance)
-            {
-                Initialize(instance);
-            }
+		void OnFromVessel(MerchantItem item)
+		{
+			double increment = stackSize.Increment;
+			increment += item.vesselResource.Transfer(-increment);
+			BookCredits(increment * item.sellPrice);
+			merchantItems.Update(item);
+		}
 
-            if (!selectedFacility.isOpen)
-            {
-                return;
-            }
+		void OnToVessel(MerchantItem item)
+		{
+			double increment = stackSize.Increment;
+			increment -= item.vesselResource.Transfer(increment);
+			BookCredits(-increment * item.buyPrice);
+			merchantItems.Update(item);
+		}
 
-            GUILayout.Space(2);
+		public void UpdateUI(StaticInstance instance)
+		{
+			var merchant = instance.myFacilities[0] as Merchant;
+			if (merchantItems.Merchant != merchant || merchantItems.Vessel != FlightGlobals.ActiveVessel) {
+				merchantItems.Merchant = merchant;
+				merchantItems.Vessel = FlightGlobals.ActiveVessel;
+				BuildMerchantItems();
+			}
+		}
 
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Stack size: ", GUILayout.Height(18));
-                GUI.enabled = (increment != 1f);
-                if (GUILayout.Button("1", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 1f;
-                }
-                GUI.enabled = (increment != 10f);
-                if (GUILayout.Button("10", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 10f;
-                }
-                GUI.enabled = (increment != 100f);
-                if (GUILayout.Button("100", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 100f;
-                }
-            }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUI.enabled = true;
+		void BuildMerchantItems()
+		{
+			merchantItems.Clear();
 
-            GUILayout.Label("Buy or sell these resources: ", GUILayout.Height(30));
+			var merchant = merchantItems.Merchant;
 
-            GUILayout.Space(2);
-            facilityscroll = GUILayout.BeginScrollView(facilityscroll);
-            {
-                foreach (TradedResource myResource in selectedFacility.tradedResources)
-                {
-                    currentVessel.resourcePartSet.GetConnectedResourceTotals(myResource.resource.id, out double amount, out double maxAmount, false);
-                    // check if we can store this resource
-                    //if (maxAmount == 0 )
-                    //{
-                    //    continue;
-                    //}
-                    GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label(myResource.resource.name, GUILayout.Height(23), GUILayout.Width(120));
-                        GUILayout.FlexibleSpace();
-                        if (myResource.canBeSold)
-                        {
-                            GUILayout.Label("Sell for: ", GUILayout.Height(23));
-                            GUILayout.Label((myResource.resource.unitCost * myResource.multiplierSell).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                        }
-                        else
-                        {
-                            GUILayout.Space(100);
-                        }
-                        GUILayout.FlexibleSpace();
-                        if (myResource.canBeBought)
-                        {
-                            GUILayout.Label("Buy for: ", GUILayout.Height(23));
-                            GUILayout.Label((myResource.resource.unitCost * myResource.multiplierBuy).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                            GUILayout.Space(10);
-                        }
-                        else
-                        {
-                            GUILayout.Space(100);
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                    foreach (PartSet xFeedSet in currentVessel.crossfeedSets)
-                    {
-                        xFeedSet.GetConnectedResourceTotals(myResource.resource.id, out double xfeedAmount, out double xfeedMax, true);
-                        GUILayout.BeginHorizontal();
-                        {
-                            GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18), GUILayout.Width(120));
-                            GUILayout.FlexibleSpace();
-                            if (myResource.canBeSold)
-                            {
-                                if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
-                                {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, increment, true);
-                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
-                                }
-                                if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
-                                {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, increment, true);
-                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierSell);
-                                }
-                            }
-                            else
-                            {
-                                GUILayout.Space(64);
-                            }
-                            GUILayout.FlexibleSpace();
-                            if (myResource.canBeBought)
-                            {
-                                // check if we have enough money to buy the resources
-                                GUI.enabled = ((HighLogic.CurrentGame.Mode != Game.Modes.CAREER) || (Funding.Instance.Funds > (myResource.resource.unitCost * increment * myResource.multiplierBuy)));
-                                if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)) || GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
-                                {
-                                    double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), myResource.resource.id, -increment, true);
-                                    BookCredits(transferred * myResource.resource.unitCost * myResource.multiplierBuy);
-                                }
-                                GUI.enabled = true;
-                            }
-                            else
-                            {
-                                GUILayout.Space(64);
-                            }
-                        }
-                        GUILayout.Space(16);
-                        GUILayout.EndHorizontal();
-                    }
-                    //GUILayout.Space(4);
-                }
-            }
-            GUILayout.EndScrollView();
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
-            if (!String.IsNullOrEmpty(selectedFacility.FacilityName))
-            {
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label("Thanks for trading at: ");
-                    GUILayout.Box(selectedFacility.FacilityName, UIMain.Yellowtext);
-                }
-            GUILayout.EndHorizontal();
-        }
-            //GUILayout.FlexibleSpace();
-        }
+			Part rootPart = merchantItems.Vessel.parts[0].localRoot;
+			var manager = new RMResourceManager(merchantItems.Vessel.parts, rootPart);
+			var vesselResources = manager.masterSet.resources;
 
-        internal static void Initialize(StaticInstance instance)
-        {
-            selectedFacility = instance.myFacilities[0] as Merchant;
-            lastInstance = instance;
-            currentVessel = FlightGlobals.ActiveVessel;
-        }
-
+			var tradedResources = merchant.Resources;
+			for (int i = tradedResources.Count; i-- > 0; ) {
+				var resource = tradedResources[i];
+				RMResourceInfo vesselResource;
+				vesselResources.TryGetValue(resource.resource.name, out vesselResource);
+				merchantItems.Add(new MerchantItem(merchant, resource, vesselResource));
+			}
+			UIKit.UpdateListContent(merchantItems);
+		}
 
         private static void BookCredits(double amount)
         {
-            if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER)
-            {
+            if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER) {
                 Funding.Instance.AddFunds(amount,TransactionReasons.Vessels);
                // Log.Normal("Transaction for: " + (amount).ToString());
             }
-
         }
     }
 }

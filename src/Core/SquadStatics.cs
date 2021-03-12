@@ -337,6 +337,10 @@ namespace KerbalKonstructs
                 // activate them
                 foreach (Transform child in model.prefab.GetComponentsInChildren<Transform>(true))
                 {
+                    if (!child || !child.gameObject) {
+                        continue;
+                    }
+
                     child.gameObject.SetActive(true);
                 }
                 model.prefab.SetActive(false);

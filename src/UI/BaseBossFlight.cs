@@ -3,35 +3,52 @@ using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using KSP.Localization;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    internal class BaseBossFlight : KKWindow
+    internal class BaseBossFlight : Window
     {
-        private static BaseBossFlight _instance = null;
+        static BaseBossFlight _instance = null;
         internal static BaseBossFlight instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new BaseBossFlight();
-
+            get {
+                if (_instance == null) {
+					_instance = UIKit.CreateUI<BaseBossFlight> (UIMain.appCanvasRect, "KKBaseBossFlight");
                 }
                 return _instance;
             }
         }
 
+		IconToggle landingGuide;
+		IconToggle navGuidance;
+		UIText noBasesBeacon;
+		UIText noNearestBase;
+		HorizontalLayout nearestBaseGroup;
+		InfoLine nearestBase;
+		FixedSpace ngsFiller;
+		UIButton setNGSTarget;
+		VerticalLayout careerGroup;
+		UIButton openSite;
+		UIText siteIsOpen;
+		UIText siteCannoteBeOpened;
+		UIText basesCanBeOpened;
+		VerticalLayout facilitiesGroup;
+		UIButton facilityScan;
+		UIText noFacilitiesWithin;
+		UIText nearbyFacilities;
 
-        public StaticInstance selectedObject = null;
+		GroupCenter center;
+		KKLaunchSite ngsSite;
 
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
-        public Texture tIconClosed = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteclosed", false);
-        public Texture tIconOpen = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        public Texture tToggle = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        public Texture tToggle2 = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/siteopen", false);
-        private Rect managerRect = new Rect(10, 25, 320, 520);
+		LaunchsiteItem.List launchsiteItems;
+		KKLaunchSite selectedSite;
 
+		FacilityItem.List facilityItems;
+		FacilityItem selectedFacility;
 
         public float iFundsOpen2 = 0f;
 
@@ -39,240 +56,438 @@ namespace KerbalKonstructs.UI
         public bool foundingBase = false;
         public bool bIsOpen = false;
 
-        public bool bShowFacilities = false;
-        private static List<StaticInstance> allFacilities = new List<StaticInstance>();
+        List<StaticInstance> allFacilities = new List<StaticInstance>();
 
-        public static bool bChangeTarget = false;
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
 
-        public static string sTargetType = "None";
-        private Vector2 scrollPos;
-        private GUIStyle KKWindow;
-        private GUIStyle DeadButton;
-        private GUIStyle DeadButtonRed;
-        private GUIStyle BoxNoBorder;
-        private GUIStyle LabelInfo;
+		public override void CreateUI()
+		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
+			base.CreateUI();
 
-        internal string Base;
-        internal string Base2;
-        internal float Range;
-        internal KKLaunchSite lBase;
-        internal KKLaunchSite lBase2;
-        internal string smessage = "";
-        internal string sClosed;
-        internal float fOpenCost;
+			ScrollView launchsiteList;
+			UIScrollbar ls_scrollbar;
+			ScrollView facilityList;
+			UIScrollbar f_scrollbar;
 
-        private bool isInitialized = false;
+			this.Title(KKLocalization.InflightBaseBoss)
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.SetSkin("KK.Default")
 
-        public override void Draw()
+				.Add<FixedSpace>() .Size(1) .Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+				.Add<FixedSpace>() .Size(5) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.FlightTools)
+					.Finish()
+				.Add<HorizontalLayout>()
+					.Add<FixedSpace>() .Size(2) .Finish()
+					.Add<UIText>()
+						.Text(KKLocalization.LandingGuide)
+						.Finish()
+					.Add<IconToggle>(out landingGuide)
+						.OnSprite(UIMain.tIconOpen)
+						.OffSprite(UIMain.tIconClosed)
+						.OnValueChanged(ToggleLandingGuideUI)
+						.PreferredSize(56, 18)
+						.Finish()
+					.Add<FlexibleSpace>() .Finish()
+					.Add<UIText>()
+						.Text(KKLocalization.NGS)
+						.Finish()
+					.Add<IconToggle>(out navGuidance)
+						.OnSprite(UIMain.tIconOpen)
+						.OffSprite(UIMain.tIconClosed)
+						.OnValueChanged(ToggleNavGuidanceSystem)
+						.PreferredSize(18, 18)
+						.Finish()
+					.Add<FixedSpace>() .Size(2) .Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.SelectedBase)
+					.Finish()
+				.Add<UIText>(out noBasesBeacon)
+					.Text(KKLocalization.NoBasesBeacon)
+					.Finish()
+				.Add<UIText>(out noNearestBase)
+					.Text(KKLocalization.NoNearestBase)
+					.Finish()
+				.Add<HorizontalLayout>(out nearestBaseGroup)
+					.Add<InfoLine>(out nearestBase)
+						.Label(KKLocalization.NearestBase)
+						.Finish()
+					.Add<FixedSpace>(out ngsFiller) .Size(21) .Finish()
+					.Add<UIButton>(out setNGSTarget)
+						.Text(KKLocalization.NGS)
+						.OnClick(SetNGSTarget)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.BaseStatus)
+					.Finish()
+				.Add<VerticalLayout>(out careerGroup)
+					.Add<ScrollView>(out launchsiteList)
+						.Horizontal(false)
+						.Vertical(true)
+						.Horizontal()
+						.ControlChildSize(true, true)
+						.ChildForceExpand(false, true)
+						.FlexibleLayout(true, false)
+						.PreferredSize(-1, 120)
+						.Add<UIScrollbar>(out ls_scrollbar, "Scrollbar")
+							.Direction(Scrollbar.Direction.BottomToTop)
+							.PreferredWidth(15)
+							.FlexibleLayout(false, true)
+							.Finish()
+						.Finish()
+					.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+					.Add<UIButton>(out openSite)
+						.OnClick(OpenSite)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Add<UIText>(out siteIsOpen)
+						.Text(KKLocalization.BaseIsOpen)
+						.Finish()
+					.Add<UIText>(out siteCannoteBeOpened)
+						.Text(KKLocalization.BaseCannotBeOpened)
+						.Finish()
+					.Add<UIText>(out basesCanBeOpened)
+						.Text(KKLocalization.BasesCanBeOpened)
+						.Finish()
+					.Finish()
+				.Add<VerticalLayout>(out facilitiesGroup)
+					.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+					.Add<UIText>()
+						.Text(KKLocalization.OperationalFacilities)
+						.Finish()
+					.Add<UIButton>(out facilityScan)
+						.Text(KKLocalization.ScanForFacilities)
+						.OnClick(CacheFacilities)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Add<ScrollView>(out facilityList)
+						.Horizontal(false)
+						.Vertical(true)
+						.Horizontal()
+						.ControlChildSize(true, true)
+						.ChildForceExpand(false, true)
+						.FlexibleLayout(true, false)
+						.PreferredSize(-1, 120)
+						.Add<UIScrollbar>(out f_scrollbar, "Scrollbar")
+							.Direction(Scrollbar.Direction.BottomToTop)
+							.PreferredWidth(15)
+							.FlexibleLayout(false, true)
+							.Finish()
+						.Finish()
+					.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+					.Add<UIText>(out noFacilitiesWithin)
+						.Text(KKLocalization.NoFacilitiesWithin)
+						.Finish()
+					.Add<UIText>(out nearbyFacilities)
+						.Text(KKLocalization.NearbyFacilitiesCanBeShown)
+						.Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space(2, 2) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.OtherFeatures)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.StartAirRacing)
+					.OnClick(StartAirRacing)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.BasicOrbitalData)
+					.OnClick(BasicOrbitalData)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space(5, 2) .Finish()
+				.Finish();
+
+			ToggleGroup launchsiteGroup;
+			launchsiteList.VerticalScrollbar = ls_scrollbar;
+			launchsiteList.Viewport.FlexibleLayout(true, true);
+			launchsiteList.Content
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false, false)
+				.Anchor(AnchorPresets.HorStretchTop)
+				.PreferredSizeFitter(true, false)
+				.WidthDelta(0)
+				.ToggleGroup (out launchsiteGroup)
+				.Finish();
+
+			UIMain.SetTitlebar(titlebar, Close);
+
+			launchsiteItems = new LaunchsiteItem.List (launchsiteGroup);
+			launchsiteItems.Content = launchsiteList.Content;
+			launchsiteItems.onSelected = OnLaunchsiteSelected;
+
+			ToggleGroup facilityGroup;
+			facilityList.VerticalScrollbar = f_scrollbar;
+			facilityList.Viewport.FlexibleLayout(true, true);
+			facilityList.Content
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false, false)
+				.Anchor(AnchorPresets.HorStretchTop)
+				.PreferredSizeFitter(true, false)
+				.WidthDelta(0)
+				.ToggleGroup (out facilityGroup)
+				.Finish();
+
+			facilityItems = new FacilityItem.List (facilityGroup);
+			facilityItems.Content = facilityList.Content;
+			facilityItems.onSelected = OnFacilitySelected;
+
+			rectTransform.anchoredPosition3D = new Vector2(10, -25);
+
+			GameEvents.onVesselSituationChange.Add (onVesselSituationChange);
+		}
+
+		protected override void OnDestroy()
+		{
+			GameEvents.onVesselSituationChange.Remove (onVesselSituationChange);
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
+		}
+
+		void onVesselSituationChange(GameEvents.HostedFromToAction<Vessel, Vessel.Situations> vs)
+		{
+			if (vs.host == FlightGlobals.ActiveVessel) {
+				if (!FlightGlobals.ActiveVessel.Landed) {
+					allFacilities.Clear();
+					UpdateFaclilitiesGroup();
+				}
+			}
+		}
+
+        public void Close()
         {
-            if (MapView.MapIsEnabled)
-            {
-                return;
-            }
-
-            KKWindow = new GUIStyle(GUI.skin.window)
-            {
-                padding = new RectOffset(3, 3, 5, 5)
-            };
-
-            //if (obj != null)
-            //{
-            //    if (selectedObject != obj)
-            //        EditorGUI.updateSelection(obj);
-            //}
-
-            managerRect = GUI.Window(0xB00B1E2, managerRect, DrawBaseManagerWindow, "", KKWindow);
-        }
-
-        public override void Close()
-        {
-            bShowFacilities = false;
             FacilityManager.instance.Close();
-            base.Close();
+			SetActive(false);
         }
 
-        private void DrawBaseManagerWindow(int windowID)
+		public void Open()
+		{
+			SetActive(true);
+			UpdateUI();
+		}
+
+		void ToggleLandingGuideUI(bool on)
+		{
+			KerbalKonstructs.instance.UpdateCache();
+			LandingGuideUI.instance.Toggle();
+		}
+
+		void ToggleNavGuidanceSystem(bool on)
+		{
+			NavGuidanceSystem.instance.Toggle();
+		}
+
+		void SetNGSTarget()
+		{
+			NavGuidanceSystem.setTargetSite(ngsSite);
+
+			string message = Localizer.Format(KKLocalization.NGSSetTo, center.Group);
+			MiscUtils.HUDMessage(message, 10, 2);
+		}
+
+		void OnLaunchsiteSelected(LaunchsiteItem site)
+		{
+			selectedSite = site.launchsite;
+			UpdateUI();
+		}
+
+		void OnFacilitySelected(FacilityItem facility)
+		{
+			selectedFacility = facility;
+
+			KerbalKonstructs.SelectInstance(selectedFacility.facility, false);
+			FacilityManager.selectedInstance = selectedFacility.facility;
+			FacilityManager.instance.Open();
+		}
+
+		void BuildLaunchsites()
+		{
+			launchsiteItems.Clear();
+			int index = 0;
+			for (int i = 0, count = center.launchsites.Count; i < count; i++) {
+				var site = center.launchsites[i];
+				if (site == selectedSite) {
+					index = launchsiteItems.Count;
+				}
+				launchsiteItems.Add (new LaunchsiteItem (site));
+			}
+			UIKit.UpdateListContent (launchsiteItems);
+			launchsiteItems.Select (index);
+		}
+
+		void BuildFacilities()
+		{
+			facilityItems.Clear();
+			for (int i = 0, count = allFacilities.Count; i < count; i++) {
+				var facility = allFacilities[i];
+				facilityItems.Add (new FacilityItem (facility));
+			}
+			UIKit.UpdateListContent (facilityItems);
+		}
+
+		void OpenSite()
+		{
+			float openCost = selectedSite.OpenCost / 2;
+			double currentfunds = Funding.Instance.Funds;
+
+			if (openCost > currentfunds) {
+				MiscUtils.HUDMessage(KKLocalization.InsuficientFundsToOpenSite, 10, 3);
+			} else {
+				LaunchSiteManager.OpenLaunchSite(selectedSite);
+				if (MiscUtils.isCareerGame())
+				{
+					Funding.Instance.AddFunds(-openCost, TransactionReasons.Cheating);
+				}
+				string message = Localizer.Format(KKLocalization.SiteOpened, selectedSite.LaunchSiteName);
+				MiscUtils.HUDMessage(message, 10, 2);
+
+				launchsiteItems.Update(selectedSite);
+				UpdateLaunchsite();
+			}
+		}
+
+		void StartAirRacing()
+		{
+			AirRacing.instance.Open();
+			AirRacing.runningRace = true;
+			NavGuidanceSystem.instance.Close();
+			FacilityManager.instance.Close();
+		}
+
+		void BasicOrbitalData()
+		{
+			AirRacing.instance.Open();
+			AirRacing.runningRace = false;
+			AirRacing.basicorbitalhud = true;
+			NavGuidanceSystem.instance.Close();
+			FacilityManager.instance.Close();
+		}
+
+		void UpdateLaunchsite()
+		{
+			if (selectedSite == null) {
+				openSite.SetActive(false);
+				siteIsOpen.SetActive(false);
+				siteCannoteBeOpened.SetActive(true);
+			} else {
+				var site = selectedSite;
+				string state = site.OpenCloseState;
+
+				if (state == "Closed") {
+					float openCost = site.OpenCost / 2;
+					openSite.Text(Localizer.Format(KKLocalization.OpenSiteForFunds, site.LaunchSiteName, openCost));
+					openSite.SetActive(true);
+					siteIsOpen.SetActive(false);
+					siteCannoteBeOpened.SetActive(false);
+				} else if (state == "Open") {
+					openSite.SetActive(false);
+					siteIsOpen.SetActive(true);
+					siteCannoteBeOpened.SetActive(false);
+				} else if (state == "OpenLocked" || state == "ClosedLocked") {
+					openSite.SetActive(false);
+					siteIsOpen.SetActive(false);
+					siteCannoteBeOpened.SetActive(true);
+				}
+			}
+		}
+
+		void UpdateFaclilitiesGroup()
+		{
+			BuildFacilities();
+			facilityScan.interactable = FlightGlobals.ActiveVessel.Landed;
+            if (FlightGlobals.ActiveVessel.Landed) {
+                if (allFacilities.Count == 0) {
+					noFacilitiesWithin.SetActive(true);
+					nearbyFacilities.SetActive(false);
+                } else {
+					noFacilitiesWithin.SetActive(false);
+					nearbyFacilities.SetActive(false);
+				}
+            } else {
+				noFacilitiesWithin.SetActive(false);
+				nearbyFacilities.SetActive(true);
+            }
+		}
+
+        void UpdateUI()
         {
+			landingGuide.SetIsOnWithoutNotify(LandingGuideUI.instance.IsOpen());
+			navGuidance.SetIsOnWithoutNotify(NavGuidanceSystem.instance.IsOpen());
 
-            if (!isInitialized)
-            {
-                InitializeLayout();
-            }
+			var Range = float.PositiveInfinity;
 
+			//FIXME atmo scaling? other worlds? ...
+			if (FlightGlobals.ActiveVessel.altitude > 75000) {
+				center = null;
+				noBasesBeacon.SetActive(true);
+				noNearestBase.SetActive(false);
+				nearestBaseGroup.SetActive(false);
+			} else {
+				center = StaticDatabase.GetClosestLaunchCenter();;
+				if (center == null) {
+					noBasesBeacon.SetActive(false);
+					noNearestBase.SetActive(true);
+					nearestBaseGroup.SetActive(false);
+				} else {
+					noBasesBeacon.SetActive(false);
+					noNearestBase.SetActive(false);
+					nearestBaseGroup.SetActive(true);
 
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
+					Vector3 vPosition = FlightGlobals.ActiveVessel.GetTransform().position;
+					ngsSite = LaunchSiteManager.getNearestBase(center, vPosition);
+					Range = Vector3.Distance(center.gameObject.transform.position, vPosition);
+					string info;
+					if (Range < 10000) {
+						info = center.Group + " at " + Range.ToString("#0.0") + " m";
+					} else {
+						info = center.Group + " at " + (Range / 1000).ToString("#0.0") + " km";
+					}
+					nearestBase.Info(info);
+					bool ngs = NavGuidanceSystem.instance.IsOpen();
+					ngsFiller.SetActive (!ngs);
+					setNGSTarget.SetActive (ngs);
+				}
+			}
 
-                GUILayout.FlexibleSpace();
+			if (!MiscUtils.isCareerGame()) {
+				careerGroup.SetActive(false);
+			} else {
+				careerGroup.SetActive(true);
 
-                GUILayout.Button("Inflight Base Boss", DeadButton, GUILayout.Height(16));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
-                {
-                    bShowFacilities = false;
-                    this.Close();
-                    return;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(5);
-            GUILayout.Box("Flight Tools", BoxNoBorder);
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Space(2);
-                GUILayout.Label("Landing Guide ", LabelInfo);
-                if (GUILayout.Button(LandingGuideUI.instance.IsOpen() ? tIconOpen : tIconClosed, GUILayout.Height(18), GUILayout.Width(56)))
-                {
-                    KerbalKonstructs.instance.UpdateCache();
-                    LandingGuideUI.instance.Toggle();
-                }
-
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("NGS ", LabelInfo);
-
-                if (NavGuidanceSystem.instance.IsOpen())
-                {
-                    tToggle2 = tIconOpen;
-                }
-                else
-                {
-                    tToggle2 = tIconClosed;
-                }
-                if (GUILayout.Button(tToggle2, GUILayout.Height(18), GUILayout.Width(18)))
-                {
-                    NavGuidanceSystem.instance.Toggle();
-                }
-
-
-                GUILayout.Space(2);
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(2);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(2);
-
-            GUILayout.Box("Selected Base", BoxNoBorder);
-
-            GUILayout.Space(2);
-
-
-            GUILayout.BeginHorizontal();
-            {
-                string sNearestbase = "";
-                LaunchSiteManager.getNearestBase(FlightGlobals.ActiveVessel.GetTransform().position, out Base, out Base2, out Range, out lBase, out lBase2);
-
-                if (FlightGlobals.ActiveVessel.altitude > 75000)
-                {
-                    GUILayout.Label("No base's beacon in range at this altitude.", LabelInfo);
-                }
-                else
-                if (Base == "")
-                {
-                    GUILayout.Label("No nearest base found.", LabelInfo);
-                }
-                else
-                {
-                    if (Range < 10000)
-                    {
-                        sNearestbase = Base + " at " + Range.ToString("#0.0") + " m";
-                    }
-                    else
-                    {
-                        sNearestbase = Base + " at " + (Range / 1000).ToString("#0.0") + " km";
-                    }
-
-                    GUILayout.Space(5);
-                    GUILayout.Label("Nearest Base: ", LabelInfo);
-                    GUILayout.Label(sNearestbase, LabelInfo, GUILayout.Width(150));
-
-                    if (NavGuidanceSystem.instance.IsOpen())
-                    {
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("NGS", GUILayout.Height(21)))
-                        {
-                            NavGuidanceSystem.setTargetSite(lBase);
-
-                            smessage = "NGS set to " + Base;
-                            MiscUtils.HUDMessage(smessage, 10, 2);
-                        }
-                    }
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(2);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(2);
-            GUILayout.Box("Base Status", BoxNoBorder);
-
-            if (MiscUtils.isCareerGame())
-            {
-
-
-                if (Range < 5000)
-                {
-                    LaunchSiteManager.getSiteOpenCloseState(Base, out sClosed, out fOpenCost);
-                    fOpenCost /= 2f;
-
-                    if (FlightGlobals.ActiveVessel.Landed && sClosed == "Closed")
-                    {
-                        GUILayout.Space(2);
-                        GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                        GUILayout.Space(2);
-                        if (GUILayout.Button("Open Base for " + fOpenCost + " funds", GUILayout.Height(23)))
-                        {
-                            double currentfunds = Funding.Instance.Funds;
-
-                            if (fOpenCost > currentfunds)
-                            {
-                                MiscUtils.HUDMessage("Insufficient funds to open this site!", 10, 0);
-                            }
-                            else
-                            {
-                                LaunchSiteManager.OpenLaunchSite(LaunchSiteManager.GetLaunchSiteByName(Base));
-                                if (MiscUtils.isCareerGame())
-                                {
-                                    Funding.Instance.AddFunds(-LaunchSiteManager.GetLaunchSiteByName(Base).OpenCost, TransactionReasons.Cheating);
-                                }
-                                smessage = Base + " opened";
-                                MiscUtils.HUDMessage(smessage, 10, 2);
-                            }
-                        }
-                    }
-
-                    if (FlightGlobals.ActiveVessel.Landed && sClosed == "Open")
-                    {
-                        GUI.enabled = false;
-                        GUILayout.Button("Base is Open", GUILayout.Height(23));
-                        GUI.enabled = true;
-                    }
-
-                    if (FlightGlobals.ActiveVessel.Landed && (sClosed == "OpenLocked" || sClosed == "ClosedLocked"))
-                    {
-                        GUI.enabled = false;
-                        GUILayout.Button("Base cannot be opened or closed", GUILayout.Height(23));
-                        GUI.enabled = true;
-                    }
-
-                    GUILayout.Space(2);
-                    GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                    GUILayout.Space(2);
-                }
-                else
-                {
-                    GUILayout.Label("Bases can only be opened or closed at the base when within 5km of the base.", LabelInfo);
+                if (!FlightGlobals.ActiveVessel.Landed || Range > 5000) {
+					//FIXME a bouncy landing will be laggy
+					if (launchsiteItems.Count > 0) {
+						launchsiteItems.Clear();
+						UIKit.UpdateListContent (launchsiteItems);
+					}
+					basesCanBeOpened.SetActive(true);
+					openSite.SetActive(false);
+					siteIsOpen.SetActive(false);
+					siteCannoteBeOpened.SetActive(false);
+				} else {
+					basesCanBeOpened.SetActive(false);
+					if (launchsiteItems.Count != center.launchsites.Count) {
+						BuildLaunchsites();
+					}
+					UpdateLaunchsite();
                 }
 
                 //if (Range > 100000)
@@ -298,197 +513,42 @@ namespace KerbalKonstructs.UI
                 //}
             }
 
-            GUILayout.Space(2);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(2);
-            GUILayout.Box("Operational Facilities", BoxNoBorder);
-
-
-            if (FlightGlobals.ActiveVessel.Landed)
-            {
-                if (GUILayout.Button("Show/Hide", GUILayout.Height(23)))
-                {
-                    if (bShowFacilities)
-                    {
-                        bShowFacilities = false;
-                    }
-                    else
-                    {
-                        CacheFacilities();
-                        bShowFacilities = true;
-                    }
-                }
-                if (bShowFacilities && allFacilities.Count == 0)
-                {
-                    GUILayout.Label("No facilities within 5000m", LabelInfo);
-                }
-
-
-                if (bShowFacilities && allFacilities.Count > 0)
-                {
-                    scrollPos = GUILayout.BeginScrollView(scrollPos);
-                    {
-                        for (int i = 0; i < allFacilities.Count; i++)
-                        {
-
-                            GUILayout.BeginHorizontal();
-                            {
-                                bIsOpen = allFacilities[i].myFacilities[0].isOpen;
-
-                                if (!bIsOpen)
-                                {
-                                    iFundsOpen2 = allFacilities[i].myFacilities[0].OpenCost;
-                                    if (iFundsOpen2 == 0)
-                                    {
-                                        bIsOpen = true;
-                                    }
-                                }
-
-                                if (GUILayout.Button(allFacilities[i].model.title, GUILayout.Height(23)))
-                                {
-                                    selectedObject = allFacilities[i];
-                                    KerbalKonstructs.SelectInstance(allFacilities[i], false);
-                                    FacilityManager.selectedInstance = allFacilities[i];
-                                    FacilityManager.instance.Open();
-                                }
-
-                                if (bIsOpen)
-                                {
-                                    GUILayout.Label(tIconOpen, GUILayout.Height(23), GUILayout.Width(23));
-                                }
-
-                                if (!bIsOpen)
-                                {
-                                    GUILayout.Label(tIconClosed, GUILayout.Height(23), GUILayout.Width(23));
-                                }
-                            }
-                            GUILayout.EndHorizontal();
-
-                        }
-                    }
-                    GUILayout.EndScrollView();
-                }
-                else
-                {
-                    GUILayout.Label("Click the button above to display a list of nearby operational facilities.", LabelInfo);
-                }
-            }
-            else
-            {
-                GUILayout.Label("Nearby facilities can only be shown when landed.", LabelInfo);
-                bShowFacilities = false;
-            }
-
-            GUILayout.FlexibleSpace();
-            GUILayout.Space(2);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(2);
-            GUILayout.Box("Other Features", BoxNoBorder);
-            if (GUILayout.Button("Start Air Racing!", GUILayout.Height(23)))
-            {
-                AirRacing.instance.Open();
-                AirRacing.runningRace = true;
-                NavGuidanceSystem.instance.Close();
-                FacilityManager.instance.Close();
-            }
-            if (GUILayout.Button("Basic Orbital Data", GUILayout.Height(23)))
-            {
-                AirRacing.instance.Open();
-                AirRacing.runningRace = false;
-                AirRacing.basicorbitalhud = true;
-                NavGuidanceSystem.instance.Close();
-                FacilityManager.instance.Close();
-            }
-            GUILayout.Space(5);
-
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(2);
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+			UpdateFaclilitiesGroup();
         }
-
-        private void InitializeLayout()
-        {
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            isInitialized = true;
-        }
-
 
         /// <summary>
         /// Caches the facilities on button open
         /// </summary>
-        private void CacheFacilities()
+        void CacheFacilities()
         {
 
             StaticInstance[] allStatics = StaticDatabase.allStaticInstances;
-            allFacilities = new List<StaticInstance>();
+            allFacilities.Clear();
 
-            for (int i = 0; i < allStatics.Length; i++)
-            {
+            for (int i = 0; i < allStatics.Length; i++) {
                 // No facility assigned
-                if (!allStatics[i].hasFacilities)
-                {
+                if (!allStatics[i].hasFacilities) {
                     continue;
                 }
                 //not anywhere here
-                if (!allStatics[i].isActive)
-                {
+                if (!allStatics[i].isActive) {
                     continue;
                 }
-                if (allStatics[i].myFacilities.Count == 0)
-                {
+                if (allStatics[i].myFacilities.Count == 0) {
                     continue;
                 }
                 // Facility is more than 5000m away
-                if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].position) > 5000f)
-                {
+                if (Vector3.Distance(FlightGlobals.ActiveVessel.GetTransform().position, allStatics[i].position) > 5000f) {
                     continue;
                 }
                 // is not a facility
-                if (string.Equals(allStatics[i].FacilityType, "None", StringComparison.CurrentCultureIgnoreCase))
-                {
+                if (string.Equals(allStatics[i].FacilityType, "None", StringComparison.CurrentCultureIgnoreCase)) {
                     continue;
                 }
 
                 allFacilities.Add(allStatics[i]);
             }
+			UpdateFaclilitiesGroup();
         }
 
 

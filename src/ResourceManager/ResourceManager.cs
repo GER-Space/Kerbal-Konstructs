@@ -1,0 +1,395 @@
+// Thanks to Taranis Elsu and his Fuel Balancer mod for the inspiration.
+using System;
+using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace KerbalKonstructs.ResourceManager {
+
+	public enum XferState {
+		Hold,
+		In,
+		Out,
+	};
+
+	public class RMResourceManager
+	{
+		class ConnectedPartSet {
+			Dictionary<uint, string> parts;
+			public ConnectedPartSet ()
+			{
+				parts = new Dictionary<uint, string>();
+			}
+			public void Add (Part part, string name)
+			{
+				uint id = RMResourceManager.GetID (part);
+				parts[id] = name;
+			}
+			public bool Has (Part part)
+			{
+				uint id = RMResourceManager.GetID (part);
+				return parts.ContainsKey (id);
+			}
+			public string Name (Part part)
+			{
+				uint id = RMResourceManager.GetID (part);
+				return parts[id];
+			}
+			public void Clear ()
+			{
+				parts.Clear ();
+			}
+		}
+
+		HashSet<uint> visitedParts = new HashSet<uint> ();
+		HashSet<Guid> visitedVessels = new HashSet<Guid> ();
+		HashSet<Part> excludeParts;
+		Dictionary<uint, Part> partMap = new Dictionary<uint, Part>();
+		Dictionary<uint, RMResourceSet> symmetryDict;
+
+		public List<RMResourceSet> symmetrySets;
+		public List<RMResourceSet> moduleSets = new List<RMResourceSet> ();
+		public List<RMResourceSet> resourceSets;
+		public RMResourceSet masterSet;
+		bool useFlightID;
+		bool addVessels;
+
+		public ResourceXferControl xferControl { get; private set; }
+
+		public ResourceXferControl CreateXferControl ()
+		{
+			if (xferControl == null) {
+				xferControl = new ResourceXferControl ();
+			}
+			return xferControl;
+		}
+
+		public void MoveSet (XferState from, XferState to, RMResourceSet set,
+							 string resourceName)
+		{
+			if (from == XferState.In) {
+				xferControl.RemoveDestination (set, resourceName);
+			} else if (from == XferState.Out) {
+				xferControl.RemoveSource (set, resourceName);
+			}
+			if (to == XferState.In) {
+				xferControl.AddDestination (set, resourceName);
+			} else if (to == XferState.Out) {
+				xferControl.AddSource (set, resourceName);
+			}
+			xferControl.CheckTransfer ();
+		}
+
+		void ExpandPartMap (IEnumerable<Part> parts)
+		{
+			foreach (Part p in parts) {
+				if (excludeParts.Contains (p)) {
+					continue;
+				}
+				// flightID is usable when the parts are from an existing
+				// vessel, and craftID is usable when the parts are from
+				// a craft file (ie, the vessel does not yet exist)
+				// FIXME does it matter? will this be used on an embryonic
+				// vessel?
+				uint id = useFlightID ? p.flightID : p.craftID;
+				partMap[id] = p;
+			}
+		}
+
+		void GetOtherPart (IStageSeparator separator, ConnectedPartSet cp)
+		{
+			AttachNode node = null;
+			if (separator is ModuleAnchoredDecoupler) {
+				if (!(separator as ModuleAnchoredDecoupler).stagingEnabled) {
+					return;
+				}
+				node = (separator as ModuleAnchoredDecoupler).ExplosiveNode;
+			} else if (separator is ModuleDecouple) {
+				if (!(separator as ModuleDecouple).stagingEnabled) {
+					return;
+				}
+				node = (separator as ModuleDecouple).ExplosiveNode;
+			} else if (separator is ModuleDockingNode) {
+				// if referenceNode.attachedPart is not null, then the port
+				// was attached in the editor and may be separated later,
+				// otherwise, need to check for the port having been docked.
+				// if referenceNode itself is null, then the port cannot be
+				// docked in the editor (eg, inline docking port)
+				var port = separator as ModuleDockingNode;
+				Part otherPart = null;
+				if (partMap.TryGetValue (port.dockedPartUId, out otherPart)) {
+					if (port.vesselInfo != null) {
+						var vi = port.vesselInfo;
+						cp.Add (otherPart, vi.name);
+						return;
+					}
+				}
+				node = port.referenceNode;
+				if (node == null) {
+					//Debug.LogFormat ("[RMResourceManager] docking port null");
+					return;
+				}
+			}
+			if (node == null) {
+				// separators detach on both ends (and all surface attachments?)
+				// and thus don't keep track of the node(s), so return the parent
+				Part p = (separator as PartModule).part;
+				if (p.parent != null) {
+					cp.Add (p.parent, "separator");
+				}
+				return;
+			}
+			if (node.attachedPart != null) {
+				cp.Add (node.attachedPart, "decoupler");
+			}
+		}
+
+		static FieldInfo _grappleNodeField;
+		static FieldInfo grappleNodeField
+		{
+			get {
+				if (_grappleNodeField == null) {
+					var fields = typeof (ModuleGrappleNode).GetFields (BindingFlags.NonPublic | BindingFlags.Instance);
+					for (int i = 0; i < fields.Length; i++) {
+						if (fields[i].FieldType == typeof (AttachNode)) {
+							_grappleNodeField =  fields[i];
+							break;
+						}
+					}
+				}
+				return _grappleNodeField;
+			}
+		}
+		void GetOtherPart (ModuleGrappleNode grapple, ConnectedPartSet cp)
+		{
+			// The claw is a very unfriendly part. All the important fields
+			// private.
+			AttachNode grappleNode = (AttachNode) grappleNodeField.GetValue (grapple);
+			if (grappleNode != null && grappleNode.attachedPart != null) {
+				var vi = grapple.vesselInfo;
+				cp.Add (grappleNode.attachedPart, vi.name);
+			}
+		}
+
+		//FIXME rework for multiple connections
+		ConnectedPartSet ConnectedParts (Part part)
+		{
+			var connectedParts = new ConnectedPartSet ();
+
+			for (int i = part.Modules.Count; i-- > 0; ) {
+				var module = part.Modules[i];
+				// This covers radial and stack decouplers and separators,
+				// launch clamps, and docking ports.
+				var separator = module as IStageSeparator;
+				if (separator != null) {
+					GetOtherPart (separator, connectedParts);
+					continue;
+				}
+
+				// The claw is on its own as it is never staged (I guess).
+				var grapple = module as ModuleGrappleNode;
+				if (grapple != null) {
+					GetOtherPart (grapple, connectedParts);
+					continue;
+				}
+			}
+			return connectedParts;
+		}
+
+		RMResourceSet AddModule (string name, uint id)
+		{
+			var set = new RMResourceSet ();
+			set.name = name;
+			set.id = id;
+			moduleSets.Add (set);
+			return set;
+		}
+
+		void ProcessParts (Part part, RMResourceSet set)
+		{
+			var cp = ConnectedParts (part);
+
+			if (part.parent != null && cp.Has (part.parent)) {
+				//Debug.LogFormat("[RMResourceManager] ProcessParts: parent {0}", part.parent);
+				set = AddModule (cp.Name (part.parent), GetID (part.parent));
+			}
+
+			set.AddPart(part);
+
+			for (int i = part.children.Count; i-- > 0; ) {
+				var child = part.children[i];
+				if (excludeParts.Contains (child)) {
+					continue;
+				}
+				if (cp.Has (child)) {
+					//Debug.LogFormat("[RMResourceManager] ProcessParts: child {0}", child);
+					ProcessParts (child, AddModule (cp.Name (child), GetID (child)));
+				} else {
+					ProcessParts (child, set);
+				}
+			}
+		}
+
+		static uint GetID (Part p)
+		{
+			return p.flightID != 0 ? p.flightID : p.craftID;
+		}
+
+		// The dictionary is indexed by part id (flight or craft) such that
+		// the symmetry set can be found by the id of any part within the set.
+		// However, the sets consist of only those parts that hold resources.
+		void FindSymmetrySets (IEnumerable<Part> parts)
+		{
+			visitedParts.Clear ();
+			var dict = new Dictionary<uint, RMResourceSet> ();
+			var sets = new List<RMResourceSet> ();
+			foreach (Part p in parts) {
+				if (excludeParts.Contains (p)) {
+					continue;
+				}
+				uint id = GetID (p);
+				//Debug.LogFormat ("{0} {1} {2}", id, p.name, p.symmetryCounterparts.Count);
+				if (p.Resources.Count < 1) {
+					// no resources, so no point worrying about symmetry
+					continue;
+				}
+				if (p.symmetryCounterparts.Count < 1) {
+					// not part of a symmetry set
+					continue;
+				}
+				if (visitedParts.Contains (id)) {
+					// already added this part
+					continue;
+				}
+				visitedParts.Add (id);
+				RMResourceSet symmetrySet = new RMResourceSet ();
+				symmetrySet.balanced = true;
+				symmetrySet.name = "sym " + id.ToString ();
+				symmetrySet.AddPart (p);
+				dict[id] = symmetrySet;
+				sets.Add (symmetrySet);
+				for (int j = 0; j < p.symmetryCounterparts.Count; j++) {
+					Part s = p.symmetryCounterparts[j];
+					id = GetID (s);
+					visitedParts.Add (id);
+					symmetrySet.AddPart (s);
+					dict[id] = symmetrySet;
+				}
+			}
+			symmetryDict = dict;
+			symmetrySets = sets;
+		}
+
+		void FinalizeResourceSets ()
+		{
+			visitedParts.Clear ();
+			resourceSets = new List<RMResourceSet> ();
+			masterSet = new RMResourceSet ();
+			RMResourceSet set = null;
+			foreach (var m in moduleSets) {
+				if (set == null) {
+					set = new RMResourceSet ();
+					set.name = m.name;
+					set.id = m.id;
+				}
+				foreach (var p in m.parts) {
+					uint id = GetID (p);
+					if (visitedParts.Contains (id)) {
+						continue;
+					}
+					if (p.symmetryCounterparts.Count > 0
+						&& symmetryDict.ContainsKey (id)) {
+						RMResourceSet sym = symmetryDict[id];
+						foreach (var s in sym.parts) {
+							uint sid = GetID (s);
+							visitedParts.Add (sid);
+						}
+						set.AddSet (sym);
+						masterSet.AddSet (sym);
+					} else {
+						visitedParts.Contains (id);
+						set.AddPart (p);
+						masterSet.AddPart (p);
+					}
+				}
+				if (set.parts.Count > 0 || set.sets.Count > 0) {
+					resourceSets.Add (set);
+					set = null;
+				}
+			}
+		}
+
+		void AddVessel (string vesselName, IEnumerable<Part> parts,
+						Part rootPart)
+		{
+			ExpandPartMap (parts);
+			FindSymmetrySets (parts);
+			ProcessParts (rootPart, AddModule (vesselName, GetID (rootPart)));
+			for (int i = 0; i < moduleSets.Count; ) {
+				if (moduleSets[i].parts.Count > 0) {
+					i++;
+				} else {
+					moduleSets.RemoveAt (i);
+				}
+			}
+		}
+
+		void DumpResourceSets ()
+		{
+			foreach (var s in symmetrySets) {
+				Debug.LogFormat ("[RMResourceManager]  s {0} {1} {2} {3}", s.name, s.parts.Count, s.sets.Count, s.resources.Count);
+			}
+			foreach (var m in moduleSets) {
+				Debug.Log ($"[RMResourceManager]  m {m.name} {m.id} {m.parts.Count} {m.sets.Count} {m.resources.Count}");
+			}
+			foreach (var r in resourceSets) {
+				Debug.Log ($"[RMResourceManager]  r {r.name} {r.id} {r.parts.Count} {r.sets.Count} {r.resources.Count}");
+				foreach (var s in r.sets) {
+					Debug.LogFormat ("[RMResourceManager] rs  {0} {1} {2} {3}", s.name, s.parts.Count, s.sets.Count, s.resources.Count);
+				}
+				foreach (var res in r.resources.Keys) {
+					Debug.LogFormat ("[RMResourceManager] rr {0} {1} {2}", res, r.ResourceAmount (res), r.ResourceCapacity (res));
+				}
+			}
+		}
+
+		public RMResourceManager (string vesselName,
+								  IEnumerable<Part> parts, Part rootPart,
+								  HashSet<Part> excludeParts,
+								  bool addVessels = true,
+								  bool useFlightID = true)
+		{
+			this.useFlightID = useFlightID;
+			this.addVessels = addVessels;
+			if (excludeParts == null) {
+				excludeParts = new HashSet<Part> ();
+			}
+			this.excludeParts = excludeParts;
+
+			AddVessel (vesselName, parts, rootPart);
+			FinalizeResourceSets ();
+
+			//DumpResourceSets ();
+		}
+
+		public RMResourceManager (IEnumerable<Part> parts, Part rootPart,
+								  bool addVessels = true,
+								  bool useFlightID = true)
+		{
+			this.useFlightID = useFlightID;
+			this.addVessels = addVessels;
+			this.excludeParts = new HashSet<Part> ();
+
+			string vesselName = "root";
+			if (rootPart.vessel != null) {
+				visitedVessels.Add (rootPart.vessel.id);
+				vesselName = rootPart.vessel.vesselName;
+			}
+
+			AddVessel (vesselName, parts, rootPart);
+			FinalizeResourceSets ();
+
+			//DumpResourceSets ();
+		}
+	}
+}

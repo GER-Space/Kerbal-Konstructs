@@ -26,7 +26,7 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
-                LaunchSiteSelectorGUI.instance.Open();
+                LaunchsiteSelectorGUI.instance.Open();
                 return;
             }
             if ((HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled))
@@ -54,7 +54,7 @@ namespace KerbalKonstructs.UI
 
             if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
-                LaunchSiteSelectorGUI.instance.Close();
+                LaunchsiteSelectorGUI.instance.Close();
                 BaseManager.instance.Close();
                 return;
             }

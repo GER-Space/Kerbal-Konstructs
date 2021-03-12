@@ -1,263 +1,145 @@
 ﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
+using KerbalKonstructs.ResourceManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    internal class StorageGUI
+    internal class StorageGUI : VerticalLayout
     {
 
-        internal static Storage selectedFacility = null;
-        internal static StaticInstance lastInstance = null;
+        HashSet<int> resourceSet;
+		List<PartResourceDefinition> resourceList;
 
-        private static HashSet<PartResourceDefinition> allResources = new HashSet<PartResourceDefinition>();
+        static HashSet<string> blackListedResources = new HashSet<string> { "ElectricCharge", "IntakeAir" };
 
-        internal static Vessel currentVessel = null;
+		StackSize stackSize;
+		InfoLine volumeUsed;
+		ListView storageList;
+		InfoLine thanksForUsing;
+		StorageItem.List storageItems;
 
-        private static float storedAmount = 0f;
-        private static StoredResource storedResource = null;
+		public override void CreateUI()
+		{
+			resourceSet = new HashSet<int>();
+			resourceList = new List<PartResourceDefinition>();
+			base.CreateUI();
 
-        private static HashSet<string> blackListedResources = new HashSet<string> { "ElectricCharge", "IntakeAir" };
+			this.ChildForceExpand(true, false)
+				.Add<FixedSpace>() .Size(4) .Finish()
+				.Add<StackSize>(out stackSize) .Finish()
+				.Add<UIText>()
+					.Text(KKLocalization.StoreRetrieveResources)
+					.Finish()
+				.Add<InfoLine>(out volumeUsed)
+					.Label(KKLocalization.VolumeUsed)
+					.Finish()
+				.Add<ListView>(out storageList)
+					.PreferredHeight(120)
+					.Finish()
+				.Add<InfoLine>(out thanksForUsing)
+					.Label(KKLocalization.ThanksForUsing)
+					.Finish()
+				;
 
-        private static float maxSpaceLeft = 0f;
-        private static double storableUnits = 0f;
+			storageItems = new StorageItem.List();
+			storageItems.Content = storageList.Content;
+			storageItems.onFromVessel = OnFromVessel;
+			storageItems.onToVessel = OnToVessel;
+		}
 
+		public void UpdateUI(StaticInstance instance)
+		{
+			var storage = instance.myFacilities[0] as Storage;
+			volumeUsed.Info($"{storage.currentVolume} / {storage.maxVolume}");
+			if (storageItems.Storage != storage || storageItems.Vessel != FlightGlobals.ActiveVessel) {
+				BuildStorageItems(storage);
+			}
+			thanksForUsing.Info(storage.FacilityName);
+		}
 
-        private static Vector2 facilityscroll;
-        private static float increment = 10f;
+		void BuildStorageItems(Storage storage)
+		{
+			Vessel vessel = FlightGlobals.ActiveVessel;
+			resourceSet.Clear();
+			resourceList.Clear();
 
+			Part rootPart = vessel.parts[0].localRoot;
+			var manager = new RMResourceManager(vessel.parts, rootPart);
+			GetVesselResources (manager);
+			GetStoredResources (storage);
 
-        /// <summary>
-        /// Subwindows called by FacilityManager
-        /// </summary>
-        /// <param name="instance"></param>
-        internal static void StorageInerface(StaticInstance instance)
+			storageItems.Clear();
+			storageItems.Storage = storage;
+			storageItems.Vessel = vessel;
+
+			for (int i = 0; i < resourceList.Count; i++) {
+				var resDef = resourceList[i];
+				var storedResource = storage.GetResource(resDef);
+				RMResourceInfo vesselResource;
+				manager.masterSet.resources.TryGetValue(resDef.name, out vesselResource);
+				storageItems.Add (new StorageItem(storage, storedResource, vesselResource));
+			}
+			UIKit.UpdateListContent(storageItems);
+		}
+
+		void OnFromVessel(StorageItem storageItem)
+		{
+			// vessel to storage
+			double increment = stackSize.Increment;
+			double storableUnits = Math.Min(increment, storageItem.maxAmount - storageItem.storedAmount);
+			Debug.Log($"[StorageGUI] OnFromVessel {storageItem.name} {increment} {storableUnits}");
+			// Transfer uses +ve for in, -ve for out
+			storableUnits += storageItem.vesselResource.Transfer(-storableUnits);
+			Debug.Log($"	{storableUnits}");
+			storageItem.storage.StoreResource(storageItem.storedResource.resource, storableUnits);
+			storageItems.Update(storageItem);
+		}
+
+		void OnToVessel(StorageItem storageItem)
+		{
+			// storage to vessel
+			double increment = stackSize.Increment;
+			double retrievableUnits = Math.Min(increment, storageItem.storedAmount);
+			Debug.Log($"[StorageGUI] OnToVessel {storageItem.name} {increment} {retrievableUnits}");
+			// Transfer uses +ve for in, -ve for out
+			retrievableUnits -= storageItem.vesselResource.Transfer(retrievableUnits);
+			Debug.Log($"	{retrievableUnits}");
+			storageItem.storage.StoreResource(storageItem.storedResource.resource, -retrievableUnits);
+			storageItems.Update(storageItem);
+		}
+
+        internal void GetVesselResources(RMResourceManager manager)
         {
-            if (instance != lastInstance)
-            {
-                Initialize(instance);
-            }
+			var definitions = PartResourceLibrary.Instance.resourceDefinitions;
 
-            if (!selectedFacility.isOpen)
-            {
-                return;
-            }
-
-            GUILayout.Space(2);
-            GUILayout.Space(2);
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Stack size: ", GUILayout.Height(18));
-                GUI.enabled = (increment != 1f);
-                if (GUILayout.Button("1", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 1f;
-                }
-                GUI.enabled = (increment != 10f);
-                if (GUILayout.Button("10", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 10f;
-                }
-                GUI.enabled = (increment != 100f);
-                if (GUILayout.Button("100", GUILayout.Height(18), GUILayout.Width(32)))
-                {
-                    increment = 100f;
-                }
-            }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUI.enabled = true;
-
-            GUILayout.Label("Store or retrieve these resources: ", GUILayout.Height(30));
-
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Volume used: ", GUILayout.Height(23));
-                GUILayout.Label(selectedFacility.currentVolume.ToString() + "/" + selectedFacility.maxVolume.ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                GUILayout.Space(10);
-                GUILayout.FlexibleSpace();
-            }
-            GUILayout.EndHorizontal();
-
-            facilityscroll = GUILayout.BeginScrollView(facilityscroll);
-            {
-                ShowRetrieveGUI();
-            }
-            GUILayout.EndScrollView();
-
-
-            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
-            if (!String.IsNullOrEmpty(selectedFacility.FacilityName))
-            {
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label("Thanks for using: ");
-                    GUILayout.Box(selectedFacility.FacilityName, UIMain.Yellowtext);
-                }
-                GUILayout.EndHorizontal();
-            }
-            //GUILayout.FlexibleSpace();
+			foreach (string r in manager.masterSet.resources.Keys) {
+				if (blackListedResources.Contains(r)) {
+					continue;
+				}
+				var resDef = definitions[r];
+				if (resDef != null) {	// null shouldn't happen, but...
+					resourceSet.Add(resDef.id);
+					resourceList.Add(resDef);
+				}
+			}
         }
 
-
-        /// <summary>
-        /// SubSub windows components. The actual scroll view
-        /// </summary>
-        internal static void ShowRetrieveGUI()
+        internal void GetStoredResources(Storage storage)
         {
-            foreach (PartResourceDefinition resource in allResources)
+            foreach (var resource in storage.storedResources.Values)
             {
-                if (blackListedResources.Contains(resource.name))
+                if (!resourceSet.Contains(resource.id))
                 {
-                    continue;
-                }
-
-                storedResource = selectedFacility.storedResources.Where(r => r.resource == resource).FirstOrDefault();
-                if (storedResource == null)
-                {
-                    storedAmount = 0f;
-                }
-                else
-                {
-                    storedAmount = storedResource.amount;
-                }
-
-                GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label(resource.name, GUILayout.Height(23));
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Stored: ", GUILayout.Height(23));
-                    GUILayout.Label((storedAmount).ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Volume: ", GUILayout.Height(23));
-                    GUILayout.Label((resource.volume * storedAmount).ToString() + "/" + selectedFacility.maxVolume.ToString(), UIMain.LabelInfo, GUILayout.Height(23));
-                    //GUILayout.Space(10);
-                }
-                GUILayout.EndHorizontal();
-                foreach (PartSet xFeedSet in currentVessel.crossfeedSets)
-                {
-                    xFeedSet.GetConnectedResourceTotals(resource.id, out double xfeedAmount, out double xfeedMax, true);
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label(Math.Round(xfeedAmount, 1).ToString() + " of " + Math.Round(xfeedMax, 1).ToString(), UIMain.LabelInfo, GUILayout.Height(18));
-                        GUILayout.FlexibleSpace();
-
-                        maxSpaceLeft = selectedFacility.maxVolume - selectedFacility.currentVolume;
-                        storableUnits = Math.Min(increment, maxSpaceLeft / resource.volume);
-                        GUI.enabled = (storableUnits > 0f);
-                        if (GUILayout.Button("+", GUILayout.Height(18), GUILayout.Width(32)))
-                        {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
-                            StoreResource(resource, transferred);
-                        }
-                        if (GUILayout.RepeatButton("++", GUILayout.Height(18), GUILayout.Width(32)))
-                        {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, storableUnits, true);
-                            StoreResource(resource, transferred);
-                        }
-                        GUI.enabled = true;
-                        GUILayout.FlexibleSpace();
-
-                        // check if we have enough space to retrieve the resource and if there is anything to retrieve
-                        GUI.enabled = ((xfeedMax > 0) && (storedAmount > 0f));
-                        if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(32)))
-                        {
-
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(increment, storedAmount), true);
-                            StoreResource(resource, transferred);
-
-                        }
-                        if (GUILayout.RepeatButton("--", GUILayout.Height(18), GUILayout.Width(32)))
-                        {
-                            double transferred = xFeedSet.RequestResource(xFeedSet.GetParts().ToList().First(), resource.id, -Math.Min(increment, storedAmount), true);
-                            StoreResource(resource, transferred);
-                        }
-                        GUILayout.Space(10);
-                        GUI.enabled = true;
-
-
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                //GUILayout.Space(4);
-            }
-
-        }
-
-
-        internal static void GetVesselResources()
-        {
-            double amount = 0;
-            double maxAmount = 0;
-            foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions)
-            {
-                foreach (var partSet in currentVessel.crossfeedSets)
-                {
-                    partSet.GetConnectedResourceTotals(availableResource.id, out amount, out maxAmount, true);
-                    if (maxAmount > 0)
-                    {
-                        allResources.Add(availableResource);
-                        break;
-                    }
-
+					resourceSet.Add(resource.id);
+                    resourceList.Add(resource.resource);
                 }
             }
         }
-
-        internal static void GetStoredResources()
-        {
-            foreach (var resource in selectedFacility.storedResources)
-            {
-                if (!allResources.Contains(resource.resource))
-                {
-                    allResources.Add(resource.resource);
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Stores or retrieves a resource to the facility. Deletes the resource if nothing is left
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="amount"></param>
-        internal static void StoreResource(PartResourceDefinition resource, double amount)
-        {
-            StoredResource myStoredResource = selectedFacility.storedResources.Where(r => r.resource == resource).FirstOrDefault();
-            if (myStoredResource == null)
-            {
-                myStoredResource = new StoredResource { resource = resource, amount = (float)amount };
-                selectedFacility.storedResources.Add(myStoredResource);
-            }
-            else
-            {
-                myStoredResource.amount += (float)amount;
-            }
-
-            if (Math.Round(myStoredResource.amount, 4) == 0f)
-            {
-                selectedFacility.storedResources.Remove(myStoredResource);
-            }
-        }
-
-        /// <summary>
-        /// init of needed vaiabled on facility change
-        /// </summary>
-        /// <param name="instance"></param>
-        internal static void Initialize(StaticInstance instance)
-        {
-            selectedFacility = instance.myFacilities[0] as Storage;
-            lastInstance = instance;
-            currentVessel = FlightGlobals.ActiveVessel;
-            GetVesselResources();
-            GetStoredResources();
-        }
-
     }
 }

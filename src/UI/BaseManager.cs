@@ -3,10 +3,15 @@ using KerbalKonstructs.Modules;
 using KerbalKonstructs.Utilities;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using KSP.Localization;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    class BaseManager : KKWindow
+    class BaseManager : Window
     {
         private static BaseManager _instance = null;
         internal static BaseManager instance
@@ -15,48 +20,55 @@ namespace KerbalKonstructs.UI
             {
                 if (_instance == null)
                 {
-                    _instance = new BaseManager();
-
+                    _instance = UIKit.CreateUI<BaseManager>(UIMain.appCanvasRect, "KKBaseManager");
+					_instance.rectTransform.anchoredPosition3D = new Vector2(250, -60);
                 }
                 return _instance;
             }
         }
 
-
-        public static Rect BaseManagerRect = new Rect(250, 60, 185, 610);
-
-        public Texture tTitleIcon = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/titlebaricon", false);
-        public Texture tSmallClose = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/littleclose", false);
-        public Texture tStatusLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/setaslaunchsite", false);
-        public Texture tSetLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/setaslaunchsite", false);
-        public Texture tOpenedLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/openedlaunchsite", false);
-        public Texture tClosedLaunchsite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/closedlaunchsite", false);
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep", false);
-        public Texture tMakeFavourite = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/makefavourite", false);
-        public Texture tVerticalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/verticalsep", false);
-        public Texture tFaveTemp = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/makefavourite", false);
-        public Texture tIsFave = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/isFavourite", false);
-        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
+        public static Sprite tTitleIcon;
+        public static Sprite tSmallClose;
+        public static Sprite tSetLaunchsite;
+        public static Sprite tOpenedLaunchsite;
+        public static Sprite tClosedLaunchsite;
+        public static Sprite tMakeFavourite;
+        public static Sprite tVerticalSep;
+        public static Sprite tIsFave;
+        public static Sprite tFoldOut;
+        public static Sprite tFoldIn;
+        public static Sprite tFolded;
 
 
         public static KKLaunchSite selectedSite = null;
 
-        GUIStyle Yellowtext;
-        GUIStyle TextAreaNoBorder;
-        GUIStyle KKWindow;
-        GUIStyle BoxNoBorder;
-        GUIStyle SmallButton;
-        GUIStyle LabelWhite;
-        GUIStyle KKWindowTitle;
-        GUIStyle LabelInfo;
-        GUIStyle DeadButton;
-        GUIStyle DeadButtonRed;
-
-        Vector2 descriptionScrollPosition;
-        Vector2 logScrollPosition;
-
+		UIText siteName;
+		UIImage siteLogo;
+		UIText siteDescription;
+		VerticalLayout foldGroup;
+		VerticalLayout statsView;
+		UIButton showStats;
+		UIButton showLog;
+		IconToggle favToggle;
+		IconToggle foldToggle;
+		InfoLine altitude;
+		InfoLine longitude;
+		InfoLine latitude;
+		InfoLine maxLength;
+		InfoLine maxWidth;
+		InfoLine maxHeight;
+		InfoLine maxMass;
+		InfoLine maxParts;
+		ScrollView logView;
+		UIText logText;
+		UIButton openBase;
+		UIButton closeBase;
+		HorizontalLayout editorView;
+		VerticalLayout flightView;
+		UIImage launchsiteStatus;
+		UIButton setLaunchsite;
+		UIButton createWaypoint;
+		UIButton deleteWaypoint;
 
         public float rangekm = 0;
 
@@ -69,399 +81,361 @@ namespace KerbalKonstructs.UI
         public Boolean doneFold = false;
         //public Boolean isLaunch = false;
 
-        private bool layoutIsInitialized = false;
+		public void Close()
+		{
+			SetActive(false);
+		}
+
+		public void Open()
+		{
+			SetActive(true);
+			UpdateUI();
+		}
+
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
+
+		public override void CreateUI()
+		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
+			if (tFolded == null) {
+				tTitleIcon = UIMain.MakeSprite("KerbalKonstructs/Assets/titlebaricon");
+				tSmallClose = UIMain.MakeSprite("KerbalKonstructs/Assets/littleclose");
+				tSetLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/setaslaunchsite");
+				tOpenedLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/openedlaunchsite");
+				tClosedLaunchsite = UIMain.MakeSprite("KerbalKonstructs/Assets/closedlaunchsite");
+				tMakeFavourite = UIMain.MakeSprite("KerbalKonstructs/Assets/makefavourite");
+				tVerticalSep = UIMain.MakeSprite("KerbalKonstructs/Assets/verticalsep");
+				tIsFave = UIMain.MakeSprite("KerbalKonstructs/Assets/isFavourite");
+				tFoldOut = UIMain.MakeSprite("KerbalKonstructs/Assets/foldin");
+				tFoldIn = UIMain.MakeSprite("KerbalKonstructs/Assets/foldout");
+				tFolded = UIMain.MakeSprite("KerbalKonstructs/Assets/foldout");
+			}
+
+			ScrollView siteInfo;
+			UIScrollbar info_scrollbar;
+			UIScrollbar log_scrollbar;
+			//ToggleGroup toggleGroup;
+
+			base.CreateUI();
+			Title (KKLocalization.BaseManager)
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.SetSkin ("KK.Default")
+
+				.Add<HorizontalSep>("HorizontalSep") .Space(1, 2) .Finish()
+				.Add<UIText>(out siteName)//yellow text
+					.Alignment(TextAlignmentOptions.Center)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<FixedSpace>() .Size(5) .Finish()
+				.Add<VerticalLayout>(out foldGroup)
+					.Add<HorizontalLayout>()
+						.Add<FixedSpace>() .Size(2) .Finish()
+						.Add<UIImage>()
+							.Image(tVerticalSep)
+							.FlexibleLayout(false, true)
+							.PreferredSize(4,135)
+							.Finish()
+						.Add<FlexibleSpace>() .Finish()
+						.Add<UIImage>(out siteLogo)
+							.PreferredSize(135,135)
+							.Finish()
+						.Add<FlexibleSpace>() .Finish()
+						.Add<UIImage>()
+							.Image(tVerticalSep)
+							.FlexibleLayout(false, true)
+							.PreferredSize(4,135)
+							.Finish()
+						.Add<FixedSpace>() .Size(2) .Finish()
+						.Finish()
+					.Add<FixedSpace>() .Size(3) .Finish()
+					.Add<ScrollView>(out siteInfo)
+						.Horizontal(false)
+						.Vertical(true)
+						.Horizontal()
+						.ControlChildSize(true, true)
+						.ChildForceExpand(false, true)
+						.FlexibleLayout(true, false)
+						.PreferredSize(-1, 120)
+						.Add<UIScrollbar>(out info_scrollbar, "Scrollbar")
+							.Direction(Scrollbar.Direction.BottomToTop)
+							.PreferredWidth(15)
+							.Finish()
+						.Finish()
+					.Finish()
+				.Add<FixedSpace>() .Size(1) .Finish()
+				.Add<HorizontalLayout>()
+					.ChildAlignment(TextAnchor.MiddleCenter)
+					.Add<UIButton>(out showStats)
+						.Text(KKLocalization.Stats)
+						.OnClick(ShowStats)
+						.Finish()
+					.Add<FlexibleSpace>() .Finish()
+					.Add<UIButton>(out showLog)
+						.Text(KKLocalization.Log)
+						.OnClick(ShowLog)
+						.Finish()
+					.Add<FlexibleSpace>() .Finish()
+					.Add<IconToggle>(out favToggle)
+						.OnSprite(tIsFave)
+						.OffSprite(tMakeFavourite)
+						.OnValueChanged(SetIsFavorite)
+						.PreferredSize(23,23)
+						.Finish()
+					.Add<FlexibleSpace>() .Finish()
+					.Add<IconToggle>(out foldToggle)
+						.OnSprite(tFoldOut)
+						.OffSprite(tFoldIn)
+						.OnValueChanged(SetIsFolded)
+						.PreferredSize(23,23)
+						.Finish()
+					.Finish()
+				.Add<VerticalLayout>(out statsView)
+					.Add<InfoLine>(out altitude) .Label(KKLocalization.Altitude) .Finish()
+					.Add<InfoLine>(out longitude) .Label(KKLocalization.Longitude) .Finish()
+					.Add<InfoLine>(out latitude) .Label(KKLocalization.Latitude) .Finish()
+					.Add<FixedSpace>() .Size(3) .Finish()
+					.Add<InfoLine>(out maxLength) .Label(KKLocalization.MaxLength) .Finish()
+					.Add<InfoLine>(out maxWidth) .Label(KKLocalization.MaxWidth) .Finish()
+					.Add<InfoLine>(out maxHeight) .Label(KKLocalization.MaxHeight) .Finish()
+					.Add<InfoLine>(out maxMass) .Label(KKLocalization.MaxMass) .Finish()
+					.Add<InfoLine>(out maxParts) .Label(KKLocalization.MaxParts) .Finish()
+					.Finish()
+				.Add<ScrollView>(out logView)
+					.Horizontal(false)
+					.Vertical(true)
+					.Horizontal()
+					.ControlChildSize(true, true)
+					.ChildForceExpand(false, true)
+					.FlexibleLayout(true, false)
+					.PreferredSize(-1, 120)
+					.Add<UIScrollbar>(out log_scrollbar, "Scrollbar")
+						.Direction(Scrollbar.Direction.BottomToTop)
+						.PreferredWidth(15)
+						.Finish()
+					.Finish()
+				.Add<FixedSpace>() .Size(1) .Finish()
+				.Add<UIButton>(out openBase)
+					.OnClick(OpenBase)
+					.Finish()
+				.Add<UIButton>(out closeBase)
+					.OnClick(CloseBase)
+					.Finish()
+				.Add<FlexibleSpace>() .Finish()
+				.Add<HorizontalLayout>(out editorView)
+					.Add<UIImage>(out launchsiteStatus)
+						.PreferredSize(32, 32)
+						.Finish()
+					.Add<UIButton>(out setLaunchsite)
+						.Text(KKLocalization.SetLaunchsite)
+						.OnClick(SetLaunchsite)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<VerticalLayout>(out flightView)
+					.Add<UIButton>(out createWaypoint)
+						.Text(KKLocalization.CreateWaypoint)
+						.OnClick(CreateWaypoint)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Add<UIButton>(out deleteWaypoint)
+						.Text(KKLocalization.DeleteWaypoint)
+						.OnClick(DeleteWaypoint)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep") .Space(3, 1) .Finish()
+				.Finish();
+
+			ShowStats();
+
+			siteInfo.VerticalScrollbar = info_scrollbar;
+			siteInfo.Viewport.FlexibleLayout(true, true);
+			siteInfo.Content
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false, false)
+				.Anchor(AnchorPresets.HorStretchTop)
+				.PreferredSizeFitter(true, false)
+				.WidthDelta(0)
+				.Add<UIText>(out siteDescription)
+					.Alignment (TextAlignmentOptions.TopLeft)
+					.Margin(5, 5, 5, 5)
+					.FlexibleLayout (true, false)
+					.SizeDelta (0, 0)
+					.Finish ()
+				.Finish();
+
+			logView.VerticalScrollbar = log_scrollbar;
+			logView.Viewport.FlexibleLayout(true, true);
+			logView.Content
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false, false)
+				.Anchor(AnchorPresets.HorStretchTop)
+				.PreferredSizeFitter(true, false)
+				.WidthDelta(0)
+				.Add<UIText>(out logText)
+					.Alignment (TextAlignmentOptions.TopLeft)
+					.Margin(5, 5, 5, 5)
+					.FlexibleLayout (true, false)
+					.SizeDelta (0, 0)
+					.Finish ()
+				.Finish();
+
+			UIMain.SetTitlebar(titlebar, Close);
+		}
+
+		protected override void OnDestroy()
+		{
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
+		}
 
 
-        public override void Draw()
+		void SetIsFolded(bool on)
+		{
+			foldedIn = on;
+			foldGroup.SetActive(!on);
+			selectedSite.favouriteSite = on ? "Yes" : "No";
+		}
+
+		void SetIsFavorite(bool on)
+		{
+			selectedSite.favouriteSite = on ? "Yes" : "No";
+		}
+
+		void ShowStats()
+		{
+			showStats.interactable = false;
+			showLog.interactable = true;
+			statsView.SetActive(true);
+			logView.SetActive(false);
+		}
+
+		void ShowLog()
+		{
+			showStats.interactable = true;
+			showLog.interactable = false;
+			statsView.SetActive(false);
+			logView.SetActive(true);
+		}
+
+		void OpenBase()
+		{
+			if (CareerUtils.isCareerGame && selectedSite.OpenCost > Funding.Instance.Funds) {
+				MiscUtils.HUDMessage(KKLocalization.InsuficientFundsToOpenBase, 10, 3);
+			} else {
+				LaunchSiteManager.OpenLaunchSite(selectedSite);
+				if (CareerUtils.isCareerGame) {
+					//FIXME why is this cheating?
+					Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
+				}
+			}
+		}
+
+		void CloseBase()
+		{
+			LaunchSiteManager.CloseLaunchSite(selectedSite);
+			if (CareerUtils.isCareerGame) {
+				//FIXME why is this cheating?
+				Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
+			}
+		}
+
+		void CreateWaypoint()
+		{
+			MapIconSelector.CreateWPForLaunchSite(selectedSite);
+		}
+
+		void DeleteWaypoint()
+		{
+			FinePrint.WaypointManager.RemoveWaypoint(selectedSite.wayPoint);
+			selectedSite.wayPoint = null;
+		}
+
+		void SetLaunchsite()
+		{
+			LaunchSiteManager.setLauncsite(selectedSite);
+			string message = Localizer.Format(KKLocalization.HasBeenSetAsLaunchsite, SiteName);
+			MiscUtils.HUDMessage(message, 10, 0);
+		}
+
+		string MaxSpec(float spec, string unit)
+		{
+			if (spec > 0) {
+				return $"{spec:F0}{unit}";
+			}
+			return KKLocalization.Unlimited;
+		}
+
+		string SiteName
+		{
+			get {
+				string siteName = "";
+				siteName = selectedSite.LaunchSiteName;
+				if (selectedSite.LaunchSiteName == "Runway") siteName = "KSC Runway";
+				if (selectedSite.LaunchSiteName == "LaunchPad") siteName = "KSC LaunchPad";
+				return siteName;
+			}
+		}
+
+        internal void UpdateUI()
         {
-            drawBaseManager();
+			siteName.Text(SiteName);
+			siteLogo.Image(selectedSite.logo);
+			siteDescription.Text(selectedSite.LaunchSiteDescription);
+
+			favToggle.SetIsOnWithoutNotify(selectedSite.favouriteSite == "Yes");
+			foldToggle.SetIsOnWithoutNotify(foldedIn);
+
+			altitude.Info($"{selectedSite.refAlt:F1} m");
+			longitude.Info($"{selectedSite.refLon:F3}");
+			latitude.Info($"{selectedSite.refLat:F3}");
+			maxLength.Info(MaxSpec(selectedSite.LaunchSiteLength, " m"));
+			maxWidth.Info(MaxSpec(selectedSite.LaunchSiteWidth, " m"));
+			maxHeight.Info(MaxSpec(selectedSite.LaunchSiteHeight, " m"));
+			maxMass.Info(MaxSpec(selectedSite.MaxCraftMass, " t"));
+			maxParts.Info(MaxSpec(selectedSite.MaxCraftParts, ""));
+
+			openBase.interactable = !selectedSite.isOpen;
+			closeBase.interactable = selectedSite.isOpen;
+			openBase.Text(Localizer.Format(KKLocalization.OpenBaseForFunds, selectedSite.OpenCost));
+			closeBase.Text(Localizer.Format(KKLocalization.CloseBaseForFunds, selectedSite.CloseValue));
+
+			if (!String.IsNullOrEmpty(selectedSite.MissionLog)) {
+				logText.Text(selectedSite.MissionLog.Replace("|", "\n"));
+			} else {
+				logText.Text(KKLocalization.NoLog);
+			}
+
+            if (HighLogic.LoadedScene == GameScenes.EDITOR) {
+				editorView.SetActive(true);
+				flightView.SetActive(false);
+				if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName) {
+					launchsiteStatus.Image(tSetLaunchsite);
+				} else if (selectedSite.isOpen) {
+					launchsiteStatus.Image(tOpenedLaunchsite);
+				} else {
+					launchsiteStatus.Image(tClosedLaunchsite);
+				}
+				setLaunchsite.interactable = (selectedSite.isOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
+            } else {
+				editorView.SetActive(false);
+				flightView.SetActive(true);
+				if (selectedSite.wayPoint!= null && FinePrint.WaypointManager.FindWaypoint(selectedSite.wayPoint.navigationId) == null) {
+					selectedSite.wayPoint = null;
+				}
+				createWaypoint.SetActive(selectedSite.wayPoint == null);
+				deleteWaypoint.SetActive(selectedSite.wayPoint != null);
+			}
         }
-
-        public void drawBaseManager()
-        {
-
-            KKWindow = new GUIStyle(GUI.skin.window);
-            KKWindow.padding = new RectOffset(3, 3, 5, 5);
-
-            if (foldedIn)
-            {
-                if (!doneFold)
-                    BaseManagerRect = new Rect(BaseManagerRect.xMin, BaseManagerRect.yMin, BaseManagerRect.width, BaseManagerRect.height - 255);
-
-                doneFold = true;
-            }
-
-            if (!foldedIn)
-            {
-                if (doneFold)
-                    BaseManagerRect = new Rect(BaseManagerRect.xMin, BaseManagerRect.yMin, BaseManagerRect.width, BaseManagerRect.height + 255);
-
-                doneFold = false;
-            }
-
-            BaseManagerRect = GUI.Window(0xC00B8B7, BaseManagerRect, drawBaseManagerWindow, "", KKWindow);
-
-            if (BaseManagerRect.Contains(Event.current.mousePosition))
-            {
-                InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "KKEditorLock");
-            }
-            else
-            {
-                InputLockManager.RemoveControlLock("KKEditorLock");
-            }
-        }
-
-        public void drawBaseManagerWindow(int windowID)
-        {
-
-            if (!layoutIsInitialized)
-            {
-                InitializeLayout();
-                layoutIsInitialized = true;
-            }
-
-            string sButtonName = "";
-            sButtonName = selectedSite.LaunchSiteName;
-            if (selectedSite.LaunchSiteName == "Runway") sButtonName = "KSC Runway";
-            if (selectedSite.LaunchSiteName == "LaunchPad") sButtonName = "KSC LaunchPad";
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("Base Manager", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (HighLogic.LoadedScene != GameScenes.EDITOR)
-                {
-                    if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-                    {
-                        InputLockManager.RemoveControlLock("KKEditorLock");
-                        selectedSite = null;
-                        this.Close();
-                        return;
-                    }
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            if (selectedSite.LaunchSiteName == "Runway")
-                GUILayout.Box("KSC Runway", Yellowtext);
-            else
-                if (selectedSite.LaunchSiteName == "LaunchPad")
-                GUILayout.Box("KSC LaunchPad", Yellowtext);
-            else
-                GUILayout.Box("" + selectedSite.LaunchSiteName, Yellowtext);
-
-            if (!foldedIn)
-            {
-                GUILayout.Space(5);
-
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Space(2);
-                    GUILayout.Box(tVerticalSep, BoxNoBorder, GUILayout.Width(4), GUILayout.Height(135));
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Box(selectedSite.logo, BoxNoBorder, GUILayout.Height(135), GUILayout.Width(135));
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Box(tVerticalSep, BoxNoBorder, GUILayout.Width(4), GUILayout.Height(135));
-                    GUILayout.Space(2);
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.Space(3);
-
-                descriptionScrollPosition = GUILayout.BeginScrollView(descriptionScrollPosition, GUILayout.Height(120));
-                {
-                    GUI.enabled = false;
-                    GUILayout.Label(selectedSite.LaunchSiteDescription, LabelWhite);
-                    GUI.enabled = true;
-                }
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.Space(1);
-
-            isFavourite = (selectedSite.favouriteSite == "Yes");
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = (!displayStats);
-                if (GUILayout.Button("Stats", GUILayout.Height(23)))
-                {
-                    displayLog = false;
-                    displayStats = true;
-                }
-                GUI.enabled = true;
-
-                GUI.enabled = (!displayLog);
-                if (GUILayout.Button("Log", GUILayout.Height(23)))
-                {
-                    displayLog = true;
-                    displayStats = false;
-                }
-                GUI.enabled = true;
-
-                if (isFavourite)
-                    tFaveTemp = tIsFave;
-                else
-                    tFaveTemp = tMakeFavourite;
-
-                if (GUILayout.Button(tFaveTemp, GUILayout.Height(23), GUILayout.Width(23)))
-                {
-                    if (isFavourite)
-                        selectedSite.favouriteSite = "No";
-                    else
-                        selectedSite.favouriteSite = "Yes";
-                }
-
-                if (foldedIn) tFolded = tFoldOut;
-                if (!foldedIn) tFolded = tFoldIn;
-
-                if (GUILayout.Button(tFolded, GUILayout.Height(23), GUILayout.Width(23)))
-                {
-                    if (foldedIn) foldedIn = false;
-                    else
-                        foldedIn = true;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-
-            if (displayStats)
-            {
-                GUILayout.Label("Altitude: " + selectedSite.refAlt.ToString("#0.0") + " m", LabelInfo);
-                GUILayout.Label("Longitude: " + selectedSite.refLon.ToString("#0.000"), LabelInfo);
-                GUILayout.Label("Latitude: " + selectedSite.refLat.ToString("#0.000"), LabelInfo);
-                GUILayout.Space(3);
-                GUILayout.Label("Max Length: " + ((selectedSite.LaunchSiteLength == 0f) ? "unlimited " : selectedSite.LaunchSiteLength.ToString("#0" + " m")), LabelInfo);
-                GUILayout.Label("Max Width: " + ((selectedSite.LaunchSiteWidth == 0f) ? "unlimited " : selectedSite.LaunchSiteWidth.ToString("#0" + " m")), LabelInfo);
-                GUILayout.Label("Max Height: " + ((selectedSite.LaunchSiteHeight == 0f) ? "unlimited " : selectedSite.LaunchSiteHeight.ToString("#0" + " m")), LabelInfo);
-                GUILayout.Label("Max Mass: " + ((selectedSite.MaxCraftMass == 0f) ? "unlimited " : selectedSite.MaxCraftMass.ToString("#0" + " t")), LabelInfo);
-                GUILayout.Label("Max Parts: " + ((selectedSite.MaxCraftParts == 0) ? "unlimited " : selectedSite.MaxCraftParts.ToString("#0")), LabelInfo);
-
-                GUILayout.FlexibleSpace();
-            }
-
-
-            if (displayLog)
-            {
-                logScrollPosition = GUILayout.BeginScrollView(logScrollPosition, GUILayout.Height(120));
-                {
-                    Char csep = '|';
-                    string[] sLogEntries = selectedSite.MissionLog.Split(csep);
-                    foreach (string sEntry in sLogEntries)
-                    {
-                        GUILayout.Label(sEntry, LabelInfo);
-                    }
-                }
-                GUILayout.EndScrollView();
-
-                GUILayout.FlexibleSpace();
-            }
-
-            GUI.enabled = !selectedSite.isOpen;
-
-            if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
-            {
-                if (GUILayout.Button("Open Base for \n" + selectedSite.OpenCost + " funds", GUILayout.Height(38)))
-                {
-                    if (CareerUtils.isCareerGame && selectedSite.OpenCost > Funding.Instance.Funds)
-                    {
-                        MiscUtils.HUDMessage("Insufficient funds to open this base!", 10, 3);
-                    }
-                    else
-                    {
-                        LaunchSiteManager.OpenLaunchSite(selectedSite);
-                        if (CareerUtils.isCareerGame)
-                        {
-                            Funding.Instance.AddFunds(-selectedSite.OpenCost, TransactionReasons.Cheating);
-                        }
-                    }
-                }
-            }
-
-            GUI.enabled = true;
-            GUI.enabled = selectedSite.isOpen;
-
-
-            if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
-            {
-                LaunchSiteManager.CloseLaunchSite(selectedSite);
-                if (CareerUtils.isCareerGame)
-                {
-                    Funding.Instance.AddFunds(selectedSite.CloseValue, TransactionReasons.Cheating);
-                }
-            }
-
-            GUI.enabled = true;
-
-            GUILayout.FlexibleSpace();
-
-            if (HighLogic.LoadedScene == GameScenes.EDITOR)
-            {
-                GUILayout.BeginHorizontal();
-                {
-                    if (selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName)
-                    {
-                        tStatusLaunchsite = tSetLaunchsite;
-                    }
-                    else
-                        if (selectedSite.isOpen)
-                    {
-                        tStatusLaunchsite = tOpenedLaunchsite;
-                    }
-                    else
-                    {
-                        tStatusLaunchsite = tClosedLaunchsite;
-                    }
-
-                    GUILayout.Label(tStatusLaunchsite, GUILayout.Height(32), GUILayout.Width(32));
-
-                    GUI.enabled = (selectedSite.isOpen) && !(selectedSite.LaunchSiteName == EditorLogic.fetch.launchSiteName);
-                    if (GUILayout.Button("Set as \nLaunchsite", GUILayout.Height(38)))
-                    {
-                        LaunchSiteManager.setLaunchSite(selectedSite);
-                        string smessage = sButtonName + " has been set as the launchsite";
-                        MiscUtils.HUDMessage(smessage, 10, 0);
-                    }
-                    GUI.enabled = true;
-
-                }
-                GUILayout.EndHorizontal();
-            }
-
-
-
-            if (HighLogic.LoadedScene != GameScenes.EDITOR)
-            {
-                GUILayout.BeginHorizontal();
-                {
-                    if (selectedSite.wayPoint == null)
-                    {
-                        if (GUILayout.Button("Create Waypoint", GUILayout.Height(30)))
-                        {
-                            MapIconSelector.CreateWPForLaunchSite(selectedSite);
-                        }
-                    }
-                    else
-                    {
-                        if (FinePrint.WaypointManager.FindWaypoint(selectedSite.wayPoint.navigationId) == null)
-                        {
-                            selectedSite.wayPoint = null;
-                            GUI.enabled = false;
-                        }
-                        if (GUILayout.Button("Delete Waypoint", GUILayout.Height(30)))
-                        {
-                            FinePrint.WaypointManager.RemoveWaypoint(selectedSite.wayPoint);
-                            selectedSite.wayPoint = null;
-                        }
-                        GUI.enabled = true;
-                    }
-
-                }
-                GUILayout.EndHorizontal();
-            }
-
-            GUILayout.Space(3);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(1);
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-
-
-
-
-        private void InitializeLayout()
-        {
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            Yellowtext = new GUIStyle(GUI.skin.box);
-            Yellowtext.normal.textColor = Color.yellow;
-            Yellowtext.normal.background = null;
-
-            TextAreaNoBorder = new GUIStyle(GUI.skin.textArea);
-            TextAreaNoBorder.normal.background = null;
-            TextAreaNoBorder.normal.textColor = Color.white;
-            TextAreaNoBorder.fontSize = 12;
-            TextAreaNoBorder.padding.left = 1;
-            TextAreaNoBorder.padding.right = 1;
-            TextAreaNoBorder.padding.top = 4;
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            LabelWhite = new GUIStyle(GUI.skin.label);
-            LabelWhite.normal.background = null;
-            LabelWhite.normal.textColor = Color.white;
-            LabelWhite.fontSize = 12;
-            LabelWhite.padding.left = 1;
-            LabelWhite.padding.right = 1;
-            LabelWhite.padding.top = 4;
-
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-
-            KKWindowTitle = new GUIStyle(GUI.skin.box);
-            KKWindowTitle.normal.background = null;
-            KKWindowTitle.normal.textColor = Color.white;
-            KKWindowTitle.fontSize = 14;
-            KKWindowTitle.fontStyle = FontStyle.Bold;
-
-            SmallButton = new GUIStyle(GUI.skin.button);
-            SmallButton.normal.textColor = Color.red;
-            SmallButton.hover.textColor = Color.white;
-            SmallButton.padding.top = 1;
-            SmallButton.padding.left = 1;
-            SmallButton.padding.right = 1;
-            SmallButton.padding.bottom = 4;
-            SmallButton.normal.background = null;
-            SmallButton.hover.background = null;
-            SmallButton.fontSize = 12;
-        }
-
 
         public static KKLaunchSite getSelectedSite()
         {

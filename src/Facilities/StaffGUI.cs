@@ -4,12 +4,12 @@ using KerbalKonstructs.Utilities;
 using System;
 using UnityEngine;
 
+using KodeUI;
+
 namespace KerbalKonstructs.UI
 {
-    public class StaffGUI
+    public class StaffGUI : VerticalLayout
     {
-        public static float fStaff;
-        public static float fMaxStaff;
         public static float fXP;
         public static GUIStyle LabelInfo;
         public static GUIStyle BoxInfo;
@@ -22,12 +22,164 @@ namespace KerbalKonstructs.UI
         public static Texture tXPGained = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/xpgained", false);
         public static Texture tXPUngained = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/xpungained", false);
 
-        public static Boolean bIsOpen = false;
-        public static float iFundsOpen2 = 0f;
+		ListView staffList;
+		StaffItem.List staffItems;
+		VerticalLayout barracksGroup;
+		VerticalLayout nonbarracksGroup;
+		InfoLine assignedStaff;
+		InfoLine staff;
+		InfoLine unassignedStaff;
+		InfoLine hireTip;
+		InfoLine fireTipCost;
+		InfoLine fireTipRep;
+		UIText noStaffRequired;
 
-        public static bool bIsBarracks = false;
+		IBarracks barracks;
+		IProduction production;
+		int maxStaff;
+		int currentStaff;
 
-        public static float TotalBarracksPool(StaticInstance selectedFacility)
+		const float fireRefund = 2500;
+		const float fireRepCost = 1;
+
+		public override void CreateUI()
+		{
+			base.CreateUI();
+
+			this.ChildForceExpand(true, false)
+				.Add<ListView>(out staffList)
+					.PreferredHeight(58)
+					.Finish()
+				.Add<VerticalLayout>(out barracksGroup)
+					.Add<InfoLine>(out staff)
+						.Label(KKLocalization.Staff)
+						.Finish()
+					.Add<InfoLine>(out unassignedStaff)
+						.Label(KKLocalization.StaffUnassigned)
+						.Finish()
+					.Add<HorizontalLayout>()
+						.Add<UIButton>()
+							.Text(KKLocalization.StaffHire)
+							.OnClick(HireStaff)
+							.Finish()
+						.Add<UIButton>()
+							.Text(KKLocalization.StaffFire)
+							.OnClick(FireStaff)
+							.Finish()
+						.Finish()
+					.Add<FixedSpace>() .Size(2) .Finish()
+					.Add<InfoLine>(out hireTip)
+						.Label(KKLocalization.StaffCostToHire)
+						.Finish()
+					.Add<InfoLine>(out fireTipCost)
+						.Label(KKLocalization.StaffRefundForFiring)
+						.Finish()
+					.Add<InfoLine>(out fireTipRep)
+						.Label(KKLocalization.StaffReputationLost)
+						.Finish()
+					.Finish()
+				.Add<VerticalLayout>(out nonbarracksGroup)
+					.Add<InfoLine>(out assignedStaff)
+						.Label(KKLocalization.StaffAssigned)
+						.Finish()
+					.Add<HorizontalLayout>()
+						.Add<UIButton>()
+							.Text(KKLocalization.StaffAssign)
+							.OnClick(AssignStaff)
+							.FlexibleLayout(true, false)
+							.Finish()
+						.Add<UIButton>()
+							.Text(KKLocalization.StaffUnassign)
+							.OnClick(UnassignStaff)
+							.FlexibleLayout(true, false)
+							.Finish()
+						.Finish()
+					.Finish()
+					.Add<FixedSpace>() .Size(5) .Finish()
+				.Add<UIText>(out noStaffRequired)
+					.Text(KKLocalization.StaffNoStaffRequired)
+					.Finish()
+				;
+
+			staffItems = new StaffItem.List(staffList.Group);
+			staffItems.Content = staffList.Content;
+		}
+
+		void HireStaff()
+		{
+			if (currentStaff == maxStaff) {
+				MiscUtils.HUDMessage(KKLocalization.StaffFacilityIsFull, 10, 3);
+			} else {
+				double currentfunds = Funding.Instance.Funds;
+
+				if (Barracks.hireFundCost > currentfunds) {
+					MiscUtils.HUDMessage(KKLocalization.StaffInsufficientFunds, 10, 3);
+				} else {
+					barracks.HireStaff();
+					UpdateUI();
+				}
+			}
+
+		}
+
+		void FireStaff()
+		{
+			if (currentStaff < 2) {
+				MiscUtils.HUDMessage(KKLocalization.StaffMustHaveCaretaker, 10, 3);
+			} else {
+				if (barracks.StaffAvailable < 1) {
+					MiscUtils.HUDMessage(KKLocalization.StaffAllStaffAssigned, 10, 3);
+				} else {
+					barracks.FireStaff();
+					UpdateUI();
+				}
+			}
+		}
+
+		void AssignStaff()
+		{
+			//FIXME this should be in IProduction
+			if (currentStaff == maxStaff) {
+				MiscUtils.HUDMessage(KKLocalization.StaffFullyStaffed, 10, 3);
+			} else {
+				float fAvailable = TotalBarracksPool(production.StaticInstance);
+
+				if (fAvailable < 1) {
+					MiscUtils.HUDMessage(KKLocalization.StaffNoUnassignedStaffAvailable, 10, 3);
+				} else {
+					StaticInstance nearestBarracks = NearestBarracks(production.StaticInstance);
+
+					if (nearestBarracks != null) {
+						DrawFromBarracks(nearestBarracks);
+
+						production.AssignStaff();
+					} else {
+						MiscUtils.HUDMessage(KKLocalization.StaffNoFacilityWithStaff, 10, 3);
+					}
+					UpdateUI();
+				}
+			}
+		}
+
+		void UnassignStaff()
+		{
+			//FIXME this should be in IProduction
+			if (currentStaff < 2) {
+				MiscUtils.HUDMessage(KKLocalization.StaffMustHaveCaretaker, 10, 3);
+			} else {
+				StaticInstance availableSpace = NearestBarracks(production.StaticInstance, false);
+
+				if (availableSpace != null) {
+					UnassignToBarracks(availableSpace);
+					production.UnassignStaff();
+					UpdateUI();
+				} else {
+					MiscUtils.HUDMessage(KKLocalization.StaffNoRoom, 10, 3);
+				}
+			}
+		}
+
+        public static float TotalBarracksPool(StaticInstance staticInstance)
         {
             float fKerbals = 0f;
 
@@ -40,12 +192,12 @@ namespace KerbalKonstructs.UI
                     if (instance.model.DefaultFacilityType != "Barracks") continue;
                 }
 
-                var dist = Vector3.Distance(selectedFacility.position, instance.position);
+                var dist = Vector3.Distance(staticInstance.position, instance.position);
                 if (dist > 5000f) continue;
 
                 Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
 
-                fKerbals = fKerbals + foundBarracks.ProductionRateCurrent;
+                fKerbals = fKerbals + foundBarracks.StaffAvailable;
 
 
             }
@@ -53,7 +205,7 @@ namespace KerbalKonstructs.UI
             return fKerbals;
         }
 
-        public static StaticInstance NearestBarracks(StaticInstance selectedFacility, bool bUnassigned = true)
+        public static StaticInstance NearestBarracks(StaticInstance staticInstance, bool bUnassigned = true)
         {
             StaticInstance soNearest = null;
             float fKerbals = 0f;
@@ -69,7 +221,7 @@ namespace KerbalKonstructs.UI
 
                 if (instance.CelestialBody.name == FlightGlobals.currentMainBody.name)
                 {
-                    var dist = Vector3.Distance(selectedFacility.position, instance.position);
+                    var dist = Vector3.Distance(staticInstance.position, instance.position);
                     if (dist > 5000f) continue;
                 }
                 else
@@ -78,7 +230,7 @@ namespace KerbalKonstructs.UI
                 Barracks foundBarracks = instance.gameObject.GetComponent<Barracks>();
                 if (bUnassigned)
                 {
-                    fKerbals = foundBarracks.ProductionRateCurrent;
+                    fKerbals = foundBarracks.StaffAvailable;
 
                     if (fKerbals < 1) continue;
                     else
@@ -91,7 +243,7 @@ namespace KerbalKonstructs.UI
                 {
                     if (foundBarracks.StaffCurrent == 1) continue;
 
-                    if ((foundBarracks.StaffCurrent - 1f) == foundBarracks.ProductionRateCurrent)
+                    if ((foundBarracks.StaffCurrent - 1f) == foundBarracks.StaffAvailable)
                         continue;
                     else
                     {
@@ -104,267 +256,92 @@ namespace KerbalKonstructs.UI
             return soNearest;
         }
 
-        public static void DrawFromBarracks(StaticInstance selectedFacility)
+        public static void DrawFromBarracks(StaticInstance staticInstance)
         {
-            Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
-            foundBarracks.ProductionRateCurrent--;
+            IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
+            foundBarracks.DrawStaff();
         }
 
-        public static void UnassignToBarracks(StaticInstance selectedFacility)
+        public static void UnassignToBarracks(StaticInstance staticInstance)
         {
-            Barracks foundBarracks = selectedFacility.gameObject.GetComponent<Barracks>();
-            foundBarracks.ProductionRateCurrent++;
+            IBarracks foundBarracks = staticInstance.gameObject.GetComponent<IBarracks>();
+            foundBarracks.ReturnStaff();
         }
 
-        public static void StaffingInterface(StaticInstance selectedFacility)
-        {
-            Barracks myBarracks = selectedFacility.myFacilities[0] as Barracks;
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
+		void BuildStaffList(int currentStaff, int maxStaff)
+		{
+			int empty = maxStaff - currentStaff;
 
-            BoxInfo = new GUIStyle(GUI.skin.box);
-            BoxInfo.normal.textColor = Color.cyan;
-            BoxInfo.fontSize = 13;
-            BoxInfo.padding.top = 2;
-            BoxInfo.padding.bottom = 1;
-            BoxInfo.padding.left = 5;
-            BoxInfo.padding.right = 5;
-            BoxInfo.normal.background = null;
+			staffItems.Clear();
+			while (currentStaff-- > 0) {
+				staffItems.Add(new StaffItem (true));
+			}
+			while (empty-- > 0) {
+				staffItems.Add(new StaffItem (false));
+			}
+			staffList.Items(staffItems);
+		}
 
-            ButtonSmallText = new GUIStyle(GUI.skin.button);
-            ButtonSmallText.fontSize = 12;
-            ButtonSmallText.fontStyle = FontStyle.Normal;
-
-
-            bIsBarracks = false;
-
-            if (selectedFacility.FacilityType == "Barracks")
-                bIsBarracks = true;
-            else
-                if (selectedFacility.model.DefaultFacilityType == "Barracks")
-                bIsBarracks = true;
+		void UpdateUI()
+		{
+			// assume we don't have any staffing
+			maxStaff = 0;
+			currentStaff = 0;
 
             // check if we can access the staffing variables
-            if (selectedFacility.FacilityType == "Barracks" || selectedFacility.FacilityType == "Business" || selectedFacility.FacilityType == "Research")
+			if (barracks != null) {
+				currentStaff = barracks.StaffCurrent;
+				maxStaff = barracks.StaffMax;
+			} else if (production != null) {
+				currentStaff = production.StaffCurrent;
+				maxStaff = production.StaffMax;
+			}
+                /* FIXME this should be moved into barracks/production loading
+				if (maxStaff < 1) {
+                    maxStaff = staticInstance.model.DefaultStaffMax;
+
+                    if (maxStaff < 1) {
+                        barracks.StaffMax = 0;
+                    } else {
+                        barracks.StaffMax = maxStaff;
+                    }
+                }
+				*/
+
+
+            if (maxStaff > 0)
             {
-                fStaff = myBarracks.StaffCurrent;
-                fMaxStaff = myBarracks.StaffMax;
+                float CountEmpty = maxStaff - currentStaff;
 
-                if (fMaxStaff < 1)
-                {
-                    fMaxStaff = selectedFacility.model.DefaultStaffMax;
+				BuildStaffList(currentStaff, maxStaff);
 
-                    if (fMaxStaff < 1)
-                    {
-                        myBarracks.StaffMax = 0;
-                    }
-                    else
-                    {
-                        myBarracks.StaffMax = fMaxStaff;
-                    }
-                }
+				staffList.SetActive(true);
+				noStaffRequired.SetActive(false);
+				barracksGroup.SetActive(barracks != null);
+				nonbarracksGroup.SetActive(barracks == null);
+				if (barracks != null) {
+					staff.Info($"{currentStaff} / {maxStaff}");
+					unassignedStaff.Info($"{barracks.StaffAvailable} / {currentStaff}");
+
+					hireTip.Info($"{Barracks.hireFundCost:F0}");
+					fireTipCost.Info($"{Barracks.fireRefund:F0}");
+					fireTipRep.Info($"{Barracks.fireRepCost:F0}");
+				} else {
+					assignedStaff.Info($"{currentStaff} / {maxStaff}");
+				}
+            } else {
+				staffList.SetActive(false);
+				noStaffRequired.SetActive(true);
+				barracksGroup.SetActive(false);
+				nonbarracksGroup.SetActive(false);
             }
-            else
-            {
-                // we don't have any staffing
-                fStaff = 0;
-                fMaxStaff = 0;
-            }
+		}
 
-
-            if (fMaxStaff > 0)
-            {
-                float fHireFundCost = 5000;
-                float fFireRefund = 2500;
-                float fFireRepCost = 1;
-
-                bIsOpen = myBarracks.isOpen;
-
-                if (!bIsOpen)
-                {
-                    iFundsOpen2 = (float)selectedFacility.model.cost;
-                    if (iFundsOpen2 == 0) bIsOpen = true;
-                }
-
-                GUILayout.Space(5);
-
-                float CountCurrent = fStaff;
-                float CountEmpty = fMaxStaff - fStaff;
-                float funassigned = myBarracks.ProductionRateCurrent;
-
-                scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(58));
-                {
-                    GUILayout.BeginHorizontal();
-                    {
-                        while (CountCurrent > 0)
-                        {
-                            GUILayout.Box(tKerbal, GUILayout.Width(23));
-                            CountCurrent = CountCurrent - 1;
-                        }
-
-                        while (CountEmpty > 0)
-                        {
-                            GUILayout.Box(tNoKerbal, GUILayout.Width(23));
-                            CountEmpty = CountEmpty - 1;
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndScrollView();
-
-                GUI.enabled = bIsOpen;
-
-                if (!bIsBarracks)
-                {
-                    GUILayout.Box("Assigned Staff: " + fStaff.ToString("#0") + "/" + fMaxStaff.ToString("#0"), BoxInfo);
-                }
-                if (bIsBarracks)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Staff: " + fStaff.ToString("#0") + "/" + fMaxStaff.ToString("#0"), LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Unassigned: " + funassigned.ToString("#0") + "/" + fStaff.ToString("#0"), LabelInfo);
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    {
-                        if (GUILayout.Button("Hire", ButtonSmallText, GUILayout.Height(20)))
-                        {
-                            if (fStaff == fMaxStaff)
-                            {
-                                MiscUtils.HUDMessage("Facility is full.", 10,
-                                    3);
-                            }
-                            else
-                            {
-                                double currentfunds = Funding.Instance.Funds;
-
-                                if (fHireFundCost > currentfunds)
-                                    MiscUtils.HUDMessage("Insufficient funds to hire staff!", 10,
-                                        3);
-                                else
-                                {
-                                    myBarracks.StaffCurrent = fStaff + 1;
-                                    Funding.Instance.AddFunds(-fHireFundCost, TransactionReasons.Cheating);
-                                    myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent + 1f;
-                                }
-                            }
-
-                        }
-                        if (GUILayout.Button("Fire", ButtonSmallText, GUILayout.Height(20)))
-                        {
-                            if (fStaff < 2)
-                            {
-                                MiscUtils.HUDMessage("This facility must have at least one caretaker.", 10, 3);
-                            }
-                            else
-                            {
-                                if (myBarracks.ProductionRateCurrent < 1)
-                                {
-                                    MiscUtils.HUDMessage("All staff are assigned to duties. Staff must be unassigned in order to fire them.", 10, 3);
-                                }
-                                else
-                                {
-                                    myBarracks.StaffCurrent = fStaff - 1;
-                                    myBarracks.ProductionRateCurrent = myBarracks.ProductionRateCurrent - 1f;
-                                    Funding.Instance.AddFunds(fFireRefund, TransactionReasons.Cheating);
-                                    Reputation.Instance.AddReputation(-fFireRepCost, TransactionReasons.Cheating);
-                                }
-                            }
-                        }
-                    }
-
-                    GUI.enabled = true;
-                    GUILayout.EndHorizontal();
-
-                    string sHireTip = " Cost to hire next kerbal: " + fHireFundCost.ToString("#0") + " funds.";
-                    string sFireTip = " Refund for firing: " + fFireRefund.ToString("#0") + " funds. Rep lost: " + fFireRepCost.ToString("#0") + ".";
-
-                    GUILayout.Space(2);
-
-                    if (fStaff < fMaxStaff)
-                        GUILayout.Box(sHireTip, BoxInfo, GUILayout.Height(16));
-
-                    if (fStaff > 1)
-                        GUILayout.Box(sFireTip, BoxInfo, GUILayout.Height(16));
-                }
-                else
-                {
-                    GUILayout.BeginHorizontal();
-                    {
-                        if (GUILayout.Button("Assign", ButtonSmallText, GUILayout.Height(20)))
-                        {
-                            if (fStaff == fMaxStaff)
-                            {
-                                MiscUtils.HUDMessage("Facility is fully staffed.", 10,
-                                    3);
-                            }
-                            else
-                            {
-                                float fAvailable = TotalBarracksPool(selectedFacility);
-
-                                if (fAvailable < 1)
-                                {
-                                    MiscUtils.HUDMessage("No unassigned staff available.", 10, 3);
-                                }
-                                else
-                                {
-                                    StaticInstance soNearestBarracks = NearestBarracks(selectedFacility);
-
-                                    if (soNearestBarracks != null)
-                                    {
-                                        DrawFromBarracks(soNearestBarracks);
-
-                                        myBarracks.StaffCurrent = fStaff + 1;
-                                    }
-                                    else
-                                        MiscUtils.HUDMessage("No facility with available staff is nearby.", 10, 3);
-                                }
-                            }
-                        }
-
-                        if (GUILayout.Button("Unassign", ButtonSmallText, GUILayout.Height(20)))
-                        {
-                            if (fStaff < 2)
-                            {
-                                MiscUtils.HUDMessage("An open facility must have one resident caretaker.", 10, 3);
-                            }
-                            else
-                            {
-                                StaticInstance soAvailableSpace = NearestBarracks(selectedFacility, false);
-
-                                if (soAvailableSpace != null)
-                                {
-                                    UnassignToBarracks(soAvailableSpace);
-                                    myBarracks.StaffCurrent = fStaff - 1;
-                                }
-                                else
-                                {
-                                    MiscUtils.HUDMessage("There's no room left in a barracks or apartment for this kerbal to go to.", 10, 3);
-                                }
-                            }
-                        }
-                    }
-
-                    GUI.enabled = true;
-                    GUILayout.EndHorizontal();
-                }
-
-                GUILayout.Space(5);
-
-            }
-            else
-            {
-                GUILayout.FlexibleSpace();
-                GUILayout.Box("This facility does not require staff assigned to it.", BoxInfo, GUILayout.Height(16));
-            }
+        public void UpdateUI(StaticInstance staticInstance)
+        {
+            barracks = staticInstance.myFacilities[0] as IBarracks;
+			production = staticInstance.myFacilities[0] as IProduction;
+			UpdateUI();
         }
-
     }
 }

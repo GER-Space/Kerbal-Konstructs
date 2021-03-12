@@ -3,32 +3,66 @@ using System.Collections.Generic;
 
 namespace KerbalKonstructs.Modules
 {
-    internal class StoredResource
+    public class StoredResource
     {
-        internal PartResourceDefinition resource;
-        internal float amount = 0f;
+		public int id { get { return resource.id; } }
+		public double volume { get { return resource.volume; } }
+        public PartResourceDefinition resource;
+        public double amount = 0f;
     }
 
 
     public class Storage : KKFacility
     {
         [CFGSetting]
-        public float maxVolume = 0f;
+        public double maxVolume = 0f;
 
 
-        internal HashSet<StoredResource> storedResources = new HashSet<StoredResource>();
+        public Dictionary<int, StoredResource> storedResources { get; private set; }
 
-        private float retval;
-        internal float currentVolume
+        public double currentVolume
         {
-            get
-            {
-                retval = 0;
-                foreach (StoredResource resource in storedResources)
-                {
+            get {
+				if (storedResources == null) {
+					return 0;
+				}
+                double retval = 0;
+                foreach (StoredResource resource in storedResources.Values) {
                     retval += (resource.amount * resource.resource.volume);
                 }
                 return retval;
+            }
+        }
+
+		public StoredResource GetResource(PartResourceDefinition resource)
+		{
+			StoredResource storedResource;
+			if (!storedResources.TryGetValue(resource.id, out storedResource)) {
+				storedResource = new StoredResource { resource = resource, amount = 0 };
+				storedResources[resource.id] = storedResource;
+			}
+			return storedResource;
+		}
+
+        /// <summary>
+        /// Stores or retrieves a resource to the facility. Deletes the resource if nothing is left
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="amount"></param>
+        public void StoreResource(PartResourceDefinition resource, double delta)
+        {
+			StoredResource storedResource;
+			if (!storedResources.TryGetValue(resource.id, out storedResource)) {
+				if (delta <= 0) {
+					return;
+				}
+				storedResource = new StoredResource { resource = resource, amount = 0 };
+				storedResources[resource.id] = storedResource;
+			}
+			storedResource.amount += delta;
+
+            if (storedResource.amount < 0) {
+                storedResource.amount = 0;
             }
         }
 
@@ -40,29 +74,27 @@ namespace KerbalKonstructs.Modules
         internal override void LoadCareerConfig(ConfigNode cfgNode)
         {
             base.ParseConfig(cfgNode);
-            storedResources = new HashSet<StoredResource>();
+            storedResources = new Dictionary<int, StoredResource>();
 
             string resourceName = null;
             PartResourceDefinition foundResource = null;
             StoredResource tradedResource = null;
 
 
-            foreach (ConfigNode resourceNode in cfgNode.GetNodes("StoredResource"))
-            {
+            foreach (ConfigNode resourceNode in cfgNode.GetNodes("StoredResource")) {
                 resourceName = resourceNode.GetValue("ResourceName");
                 foundResource = PartResourceLibrary.Instance.GetDefinition(resourceName);
-                if (foundResource == null)
-                {
+                if (foundResource == null) {
                     Log.UserWarning("Resource not found: " + resourceName);
-                }
-                else
-                {
+                } else {
+					double Amount;
+					double.TryParse(resourceNode.GetValue("Amount"), out Amount);
                     tradedResource = new StoredResource()
                     {
                         resource = foundResource,
-                        amount = float.Parse(resourceNode.GetValue("Amount")),
+                        amount = Amount
                     };
-                    storedResources.Add(tradedResource);
+                    storedResources[tradedResource.id] = tradedResource;
                 }
             }
         }
@@ -73,14 +105,16 @@ namespace KerbalKonstructs.Modules
 
             base.WriteConfig(cfgNode);
 
-            foreach (StoredResource resource in storedResources)
-            {
-                resourceNode = new ConfigNode("StoredResource");
-                resourceNode.SetValue("ResourceName", resource.resource.name, true);
-                resourceNode.SetValue("Amount", resource.amount, true);
-                cfgNode.AddNode(resourceNode);
+			if (storedResources != null) {
+				foreach (StoredResource resource in storedResources.Values) {
+					if (resource.amount > 0) {
+						resourceNode = new ConfigNode("StoredResource");
+						resourceNode.SetValue("ResourceName", resource.resource.name, true);
+						resourceNode.SetValue("Amount", resource.amount, true);
+						cfgNode.AddNode(resourceNode);
+					}
+				}
             }
-
         }
 
     }

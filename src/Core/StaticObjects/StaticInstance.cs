@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Modules;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace KerbalKonstructs.Core
         Terrain = 2
     }
 
-    public class StaticInstance
+    public class StaticInstance : IMapIcon
     {
         // UUID for later identification
         [CFGSetting]
@@ -93,7 +94,9 @@ namespace KerbalKonstructs.Core
             set
             {
                 _mesh = value;
-                _mesh.name = "Mesh";
+                if (String.IsNullOrEmpty(mesh.name)) {
+                    _mesh.name = "Mesh";
+                }
                 _mesh.transform.parent = gameObject.transform;
                 _mesh.transform.position = transform.position;
                 _mesh.transform.rotation = transform.rotation;
@@ -623,5 +626,61 @@ namespace KerbalKonstructs.Core
             }
             GameObject.DestroyImmediate(gameObject);
         }
+
+		public Vector3d Position
+		{
+			get {
+				return position;
+			}
+		}
+
+		public string Tooltip
+		{
+			get {
+				string name = "Tracking Station";
+				var pos = CelestialBody.transform.InverseTransformPoint(Position);
+				var lat = KKMath.GetLatitudeInDeg(pos);
+				var lon = KKMath.GetLongitudeInDeg(pos);
+				return $"{name}\n(Lat. {lat:F2}/ Lon. {lon:F2})";
+			}
+		}
+
+		public Sprite Icon
+		{
+			get {
+				return UIMain.TrackingStationIcon;
+			}
+		}
+
+		public bool IsOccluded
+		{
+			get {
+				return MapIcon.IsOccluded(Position, CelestialBody);
+			}
+		}
+
+		public bool IsHidden
+		{
+			get {
+				bool hidden = false;
+				var gs = myFacilities[0] as GroundStation;
+				bool isOpen = gs.isOpen;
+				hidden |= !KerbalKonstructs.instance.mapShowGroundStation;
+				hidden |= (groupCenter?.isHidden is bool h) && h && (!isOpen || ((GroundStation)myFacilities[0]).OpenCost == 0);
+				if (MiscUtils.isCareerGame()) {
+					hidden |= (!isOpen && !KerbalKonstructs.instance.mapShowClosed);
+					hidden |= (isOpen && !KerbalKonstructs.instance.mapShowOpen);
+				}
+				return hidden;
+			}
+		}
+
+		public MapIcon MapIcon { get; set; }
+
+		public void OnClick()
+		{
+			FacilityManager.selectedInstance = this;
+			FacilityManager.instance.Open();
+		}
     }
 }

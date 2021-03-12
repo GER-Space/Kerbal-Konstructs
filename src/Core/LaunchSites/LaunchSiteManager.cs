@@ -98,7 +98,7 @@ namespace KerbalKonstructs.Core
         private static void AddKSC()
         {
             StaticInstance rwInstance = new StaticInstance();
-            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             rwInstance.RefLatitude = getKSCLat;
             rwInstance.RefLongitude = getKSCLon;
             rwInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -107,7 +107,7 @@ namespace KerbalKonstructs.Core
             rwInstance.launchSite = runway;
 
             StaticInstance padInstance = new StaticInstance();
-            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             padInstance.RefLatitude = getKSCLat;
             padInstance.RefLongitude = getKSCLon;
             padInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -121,7 +121,7 @@ namespace KerbalKonstructs.Core
             runway.LaunchSiteAuthor = "Squad";
             runway.LaunchSiteType = SiteType.SPH;
             runway.sitecategory = LaunchSiteCategory.Runway;
-            runway.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCRunway", false);
+            runway.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/KSCRunway");
             runway.LaunchSiteDescription = "The KSC runway is a concrete runway measuring about 2.5km long and 70m wide, on a magnetic heading of 90/270. It is not uncommon to see burning chunks of metal sliding across the surface.";
             runway.body = ConfigUtil.GetCelestialBody("HomeWorld");
             runway.refLat = (float)rwInstance.RefLatitude;
@@ -139,7 +139,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteAuthor = "Squad";
             launchpad.LaunchSiteType = SiteType.VAB;
             launchpad.sitecategory = LaunchSiteCategory.RocketPad;
-            launchpad.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/KSCLaunchpad", false);
+            launchpad.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/KSCLaunchpad");
             launchpad.LaunchSiteDescription = "The KSC launchpad is a platform used to fire screaming Kerbals into the kosmos. There was a tower here at one point but for some reason nobody seems to know where it went...";
             launchpad.body = ConfigUtil.GetCelestialBody("HomeWorld");
             launchpad.refLat = getKSCLat;
@@ -148,7 +148,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteLength = 0f;
             launchpad.LaunchSiteWidth = 0f;
             launchpad.InitialCameraRotation = -60f;
-            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableFacility>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
             launchpad.SetOpen();
 
 
@@ -193,7 +193,7 @@ namespace KerbalKonstructs.Core
             ksc2.LaunchPadTransform = "launchpad/PlatformPlane";
 
             ksc2.LaunchSiteAuthor = "KerbalKonstructs";
-            ksc2.logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
+            ksc2.logo = UIMain.MakeSprite("KerbalKonstructs/Assets/DefaultSiteLogo");
             ksc2.LaunchSiteType = SiteType.VAB;
             ksc2.sitecategory = LaunchSiteCategory.RocketPad;
             ksc2.LaunchSiteDescription = "The hidden KSC2";
@@ -781,7 +781,7 @@ namespace KerbalKonstructs.Core
         }
 
         // Returns the nearest Launchsite to a position and range in m to the Launchsite, regardless of whether it is open or closed
-        public static void getNearestBase(Vector3 position, out string sBase, out string sBase2, out float flRange, out KKLaunchSite lSite, out KKLaunchSite lSite2)
+        public static KKLaunchSite getNearestBase(GroupCenter center, Vector3 position)
         {
             SpaceCenter KSC = SpaceCenter.Instance;
             var smallestDist = Vector3.Distance(KSC.gameObject.transform.position, position);
@@ -793,7 +793,7 @@ namespace KerbalKonstructs.Core
             string sLastNearest = "";
 
 
-            foreach (KKLaunchSite site in allLaunchSites)
+            foreach (KKLaunchSite site in center.launchsites)
             {
                 if (site.staticInstance.gameObject == null)
                 {
@@ -845,15 +845,11 @@ namespace KerbalKonstructs.Core
 
             rangeNearestBase = (float)smallestDist;
 
-            sBase = sNearestBase;
-            sBase2 = sLastNearest;
-            flRange = rangeNearestBase;
-            lSite = lTargetSite;
-            lSite2 = lLastSite;
+            return lTargetSite;
         }
 
 
-        public static void ResetLaunchSiteFacilityName()
+        public static void ResetLauncsite()
         {
             if (currentLaunchSite == "Runway" || currentLaunchSite == "LaunchPad" || currentLaunchSite == "KSC" || currentLaunchSite.Length == 0)
             {
@@ -875,10 +871,10 @@ namespace KerbalKonstructs.Core
         // Pokes KSP to change the launchsite to use. There's near hackery here again that may get broken by Squad
         // This only works because they use multiple variables to store the same value, basically its black magic
         // Original author: medsouz
-        public static void setLaunchSite(KKLaunchSite site)
+        public static void setLauncsite(KKLaunchSite site)
         {
 
-            ResetLaunchSiteFacilityName();
+            ResetLauncsite();
 
             ////Log.Normal("EditorDriver thinks this is: " + EditorDriver.SelectedLaunchSiteName);
             //// without detouring some internal functions we have to fake the facility name... which is pretty bad

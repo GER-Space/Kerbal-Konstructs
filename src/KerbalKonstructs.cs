@@ -13,10 +13,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-
 namespace KerbalKonstructs
 {
-
     [KSPAddon(KSPAddon.Startup.MainMenu, true)]
     public class KerbalKonstructs : MonoBehaviour
     {
@@ -150,23 +148,23 @@ namespace KerbalKonstructs
 
         // map icon settings. These are saved manually
         [KSPField]
-        public Boolean mapShowOpen = true;
+        public StateButton.State mapShowOpen = new StateButton.State(true);
         [KSPField]
-        public Boolean mapShowClosed = false;
+        public StateButton.State mapShowClosed = new StateButton.State(false);
         [KSPField]
-        public Boolean mapShowGroundStation = false;
+        public StateButton.State mapShowGroundStation = new StateButton.State(false);
         [KSPField]
-        public Boolean mapShowHelipads = true;
+        public StateButton.State mapShowHelipads = new StateButton.State(true);
         [KSPField]
-        public Boolean mapShowRunways = true;
+        public StateButton.State mapShowRunways = new StateButton.State(true);
         [KSPField]
-        public Boolean mapShowRocketbases = true;
+        public StateButton.State mapShowRocketbases = new StateButton.State(true);
         [KSPField]
-        public Boolean mapShowWaterLaunch = true;
+        public StateButton.State mapShowWaterLaunch = new StateButton.State(true);
         [KSPField]
-        public Boolean mapShowOther = false;
+        public StateButton.State mapShowOther = new StateButton.State(false);
         [KSPField]
-        public Boolean mapShowRecovery = false;
+        public StateButton.State mapShowRecovery = new StateButton.State(false);
         [KSPField]
         public string defaultVABlaunchsite = "LaunchPad";
         [KSPField]
@@ -187,6 +185,7 @@ namespace KerbalKonstructs
         public void Awake()
         {
             instance = this;
+            SDTest.InstallDetour();
             var TbController = new ToolbarController();
             Log.PerfStart("Awake Function");
 
@@ -269,8 +268,6 @@ namespace KerbalKonstructs
             //SDTest.ScanParticles();
             //KKGraphics.LoadShaders();
             //KKGraphics.GetBuiltinTexture("", 0);
-
-            //SDTest.InstallDetour();
 
         }
 
@@ -498,7 +495,7 @@ namespace KerbalKonstructs
                     {
 
                         // Prevent abuse if selector left open when switching to from VAB and SPH
-                        LaunchSiteSelectorGUI.instance.Close();
+                        LaunchsiteSelectorGUI.instance.Close();
                         KKLaunchSite currentSite = LaunchSiteManager.GetCurrentLaunchSite();
 
                         //if (currentSite.LaunchSiteType == SiteType.Any)
@@ -520,7 +517,7 @@ namespace KerbalKonstructs
                             Log.Normal("LS not valid: " + LaunchSiteManager.getCurrentLaunchSite());
                             currentSite = LaunchSiteManager.GetDefaultSite();
                         }
-                        LaunchSiteManager.setLaunchSite(currentSite);
+                        LaunchSiteManager.setLauncsite(currentSite);
                         if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory"))
                         {
                             LaunchSiteManager.AlterMHSelector();
@@ -607,7 +604,7 @@ namespace KerbalKonstructs
         public IEnumerator WaitAndReset(GameEvents.VesselSpawnInfo info)
         {
             yield return new WaitForSeconds(2);
-            //LaunchSiteManager.ResetLaunchSites();
+            //LaunchSiteManager.ResetLauncsite();
             LaunchSiteManager.RegisterMHLaunchSites(info.callingFacility.facilityType);
 
             KSP.UI.UILaunchsiteController uILaunchsiteController = Resources.FindObjectsOfTypeAll<KSP.UI.UILaunchsiteController>().FirstOrDefault();
@@ -796,14 +793,11 @@ namespace KerbalKonstructs
             {
                 EditorGUI.instance.CheckEditorKeys();
 
-                GroupEditor.instance.CheckEditorKeys();
-
-
                 if (Input.GetKeyDown(KeyCode.K) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
                 {
                     StaticsEditorGUI.instance.ToggleEditor();
                 }
-                if (Input.GetKeyDown(KeyCode.Tab) && StaticsEditorGUI.instance.IsOpen())
+                if (Input.GetKeyDown(KeyCode.Tab) && StaticsEditorGUI.IsOpen())
                 {
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
@@ -851,7 +845,7 @@ namespace KerbalKonstructs
             if (HighLogic.LoadedSceneIsGame)
             {
                 // Don't update visiblility when Editor is open
-                if (StaticsEditorGUI.instance.IsOpen())
+                if (HighLogic.LoadedSceneIsFlight && StaticsEditorGUI.IsOpen())
                 {
                     return;
                 }
@@ -1174,19 +1168,15 @@ namespace KerbalKonstructs
                 return;
             }
 
-            KKFacilityType facType;
-            try
-            {
-                facType = (KKFacilityType)Enum.Parse(typeof(KKFacilityType), cfgNode.GetValue("FacilityType"), true);
-            }
-            catch(ArgumentException ex)
+            string facTypeStr = cfgNode.GetValue("FacilityType");
+            KKFacilityType facType = KKFacilityType.None;
+            if (!String.IsNullOrEmpty(facTypeStr) && !KK_Enum.ToEnum<KKFacilityType>(facTypeStr, KKFacilityType.None, out facType))
             {
                 instance.legacyfacilityID = cfgNode.GetValue("FacilityType");
                 instance.FacilityType = "None";
                 instance.facilityType = KKFacilityType.None;
                 facType = KKFacilityType.None;
-                Log.UserWarning(ex.Message);
-                //Log.UserError("Unknown Facility Type: " + cfgNode.GetValue("FacilityType") + " in file: " + instance.configPath );
+                Log.UserError("Unknown Facility Type: '" + cfgNode.GetValue("FacilityType") + "' in file: " + instance.configPath );
             }
 
 
@@ -1507,8 +1497,18 @@ namespace KerbalKonstructs
                     {
                         if (cfg.HasValue(f.Name))
                         {
-                            //Log.Normal("setting value of: " + f.Name + " to´: " + Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType).ToString());
-                            f.SetValue(this, Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType));
+							object obj = f.GetValue(this);
+							if (obj is StateButton.State state) {
+								string val = cfg.GetValue(f.Name);
+								if (!String.IsNullOrEmpty(val)) {
+									bool b;
+									bool.TryParse(val, out b);
+									state.state = b;
+								}
+							} else {
+								//Log.Normal("setting value of: " + f.Name + " to´: " + Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType).ToString());
+								f.SetValue(this, Convert.ChangeType(cfg.GetValue(f.Name), f.FieldType));
+							}
                         }
                     }
                 }
@@ -1540,7 +1540,12 @@ namespace KerbalKonstructs
             {
                 if (Attribute.IsDefined(f, typeof(KSPField)))
                 {
-                    cfg.AddValue(f.Name, f.GetValue(this));
+					object obj = f.GetValue(this);
+					if (obj is StateButton.State state) {
+						cfg.AddValue(f.Name, state.state);
+					} else {
+						cfg.AddValue(f.Name, obj);
+					}
                 }
             }
         }

@@ -327,7 +327,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
                 GUI.enabled = (referenceSystem == Reference.Center);
 
-                if (GUILayout.Button(new GUIContent(UIMain.iconCubes, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
+                if (GUILayout.Button(new GUIContent(UIMain.iconCubes.texture, "Model"), GUILayout.Height(23), GUILayout.Width(23)))
                 {
                     referenceSystem = Reference.Model;
                     UpdateGizmo();
@@ -335,7 +335,7 @@ namespace KerbalKonstructs.UI
                 }
 
                 GUI.enabled = (referenceSystem == Reference.Model);
-                if (GUILayout.Button(new GUIContent(UIMain.iconWorld, "Group Center"), GUILayout.Height(23), GUILayout.Width(23)))
+                if (GUILayout.Button(new GUIContent(UIMain.iconWorld.texture, "Group Center"), GUILayout.Height(23), GUILayout.Width(23)))
                 {
                     referenceSystem = Reference.Center;
                     UpdateGizmo();
@@ -824,8 +824,6 @@ namespace KerbalKonstructs.UI
         {
             if (StaticsEditorGUI.instance.snapTargetInstance == selectedInstance)
                 StaticsEditorGUI.instance.snapTargetInstance = null;
-            if (StaticsEditorGUI.instance.selectedObjectPrevious == selectedInstance)
-                StaticsEditorGUI.instance.selectedObjectPrevious = null;
             if (selectedObjectPrevious == selectedInstance)
                 selectedObjectPrevious = null;
 
@@ -839,7 +837,7 @@ namespace KerbalKonstructs.UI
             KerbalKonstructs.instance.DeleteInstance(selectedInstance);
             selectedInstance = null;
 
-            StaticsEditorGUI.ResetInstancesList();
+            //XXX StaticsEditorGUI.ResetInstancesList();
 
             return;
         }

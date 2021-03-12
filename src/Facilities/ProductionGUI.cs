@@ -3,232 +3,64 @@ using KerbalKonstructs.Modules;
 using System;
 using System.Reflection;
 using UnityEngine;
+using KSP.Localization;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    public class ProductionGUI
+    public class ProductionGUI : VerticalLayout
     {
-        public static GUIStyle Yellowtext;
-        public static GUIStyle KKWindow;
-        public static GUIStyle DeadButton;
-        public static GUIStyle DeadButtonRed;
-        public static GUIStyle BoxNoBorder;
-        public static GUIStyle LabelInfo;
-        public static GUIStyle ButtonSmallText;
+		InfoLine produces;
+		InfoLine current;
+		UIButton transfer;
+		InfoLine productionRate;
 
-        private static bool isInitialized = false;
+		IProduction production;
 
-        private static Type facField;
-        private static Research myResearch;
-        private static Business myBusiness;
+		public override void CreateUI()
+		{
+			base.CreateUI();
+			this.ChildForceExpand(true, false)
+				.Add<InfoLine>(out produces)
+					.Label(KKLocalization.ProductionProduces)
+					.Finish()
+				.Add<InfoLine>(out current)
+					.Label(KKLocalization.ProductionCurrent)
+					.Finish()
+				.Add<UIButton>(out transfer)
+					.OnClick(TransmitProduction)
+					.Finish()
+				.Add<InfoLine>(out productionRate)
+					.Label(KKLocalization.ProductionRate)
+					.Finish()
+				;
+		}
 
-        private static float currentStaff = 0;
-        private static float currentProductionRate = 0;
-        private static float lastCheckTime = 0;
-        private static FieldInfo checkTimeField;
+		void TransmitProduction()
+		{
+			production.TransmitProduction();
+		}
 
-        private static float defaultProductionRate;
+		void UpdateUI()
+		{
+			produces.Info(production.Produces);
+			current.Info($"{production.UpdateProduction():F0}");
+			transfer.Text(Localizer.Format(KKLocalization.TransferToKSC, production.Produces));
+			productionRate.Info($"{production.CurrentRate:F2}/d");
+		}
 
-        private static string produces = "";
-        private static float maxProduced = 0f;
-        private static float currentProduced = 0f;
+		public void UpdateUI(StaticInstance selectedFacility)
+		{
+			production = selectedFacility.myFacilities[0] as IProduction;
+			UpdateUI();
+		}
 
-        private static float currentTime;
-        private static float daysPast;
-
-
-
-        internal static void InitializeLayout()
-        {
-            isInitialized = true;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            Yellowtext = new GUIStyle(GUI.skin.box);
-            Yellowtext.normal.textColor = Color.yellow;
-            Yellowtext.normal.background = null;
-
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-
-            ButtonSmallText = new GUIStyle(GUI.skin.button);
-            ButtonSmallText.fontSize = 12;
-            ButtonSmallText.fontStyle = FontStyle.Normal;
-        }
-
-
-
-        public static void ProductionInterface(StaticInstance selectedFacility, string facilityType)
-        {
-            if (selectedFacility.myFacilities.Count == 0)
-                return;
-
-
-            if (isInitialized == false)
-            {
-                InitializeLayout();
-            }
-
-            if (facilityType == "Research")
-            {
-                facField = typeof(Research);
-            }
-            else
-            {
-                facField = typeof(Business);
-            }
-
-
-            myResearch = selectedFacility.myFacilities[0] as Research;
-            myBusiness = selectedFacility.myFacilities[0] as Business;
-
-            checkTimeField = facField.GetField("LastCheck");
-
-            lastCheckTime = (float)checkTimeField.GetValue(selectedFacility.myFacilities[0]);
-
-            if (lastCheckTime == 0)
-            {
-                lastCheckTime = (float)Planetarium.GetUniversalTime();
-                checkTimeField.SetValue(selectedFacility.myFacilities[0], lastCheckTime);
-            }
-
-            if (facilityType == "Research" || facilityType == "Business")
-            {
-                produces = "";
-                maxProduced = 0f;
-                defaultProductionRate = (float)facField.GetField("ProductionRateCurrent").GetValue(selectedFacility.myFacilities[0]);
-
-                if (facilityType == "Research")
-                {
-                    produces = "Science";
-                    maxProduced = myResearch.ScienceOMax;
-
-                    if (defaultProductionRate < 0.1f)
-                    {
-                        defaultProductionRate = 0.1f;
-                    }
-
-                    if (maxProduced < 1)
-                    {
-                        maxProduced = selectedFacility.model.DefaultScienceOMax;
-
-                        if (maxProduced < 1) maxProduced = 10f;
-                        {
-                            myResearch.ScienceOMax = maxProduced;
-                        }
-                    }
-                    maxProduced = myResearch.ScienceOMax;
-                }
-                if (facilityType == "Business")
-                {
-                    produces = "Funds";
-                    maxProduced = myBusiness.FundsOMax;
-
-                    if (defaultProductionRate < 10f)
-                    {
-                        defaultProductionRate = 10f;
-                    }
-
-                    if (maxProduced < 1)
-                    {
-                        maxProduced = selectedFacility.model.DefaultFundsOMax;
-
-                        if (maxProduced < 1)
-                        {
-                            myBusiness.FundsOMax = 10000f;
-                        }
-                    }
-                    maxProduced = myBusiness.FundsOMax;
-                }
-                facField.GetField("ProductionRateCurrent").SetValue(selectedFacility.myFacilities[0], defaultProductionRate);
-
-                currentStaff = (float)facField.GetField("StaffCurrent").GetValue(selectedFacility.myFacilities[0]);
-                currentProductionRate = defaultProductionRate * currentStaff;
-
-                currentTime = (float)Planetarium.GetUniversalTime();
-                //   Log.Normal("Current time: " + currentTime);
-
-                // Deal with revert exploits
-                if (lastCheckTime > currentTime)
-                {
-                    checkTimeField.SetValue(selectedFacility.myFacilities[0], currentTime);
-                }
-                daysPast = ((currentTime - lastCheckTime) / 21600f);
-                currentProduced = daysPast * currentProductionRate;
-
-                if (currentProduced > maxProduced)
-                {
-                    currentProduced = maxProduced;
-
-                }
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Produces: " + produces, LabelInfo);
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("Current: " + currentProduced.ToString("#0") + " | Max: " + maxProduced.ToString("#0"), LabelInfo);
-                GUILayout.EndHorizontal();
-                if (facilityType == "Research")
-                {
-                    if (GUILayout.Button("Transfer Science to KSC R&D", ButtonSmallText, GUILayout.Height(20)))
-                    {
-                        ResearchAndDevelopment.Instance.AddScience(currentProduced, TransactionReasons.Cheating);
-                        myResearch.ScienceOCurrent = 0f;
-                        myResearch.LastCheck = currentTime;
-                    }
-
-                }
-                if (facilityType == "Business")
-                {
-                    if (GUILayout.Button("Transfer Funds to KSC Account", ButtonSmallText, GUILayout.Height(20)))
-                    {
-                        Funding.Instance.AddFunds(currentProduced, TransactionReasons.Cheating);
-                        myBusiness.FundsOCurrent = 0f;
-                        myBusiness.LastCheck = currentTime;
-                    }
-                }
-
-                GUILayout.Space(5);
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label("Production Rate: Up to " + currentProductionRate.ToString("#0.00") + " a Kerbin day", LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    //if (GUILayout.Button(" Upgrade ", ButtonSmallText, GUILayout.Height(20)))
-                    //{ }
-                }
-                GUILayout.EndHorizontal();
-                GUILayout.Space(3);
-            }
-        }
+		void Update()
+		{
+			if (production != null) {
+				UpdateUI();
+			}
+		}
     }
 }

@@ -3,20 +3,17 @@ using KerbalKonstructs.Modules;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    class MapIconSelector
+    class MapIconSelector : Window
     {
-        internal static PopupDialog dialog;
-        internal static MultiOptionDialog optionDialog;
-        internal static List<DialogGUIBase> content;
-
         internal static string windowName = "IconSelector";
         internal static string windowMessage = "choose action";
         internal static string windowTitle = "Kerbal Konstructs";
-
-        internal static Rect windowRect = new Rect(0.5f, 0.5f, 150f, 60f);
 
         internal static float windowWidth = 150f;
         internal static float windowHeight = 50f;
@@ -24,6 +21,64 @@ namespace KerbalKonstructs.UI
         internal static KKLaunchSite selectedSite;
         internal static StaticInstance staticInstance;
         internal static bool useLaunchSite;
+
+		internal static PointerEventData eventData;
+
+		static MapIconSelector instance;
+
+		UIText message;
+
+		public override void CreateUI()
+		{
+			base.CreateUI();
+
+			Title(windowTitle)
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.BottomLeft)
+				.Pivot(PivotPresets.BottomLeft)
+				.PreferredWidth(windowWidth)
+				.SetSkin ("KK.Default")
+
+				.Add<UIText>(out message)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.CreateWaypoint)
+					.OnClick(CreateWayPoint)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.OpenBaseManager)
+					.OnClick(OpenBaseManager)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Add<UIButton>()
+					.Text(KKLocalization.Close)
+					.OnClick(Close)
+					.FlexibleLayout(true, false)
+					.Finish()
+				.Finish();
+
+			MapView.OnExitMapView += OnExitMapView;
+		}
+
+		protected override void OnDestroy()
+		{
+			MapView.OnExitMapView -= OnExitMapView;
+		}
+
+		void OnExitMapView()
+		{
+			Close();
+		}
+
+		public override void Style()
+		{
+			base.Style();
+		}
 
 
         internal static void CreateContent()
@@ -36,74 +91,29 @@ namespace KerbalKonstructs.UI
             {
                 windowMessage = staticInstance.GetFacility(KKFacilityType.RecoveryBase).FacilityName + "\n" + "Status: " + staticInstance.GetFacility(KKFacilityType.RecoveryBase).OpenCloseState;
             }
-
-            content = new List<DialogGUIBase>();
-
-            content.Add(new DialogGUIFlexibleSpace());
-            content.Add(new DialogGUIVerticalLayout(
-                           new DialogGUIFlexibleSpace(),
-                           new DialogGUIButton("Create a Waypoint", CreateWayPoint, 140.0f, 30.0f, true),
-                           new DialogGUIButton("Open BaseManager", OpenBaseManager, 140.0f, 30.0f, true),
-                           new DialogGUIButton("Close", () =>
-                           {
-                           }, 140.0f, 30.0f, true)
-                           ));
+			instance.message.Text(windowMessage);
         }
-
-
-        internal static void CreateMultiOptionDialog()
-        {
-#if KSP12
-            optionDialog = new MultiOptionDialog(windowMessage, windowTitle, HighLogic.UISkin, windowRect, content.ToArray());
-#else
-            optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, HighLogic.UISkin, windowRect, content.ToArray());
-#endif
-        }
-
-
-        internal static void CreatePopUp()
-        {
-            dialog = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
-                   new Vector2(0.5f, 0.5f), optionDialog,
-                   false,
-                   HighLogic.UISkin, false);
-        }
-
-
-        internal static Vector2 CreateRectUnderMouse()
-        {
-
-            Vector2 mousePos = Event.current.mousePosition;
-            Vector2 pos = new Vector2();
-
-            pos﻿.x = (mousePos.x - (windowWidth / 2)) / Screen.width;
-            //we need to invert the height
-            pos.y = 1 - (mousePos.y / Screen.height);
-
-            return (pos);
-        }
-
 
 
         internal static void Open()
         {
-            windowRect = new Rect(CreateRectUnderMouse(), new Vector2(windowWidth, windowHeight));
+			if (instance == null) {
+				instance = UIKit.CreateUI<MapIconSelector>(UIMain.appCanvasRect, "KKMapIconSelector");
+			}
 
+			instance.rectTransform.anchoredPosition3D = eventData.position;
             CreateContent();
-            CreateMultiOptionDialog();
-            CreatePopUp();
+			instance.SetActive(true);
         }
 
 
         internal static void Close()
         {
-            if (dialog != null)
-            {
-                dialog.Dismiss();
-            }
-            dialog = null;
             selectedSite = null;
             staticInstance = null;
+			if (instance) {
+				instance.SetActive(false);
+			}
         }
 
 

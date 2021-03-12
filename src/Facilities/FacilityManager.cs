@@ -2,20 +2,20 @@
 using KerbalKonstructs.Modules;
 using System;
 using UnityEngine;
+using KSP.Localization;
+
+using KodeUI;
 
 namespace KerbalKonstructs.UI
 {
-    class FacilityManager : KKWindow
+    class FacilityManager : Window
     {
         private static FacilityManager _instance = null;
         internal static FacilityManager instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new FacilityManager();
-
+            get {
+                if (_instance == null) {
+					_instance = UIKit.CreateUI<FacilityManager> (UIMain.appCanvasRect, "KKFacilityManager");
                 }
                 return _instance;
             }
@@ -29,323 +29,253 @@ namespace KerbalKonstructs.UI
         public static StaticInstance selectedInstance = null;
 
 
-        float fAlt = 0f;
 
+		UIText facilityName;
+		PositionLine facilityPosition;
+		UIText facilityPurpose;
+		UIButton openFacility;
+		UIButton closeFacility;
 
-        public Boolean bHalfwindow = false;
-        public Boolean bHalvedWindow = false;
-
-
-        string sFacilityName = "Unknown";
-        string sFacilityType = "Unknown";
-
-        private string sPurpose = "";
+		TrackingStationGUI tractingStation;
+		HangarGUI hangar;
+		ProductionGUI production;
+		MerchantGUI merchant;
+		StorageGUI storage;
+		StaffGUI staff;
 
         // string sOreTransferAmount = "0";
+		void onGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
+		{
+			Close();
+		}
 
-        Vector3 objectPos = new Vector3(0, 0, 0);
+		public override void CreateUI()
+		{
+			GameEvents.onGameSceneSwitchRequested.Add(onGameSceneSwitchRequested);
+			base.CreateUI();
 
-        double disObjectLat = 0;
-        double disObjectLon = 0;
+			this.Title(KKLocalization.FacilityManager)
+				.Vertical()
+				.ControlChildSize(true, true)
+				.ChildForceExpand(false,false)
+				.Padding(3, 3, 5, 5)
+				.PreferredSizeFitter(true, true)
+				.Anchor(AnchorPresets.TopLeft)
+				.Pivot(PivotPresets.TopLeft)
+				.SetSkin("KK.Default")
 
-        GUIStyle Yellowtext;
-        GUIStyle KKWindow;
-        GUIStyle DeadButton;
-        GUIStyle DeadButtonRed;
-        GUIStyle BoxNoBorder;
-        GUIStyle LabelInfo;
-        GUIStyle ButtonSmallText;
+				.Add<HorizontalSep>("HorizontalSep3") .Space (1, 2) .Finish()
+				.Add<UIText>(out facilityName)//box, yellow
+					.Finish()
+				.Add<FixedSpace>() .Size(5) .Finish()
+				.Add<PositionLine>(out facilityPosition) .Finish()
+				.Add<LayoutAnchor>()
+					.DoPreferredHeight(true)
+					.FlexibleLayout(true, false)
+					.Add<UIText>(out facilityPurpose)
+						.Anchor(AnchorPresets.StretchAll)
+						.SizeDelta(0, 0)
+						.Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space (2, 3) .Finish()
+				.Add<HorizontalLayout>()
+					.Add<UIButton>(out openFacility)
+						.OnClick(OpenFacility)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Add<UIButton>(out closeFacility)
+						.OnClick(CloseFacility)
+						.FlexibleLayout(true, false)
+						.Finish()
+					.Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space (2, 3) .Finish()
+				.Add<TrackingStationGUI>(out tractingStation) .FlexibleLayout(true, false) .Finish()
+				.Add<HangarGUI>(out hangar) .FlexibleLayout(true, false) .Finish()
+				.Add<ProductionGUI>(out production) .FlexibleLayout(true, false) .Finish()
+				.Add<MerchantGUI>(out merchant) .FlexibleLayout(true, false) .Finish()
+				.Add<StorageGUI>(out storage) .FlexibleLayout(true, false) .Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .Space (2, 2) .Finish()
+				.Add<StaffGUI>(out staff) .FlexibleLayout(true, false) .Finish()
+				.Add<HorizontalSep>("HorizontalSep3") .SpaceBelow (3) .Finish()
+				.Finish();
 
-        private bool layoutInitialized = false;
+			UIMain.SetTitlebar(titlebar, Close);
+		}
 
+		protected override void OnDestroy()
+		{
+			GameEvents.onGameSceneSwitchRequested.Remove(onGameSceneSwitchRequested);
+		}
 
-        public override void Close()
+        public void Close()
         {
             if (KerbalKonstructs.selectedInstance != null)
                 KerbalKonstructs.DeselectObject(true, true);
 
-
-            MerchantGUI.lastInstance = null;
-            StorageGUI.lastInstance = null;
-            base.Close();
+			SetActive(false);
         }
 
 
-        public override void Open()
+        public void Open()
         {
-            MerchantGUI.lastInstance = null;
-            StorageGUI.lastInstance = null;
-            base.Open();
+			if (selectedInstance != null && selectedInstance.hasFacilities && selectedInstance.myFacilities.Count > 0) {
+				SetActive(true);
+				UpdateUI();
+			}
         }
 
-        public override void Draw()
+		void OpenFacility()
+		{
+			double cost = selectedInstance.myFacilities[0].OpenCost;
+			if (cost == 0) {
+				cost = selectedInstance.model.cost;
+			}
+			double funds = Funding.Instance.Funds;
+
+			if (cost > Funding.Instance.Funds) {
+				MiscUtils.HUDMessage(KKLocalization.InsuficientFundsToOpenFacility, 10, 0);
+			} else {
+				selectedInstance.myFacilities[0].SetOpen();
+				Funding.Instance.AddFunds(-cost, TransactionReasons.Structures);
+			}
+			UpdateUI();
+		}
+
+		void CloseFacility()
+		{
+			double value = selectedInstance.myFacilities[0].CloseValue;
+			if (value == 0) {
+				value = selectedInstance.model.cost;
+			}
+
+			Funding.Instance.AddFunds(value, TransactionReasons.Structures);
+			selectedInstance.myFacilities[0].SetClosed();
+			if (selectedInstance.myFacilities[0].FacilityType == "GroundStation") {
+				Modules.ConnectionManager.DetachGroundStation(selectedInstance);
+			}
+			UpdateUI();
+		}
+
+		void UpdateOpenClose()
+		{
+			double openCost = selectedInstance.myFacilities[0].OpenCost;
+			double closeValue = selectedInstance.myFacilities[0].CloseValue;
+			double defaultCost = selectedInstance.model.cost;
+			bool isOpen = selectedInstance.myFacilities[0].isOpen;
+
+			if (openCost == 0) {
+				openCost = defaultCost;
+			}
+
+			if (closeValue == 0) {
+				closeValue = defaultCost;
+			}
+			bool alwaysOpen = openCost == 0;
+			bool cannotClose = closeValue == 0;
+
+			openFacility.interactable = !alwaysOpen && !isOpen;
+			closeFacility.interactable = !cannotClose && isOpen;
+			if (alwaysOpen) {
+				openFacility.Text(KKLocalization.AlwaysOpen);
+			} else {
+				openFacility.Text(Localizer.Format(KKLocalization.OpenFacilityForFunds, openCost));
+			}
+			if (cannotClose) {
+				closeFacility.Text(KKLocalization.CannotClose);
+			} else {
+				closeFacility.Text(Localizer.Format(KKLocalization.CloseFacilityForFunds, closeValue));
+			}
+		}
+
+        void UpdateUI()
         {
-            if (MapView.MapIsEnabled)
-            {
-                if (KerbalKonstructs.selectedInstance != null)
-                    KerbalKonstructs.DeselectObject(true, true);
-            }
+			if (selectedInstance.hasFacilities == false || selectedInstance.myFacilities.Count == 0) {
+				selectedInstance = null;
+				this.Close();
+			}
 
+			string facilityType = selectedInstance.FacilityType;
 
-            KKWindow = new GUIStyle(GUI.skin.window);
-            KKWindow.padding = new RectOffset(3, 3, 5, 5);
+			if (facilityType == "GroundStation") {
+				facilityName.Text(KKLocalization.GroundStation);
+			} else {
+				if (selectedInstance.facilityType != KKFacilityType.None) {
+					facilityName.Text (selectedInstance.GetFacility(selectedInstance.facilityType).FacilityName);
+				} else {
+					facilityName.Text (selectedInstance.model.title);
+				}
+			}
 
-            if (bHalfwindow)
-            {
-                if (!bHalvedWindow)
-                {
-                    facilityManagerRect = new Rect(facilityManagerRect.xMin, facilityManagerRect.yMin, facilityManagerRect.width, facilityManagerRect.height - 200);
-                    bHalvedWindow = true;
-                }
-            }
+			Vector3 pos = KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(selectedInstance.position);
+			facilityPosition.Altitude(selectedInstance.RadiusOffset).Latitude(KKMath.GetLatitudeInDeg(pos)).Longitude(KKMath.GetLongitudeInDeg(pos));
 
-            if (!bHalfwindow)
-            {
-                if (bHalvedWindow)
-                {
-                    facilityManagerRect = new Rect(facilityManagerRect.xMin, facilityManagerRect.yMin, facilityManagerRect.width, facilityManagerRect.height + 200);
-                    bHalvedWindow = false;
-                }
-            }
+			UpdateOpenClose();
 
-            facilityManagerRect = GUI.Window(0xB01B2B5, facilityManagerRect, drawFacilityManagerWindow, "", KKWindow);
+			bool enableTrackingStation = false;
+			bool enableHangar = false;
+			bool enableProduction = false;
+			bool enableMerchant = false;
+			bool enableStorage = false;
 
+			switch (selectedInstance.facilityType) {
+				case KKFacilityType.Hangar:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeHangar);
+					enableHangar = true;
+					break;
+				case KKFacilityType.Barracks:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeBarracks);
+					break;
+				case KKFacilityType.Research:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeResearch);
+					enableProduction = true;
+					break;
+				case KKFacilityType.Business:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeBusiness);
+					enableProduction = true;
+					break;
+				case KKFacilityType.GroundStation:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeGroundStation);
+					enableTrackingStation = true;
+					break;
+				case KKFacilityType.Merchant:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeMerchant);
+					enableMerchant = true;
+					break;
+				case KKFacilityType.Storage:
+					facilityPurpose.Text (KKLocalization.FacilityPurposeStorage);
+					enableStorage = true;
+					break;
+			}
+			bool isOpen = selectedInstance.myFacilities[0].isOpen;
+
+			tractingStation.SetActive (isOpen && enableTrackingStation);
+			hangar.SetActive (isOpen && enableHangar);
+			production.SetActive (isOpen && enableProduction);
+			merchant.SetActive (isOpen && enableMerchant);
+			storage.SetActive (isOpen && enableStorage);
+			staff.SetActive (isOpen);
+
+			if (isOpen) {
+				switch (selectedInstance.facilityType) {
+					case KKFacilityType.GroundStation:
+						tractingStation.UpdateUI(selectedInstance);
+						break;
+					case KKFacilityType.Hangar:
+						hangar.UpdateUI(selectedInstance);
+						break;
+					case KKFacilityType.Research:
+					case KKFacilityType.Business:
+						production.UpdateUI(selectedInstance);
+						break;
+					case KKFacilityType.Merchant:
+						merchant.UpdateUI(selectedInstance);
+						break;
+					case KKFacilityType.Storage:
+						storage.UpdateUI(selectedInstance);
+						break;
+				}
+				staff.UpdateUI(selectedInstance);
+			}
         }
-
-        void drawFacilityManagerWindow(int windowID)
-        {
-            if (selectedInstance.hasFacilities == false || selectedInstance.myFacilities.Count == 0)
-            {
-                selectedInstance = null;
-                this.Close();
-            }
-
-
-            if (!layoutInitialized)
-            {
-                InitializeLayout();
-                layoutInitialized = true;
-            }
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(16));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("Facility Manager", DeadButton, GUILayout.Height(16));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(16)))
-                {
-                    selectedInstance = null;
-                    this.Close();
-                    return;
-
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            if (selectedInstance != null)
-            {
-                sFacilityType = selectedInstance.FacilityType;
-
-                if (sFacilityType == "GroundStation")
-                {
-                    sFacilityName = "Ground Station";
-                    bHalfwindow = true;
-                }
-                else
-                {
-                    if (selectedInstance.facilityType != KKFacilityType.None)
-                    {
-                        sFacilityName = selectedInstance.GetFacility(selectedInstance.facilityType).FacilityName;
-                    }
-                    else
-                    {
-                        sFacilityName = selectedInstance.model.title;
-                    }
-
-                }
-
-                GUILayout.Box("" + sFacilityName, Yellowtext);
-                GUILayout.Space(5);
-
-                fAlt = selectedInstance.RadiusOffset;
-
-                objectPos = KerbalKonstructs.instance.GetCurrentBody().transform.InverseTransformPoint(selectedInstance.position);
-                disObjectLat = KKMath.GetLatitudeInDeg(objectPos);
-                disObjectLon = KKMath.GetLongitudeInDeg(objectPos);
-
-                if (disObjectLon < 0) disObjectLon = disObjectLon + 360;
-
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Space(5);
-                    GUILayout.Label("Alt. " + fAlt.ToString("#0.0") + "m", LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Lat. " + disObjectLat.ToString("#0.000"), LabelInfo);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("Lon. " + disObjectLon.ToString("#0.000"), LabelInfo);
-                    GUILayout.Space(5);
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.Space(5);
-
-                sPurpose = "";
-
-                switch (selectedInstance.facilityType)
-                {
-                    case KKFacilityType.Hangar:
-                        {
-                            sPurpose = "Craft can be stored in this building for launching from the base at a later date. The building has limited space.";
-                            bHalfwindow = true;
-                            break;
-                        }
-                    case KKFacilityType.Barracks:
-                        {
-                            sPurpose = "This facility provides a temporary home for base-staff. Other facilities can draw staff from the pool available at this facility.";
-                            bHalfwindow = true;
-                            break;
-                        }
-                    case KKFacilityType.Research:
-                        {
-                            sPurpose = "This facility carries out research and generates Science.";
-                            bHalfwindow = true;
-                            break;
-                        }
-                    case KKFacilityType.Business:
-                        {
-                            sPurpose = "This facility carries out business related to the space program in order to generate Funds.";
-                            bHalfwindow = true;
-                            break;
-                        }
-                    case KKFacilityType.GroundStation:
-                        {
-                            sPurpose = "This facility can be a GroundStation for RemoteTech/CommNet";
-                            bHalfwindow = true;
-                            break;
-                        }
-                    case KKFacilityType.Merchant:
-                        {
-                            sPurpose = "You can buy and sell Resources here";
-                            bHalfwindow = false;
-                            break;
-                        }
-                    case KKFacilityType.Storage:
-                        {
-                            sPurpose = "You can store Resources here";
-                            bHalfwindow = false;
-                            break;
-                        }
-
-                }
-
-                GUILayout.Label(sPurpose, LabelInfo);
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(3);
-
-                SharedInterfaces.OpenCloseFacility(selectedInstance);
-
-                GUILayout.Space(2);
-                GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                GUILayout.Space(3);
-
-                if (selectedInstance.myFacilities[0].isOpen)
-                {
-
-
-                    switch (selectedInstance.facilityType)
-                    {
-                        case KKFacilityType.GroundStation:
-                            TrackingStationGUI.TrackingInterface(selectedInstance);
-                            break;
-                        case KKFacilityType.Hangar:
-                            HangarGUI.HangarInterface(selectedInstance);
-                            break;
-                        case KKFacilityType.Research:
-                        case KKFacilityType.Business:
-                            ProductionGUI.ProductionInterface(selectedInstance, sFacilityType);
-                            break;
-                        case KKFacilityType.Merchant:
-                            MerchantGUI.MerchantInterface(selectedInstance);
-                            break;
-                        case KKFacilityType.Storage:
-                            StorageGUI.StorageInerface(selectedInstance);
-                            break;
-                    }
-                    GUILayout.Space(2);
-                    GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-                    GUILayout.Space(2);
-                    StaffGUI.StaffingInterface(selectedInstance);
-                }
-            }
-
-            GUILayout.FlexibleSpace();
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-            GUILayout.Space(3);
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
-        }
-
-        private void InitializeLayout()
-        {
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.white;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.white;
-            DeadButton.focused.textColor = Color.white;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            Yellowtext = new GUIStyle(GUI.skin.box);
-            Yellowtext.normal.textColor = Color.yellow;
-            Yellowtext.normal.background = null;
-
-            LabelInfo = new GUIStyle(GUI.skin.label);
-            LabelInfo.normal.background = null;
-            LabelInfo.normal.textColor = Color.white;
-            LabelInfo.fontSize = 13;
-            LabelInfo.fontStyle = FontStyle.Bold;
-            LabelInfo.padding.left = 3;
-            LabelInfo.padding.top = 0;
-            LabelInfo.padding.bottom = 0;
-
-            ButtonSmallText = new GUIStyle(GUI.skin.button);
-            ButtonSmallText.fontSize = 12;
-            ButtonSmallText.fontStyle = FontStyle.Normal;
-        }
-
     }
 }

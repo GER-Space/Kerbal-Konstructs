@@ -48,6 +48,7 @@ namespace KerbalKonstructs.Core
 
             if (string.IsNullOrEmpty(instance.UUID))
             {
+                Debug.Log ($"Empty UUID on instance in group {instance.Group} at {instance.RelativePosition}");
                 instance.UUID = GetNewUUID();
             }
 
@@ -56,6 +57,8 @@ namespace KerbalKonstructs.Core
 
             if (instancedByUUID.ContainsKey(instance.UUID))
             {
+                var dup = instancedByUUID[instance.UUID];
+                Debug.Log ($"Duplicate UUID on instance in group {instance.Group} at {instance.RelativePosition} ({dup.Group}, {dup.RelativePosition}");
                 instance.UUID = GetNewUUID();
             }
             instancedByUUID.Add(instance.UUID, instance);
@@ -297,15 +300,31 @@ namespace KerbalKonstructs.Core
                 vPlayerPos = playerPos;
             }
 
+            closestLaunchCenter = null;
             if (centersByPlanet.ContainsKey(lastActiveBody.name))
             {
+                var closestDist = float.PositiveInfinity;
+
                 foreach (GroupCenter center in centersByPlanet[lastActiveBody.name].Values)
                 {
                     //Log.Normal("Checking Group: " + center.Group + " distance: " + Vector3.Distance(center.gameObject.transform.position, vPlayerPos)); 
                     //isInRange = (Vector3.Distance(center.gameObject.transform.position, vPlayerPos) < maxDistance);
-                    center.CheckIfInRange(Vector3.Distance(center.gameObject.transform.position, vPlayerPos), maxDistance);
+                    float dist = Vector3.Distance(center.gameObject.transform.position, vPlayerPos);
+                    if (center.CheckIfInRange(dist, maxDistance)) {
+                        if (dist < closestDist && center.launchsites.Count > 0) {
+                            closestDist = dist;
+                            closestLaunchCenter = center;
+                        }
+                    }
                 }
             }
+        }
+
+        static GroupCenter closestLaunchCenter;
+
+        internal static GroupCenter GetClosestLaunchCenter()
+        {
+            return closestLaunchCenter;
         }
 
         public static StaticInstance[] GetAllStatics()
