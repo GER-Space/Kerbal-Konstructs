@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs
 {
-    static class API
+    public static class API
     {
 
         public static Action<GameObject> OnBuildingSpawned = delegate { };
