@@ -226,13 +226,14 @@ namespace KerbalKonstructs
 
         internal void ReplaceShader(MeshRenderer renderer, string newShaderName)
         {
-            if (!KKGraphics.HasShader(newShaderName))
+            Shader newShader = KKGraphics.GetShader(newShaderName);
+
+            if (newShader == null)
             {
                 Log.UserError("No Shader like this found: " + newShaderName);
                 return;
             }
 
-            Shader newShader = KKGraphics.GetShader(newShaderName);
             renderer.material.shader = newShader;
             //Log.Normal("Applied Shader: " + newShader.name);
 

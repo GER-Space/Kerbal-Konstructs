@@ -21,7 +21,7 @@ namespace KerbalKonstructs
     public class KerbalKonstructs : MonoBehaviour
     {
         // Hello
-        internal static KerbalKonstructs instance;
+        public static KerbalKonstructs instance;
 
         internal static readonly string sKKVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
@@ -52,7 +52,7 @@ namespace KerbalKonstructs
             {
                 if (RemoteTechAddon.isInstalled)
                 {
-                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().enableRT;
+                    return HighLogic.CurrentGame?.Parameters?.CustomParams<KKCustomParameters0>()?.enableRT == true;
                 }
                 else
                 {
@@ -125,18 +125,15 @@ namespace KerbalKonstructs
         {
             get
             {
-                if (KKCustomParameters1.instance != null)
-                {
-                    return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().DebugMode;
-                }
-                else
-                {
-                    return false;
-                }
+                if (HighLogic.CurrentGame?.Parameters?.CustomParams<KKCustomParameters1>() is KKCustomParameters1 parms)
+                    return parms.DebugMode;
+
+                return false;
             }
             set
             {
-                HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().DebugMode = value;
+                if (HighLogic.CurrentGame?.Parameters?.CustomParams<KKCustomParameters1>() is KKCustomParameters1 parms)
+                    parms.DebugMode = value;
             }
         }
         internal bool spawnPreviewModels { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().spawnPreviewModels = value; } }
@@ -1273,6 +1270,8 @@ namespace KerbalKonstructs
 
             foreach (StaticInstance instance in StaticDatabase.GetInstancesFromModel(model))
             {
+                if (instance.isInSavegame) continue;
+
                 ConfigNode inst = new ConfigNode("Instances");
                 ConfigParser.WriteInstanceConfig(instance, inst);
                 modelConfig.nodes.Add(inst);
@@ -1346,6 +1345,8 @@ namespace KerbalKonstructs
 
         internal void SaveGroupCenters()
         {
+            StaticDatabase.allGroupCenters.Where(g => g.isInSavegame && !string.IsNullOrEmpty(g.configPath)).ToList().ForEach(g => deletedGroups.Add(g));
+
             foreach (GroupCenter center in deletedGroups)
             {
                 if (File.Exists(KSPUtil.ApplicationRootPath + "GameData/" + center.configPath))

@@ -90,7 +90,24 @@ namespace KerbalKonstructs
 
             float wrecksize = 65f;
 
-            float min = Math.Min(staticBounds.size.x, staticBounds.size.z);
+            float min = 1;
+            if (staticBounds.size.x != 0 && staticBounds.size.z != 0)
+            {
+                min = Math.Min(staticBounds.size.x, staticBounds.size.z);
+            }
+            else if (staticBounds.size.x == 0 && staticBounds.size.z != 0)
+            {
+                min = staticBounds.size.z;
+            }
+            else if (staticBounds.size.x != 0 && staticBounds.size.z == 0)
+            {
+                min = staticBounds.size.x;
+            }
+            else
+            {
+                min = 1;
+            }
+
             float max = Math.Max(staticBounds.size.x, staticBounds.size.z);
 
             float scale = min / wrecksize;

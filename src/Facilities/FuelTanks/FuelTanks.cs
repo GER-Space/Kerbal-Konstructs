@@ -7,7 +7,7 @@ namespace KerbalKonstructs.Modules
 
         private string[] resourceTypes = new string[] { "LiquidFuel", "MonoPropellant", "Oxidizer" };
 
-        internal override KKFacility ParseConfig(ConfigNode cfgNode)
+        public override KKFacility ParseConfig(ConfigNode cfgNode)
         {
             base.ParseConfig(cfgNode);
             Merchant fuelTankMerchant = gameObject.AddComponent<Merchant>();

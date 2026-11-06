@@ -1,312 +1,300 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C733C176-867C-4B72-B979-1004A1A4F193}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KerbalKonstructs</RootNamespace>
-    <AssemblyName>KerbalKonstructs</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\GameData\KerbalKonstructs\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <!-- To compile for ksp 1.2 use these constants: DEBUG,KSP12 -->
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\GameData\KerbalKonstructs\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Kerbal Space Program\GameData\KerbalKonstructs\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Optimize>true</Optimize>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CustomPreLaunchChecks">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\GameData\CustomPreLaunchChecks\CustomPreLaunchChecks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_Data\Managed\System.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Xml">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\KSP_Data\Managed\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.InputModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\..\Steam\SteamApps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Addons\Addons.cs" />
-    <Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
-    <Compile Include="Addons\SDTest.cs" />
-    <Compile Include="Addons\StageRecovery\StageRecovery.cs" />
-    <Compile Include="Core\Config\ConfigParser.cs" />
-    <Compile Include="Core\Config\ConfigUtil.cs" />
-    <Compile Include="Core\Config\KKCustomParameters.cs" />
-    <Compile Include="Core\KKMath.cs" />
-    <Compile Include="Core\LaunchSites\LaunchSiteParser.cs" />
-    <Compile Include="Core\LaunchSites\LaunchSiteChecks.cs" />
-    <Compile Include="Core\MapDecals\DecalsDatabase.cs" />
-    <Compile Include="Core\MapDecals\MapDecalInstance.cs" />
-    <Compile Include="Core\MapDecals\MapDecalsMap.cs" />
-    <Compile Include="Core\MapDecals\MapDecalUtils.cs" />
-    <Compile Include="Core\SpaceCenters\ScExtention.cs" />
-    <Compile Include="Core\SquadStatics.cs" />
-    <Compile Include="Core\StaticGroup\BuiltinCenters.cs" />
-    <Compile Include="Core\StaticGroup\GroupCenter.cs" />
-    <Compile Include="Core\StaticModels\ModelVariant.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\OnSunRiseMaster.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnTrigger\AnimateOnTrigger.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBack.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBackWorker.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\Destructable\Destructable.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\DishAnimate\DishAnimate.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrasColor.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColor2.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColorUtils.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\GrassColor\TexturePreset.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRiseOld.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\TileTextures\TileTextures.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
-    <Compile Include="Editor\GroupEditor\GroupEditor.cs" />
-    <Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
-    <Compile Include="Editor\InstanceEditor\GrassColorPresetUI.cs" />
-    <Compile Include="Editor\InstanceEditor\GrassColorUI.cs" />
-    <Compile Include="Editor\InstanceEditor\GrassColorPresetUI2.cs" />
-    <Compile Include="Editor\InstanceEditor\VariantSelector.cs" />
-    <Compile Include="Editor\KKEditorLogic.cs" />
-    <Compile Include="Editor\Shared\DrawObject.cs" />
-    <Compile Include="Editor\Shared\DrawTools.cs" />
-    <Compile Include="Editor\MapDecalEditor.cs" />
-    <Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
-    <Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
-    <Compile Include="Editor\Shared\EditorGizmo.cs" />
-    <Compile Include="Editor\Shared\VectorRenderer.cs" />
-    <Compile Include="ExternalAPI\API.cs" />
-    <Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
-    <Compile Include="Facilities\Barracks\Barracks.cs" />
-    <Compile Include="Facilities\Business\Business.cs" />
-    <Compile Include="Facilities\Hangar\Hangar.cs" />
-    <Compile Include="Facilities\Hangar\HangarKSCGUI.cs" />
-    <Compile Include="Facilities\KKFacility.cs" />
-    <Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
-    <Compile Include="Facilities\GroundStation\GroundStation.cs" />
-    <Compile Include="Facilities\KKFacilitySelector.cs" />
-    <Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
-    <Compile Include="Facilities\RecoveryBase\RecoveryBase.cs" />
-    <Compile Include="Facilities\Storage\Storage.cs" />
-    <Compile Include="Facilities\Storage\StorageGUI.cs" />
-    <Compile Include="Facilities\Merchant\Merchant.cs" />
-    <Compile Include="Facilities\Merchant\MerchantGUI.cs" />
-    <Compile Include="Facilities\ProductionGUI.cs" />
-    <Compile Include="Facilities\Hangar\HangarGUI.cs" />
-    <Compile Include="Core\LaunchSites\LaunchSite.cs" />
-    <Compile Include="Facilities\Research\Research.cs" />
-    <Compile Include="Modules\Career\CareerEditor.cs" />
-    <Compile Include="Modules\Career\CareerObjects.cs" />
-    <Compile Include="Modules\Career\CareerScenario.cs" />
-    <Compile Include="Modules\Career\CareerState.cs" />
-    <Compile Include="Modules\Career\CareerUtils.cs" />
-    <Compile Include="Modules\MapIcons\MapIconSelector.cs" />
-    <Compile Include="Modules\MapIcons\MapIconDraw.cs" />
-    <Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
-    <Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
-    <Compile Include="UI2\Editor\EditorModeSelector.cs" />
-    <Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
-    <Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
-    <Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
-    <Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
-    <Compile Include="UI2\Editor\Instance\ModelList.cs" />
-    <Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
-    <Compile Include="UI2\KKStyle.cs" />
-    <Compile Include="UI2\KKWindow2.cs" />
-    <Compile Include="UI2\WindowManager2.cs" />
-    <Compile Include="UI\LandingGuide.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />
-    <Compile Include="Core\StaticObjects\StaticModules\Compat\AnimateOnClick.cs" />
-    <Compile Include="Core\SpaceCenters\CustomSpaceCenter.cs" />
-    <Compile Include="Core\SpaceCenters\SpaceCenterManager.cs" />
-    <Compile Include="Core\StaticObjects\InstanceUtil.cs" />
-    <Compile Include="UI\KKWindow.cs" />
-    <Compile Include="UI\ToolbarController.cs" />
-    <Compile Include="UI\UIMain.cs" />
-    <Compile Include="Core\Log.cs" />
-    <Compile Include="UI\WindowManager.cs" />
-    <Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
-    <Compile Include="Core\StaticModels\StaticModel.cs" />
-    <Compile Include="Core\StaticObjects\StaticModule.cs" />
-    <Compile Include="Utilities\CameraController.cs" />
-    <Compile Include="UI\BaseBossFlight.cs" />
-    <Compile Include="UI\AirRacing.cs" />
-    <Compile Include="UI\BaseManager.cs" />
-    <Compile Include="Editor\ModelInfo.cs" />
-    <Compile Include="Editor\StaticsEditorGUI.cs" />
-    <Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />
-    <Compile Include="Facilities\StaffGUI.cs" />
-    <Compile Include="Facilities\SharedInterfaces.cs" />
-    <Compile Include="UI2\KSCManager.cs" />
-    <Compile Include="UI\NavGuidanceSystem.cs" />
-    <Compile Include="Facilities\FacilityManager.cs" />
-    <Compile Include="Editor\InstanceEditor\EditorGUI.cs" />
-    <Compile Include="KerbalKonstructs.cs" />
-    <Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
-    <Compile Include="Core\StaticObjects\StaticInstance.cs" />
-    <Compile Include="Core\StaticObjects\StaticDatabase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\LaunchSiteSelectorGUI.cs" />
-    <Compile Include="Modules\MapIcons\MapIconManager.cs" />
-    <Compile Include="Utilities\ClassExtentions.cs" />
-    <Compile Include="Utilities\DebugDrawer.cs" />
-    <Compile Include="Utilities\GrasColorCam.cs" />
-    <Compile Include="Utilities\KKGraphics.cs" />
-    <Compile Include="Utilities\MiscUtils.cs" />
-    <Compile Include="Addons\NavUtils\ILSConfig.cs" />
-    <Compile Include="Utilities\Zip\Crc32Helper.Managed.cs" />
-    <Compile Include="Utilities\Zip\PositionPreservingWriteOnlyStreamWrapper.cs" />
-    <Compile Include="Utilities\Zip\ZipArchive.cs" />
-    <Compile Include="Utilities\Zip\ZipArchiveEntry.cs" />
-    <Compile Include="Utilities\Zip\ZipArchiveEntry.Unity.cs" />
-    <Compile Include="Utilities\Zip\ZipArchiveMode.cs" />
-    <Compile Include="Utilities\Zip\ZipBlocks.cs" />
-    <Compile Include="Utilities\Zip\ZipCustomStreams.cs" />
-    <Compile Include="Utilities\Zip\ZipFile.cs" />
-    <Compile Include="Utilities\Zip\ZipFileExtensions.cs" />
-    <Compile Include="Utilities\Zip\ZipHelper.cs" />
-    <Compile Include="Utilities\Zip\ZipVersion.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
-    <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{C733C176-867C-4B72-B979-1004A1A4F193}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>KerbalKonstructs</RootNamespace>
+		<AssemblyName>KerbalKonstructs</AssemblyName>
+		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+		<FileAlignment>512</FileAlignment>
+		<TargetFrameworkProfile />
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>..\GameData\KerbalKonstructs</OutputPath>
+		<DefineConstants>DEBUG</DefineConstants>
+		<!-- To compile for ksp 1.2 use these constants: DEBUG,KSP12 -->
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>..\GameData\KerbalKonstructs\</OutputPath>
+		<DefineConstants>DEBUG</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+		<DebugSymbols>true</DebugSymbols>
+		<OutputPath>..\GameData\KerbalKonstructs</OutputPath>
+		<DefineConstants>DEBUG</DefineConstants>
+		<DebugType>full</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+		<Optimize>true</Optimize>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Assembly-CSharp-firstpass">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="CustomPreLaunchChecks">
+			<HintPath>$(KSPRoot)\GameData\CustomPreLaunchChecks\CustomPreLaunchChecks.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\System.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Xml">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\System.Xml.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="System.Data" />
+		<Reference Include="UnityEngine">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AnimationModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AssetBundleModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.AudioModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ImageConversionModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.IMGUIModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.InputLegacyModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.InputModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ParticleSystemModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.PhysicsModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TextRenderingModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+			<HintPath>$(KSPRoot)\KSP_x64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Addons\Addons.cs" />
+		<Compile Include="Addons\RemoteTech\RemoteTechAddon.cs" />
+		<Compile Include="Addons\SDTest.cs" />
+		<Compile Include="Addons\StageRecovery\StageRecovery.cs" />
+		<Compile Include="Core\Config\ConfigParser.cs" />
+		<Compile Include="Core\Config\ConfigUtil.cs" />
+		<Compile Include="Core\Config\KKCustomParameters.cs" />
+		<Compile Include="Core\KKMath.cs" />
+		<Compile Include="Core\LaunchSites\LaunchSiteParser.cs" />
+		<Compile Include="Core\LaunchSites\LaunchSiteChecks.cs" />
+		<Compile Include="Core\MapDecals\DecalsDatabase.cs" />
+		<Compile Include="Core\MapDecals\MapDecalInstance.cs" />
+		<Compile Include="Core\MapDecals\MapDecalsMap.cs" />
+		<Compile Include="Core\MapDecals\MapDecalUtils.cs" />
+		<Compile Include="Core\KKMouseUtility.cs" />
+		<Compile Include="Core\SpaceCenters\ScExtention.cs" />
+		<Compile Include="Core\SquadStatics.cs" />
+		<Compile Include="Core\StaticGroup\BuiltinCenters.cs" />
+		<Compile Include="Core\StaticGroup\GroupCenter.cs" />
+		<Compile Include="Core\StaticModels\ModelVariant.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AdvTextures\AdvTextures.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRise.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\OnSunRiseMaster.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AnimateOnTrigger\AnimateOnTrigger.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AudioPlayer\AudioPlayer.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AutoKourse\AutoKourse.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBack.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\CallBack\KKCallBackWorker.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\Destructable\Destructable.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\DishAnimate\DishAnimate.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\FlagDecal\FlagDecal.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrasColor.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColor2.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\GrassColor\GrassColorUtils.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\GrassColor\TexturePreset.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\PadSmoke\PadSmoke.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\RunwayPapi\RunwayPapi.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\AnimateOnSunRise\AnimateOnSunRiseOld.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\TileTextures\TileTextures.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\Water\WaterSurface.cs" />
+		<Compile Include="Editor\GroupEditor\GroupEditor.cs" />
+		<Compile Include="Editor\GroupEditor\GroupSelectorUI.cs" />
+		<Compile Include="Editor\InstanceEditor\GrassColorPresetUI.cs" />
+		<Compile Include="Editor\InstanceEditor\GrassColorUI.cs" />
+		<Compile Include="Editor\InstanceEditor\GrassColorPresetUI2.cs" />
+		<Compile Include="Editor\InstanceEditor\VariantSelector.cs" />
+		<Compile Include="Editor\KKEditorLogic.cs" />
+		<Compile Include="Editor\Shared\DrawObject.cs" />
+		<Compile Include="Editor\Shared\DrawTools.cs" />
+		<Compile Include="Editor\MapDecalEditor.cs" />
+		<Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
+		<Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
+		<Compile Include="Editor\Shared\EditorGizmo.cs" />
+		<Compile Include="Editor\Shared\VectorRenderer.cs" />
+		<Compile Include="ExternalAPI\API.cs" />
+		<Compile Include="ExternalAPI\extLaunchSiteManager.cs" />
+		<Compile Include="Facilities\Barracks\Barracks.cs" />
+		<Compile Include="Facilities\Business\Business.cs" />
+		<Compile Include="Facilities\Hangar\Hangar.cs" />
+		<Compile Include="Facilities\Hangar\HangarKSCGUI.cs" />
+		<Compile Include="Facilities\KKFacility.cs" />
+		<Compile Include="Facilities\FuelTanks\FuelTanks.cs" />
+		<Compile Include="Facilities\GroundStation\GroundStation.cs" />
+		<Compile Include="Facilities\KKFacilitySelector.cs" />
+		<Compile Include="Facilities\LandingGuide\LandingGuideClasses.cs" />
+		<Compile Include="Facilities\RecoveryBase\RecoveryBase.cs" />
+		<Compile Include="Facilities\Storage\Storage.cs" />
+		<Compile Include="Facilities\Storage\StorageGUI.cs" />
+		<Compile Include="Facilities\Merchant\Merchant.cs" />
+		<Compile Include="Facilities\Merchant\MerchantGUI.cs" />
+		<Compile Include="Facilities\ProductionGUI.cs" />
+		<Compile Include="Facilities\Hangar\HangarGUI.cs" />
+		<Compile Include="Core\LaunchSites\LaunchSite.cs" />
+		<Compile Include="Facilities\Research\Research.cs" />
+	    <Compile Include="Modules\Career\CareerGroups.cs" />
+	    <Compile Include="Modules\Career\CareerMapDecals.cs" />
+		<Compile Include="Modules\Career\CareerEditor.cs" />
+		<Compile Include="Modules\Career\CareerObjects.cs" />
+		<Compile Include="Modules\Career\CareerScenario.cs" />
+		<Compile Include="Modules\Career\CareerState.cs" />
+		<Compile Include="Modules\Career\CareerUtils.cs" />
+		<Compile Include="Modules\MapIcons\MapIconSelector.cs" />
+		<Compile Include="Modules\MapIcons\MapIconDraw.cs" />
+		<Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
+		<Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
+		<Compile Include="UI2\Editor\EditorModeSelector.cs" />
+		<Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
+		<Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
+		<Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
+		<Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
+		<Compile Include="UI2\Editor\Instance\ModelList.cs" />
+		<Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
+		<Compile Include="UI2\KKStyle.cs" />
+		<Compile Include="UI2\KKWindow2.cs" />
+		<Compile Include="UI2\WindowManager2.cs" />
+		<Compile Include="UI\LandingGuide.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\OnClick\GUIOnClick.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\OnClick\AnimateOnClick.cs" />
+		<Compile Include="Core\StaticObjects\StaticModules\Compat\AnimateOnClick.cs" />
+		<Compile Include="Core\SpaceCenters\CustomSpaceCenter.cs" />
+		<Compile Include="Core\SpaceCenters\SpaceCenterManager.cs" />
+		<Compile Include="Core\StaticObjects\InstanceUtil.cs" />
+		<Compile Include="UI\KKWindow.cs" />
+		<Compile Include="UI\ToolbarController.cs" />
+		<Compile Include="UI\UIMain.cs" />
+		<Compile Include="Core\Log.cs" />
+		<Compile Include="UI\WindowManager.cs" />
+		<Compile Include="Addons\StageRecovery\StageRecoveryWrapper.cs" />
+		<Compile Include="Core\StaticModels\StaticModel.cs" />
+		<Compile Include="Core\StaticObjects\StaticModule.cs" />
+		<Compile Include="Utilities\CameraController.cs" />
+		<Compile Include="UI\BaseBossFlight.cs" />
+		<Compile Include="UI\AirRacing.cs" />
+		<Compile Include="UI\BaseManager.cs" />
+		<Compile Include="Editor\ModelInfo.cs" />
+		<Compile Include="Editor\StaticsEditorGUI.cs" />
+		<Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />
+		<Compile Include="Facilities\StaffGUI.cs" />
+		<Compile Include="Facilities\SharedInterfaces.cs" />
+		<Compile Include="UI2\KSCManager.cs" />
+		<Compile Include="UI\NavGuidanceSystem.cs" />
+		<Compile Include="Facilities\FacilityManager.cs" />
+		<Compile Include="Editor\InstanceEditor\EditorGUI.cs" />
+		<Compile Include="KerbalKonstructs.cs" />
+		<Compile Include="Core\LaunchSites\LaunchSiteManager.cs" />
+		<Compile Include="Core\StaticObjects\StaticInstance.cs" />
+		<Compile Include="Core\StaticObjects\StaticDatabase.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="UI\LaunchSiteSelectorGUI.cs" />
+		<Compile Include="Modules\MapIcons\MapIconManager.cs" />
+		<Compile Include="Utilities\ClassExtentions.cs" />
+		<Compile Include="Utilities\DebugDrawer.cs" />
+		<Compile Include="Utilities\GrasColorCam.cs" />
+		<Compile Include="Utilities\KKGraphics.cs" />
+		<Compile Include="Utilities\MiscUtils.cs" />
+		<Compile Include="Addons\NavUtils\ILSConfig.cs" />
+		<Compile Include="Utilities\Zip\Crc32Helper.Managed.cs" />
+		<Compile Include="Utilities\Zip\PositionPreservingWriteOnlyStreamWrapper.cs" />
+		<Compile Include="Utilities\Zip\ZipArchive.cs" />
+		<Compile Include="Utilities\Zip\ZipArchiveEntry.cs" />
+		<Compile Include="Utilities\Zip\ZipArchiveEntry.Unity.cs" />
+		<Compile Include="Utilities\Zip\ZipArchiveMode.cs" />
+		<Compile Include="Utilities\Zip\ZipBlocks.cs" />
+		<Compile Include="Utilities\Zip\ZipCustomStreams.cs" />
+		<Compile Include="Utilities\Zip\ZipFile.cs" />
+		<Compile Include="Utilities\Zip\ZipFileExtensions.cs" />
+		<Compile Include="Utilities\Zip\ZipHelper.cs" />
+		<Compile Include="Utilities\Zip\ZipVersion.cs" />
+	</ItemGroup>
+	<ItemGroup />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
+		<PostBuildEvent>
+			rmdir /q /s  $(ProjectDir)\obj
 
-IF $(ConfigurationName) == Release (
-"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh 
-)</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>rmdir /q /s  $(ProjectDir)\obj
-
-IF $(ConfigurationName) == Release (
-"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh 
-)
-
-IF $(ConfigurationName) == Release12 (
-"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh KSP122
-)
-
-IF $(ConfigurationName) == Release13 (
-"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh KSP131 
-)</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>echo %25time%25</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+			IF $(ConfigurationName) == Release (
+			"C:\Program Files\Git\git-bash.exe" $(SolutionDir)\create_zip.sh
+			)
+		</PostBuildEvent>
+	</PropertyGroup>
+	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

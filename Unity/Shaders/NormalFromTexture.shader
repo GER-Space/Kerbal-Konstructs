@@ -12,6 +12,13 @@
         Tags { "RenderType"="Opaque" }
         LOD 100
 
+        Stencil
+        {
+            Ref 3
+            Comp Always
+            Pass Replace
+        }  
+
         Pass
         {
             CGPROGRAM

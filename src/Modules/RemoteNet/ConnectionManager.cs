@@ -221,7 +221,7 @@ namespace KerbalKonstructs.Modules
             StaticInstance instance = facility.staticInstance;
             float antennaPower = facility.TrackingShort * 1000000;
             Log.Normal("Adding Groundstation: " + instance.Group);
-            if (openCNStations.Contains(instance) == false)
+            if (!openCNStations.Contains(instance))
             {
                 KKCommNetHome commNetGroudStation = instance.gameObject.AddComponent<KKCommNetHome>();
                 commNetGroudStation.nodeName = instance.CelestialBody.name + ": " + instance.Group;
@@ -284,10 +284,10 @@ namespace KerbalKonstructs.Modules
 
             if (KerbalKonstructs.instance.enableRT)
             {
-                if (openRTStations.ContainsKey(instance))
+                if(openRTStations.TryGetValue(instance, out var station))
                 {
                     openRTStations.Remove(instance);
-                    RemoteTechAddon.RemoveGroundStation(openRTStations[instance]);
+                    RemoteTechAddon.RemoveGroundStation(station);
                 }
                 else
                 {

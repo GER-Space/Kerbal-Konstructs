@@ -2,7 +2,7 @@
 
 namespace KerbalKonstructs.Modules
 {
-    class GroundStation : KKFacility
+    public class GroundStation : KKFacility
     {
         [CFGSetting]
         public float TrackingShort = 0f;

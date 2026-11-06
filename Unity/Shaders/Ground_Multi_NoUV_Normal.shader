@@ -47,20 +47,26 @@ Shader "KK/Ground_Multi_NoUV"
         LOD 200
 		ZWrite On
 		ZTest LEqual
-		Blend SrcAlpha OneMinusSrcAlpha
+
+		Stencil
+		{
+			Ref 3
+			Comp Always
+			Pass Replace
+		}  
 
         CGPROGRAM
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
         #pragma exclude_renderers gles
-        //
-        #pragma surface surf BlinnPhong fullforwardshadows nofog
-
+        
+        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
 		//#include "TileRandom-include.cginc"
 		#include "TileRandom2-include.cginc"
+		#include "LightingKSP.cginc"
 		#include "KSP-include.cginc"
 
     	sampler2D _BlendMaskTexture;
@@ -293,9 +299,6 @@ Shader "KK/Ground_Multi_NoUV"
 			//o.Emission = glow.rgb * glow.aaa * _EmissiveColor.rgb * _EmissiveColor.aaa + stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 			o.Emission = stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 
-			//controlled directly by shader property
-			o.Alpha = _Opacity;
-
 
 			//apply the standard shader param multipliers to the sampled/computed values.
 			fixed4 fog = UnderwaterFog(IN.worldPos, outputColor);
@@ -303,7 +306,14 @@ Shader "KK/Ground_Multi_NoUV"
 			o.Albedo = fog.rgb;
 			o.Emission *= fog.a;
         	o.Specular = (0);
-			// o.SpecularColor = (0,0,0,0);
+			
+
+#if UNITY_PASS_DEFERRED
+			// In deferred rendering do not use the flat ambient because Deferred adds its own ambient as a composite of flat ambient and probe
+			unity_SHAr = 0.0.xxxx;
+			unity_SHAg = 0.0.xxxx;
+			unity_SHAb = 0.0.xxxx;
+#endif
 		}
 
         ENDCG

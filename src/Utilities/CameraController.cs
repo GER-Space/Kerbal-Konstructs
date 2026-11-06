@@ -94,7 +94,7 @@ namespace KerbalKonstructs.Core
         /// Set the SpaceCenterCam to the location os the current LaunchSite
         /// </summary>
         /// <param name="currentSite"></param>
-        internal static void SetSpaceCenterCam(KKLaunchSite currentSite)
+        public static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
 
             if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
@@ -122,7 +122,7 @@ namespace KerbalKonstructs.Core
                 {
 
                     Log.Normal("Resetting to KSC");
-                    Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First();
+                    Upgradeables.UpgradeableObject kscRnD = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "FlagPole").First();
                     float nomHeight = 45f - (float)ConfigUtil.GetCelestialBody("HomeWorld").GetAltitude(kscRnD.gameObject.transform.position);
                     scCam.transform.parent = kscRnD.gameObject.transform;
                     scCam.transform.position = kscRnD.gameObject.transform.transform.position;

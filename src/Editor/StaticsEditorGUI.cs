@@ -1,5 +1,4 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -780,6 +779,7 @@ namespace KerbalKonstructs.UI
                     GroupEditor.instance.Close();
                     GroupEditor.selectedGroup = groupCenter;
                     // MapDecalEditor.selectedDecal = mapDecalInstance;
+                    GroupEditor.maxEditorRange = 0;
                     GroupEditor.instance.Open();
                 }
 
@@ -820,6 +820,7 @@ namespace KerbalKonstructs.UI
                     }
                     else
                     {
+                        GroupEditor.maxEditorRange = 0;
                         GroupEditor.instance.Open();
                         Log.Normal("Group Editor spawned");
                     }
@@ -864,24 +865,21 @@ namespace KerbalKonstructs.UI
         internal static void ResetLocalGroupList()
         {
             List<GroupCenter> foundList = new List<GroupCenter>();
-            foreach (var groupCenter in StaticDatabase.allGroupCenters)
-            {
+            if (FlightGlobals.ActiveVessel != null)
+                foreach (var groupCenter in StaticDatabase.allGroupCenters)
+                {
 
-                if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
-                {
-                    continue;
-                }
-                if (groupCenter.isInSavegame)
-                {
-                    continue;
-                }
-                if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > KerbalKonstructs.localGroupRange)
-                {
-                    continue;
-                }
+                    if (groupCenter.CelestialBody != FlightGlobals.currentMainBody)
+                    {
+                        continue;
+                    }
+                    if (Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, groupCenter.gameObject.transform.position) > KerbalKonstructs.localGroupRange)
+                    {
+                        continue;
+                    }
 
-                foundList.Add(groupCenter);
-            }
+                    foundList.Add(groupCenter);
+                }
 
             localGroups = foundList.ToArray();
         }

@@ -7,7 +7,7 @@ using KerbalKonstructs;
 
 namespace KerbalKonstructs.Core
 {
-    class GroupCenter
+    public class GroupCenter
     {
         [CFGSetting]
         public string Group;
@@ -34,32 +34,32 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public bool SeaLevelAsReference = false;
         [CFGSetting]
-        internal double RefLatitude = 361d;
+        public double RefLatitude = 361d;
         [CFGSetting]
-        internal double RefLongitude = 361d;
+        public double RefLongitude = 361d;
 
 
         public UrlDir.UrlConfig configUrl;
         public String configPath = null;
 
-        internal GameObject gameObject;
+        public GameObject gameObject;
         internal PQSCity pqsCity;
         private Vector3 origScale = new Vector3(1, 1, 1);
 
-        internal List<StaticInstance> childInstances = new List<StaticInstance>();
-        internal bool isActive = true;
+        public List<StaticInstance> childInstances = new List<StaticInstance>();
+        public bool isActive = true;
 
-        internal List<KKLaunchSite> launchsites = new List<KKLaunchSite>();
+        public List<KKLaunchSite> launchsites = new List<KKLaunchSite>();
 
-        internal bool hidden = false;
-        internal bool isBuiltIn = false;
-        internal bool isInSavegame = false;
-
-
+        public bool hidden = false;
+        public bool isBuiltIn = false;
+        public bool isInSavegame = false;
 
 
 
-        internal bool isHidden
+
+
+        public bool isHidden
         {
             get
             {
@@ -81,14 +81,19 @@ namespace KerbalKonstructs.Core
         internal void Spawn()
         {
 
-            if (StaticDatabase.HasGroupCenter(dbKey))
+            var key = dbKey;
+            if (string.IsNullOrEmpty(key))
+                return;
+            
+            if (StaticDatabase.HasGroupCenter(key))
             {
                 string oldName = Group;
                 int index = 0;
-                while (StaticDatabase.HasGroupCenter(dbKey))
+                while (StaticDatabase.HasGroupCenter(key))
                 {
                     Group = oldName + "_" + index.ToString();
                     index++;
+                    key = dbKey;
                 }
             }
 
@@ -170,8 +175,12 @@ namespace KerbalKonstructs.Core
                 Vector3 oldRight = gameObject.transform.right;
                 Quaternion oldRotation = gameObject.transform.rotation;
 
-                Vector3 forward = CelestialBody.GetRelSurfacePosition(RefLatitude, RefLongitude + CelestialBody.directRotAngle, RadiusOffset);
-                Quaternion rotForward = Quaternion.LookRotation(forward);
+                Vector3 forward = CelestialBody.GetWorldSurfacePosition(RefLatitude, RefLongitude, RadiusOffset) - CelestialBody.position;
+
+                // Use the body's polar axis as "up" so heading 0 points toward the pole,
+                // matching the heading getter. Without this, tilted bodies would align
+                // to celestial north instead of the body's own north.
+                Quaternion rotForward = Quaternion.LookRotation(forward, CelestialBody.transform.up);
                 Quaternion rotHeading = Quaternion.Euler(0f, 0f, Heading);
                 Quaternion halveInvert = Quaternion.Euler(-90f, -90f, -90f);
 
@@ -192,7 +201,7 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal void RenameGroup(string newName)
+        public void RenameGroup(string newName)
         {
             StaticDatabase.RemoveGroupCenter(this);
             Group = newName;
@@ -207,7 +216,7 @@ namespace KerbalKonstructs.Core
 
         }
 
-        internal void AddInstance(StaticInstance instance)
+        public void AddInstance(StaticInstance instance)
         {
             if (!childInstances.Contains(instance))
             {
@@ -217,7 +226,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal void RemoveInstance(StaticInstance instance)
+        public void RemoveInstance(StaticInstance instance)
         {
             if (childInstances.Contains(instance))
             {
@@ -227,7 +236,7 @@ namespace KerbalKonstructs.Core
 
 
 
-        internal void SetInstancesEnabled(bool isInRange)
+        public void SetInstancesEnabled(bool isInRange)
         {
             if (isInRange == isActive)
             {
@@ -257,7 +266,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="distance"></param>
         /// <param name="maxDistance"></param>
-        internal void CheckIfInRange(float distance, float maxDistance)
+        public void CheckIfInRange(float distance, float maxDistance)
         {
 
             if (distance < 5000  && isHidden)
@@ -272,7 +281,7 @@ namespace KerbalKonstructs.Core
             SetInstancesEnabled(isInRange);
         }
 
-        internal static void ActivateInstance(StaticInstance instance)
+        public static void ActivateInstance(StaticInstance instance)
         {
             switch (instance.FacilityType)
             {
@@ -291,7 +300,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal static void DeActivateInstance(StaticInstance instance)
+        public static void DeActivateInstance(StaticInstance instance)
         {
             switch (instance.FacilityType)
             {
@@ -311,7 +320,7 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal void Update()
+        public void Update()
         {
             if (pqsCity != null)
             {
@@ -377,7 +386,7 @@ namespace KerbalKonstructs.Core
         /// Writes out the GroupCenter config
         /// </summary>
         /// <param name="instance"></param>
-        internal void Save()
+        public void Save()
         {
             if (isBuiltIn)
             {
@@ -404,6 +413,8 @@ namespace KerbalKonstructs.Core
             masterNode.AddNode(childNode);
 
             masterNode.Save(KSPUtil.ApplicationRootPath + "GameData/" + configPath, "Generated by Kerbal Konstructs");
+
+            API.OnGroupSaved.Invoke(this);
         }
 
 
@@ -416,6 +427,8 @@ namespace KerbalKonstructs.Core
                 instance.RelativePosition = sourceInstance.RelativePosition;
                 instance.Orientation = sourceInstance.Orientation;
                 instance.CelestialBody = CelestialBody;
+                instance.ModelScale = sourceInstance.ModelScale;
+                instance.VariantName = sourceInstance.VariantName;
 
                 instance.Group = Group;
                 instance.groupCenter = this;
@@ -435,12 +448,14 @@ namespace KerbalKonstructs.Core
         }
 
 
-        internal void DeleteGroupCenter()
+        public void DeleteGroupCenter()
         {
             foreach (StaticInstance child in childInstances.ToArray())
             {
                 KerbalKonstructs.instance.DeleteInstance(child);
             }
+
+            if (StaticsEditorGUI.GetActiveGroup() == this) StaticsEditorGUI.SetActiveGroup(null);
 
             StaticDatabase.RemoveGroupCenter(this);
             // check later when saving if this file is empty
@@ -460,7 +475,7 @@ namespace KerbalKonstructs.Core
             pqsCity.repositionToSphereSurfaceAddHeight = !SeaLevelAsReference;
         }
 
-        internal double surfaceHeight
+        public double surfaceHeight
         {
             get
             {
@@ -468,15 +483,18 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal string dbKey
+        public string dbKey
         {
             get
             {
+                var cb = CelestialBody;
+                if (cb == null)
+                    return string.Empty;
                 return (CelestialBody.name + "_" + Group);
             }
         }
 
-        internal float heading
+        public float heading
         {
             get
             {

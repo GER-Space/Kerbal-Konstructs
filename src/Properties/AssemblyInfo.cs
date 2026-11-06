@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#define CIBUILD_disabled
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -9,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("KerbalKonstructs")]
-[assembly: AssemblyCopyright("Copyright © Matt \"medsouz\" Souza, Ashley \"AlphaAsh\" Hall, Christian \"GER-Space\" Bronk 2019")]
+[assembly: AssemblyCopyright("Copyright © Matt \"medsouz\" Souza, Ashley \"AlphaAsh\" Hall, Christian \"GER-Space\" Bronk, KSP-RO team 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -36,7 +37,13 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("1.8.1.15")]
-[assembly: AssemblyInformationalVersion("1.8.1.15")]
-[assembly: KSPAssembly("KerbalKonstructs", 0, 9)]
+#if CIBUILD
+[assembly: AssemblyFileVersion("@MAJOR@.@MINOR@.@PATCH@.@BUILD@")]
+[assembly: AssemblyInformationalVersion("@MAJOR@.@MINOR@.@PATCH@.@BUILD@")]
+#else
+[assembly: AssemblyFileVersion("1.12.0.0")]
+[assembly: AssemblyInformationalVersion("1.12.0.0")]
+#endif
+
+[assembly: KSPAssembly("KerbalKonstructs", 1, 12, 0)]
 

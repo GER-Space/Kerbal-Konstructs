@@ -318,27 +318,19 @@ namespace KerbalKonstructs.Modules
             GUILayout.FlexibleSpace();
             ;
 
-            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-            {
+            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 SetTransform(Vector3.back * increment);
-            }
-            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-            {
+            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                 SetTransform(Vector3.forward * increment);
-            }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Left / Right:");
             GUILayout.FlexibleSpace();
-            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-            {
+            if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 SetTransform(Vector3.left * increment);
-            }
-            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-            {
+            if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                 SetTransform(Vector3.right * increment);
-            }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -360,14 +352,10 @@ namespace KerbalKonstructs.Modules
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
                 selectedInstance.RadiusOffset = float.Parse(GUILayout.TextField(selectedInstance.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)));
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
-                {
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                     SetTransform(Vector3.down * increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) || GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
-                {
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
                     SetTransform(Vector3.up * increment);
-                }
             }
             GUILayout.EndHorizontal();
 
@@ -392,22 +380,10 @@ namespace KerbalKonstructs.Modules
                 GUILayout.FlexibleSpace();
                 GUILayout.TextField(heading.ToString(), 9, GUILayout.Width(fTempWidth));
 
-                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
+                if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                     SetRotation(-increment);
-                }
-                if (GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(-increment);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)))
-                {
+                if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(23)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
                     SetRotation(increment);
-                }
-                if (GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(23)))
-                {
-                    SetRotation(increment);
-                }
             }
             GUILayout.EndHorizontal();
 

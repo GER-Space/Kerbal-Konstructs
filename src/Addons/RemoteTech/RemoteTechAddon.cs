@@ -164,6 +164,7 @@ namespace KerbalKonstructs.Addons
             IEnumerable<string> allStations = null;
             allStations = (IEnumerable<string>)methodInfo.Invoke(null, null);
 
+            List<Guid> toRemove = new List<Guid>();
             foreach (string stationName in allStations)
             {
                 stationID = GetGroundStationGuid(stationName);
@@ -173,8 +174,11 @@ namespace KerbalKonstructs.Addons
                     continue;
                 }
 
-                RemoveGroundStation(stationID);
+                toRemove.Add(stationID);
             }
+
+            foreach(Guid id in toRemove)
+                RemoveGroundStation(id);
         }
 
     }
