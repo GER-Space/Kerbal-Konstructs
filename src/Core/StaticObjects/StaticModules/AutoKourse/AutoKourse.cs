@@ -63,6 +63,7 @@ namespace BWStatics
             dg0renderer = digit0Transform.GetComponent<Renderer>();
             dg1renderer = digit1Transform.GetComponent<Renderer>();
             headingAdj = int.Parse(headingAdjustment);
+            isInitialized = true;
         }
 
 
