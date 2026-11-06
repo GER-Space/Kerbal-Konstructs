@@ -89,11 +89,11 @@ namespace KerbalKonstructs.UI
 
                 if (bClosing)
                 {
-                    tTextureMiddle = UIMain.tIconOpen.texture;
+                    tTextureMiddle = UIMain.tIconOpen;
                 }
                 else
                 {
-                    tTextureMiddle = UIMain.tIconClosed.texture;
+                    tTextureMiddle = UIMain.tIconClosed;
                 }
 
                 Vector3 vcraftpos = FlightGlobals.ActiveVessel.GetTransform().position;
@@ -125,31 +125,31 @@ namespace KerbalKonstructs.UI
 
                 if (bClosing)
                 {
-                    tTextureLeft = UIMain.tLeftOff.texture;
-                    tTextureRight = UIMain.tRightOff.texture;
+                    tTextureLeft = UIMain.tLeftOff;
+                    tTextureRight = UIMain.tRightOff;
                 }
                 else
                 {
-                    tTextureLeft = UIMain.tLeftOn.texture;
-                    tTextureRight = UIMain.tRightOn.texture;
+                    tTextureLeft = UIMain.tLeftOn;
+                    tTextureRight = UIMain.tRightOn;
                 }
 
                 if (iCorrection == 1)
                 {
-                    tTextureLeft = UIMain.tLeftOn.texture;
-                    tTextureRight = UIMain.tRightOff.texture;
+                    tTextureLeft = UIMain.tLeftOn;
+                    tTextureRight = UIMain.tRightOff;
                 }
                 if (iCorrection == 2)
                 {
-                    tTextureLeft = UIMain.tLeftOff.texture;
-                    tTextureRight = UIMain.tRightOn.texture;
+                    tTextureLeft = UIMain.tLeftOff;
+                    tTextureRight = UIMain.tRightOn;
                 }
             }
             else
             {
-                tTextureMiddle = UIMain.tIconClosed.texture;
-                tTextureLeft = UIMain.tLeftOff.texture;
-                tTextureRight = UIMain.tRightOff.texture;
+                tTextureMiddle = UIMain.tIconClosed;
+                tTextureLeft = UIMain.tLeftOff;
+                tTextureRight = UIMain.tRightOff;
             }
         }
 
@@ -221,7 +221,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.FlexibleSpace();
-            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorderW, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorderW, GUILayout.Height(4));
             GUILayout.Space(1);
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));

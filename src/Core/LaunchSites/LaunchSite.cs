@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-using KerbalKonstructs.UI;
-using KerbalKonstructs.Modules;
-
 namespace KerbalKonstructs.Core
 {
 
 
 
-    public class KKLaunchSite : IMapIcon
+    public class KKLaunchSite
     {
         [CFGSetting]
         public float OpenCost = 0f;
@@ -178,8 +175,8 @@ namespace KerbalKonstructs.Core
 
         internal StaticInstance staticInstance = null;
 
-        internal Sprite logo = null;
-        internal Sprite icon = null;
+        internal Texture logo = null;
+        internal Texture icon = null;
 
         internal LaunchSiteCategory sitecategory = LaunchSiteCategory.Other;
 
@@ -211,26 +208,26 @@ namespace KerbalKonstructs.Core
 
             if (!string.IsNullOrEmpty(LaunchSiteLogo))
             {
-                logo = UIMain.MakeSprite(LaunchSiteLogo);
+                logo = GameDatabase.Instance.GetTexture(LaunchSiteLogo, false);
 
                 if (logo == null)
                 {
-                    logo = UIMain.MakeSprite(staticInstance.model.path + "/" + LaunchSiteLogo);
+                    logo = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteLogo, false);
                 }
             }
             // use default logo
             if (logo == null)
             {
-                logo = UIMain.MakeSprite("KerbalKonstructs/Assets/DefaultSiteLogo");
+                logo = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/DefaultSiteLogo", false);
             }
 
             if (!string.IsNullOrEmpty(LaunchSiteIcon))
             {
 
-                icon = UIMain.MakeSprite(LaunchSiteIcon);
+                icon = GameDatabase.Instance.GetTexture(LaunchSiteIcon, false);
                 if (icon == null)
                 {
-                    icon = UIMain.MakeSprite(staticInstance.model.path + "/" + LaunchSiteIcon);
+                    icon = GameDatabase.Instance.GetTexture(staticInstance.model.path + "/" + LaunchSiteIcon, false);
                 }
             }
 
@@ -292,81 +289,6 @@ namespace KerbalKonstructs.Core
 
             }
         }
-
-		public Vector3d Position
-		{
-			get {
-				return body.GetWorldSurfacePosition(refLat, refLon, refAlt);
-			}
-		}
-
-		public string Name
-		{
-			get {
-				if (LaunchSiteName == "Runway") {
-					return "KSC Runway";
-				} else if (LaunchSiteName == "LaunchPad") {
-					return "KSC LaunchPad";
-				} else {
-					return LaunchSiteName;
-				}
-			}
-		}
-
-		public string Tooltip { get { return Name; } }
-
-		public Sprite Icon
-		{
-			get {
-				switch (sitecategory) {
-					case LaunchSiteCategory.RocketPad:
-						return UIMain.VABIcon;
-					case LaunchSiteCategory.Runway:
-						return UIMain.runWayIcon;
-					case LaunchSiteCategory.Helipad:
-						return UIMain.heliPadIcon;
-					case LaunchSiteCategory.Waterlaunch:
-						return UIMain.waterLaunchIcon;
-					default:
-						return UIMain.ANYIcon;
-				}
-			}
-		}
-
-		public bool IsOccluded
-		{
-			get {
-				return MapIcon.IsOccluded(Position, body);
-			}
-		}
-
-		public bool IsHidden
-		{
-			get {
-				bool hidden = false;
-				hidden |= !KerbalKonstructs.instance.mapShowHelipads && sitecategory == LaunchSiteCategory.Helipad;
-				hidden |= !KerbalKonstructs.instance.mapShowOther && sitecategory == LaunchSiteCategory.Other;
-				hidden |= !KerbalKonstructs.instance.mapShowWaterLaunch && sitecategory == LaunchSiteCategory.Waterlaunch;
-				hidden |= !KerbalKonstructs.instance.mapShowRocketbases && sitecategory == LaunchSiteCategory.RocketPad;
-				hidden |= !KerbalKonstructs.instance.mapShowRunways && sitecategory == LaunchSiteCategory.Runway;
-				if (MiscUtils.isCareerGame()) {
-					hidden |= (!isOpen && !KerbalKonstructs.instance.mapShowClosed);
-					hidden |= (isOpen && !KerbalKonstructs.instance.mapShowOpen);
-				}
-				return hidden;
-			}
-		}
-
-		public MapIcon MapIcon { get; set; }
-
-		public void OnClick()
-		{
-			MapIconSelector.Close();
-			MapIconSelector.selectedSite = this;
-			MapIconSelector.useLaunchSite = true;
-			MapIconSelector.Open();
-			NavGuidanceSystem.setTargetSite(this);
-		}
     }
 
     internal class KKLaunchSiteSelector : MonoBehaviour
@@ -455,9 +377,7 @@ namespace KerbalKonstructs.Core
         RocketPad,
         Helipad,
         Waterlaunch,
-        Other,
-
-		None = -1
+        Other
     }
 
     public enum SiteType

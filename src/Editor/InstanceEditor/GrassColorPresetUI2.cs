@@ -60,7 +60,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.IsOpen())
+            if (!StaticsEditorGUI.instance.IsOpen())
             {
                 this.Close();
             }
@@ -109,7 +109,7 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
 
             GUILayout.Space(1);
-            GUILayout.Box(UIMain.tHorizontalSep.texture, UIMain.BoxNoBorder, GUILayout.Height(4));
+            GUILayout.Box(UIMain.tHorizontalSep, UIMain.BoxNoBorder, GUILayout.Height(4));
 
 
 

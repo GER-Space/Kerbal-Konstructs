@@ -7,7 +7,7 @@ using KerbalKonstructs;
 
 namespace KerbalKonstructs.Core
 {
-    public class GroupCenter
+    class GroupCenter
     {
         [CFGSetting]
         public string Group;
@@ -257,21 +257,19 @@ namespace KerbalKonstructs.Core
         /// </summary>
         /// <param name="distance"></param>
         /// <param name="maxDistance"></param>
-        internal bool CheckIfInRange(float distance, float maxDistance)
+        internal void CheckIfInRange(float distance, float maxDistance)
         {
-            bool isKnown = !isHidden;
+
             if (distance < 5000  && isHidden)
             {
                 foreach (KKLaunchSite site in launchsites)
                 {
                     site.WasSeen = true;
+                    MiscUtils.HUDMessage("You discovered the bases at: " + Group);
                 }
-                MiscUtils.HUDMessage("You discovered the bases at: " + Group);
-                isKnown = true;
             }
             bool isInRange = (distance < maxDistance);
             SetInstancesEnabled(isInRange);
-            return isKnown;
         }
 
         internal static void ActivateInstance(StaticInstance instance)

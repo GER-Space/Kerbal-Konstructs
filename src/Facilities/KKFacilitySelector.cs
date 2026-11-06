@@ -5,7 +5,6 @@ using KSP.UI.Screens;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace KerbalKonstructs.Core
 {
@@ -78,9 +77,6 @@ namespace KerbalKonstructs.Core
 
         void OnMouseDown()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) {
-                return;
-            }
             if (!initialized)
             {
                 Initialize();
@@ -103,9 +99,6 @@ namespace KerbalKonstructs.Core
 
         void OnMouseEnter()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) {
-                return;
-            }
             if (!initialized)
             {
                 Initialize();
@@ -154,9 +147,6 @@ namespace KerbalKonstructs.Core
 
         void OnMouseExit()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) {
-                return;
-            }
             if (!initialized)
             {
                 Initialize();

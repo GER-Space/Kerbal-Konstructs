@@ -46,7 +46,7 @@ namespace KerbalKonstructs.UI
 
         private bool bChangeFacilityType = false;
         private static String facType = "None";
-        private string infTrackingShort, infOpenCost, infStaffMax, infProdRateMax, infProdStoreMax = "";
+        private string infTrackingShort, infOpenCost, infStaffMax, infProdRateMax, infScienceMax, infFundsMax = "";
 
         private string infFacMassCap = "";
         private string infFacCraftCap = "";
@@ -287,13 +287,14 @@ namespace KerbalKonstructs.UI
 
                     foreach (PartResourceDefinition availableResource in PartResourceLibrary.Instance.resourceDefinitions)
                     {
-						if (facMerchant.GetResource(availableResource.name) != null) {
-							continue;
-						}
+                        if (facMerchant.tradedResources.Where(x => x.resource.name.Equals(availableResource.name)).FirstOrDefault() != null)
+                        {
+                            continue;
+                        }
 
                         if (GUILayout.Button(availableResource.name, GUILayout.Height(23)))
                         {
-							facMerchant.AddResource(new TradedResource() { resource = availableResource });
+                            facMerchant.tradedResources.Add(new TradedResource() { resource = availableResource });
                             showResourceSelection = false;
                         }
                     }
@@ -302,18 +303,17 @@ namespace KerbalKonstructs.UI
             }
             else
             {
-				var tradedResources = facMerchant.Resources;
-                if (tradedResources.Count > 0)
+                if (facMerchant.tradedResources.Count > 0)
                 {
                     merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
                     {
-                        foreach (TradedResource tradedResource in tradedResources)
+                        foreach (TradedResource tradedResource in facMerchant.tradedResources)
                         {
                             GUILayout.BeginHorizontal();
                             {
                                 if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
                                 {
-                                    facMerchant.RemoveResource(tradedResource);
+                                    facMerchant.tradedResources.Remove(tradedResource);
                                 }
                                 GUILayout.Label("Name: ", GUILayout.Height(18));
                                 GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Height(18), GUILayout.Width(120));
@@ -496,7 +496,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Max Funds: ", LabelGreen);
                 GUILayout.FlexibleSpace();
-                infProdStoreMax = GUILayout.TextField(infProdStoreMax, 6, GUILayout.Width(150), GUILayout.Height(18));
+                infFundsMax = GUILayout.TextField(infFundsMax, 6, GUILayout.Width(150), GUILayout.Height(18));
             }
             GUILayout.EndHorizontal();
         }
@@ -513,7 +513,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Max Science: ", LabelGreen);
                 GUILayout.FlexibleSpace();
-                infProdStoreMax = GUILayout.TextField(infProdStoreMax, 3, GUILayout.Width(150), GUILayout.Height(18));
+                infScienceMax = GUILayout.TextField(infScienceMax, 3, GUILayout.Width(150), GUILayout.Height(18));
             }
             GUILayout.EndHorizontal();
         }
@@ -731,22 +731,16 @@ namespace KerbalKonstructs.UI
                     if (infStaffMax != "") ((Barracks)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
                     break;
                 case "Research":
+                    if (infStaffMax != "") ((Research)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "") ((Research)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infScienceMax != "") ((Research)selectedObject.myFacilities[0]).ScienceOMax = float.Parse(infScienceMax);
+                    break;
                 case "Business":
-					{
-						int i;
-						double d;
-						var production = selectedObject.myFacilities[0] as IProduction;
-						if (!String.IsNullOrEmpty(infStaffMax) && int.TryParse (infStaffMax, out i)) {
-							production.StaffMax = i;
-						}
-						if (!String.IsNullOrEmpty(infProdRateMax) && double.TryParse (infProdRateMax, out d)) {
-							production.ProductionRate = d;
-						}
-						if (!String.IsNullOrEmpty(infProdStoreMax) && double.TryParse (infProdStoreMax, out d)) {
-							production.ProductionMax = d;
-						}
-					}
-					break;
+                    if (infStaffMax != "") ((Business)selectedObject.myFacilities[0]).StaffMax = int.Parse(infStaffMax);
+                    if (infProdRateMax != "") ((Business)selectedObject.myFacilities[0]).ProductionRateMax = float.Parse(infProdRateMax);
+                    if (infFundsMax != "") ((Business)selectedObject.myFacilities[0]).FundsOMax = float.Parse(infFundsMax);
+                    break;
+
                 default:
                     break;
             }
@@ -818,24 +812,26 @@ namespace KerbalKonstructs.UI
                         infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
                     break;
                 case "Research":
-                case "Business":
-					{
-						var production = selectedObject.myFacilities[0] as IProduction;
-						infStaffMax = production.StaffMax.ToString();
-						infProdRateMax = production.ProductionRate.ToString();
-						infProdStoreMax = production.ProductionMax.ToString();
-					}
+                    infStaffMax = ((Research)selectedObject.myFacilities[0]).StaffMax.ToString();
                     if (infStaffMax == "0" || infStaffMax == "")
                         infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
+                    infProdRateMax = ((Research)selectedObject.myFacilities[0]).ProductionRateMax.ToString();
                     if (infProdRateMax == "0" || infProdRateMax == "")
                         infProdRateMax = selectedObject.model.DefaultProductionRateMax.ToString();
-                    if (infProdStoreMax == "0" || infProdStoreMax == "") {
-						if (facType == "Research") {
-							infProdStoreMax = selectedObject.model.DefaultScienceOMax.ToString();
-						} else {
-							infProdStoreMax = selectedObject.model.DefaultFundsOMax.ToString();
-						}
-					}
+                    infScienceMax = ((Research)selectedObject.myFacilities[0]).ScienceOMax.ToString();
+                    if (infScienceMax == "0" || infScienceMax == "")
+                        infScienceMax = selectedObject.model.DefaultScienceOMax.ToString();
+                    break;
+                case "Business":
+                    infStaffMax = ((Business)selectedObject.myFacilities[0]).StaffMax.ToString();
+                    if (infStaffMax == "0" || infStaffMax == "")
+                        infStaffMax = selectedObject.model.DefaultStaffMax.ToString();
+                    infProdRateMax = ((Business)selectedObject.myFacilities[0]).ProductionRateMax.ToString();
+                    if (infProdRateMax == "0" || infProdRateMax == "")
+                        infProdRateMax = selectedObject.model.DefaultProductionRateMax.ToString();
+                    infFundsMax = ((Business)selectedObject.myFacilities[0]).FundsOMax.ToString();
+                    if (infFundsMax == "0" || infFundsMax == "")
+                        infFundsMax = selectedObject.model.DefaultFundsOMax.ToString();
                     break;
 
             }
