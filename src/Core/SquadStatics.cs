@@ -35,7 +35,7 @@ namespace KerbalKonstructs
         /// </summary>
         public static void LoadSquadKSCModels()
         {
-            var dotAnim = Resources.FindObjectsOfTypeAll<TimeOfDayAnimation>().Where(x => x.gameObject.name == "SpaceCenter").First();
+            var dotAnim = Resources.FindObjectsOfTypeAll<TimeOfDayAnimation>().Where(x => x.gameObject.name == "SpaceCenter").FirstOrDefault();
 
             if (dotAnim != null)
             {
