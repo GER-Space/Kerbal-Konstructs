@@ -64,12 +64,15 @@ namespace KerbalKonstructs.Addons
 
                 // set the Spacecenter to the closest SpaceCenter, because StageRecovery uses this. We revert this later on the PostRecovery function
                 SpaceCenter.Instance = closestSpaceCenter;
-                Log.Normal("SpaceCenter set to: " + closestSpaceCenter.name);
 
                 if (SpaceCenter.Instance == null)
                 {
-                    Log.Normal("no Spacecenter for recovery found");
+                    Log.Normal("no Spacecenter for recovery found: using KSC");
                     SpaceCenter.Instance = SpaceCenterManager.KSC;
+                } 
+                else 
+                { 
+                    Log.Normal("SpaceCenter set to: " + closestSpaceCenter.name); 
                 }
             }
         }
