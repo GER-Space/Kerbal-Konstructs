@@ -72,6 +72,8 @@ namespace KerbalKonstructs.Modules
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";
         private float increment = 1f;
+        private float tempIncrement = 1f;
+        private float tempOffset = 0f;
 
 
         private VectorRenderer upVR = new VectorRenderer();
@@ -227,7 +229,11 @@ namespace KerbalKonstructs.Modules
                 if (!foldedIn)
                 {
                     GUILayout.Label("Increment");
-                    increment = float.Parse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)));
+                    tempIncrement = increment;
+                    if (!float.TryParse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)), out increment))
+                    {
+                        increment = tempIncrement;
+                    }
 
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
@@ -261,7 +267,11 @@ namespace KerbalKonstructs.Modules
                 else
                 {
                     GUILayout.Label("i");
-                    increment = float.Parse(GUILayout.TextField(increment.ToString(), 3, GUILayout.Width(25)));
+                    tempIncrement = increment;
+                    if (!float.TryParse(GUILayout.TextField(increment.ToString(), 3, GUILayout.Width(25)), out increment))
+                    {
+                        increment = tempIncrement;
+                    }
 
                     if (GUILayout.Button("0.1", GUILayout.Height(23)))
                     {
@@ -351,7 +361,11 @@ namespace KerbalKonstructs.Modules
             {
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
-                selectedInstance.RadiusOffset = float.Parse(GUILayout.TextField(selectedInstance.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)));
+                tempOffset = selectedInstance.RadiusOffset;
+                if (!float.TryParse(GUILayout.TextField(selectedInstance.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)), out selectedInstance.RadiusOffset))
+                {
+                    selectedInstance.RadiusOffset = tempOffset;
+                }
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                     SetTransform(Vector3.down * increment);
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))
