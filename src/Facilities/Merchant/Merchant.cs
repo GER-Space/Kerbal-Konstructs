@@ -26,7 +26,7 @@ namespace KerbalKonstructs.Modules
         /// </summary>
         /// <param name="cfgNode"></param>
         /// <returns></returns>
-        internal override KKFacility ParseConfig(ConfigNode cfgNode)
+        public override KKFacility ParseConfig(ConfigNode cfgNode)
         {
             base.ParseConfig(cfgNode);
             tradedResources = new HashSet<TradedResource>();

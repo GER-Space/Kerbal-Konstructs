@@ -173,17 +173,17 @@ namespace KerbalKonstructs.Core
         internal string openString = "Closed";
         internal string defaultState = "Closed";
 
-        internal StaticInstance staticInstance = null;
+        public StaticInstance staticInstance = null;
 
         internal Texture logo = null;
         internal Texture icon = null;
 
-        internal LaunchSiteCategory sitecategory = LaunchSiteCategory.Other;
+        public LaunchSiteCategory sitecategory = LaunchSiteCategory.Other;
 
-        internal float refLon;
-        internal float refLat;
-        internal float refAlt;
-        internal CelestialBody body;
+        public float refLon;
+        public float refLat;
+        public float refAlt;
+        public CelestialBody body;
 
         internal PSystemSetup.SpaceCenterFacility spaceCenterFacility = null;
 
@@ -193,7 +193,7 @@ namespace KerbalKonstructs.Core
 
         internal FinePrint.Waypoint wayPoint = null;
 
-        internal void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
+        public void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)
         {
             staticInstance = instance;
             body = staticInstance.CelestialBody;

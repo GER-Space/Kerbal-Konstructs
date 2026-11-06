@@ -21,17 +21,24 @@ Shader "KK/Diffuse_Multiply_Random"
         LOD 200
 		ZWrite On
 		ZTest LEqual
-		Blend SrcAlpha OneMinusSrcAlpha
+
+		Stencil
+		{
+			Ref 3
+			Comp Always
+			Pass Replace
+		}  
 
         CGPROGRAM
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
         #pragma exclude_renderers gles
-        // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf BlinnPhong fullforwardshadows nofog
+        
+		// Physically based Standard lighting model, and enable shadows on all light types
+        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog
  
-        // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
+		#include "LightingKSP.cginc"
         #include "KSP-include.cginc"
 		#include "TileRandom2-include.cginc"
 		//#include "TileRandom-include.cginc"
@@ -49,7 +56,6 @@ Shader "KK/Diffuse_Multiply_Random"
 		//float4 _EmissiveColor;
 
 		//standard shader params for adjusting color/etc
-		float4 _Color;
 		float _MakeGrayScale;
 
 		struct Input
@@ -112,9 +118,6 @@ Shader "KK/Diffuse_Multiply_Random"
 			//o.Emission = glow.rgb * glow.aaa * _EmissiveColor.rgb * _EmissiveColor.aaa + stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 			o.Emission = stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 
-			//controlled directly by shader property
-			o.Alpha = _Opacity;
-
 
 			//apply the standard shader param multipliers to the sampled/computed values.
 			fixed4 fog = UnderwaterFog(IN.worldPos, outputColor);
@@ -122,7 +125,13 @@ Shader "KK/Diffuse_Multiply_Random"
 			o.Emission *= fog.a;
         	o.Specular = (0);
 			o.Normal = normal;
-			// o.SpecularColor = (0,0,0,0);
+
+#if UNITY_PASS_DEFERRED
+			// In deferred rendering do not use the flat ambient because Deferred adds its own ambient as a composite of flat ambient and probe
+			unity_SHAr = 0.0.xxxx;
+			unity_SHAg = 0.0.xxxx;
+			unity_SHAb = 0.0.xxxx;
+#endif
 		}
 
         ENDCG

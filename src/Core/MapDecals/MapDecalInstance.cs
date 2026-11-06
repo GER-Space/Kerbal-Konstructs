@@ -56,6 +56,8 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string Group = "Ungrouped";
 
+        public bool isInSavegame = false;
+
 
         internal MapDecalsMap heighMap = null;
         internal MapDecalsMap colormapMap = null;

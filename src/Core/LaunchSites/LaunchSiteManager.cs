@@ -98,7 +98,7 @@ namespace KerbalKonstructs.Core
         private static void AddKSC()
         {
             StaticInstance rwInstance = new StaticInstance();
-            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            rwInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "FlagPole").First().gameObject;
             rwInstance.RefLatitude = getKSCLat;
             rwInstance.RefLongitude = getKSCLon;
             rwInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -107,7 +107,7 @@ namespace KerbalKonstructs.Core
             rwInstance.launchSite = runway;
 
             StaticInstance padInstance = new StaticInstance();
-            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            padInstance.gameObject = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "FlagPole").First().gameObject;
             padInstance.RefLatitude = getKSCLat;
             padInstance.RefLongitude = getKSCLon;
             padInstance.CelestialBody = ConfigUtil.GetCelestialBody("HomeWorld");
@@ -148,7 +148,7 @@ namespace KerbalKonstructs.Core
             launchpad.LaunchSiteLength = 0f;
             launchpad.LaunchSiteWidth = 0f;
             launchpad.InitialCameraRotation = -60f;
-            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "ResearchAndDevelopment").First().gameObject;
+            launchpad.staticInstance.mesh = Resources.FindObjectsOfTypeAll<Upgradeables.UpgradeableObject>().Where(x => x.name == "FlagPole").First().gameObject;
             launchpad.SetOpen();
 
 
@@ -253,7 +253,7 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Called when a Launchsite is closed
         /// </summary>
-        internal static void CloseLaunchSite(KKLaunchSite site)
+        public static void CloseLaunchSite(KKLaunchSite site)
         {
             site.SetClosed();
             if (Expansions.ExpansionsLoader.IsExpansionInstalled("MakingHistory") && HighLogic.LoadedScene == GameScenes.EDITOR)
@@ -266,7 +266,7 @@ namespace KerbalKonstructs.Core
         /// <summary>
         /// Function that is called when a launchSite is opened
         /// </summary>
-        internal static void OpenLaunchSite(KKLaunchSite site)
+        public static void OpenLaunchSite(KKLaunchSite site)
         {
             if (site.staticInstance.isSpawned && site.staticInstance.destructible != null)
             {
@@ -308,7 +308,7 @@ namespace KerbalKonstructs.Core
         /// Registers the a created LaunchSite to the PSystemSetup and LaunchSiteManager
         /// </summary>
         /// <param name="site"></param>
-        internal static void RegisterLaunchSite(KKLaunchSite site)
+        public static void RegisterLaunchSite(KKLaunchSite site)
         {
 
             if (string.IsNullOrEmpty(site.LaunchSiteName))
@@ -340,6 +340,7 @@ namespace KerbalKonstructs.Core
             {
 
                 Log.Error("Launch site " + site.LaunchSiteName + " already exists.");
+                return;
             }
 
 
@@ -479,7 +480,7 @@ namespace KerbalKonstructs.Core
         /// Removes the launchSite from the facilities
         /// </summary>
         /// <param name="site"></param>
-        internal static void UnregisterLaunchSite(KKLaunchSite site)
+        public static void UnregisterLaunchSite(KKLaunchSite site)
         {
             if (site.isOpen)
             {
@@ -510,7 +511,7 @@ namespace KerbalKonstructs.Core
         /// Deletes a LaunchSite from the internal Database
         /// </summary>
         /// <param name="site2delete"></param>
-        internal static void DeleteLaunchSite(KKLaunchSite site2delete)
+        public static void DeleteLaunchSite(KKLaunchSite site2delete)
         {
             if (launchSites.Contains(site2delete))
             {

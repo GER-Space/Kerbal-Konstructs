@@ -1,4 +1,4 @@
-﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Core;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -9,8 +9,7 @@ namespace KerbalKonstructs
 {
     class KKGraphics
     {
-        private static Dictionary<string, Shader> allShaders = new Dictionary<string, Shader>();
-        private static bool loadedShaders = false;
+        private static Dictionary<string, Shader> assetBundleShaders = new Dictionary<string, Shader>();
         private static bool loadedMaterials = false;
 
         private static Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
@@ -23,65 +22,37 @@ namespace KerbalKonstructs
 
         private static Dictionary<string, Texture2D> normalMaps = new Dictionary<string, Texture2D>();
 
-
         /// <summary>
-        /// Load all shaders into the system and fill our shader database.
-        /// </summary>
-        internal static void LoadShaders()
-        {
-            foreach (var shader in Resources.FindObjectsOfTypeAll<Shader>())
-            {
-                if (!allShaders.ContainsKey(shader.name))
-                {
-                    allShaders.Add(shader.name, shader);
-                    // Debug Code
-                    //Log.Normal("Loaded shader: " + shader.name);
-                }
-            }
-            loadedShaders = true;
-        }
-
-        internal static bool HasShader(string name)
-        {
-            if (!loadedShaders)
-            {
-                LoadShaders();
-            }
-            return allShaders.ContainsKey(name);
-        }
-
-
-        /// <summary>
-        /// Replacement for Shader.Find() function, as we return also shaders, that are through KSP asset bundles (with autoload on)
+        /// Return shaders loaded from KSP asset bundles (with autoload on), then fallback to Shader.Find
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         internal static Shader GetShader(string name)
         {
-            if (!loadedShaders)
-            {
-                LoadShaders();
-            }
+            Shader shader = null;
 
-            if (allShaders.ContainsKey(name))
+            if (assetBundleShaders.ContainsKey(name))
             {
-                return allShaders[name];
+                shader = assetBundleShaders[name];
             }
             else
+            {
+                shader = Shader.Find(name);
+            }
+
+            if (shader == null)
             {
                 Log.UserError("AdvTexture: Shader not found: " + name);
                 Log.Trace();
                 // return the error Shader, if we have one
-                if (allShaders.ContainsKey("Hidden/InternalErrorShader"))
+                if (assetBundleShaders.ContainsKey("Hidden/InternalErrorShader"))
                 {
                     //Log.UserWarning("Cannot load shader: " + name);
-                    return allShaders["Hidden/InternalErrorShader"];
-                }
-                else
-                {
-                    return null;
+                    return assetBundleShaders["Hidden/InternalErrorShader"];
                 }
             }
+
+            return shader;
         }
 
 
@@ -96,7 +67,7 @@ namespace KerbalKonstructs
                     bundleFileName = "kkshaders.osx";
                     break;
                 case RuntimePlatform.LinuxPlayer:
-                    bundleFileName = "kkshaders.osx";
+                    bundleFileName = "kkshaders.linux";
                     break;
                 default:
                     bundleFileName = "kkshaders.windows";
@@ -135,15 +106,17 @@ namespace KerbalKonstructs
         private static void LoadAndRegisterShader(AssetBundle bundle , string shaderName)
         {
             Shader newShader = bundle.LoadAsset<Shader>(shaderName);
+            if (newShader == null) { return; } // This file is not a shader; ignore it.
+
             GameObject.DontDestroyOnLoad(newShader);
-            if (newShader == null || !newShader.isSupported)
+            if (!newShader.isSupported)
             {
                 Log.Error("could not load shader: " + shaderName + " from: " + bundle.name);
             }
             else
             {
                 GameDatabase.Instance.databaseShaders.AddUnique(newShader);
-                allShaders.Add(newShader.name, newShader);
+                assetBundleShaders.Add(newShader.name, newShader);
                 Log.Normal("Loaded Shader: " + newShader.name + " from file: " + shaderName);
             }
 
@@ -171,7 +144,7 @@ namespace KerbalKonstructs
                 normalHash += theByte.ToString("x2");
             }
 
-            string storagePath = KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/Normals/";
+            string storagePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbalKonstructs/Normals/");
 
             if (!Directory.Exists(storagePath))
             {
@@ -206,7 +179,7 @@ namespace KerbalKonstructs
             }
             // here you should never end
             Log.Error("Something went wrong for: " + texture.name);
-            Log.Error("Should be chached here: " + filename);
+            Log.Error("Should be cached here: " + filename);
 
             return null;
         }
@@ -224,7 +197,7 @@ namespace KerbalKonstructs
                 //Log.Error("Called with no Texture");
                 return;
             }
-            //Log.Normal("Normal Map ChacheName: " + filename);
+            //Log.Normal("Normal Map CacheName: " + filename);
 
             Material converter = new Material(GetShader("KK/Calc/NormalFromTexture"));
             converter.mainTexture = texture;
@@ -365,11 +338,11 @@ namespace KerbalKonstructs
                     foundTexture = new Texture2D(tmpTexture.width, tmpTexture.height, TextureFormat.ARGB32, createMibMaps);
                     if (fileExtension == ".dds")
                     {
-                        foundTexture = LoadTextureDXT(File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), createMibMaps);
+                        foundTexture = LoadTextureDXT(File.ReadAllBytes(KSPUtil.ApplicationRootPath + "GameData/" + textureName + GetImageExtention(textureName)), createMibMaps);
                     }
                     else
                     {
-                        foundTexture.LoadImage﻿(File.ReadAllBytes("GameData/" + textureName + GetImageExtention(textureName)), false);
+                        foundTexture.LoadImage﻿(File.ReadAllBytes(KSPUtil.ApplicationRootPath + "GameData/" + textureName + GetImageExtention(textureName)), false);
                     }
                     foundTexture.Apply(createMibMaps, false);
                 }

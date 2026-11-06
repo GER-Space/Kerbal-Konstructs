@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Modules;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,8 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public float ModelScale = 1f;
 
+        internal float ModelScaleSave = -1f;
+
         // Legacy Faclility Setting
         [CFGSetting]
         public string FacilityType = "None";
@@ -64,7 +67,7 @@ namespace KerbalKonstructs.Core
         [CFGSetting]
         public string VariantName;
 
-        internal GameObject gameObject;
+        public GameObject gameObject;
         private GameObject _mesh = null;
 
         internal GameObject mesh
@@ -94,9 +97,13 @@ namespace KerbalKonstructs.Core
             {
                 _mesh = value;
                 _mesh.name = "Mesh";
-                _mesh.transform.parent = gameObject.transform;
-                _mesh.transform.position = transform.position;
-                _mesh.transform.rotation = transform.rotation;
+
+                if (_mesh != gameObject)
+                {
+                    _mesh.transform.parent = gameObject.transform;
+                    _mesh.transform.localPosition = Vector3.zero;
+                    _mesh.transform.localRotation = Quaternion.identity;
+                }
             }
         }
         internal GameObject wreck;
@@ -104,7 +111,7 @@ namespace KerbalKonstructs.Core
 
 
         internal Transform transform => gameObject.transform;
-        internal Vector3 position => gameObject.transform.position;
+        public Vector3 position => gameObject.transform.position;
 
         internal StaticModel model;
 
@@ -115,7 +122,7 @@ namespace KerbalKonstructs.Core
 
         internal GroupCenter groupCenter = null;
 
-        internal bool isInSavegame = false;
+        public bool isInSavegame = false;
 
         internal bool isDestroyed = false;
 
@@ -184,7 +191,7 @@ namespace KerbalKonstructs.Core
             RefLongitude = (float)(CelestialBody.GetLatitudeAndLongitude(gameObject.transform.position).y);
             RadialPosition = radialPosition;
 
-            gameObject.transform.localScale = origScale * ModelScale;
+            gameObject.transform.localScale = origScale != Vector3.zero ? origScale * ModelScale : Vector3.one * ModelScale;
 
             RelativePosition = gameObject.transform.localPosition;
             Orientation = gameObject.transform.localEulerAngles;
@@ -207,7 +214,7 @@ namespace KerbalKonstructs.Core
             }
         }
 
-        internal void ToggleAllColliders(bool enable)
+        public void ToggleAllColliders(bool enable)
         {
             Transform[] gameObjectList = gameObject.GetComponentsInChildren<Transform>();
 
@@ -239,11 +246,23 @@ namespace KerbalKonstructs.Core
             }
         }
 
+        private string PrintChildren(GameObject o, string prefix)
+        {
+            string retstr = prefix + ">" + o.name;
+            for (int i = 0; i < o.transform.childCount; ++i)
+            {
+                retstr += "\n" + PrintChildren(o.transform.GetChild(i).gameObject, prefix + "--");
+            }
+            return retstr;
+        }
+
 
         private void Spawn()
         {
             CelestialBody.CBUpdate();
             isSpawned = true;
+
+            ModelScaleSave = -1;
 
             mesh = ModelVariant.SpawnVariant(this);
             {
@@ -257,6 +276,9 @@ namespace KerbalKonstructs.Core
 
             if (model.isSquad)
             {
+                //Debug.Log("@@@ Spawning Squad static " + model.name);
+                //Debug.Log("Tree: \n" + PrintChildren(mesh, ""));
+
                 InstanceUtil.MangleSquadStatic(this);
             }
             InstanceUtil.SetLayerRecursively(this, 15);
@@ -499,7 +521,7 @@ namespace KerbalKonstructs.Core
             this.HighlightObject(Color.black);
         }
 
-        internal void SaveConfig()
+        public void SaveConfig()
         {
             ConfigParser.SaveInstanceByCfg(configPath);
         }
@@ -542,6 +564,16 @@ namespace KerbalKonstructs.Core
             }
 
             TrySpawn();
+
+            foreach (Collider colloder in gameObject.GetComponentsInChildren<Collider>(true).Where(col => col.isTrigger == false))
+            {
+                if (colloder.gameObject.GetComponent<KKMouseUtility>() == null)
+                {
+                    KKMouseUtility selector = colloder.gameObject.AddComponent<KKMouseUtility>();
+                    selector.staticInstance = this;
+                    selector.enabled = true;
+                }
+            }
 
             isActive = true;
             gameObject.SetActive(true);
@@ -603,6 +635,13 @@ namespace KerbalKonstructs.Core
 
         internal void Destroy()
         {
+            if (StaticsEditorGUI.selectedObject == this) StaticsEditorGUI.selectedObject = null;
+
+            if (launchSite != null)
+            {
+                LaunchSiteManager.DeleteLaunchSite(launchSite);
+            }
+
             if (groupCenter != null)
             {
                 groupCenter.RemoveInstance(this);

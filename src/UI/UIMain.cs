@@ -41,11 +41,11 @@ namespace KerbalKonstructs.UI
         public static Texture tFavesOn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOn", false);
         public static Texture tFavesOff = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/mapFavouritesOff", false);
 
-        internal static Texture iconWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
-        internal static Texture iconCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
-        internal static Texture iconTerrain = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/terrain", false);
+        public static Texture iconWorld = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/world", false);
+        public static Texture iconCubes = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cubes", false);
+        public static Texture iconTerrain = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/terrain", false);
 
-        internal static Texture iconRecoveryBase = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/recoveryBase", false);
+        public static Texture iconRecoveryBase = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/recoveryBase", false);
 
         public static Texture tIconClosed;
         public static Texture tIconOpen;

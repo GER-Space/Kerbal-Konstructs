@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace KerbalKonstructs.Core
 {
-    class LaunchSiteChecks
+    internal class LaunchSiteChecks
     {
         internal static AsmUtils.Detour findVesselDetour;
         internal static AsmUtils.Detour findVesselDetour2;
@@ -58,10 +58,10 @@ namespace KerbalKonstructs.Core
         public class KKPrelaunchSizeCheck : PreFlightTests.IPreFlightTest
         {
 
-            Vector3 shipSize;
-            KKLaunchSite launchSite;
+            private Vector3 shipSize;
+            private KKLaunchSite launchSite;
 
-            bool allowLaunch = false;
+            private bool allowLaunch = false;
 
 
             public KKPrelaunchSizeCheck(string launchSiteName)
@@ -120,7 +120,6 @@ namespace KerbalKonstructs.Core
                     retval = false;
                 }
 
-                //Log.Normal("Ship dimensions: " + shipSize.ToString() );
                 return retval;
             }
 
@@ -155,10 +154,10 @@ namespace KerbalKonstructs.Core
         public class KKPrelaunchMassCheck : PreFlightTests.IPreFlightTest
         {
 
-            float shipMass;
-            KKLaunchSite launchSite;
+            private float shipMass;
+            private KKLaunchSite launchSite;
 
-            bool allowLaunch = false;
+            private bool allowLaunch = false;
 
 
             public KKPrelaunchMassCheck(string launchSiteName)
@@ -238,10 +237,10 @@ namespace KerbalKonstructs.Core
         public class KKPrelaunchPartCheck : PreFlightTests.IPreFlightTest
         {
 
-            int shipParts;
-            KKLaunchSite launchSite;
+            private int shipParts;
+            private KKLaunchSite launchSite;
 
-            bool allowLaunch = false;
+            private bool allowLaunch = false;
 
 
             public KKPrelaunchPartCheck(string launchSiteName)
@@ -302,9 +301,6 @@ namespace KerbalKonstructs.Core
             }
         }
 
-
-
-
         /// <summary>
         /// ReplaceMent for finding vessels
         /// </summary>
@@ -316,7 +312,6 @@ namespace KerbalKonstructs.Core
         /// <param name="vType"></param>
         public static void FindVesselsLandedAtKK(FlightState flightState, string landedAt, out int count, out string name, out int idx, out VesselType vType)
         {
-            // Log.Normal("Called");
             float maxDistance = 100f;
 
             int vesselIndex = 0;
@@ -335,44 +330,18 @@ namespace KerbalKonstructs.Core
                         continue;
                     }
 
-                    if (launchSite == null || launchSite.isSquad)
+                    if (VesselAtLaunchSite(vessel, launchSite, maxDistance, landedAt))
                     {
-                        if (vessel.landedAt.Contains(landedAt))
-                        {
-                            count++;
-                            name = vessel.vesselName;
-                            idx = vesselIndex;
-                            vType = vessel.vesselType;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        //if (vessel.situation == Vessel.Situations.SPLASHED || vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH )
-                        //                        {
-                        ////                            Log.Normal("Body: "+ FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex].name);
-                        CelestialBody body = FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex];
-                        Vector3 position = body.GetWorldSurfacePosition(vessel.latitude, vessel.longitude, vessel.altitude);
-                        float distance = Vector3.Distance(position, launchSite.staticInstance.gameObject.transform.position);
-                        //Log.Normal("Vessel with distance: " + distance);
-                        if (distance < maxDistance)
-                        {
-                            Log.Normal("Found Vessel at Launchsite with distance: " + distance);
-                            count++;
-                            name = vessel.vesselName;
-                            idx = vesselIndex;
-                            vType = vessel.vesselType;
-                            break;
-                        }
-                        //}
+                        count++;
+                        name = vessel.vesselName;
+                        idx = vesselIndex;
+                        vType = vessel.vesselType;
+                        break;
                     }
                     vesselIndex++;
                 }
             }
         }
-
-
-
 
         public static List<ProtoVessel> FindVesselsLandedAt2(FlightState flightState, string landedAt)
         {
@@ -389,38 +358,114 @@ namespace KerbalKonstructs.Core
                         continue;
                     }
 
-                    if (launchSite == null || launchSite.isSquad)
+                    if (VesselAtLaunchSite(vessel, launchSite, maxDistance, landedAt))
                     {
-                        if (vessel.landedAt.Contains(landedAt))
-                        {
-                            list.Add(vessel);
-
-                        }
+                        list.Add(vessel);
                     }
-                    else
-                    {
-                        //if (vessel.situation == Vessel.Situations.SPLASHED || vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH)
-                        //{                          
-                        CelestialBody body = FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex];
-                        Vector3 position = body.GetWorldSurfacePosition(vessel.latitude, vessel.longitude, vessel.altitude);
-                        float distance = Vector3.Distance(position, launchSite.staticInstance.transform.position);
-
-                        if (distance < maxDistance)
-                        {
-                            Log.Normal("Found Vessel at Launchsite with distance: " + distance);
-                            list.Add(vessel);
-                        }
-                        //}
-                    }
-
                 }
-
             }
             return list;
         }
 
+        public static bool VesselAtLaunchSite(ProtoVessel vessel, KKLaunchSite launchSite, float maxDistance, string landedAt)
+        {
+            if (launchSite == null || launchSite.isSquad)
+            {
+                if (vessel.landedAt.Contains(landedAt))
+                {
+                    return true;
+                }
+                else if (launchSite == null)
+                {
+                    Log.Normal($"Launchsite is null, did not find vessel ({vessel.vesselName}) at Squad launchsite");
+                    return false;
+                }
+            }
 
+            if (vessel.orbitSnapShot.ReferenceBodyIndex == launchSite.body.flightGlobalsIndex)
+            {
+                if (vessel.situation == Vessel.Situations.SPLASHED || vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH)
+                {
+                    CelestialBody body = FlightGlobals.Bodies[vessel.orbitSnapShot.ReferenceBodyIndex];
+                    Vector3 position = body.GetWorldSurfacePosition(vessel.latitude, vessel.longitude, vessel.altitude);
+                    float distance = Vector3.Distance(position, launchSite.staticInstance.gameObject.transform.position);
+
+                    if (body == null)
+                    {
+                        Log.Normal($"Could not find body for vessel ({vessel.vesselName})");
+                        return false;
+                    }
+
+                    if (body != launchSite.body)
+                    {
+                        Log.Normal($"Vessel ({vessel.vesselName}) is on different body than Launchsite");
+                        return false;
+                    }
+
+                    if (distance == 0)
+                    {
+                        Log.Normal($"Vessel ({vessel.vesselName}) has same position as Launchsite, probably floating point error. Using gps checks instead.");
+
+                        Vector2d tol = GetLatLonTolerance(launchSite.staticInstance.groupCenter.RefLatitude, launchSite.staticInstance.groupCenter.RefLongitude, maxDistance, body.Radius + launchSite.staticInstance.groupCenter.RadiusOffset);
+
+                        if (Math.Abs(vessel.latitude - launchSite.staticInstance.groupCenter.RefLatitude) > tol.y || Math.Abs(vessel.longitude - launchSite.staticInstance.groupCenter.RefLongitude) > tol.x)
+                        {
+                            Log.Normal($"Vessel ({vessel.vesselName}) is outside lat/lon tolerance");
+                            Log.Debug($"Lat/Lon tolerance: {tol.y}, {tol.x}");
+                            Log.Debug($"Vessel Lat/Lon: {vessel.latitude}, {vessel.longitude}");
+                            Log.Debug($"Launchsite Lat/Lon: {launchSite.staticInstance.groupCenter.RefLatitude}, {launchSite.staticInstance.groupCenter.RefLongitude}");
+                            return false;
+                        }
+                        else
+                        {
+                            Log.Normal($"Found Vessel ({vessel.vesselName}) at Launchsite inside lat/lon tolerance");
+                            Log.Debug($"Lat/Lon tolerance: {tol.y}, {tol.x}");
+                            Log.Debug($"Vessel Lat/Lon: {vessel.latitude}, {vessel.longitude}");
+                            Log.Debug($"Launchsite Lat/Lon: {launchSite.staticInstance.groupCenter.RefLatitude}, {launchSite.staticInstance.groupCenter.RefLongitude}");
+                            return true;
+                        }
+                    }
+                    else if (distance < maxDistance)
+                    {
+                        Log.Normal($"Found Vessel ({vessel.vesselName}) at Launchsite with distance: " + distance);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static Vector2d GetLatLonTolerance(double lat, double lon, double squareSize, double bodySize)
+        {
+            Vector2d dest(double latRad, double lonRad, double bearingRad, double angDist)
+            {
+                Vector2d res = new Vector2d(0, 0);
+
+                // lon = x, lat = y
+                res.x = Math.Asin(Math.Sin(latRad) * Math.Cos(angDist) + Math.Cos(latRad) * Math.Sin(angDist) * Math.Cos(bearingRad));
+                res.y = lonRad + Math.Atan2(Math.Sin(bearingRad) * Math.Sin(angDist) * Math.Cos(latRad), Math.Cos(angDist) - Math.Sin(latRad) * Math.Sin(res.x));
+
+                res.y = (res.y + Math.PI) % (2 * Math.PI) - Math.PI;
+
+                return res;
+            }
+
+            double s = squareSize / 2d;
+
+            double latRads = lat * Math.PI / 180d;
+            double lonRads = lon * Math.PI / 180d;
+            double delta = s / bodySize;
+
+            Vector2d north = dest(latRads, lonRads, 0d, delta);
+            double deltaLat = Math.Abs(north.x - latRads) * 180d / Math.PI;
+
+            Vector2d east = dest(latRads, lonRads, Math.PI / 2d, delta);
+            double deltaLon = Math.Abs(east.y - lonRads) * 180d / Math.PI;
+
+            deltaLat = Math.Min(0.2, deltaLat);
+            deltaLon = Math.Min(0.2, deltaLon);
+
+            return new Vector2d(deltaLon, deltaLat);
+        }
     }
-
-
 }

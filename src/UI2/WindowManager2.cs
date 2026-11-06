@@ -1,11 +1,13 @@
-﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.Core;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 namespace KerbalKonstructs.UI2
 {
     internal static class WindowManager2
     {
+        private static readonly string storagePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbalKonstructs/PluginData");
 
         private static Dictionary<string, Vector2> lastPositions = new Dictionary<string, Vector2>();
 
@@ -79,33 +81,33 @@ namespace KerbalKonstructs.UI2
                 Log.Normal("Saving: " + pos.Key + " : " + pos.Value);
             }
 
-            if (!System.IO.Directory.Exists(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/"))
+            if (!System.IO.Directory.Exists(storagePath))
             {
-                Log.Normal("Creating Directory: " + KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/");
-                System.IO.Directory.CreateDirectory(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/");
+                Log.Normal("Creating Directory: " + storagePath);
+                System.IO.Directory.CreateDirectory(storagePath);
 
             }
             ConfigNode masterNode = new ConfigNode("Master");
             masterNode.AddNode(positionsNode);
-            masterNode.Save(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/" + "WindowPositions.txt");
+            masterNode.Save(storagePath + "WindowPositions.cfg");
         }
 
 
         internal static void LoadPresets()
         {
             lastPositions.Clear();
-            if (!System.IO.Directory.Exists(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/"))
+            if (!System.IO.Directory.Exists(storagePath))
             {
                 Log.Normal("No Directory found");
                 return;
             }
-            if (!System.IO.File.Exists(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/" + "WindowPositions.txt"))
+            if (!System.IO.File.Exists(storagePath + "WindowPositions.cfg"))
             {
                 Log.Normal("No file found");
                 return;
             }
 
-            ConfigNode positionsNode = ConfigNode.Load(KSPUtil.ApplicationRootPath + "PluginData/KerbalKonstructs/" + "WindowPositions.txt").GetNode("WindowPositions");
+            ConfigNode positionsNode = ConfigNode.Load(storagePath + "WindowPositions.cfg").GetNode("WindowPositions");
             if (positionsNode == null)
             {
                 Log.Normal("No Node Found");

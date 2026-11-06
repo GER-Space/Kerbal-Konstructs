@@ -1,9 +1,10 @@
 ﻿using KerbalKonstructs.Core;
+using System.Linq;
 using UnityEngine;
 
 namespace KerbalKonstructs.Modules
 {
-    class CareerObjects
+    public class CareerObjects
     {
 
         private static string buildingCFGNodeName = "KKBuildings";
@@ -21,15 +22,11 @@ namespace KerbalKonstructs.Modules
             {
                 if (instance.isInSavegame)
                 {
+                    Debug.Log($"Saving instance {instance.UUID} ({instance.groupCenterName}) in savegame");
                     ConfigNode instanceNode = buildingNode.AddNode("Instance");
-
-                    instanceNode.AddValue("UUID", instance.UUID);
                     instanceNode.AddValue("ModelName", instance.model.name);
-                    instanceNode.AddValue("Body", instance.CelestialBody.name);
-                    instanceNode.AddValue("Position", instance.RadialPosition);
-                    instanceNode.AddValue("Altitude", instance.RadiusOffset);
-                    instanceNode.AddValue("Rotation", instance.RotationAngle);
-                    instanceNode.AddValue("IsScanable", instance.isScanable);
+
+                    ConfigParser.WriteInstanceConfig(instance, instanceNode);
                 }
             }
         }
@@ -80,46 +77,49 @@ namespace KerbalKonstructs.Modules
 
             instance.isInSavegame = true;
 
-            instance.Orientation = Vector3.up;
-            instance.heighReference = HeightReference.Terrain;
-            instance.VisibilityRange = (PhysicsGlobals.Instance.VesselRangesDefault.flying.unload + 3000);
-
-            instance.Group = "SaveGame";
-
-            instance.RadialPosition = ConfigNode.ParseVector3(cfgNode.GetValue("Position"));
-
+            Debug.Log($"ModelName: {cfgNode.GetValue("ModelName")}");
             instance.model = StaticDatabase.GetModelByName(cfgNode.GetValue("ModelName"));
-
             if (instance.model == null)
             {
                 Log.UserError("LoadFromSave: Canot find model named: " + cfgNode.GetValue("ModelName"));
                 instance = null;
                 return;
             }
-            //instance.mesh = UnityEngine.Object.Instantiate(instance.model.prefab);
-
-            instance.UUID = cfgNode.GetValue("UUID");
-
-            instance.CelestialBody = ConfigUtil.GetCelestialBody(cfgNode.GetValue("Body"));
-
-            instance.RadiusOffset = float.Parse(cfgNode.GetValue("Altitude"));
-            instance.RotationAngle = float.Parse(cfgNode.GetValue("Rotation"));
-
-            instance.RefLatitude = KKMath.GetLatitudeInDeg(instance.RadialPosition);
-            instance.RefLongitude = KKMath.GetLongitudeInDeg(instance.RadialPosition);
-
-            InstanceUtil.CreateGroupCenterIfMissing(instance);
-
-            if (cfgNode.HasValue("IsScanable"))
+            ConfigParser.ParseInstanceConfig(instance, cfgNode);
+            if (instance.CelestialBody == null)
             {
-                bool.TryParse(cfgNode.GetValue("IsScanable"), out instance.isScanable);
+                instance = null;
+                return;
             }
 
-            bool oldLegacySpawn = KerbalKonstructs.convertLegacyConfigs;
+            if (instance.Group == null)
+            {
+                instance = null;
+                return;
+            }
 
             instance.Orientate();
 
-            KerbalKonstructs.convertLegacyConfigs = oldLegacySpawn;
+            if (!StaticDatabase.HasInstance(instance))
+            {
+                instance.Destroy();
+                return;
+            }
+
+            LaunchSiteManager.AttachLaunchSite(instance, cfgNode);
+            KerbalKonstructs.AttachFacilities(instance, cfgNode);
+
+
+
+            instance.grassColor2Configs = cfgNode.GetNodes("GrassColor2").ToList();
+
+            // update the references
+            foreach (var facility in instance.myFacilities)
+            {
+                facility.staticInstance = instance;
+            }
+
+            instance.Deactivate();
         }
 
     }

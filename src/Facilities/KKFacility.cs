@@ -128,7 +128,7 @@ namespace KerbalKonstructs.Modules
             }
         }
 
-        internal virtual KKFacility ParseConfig(ConfigNode cfgNode)
+        public virtual KKFacility ParseConfig(ConfigNode cfgNode)
         {
             if (!initialized)
             {

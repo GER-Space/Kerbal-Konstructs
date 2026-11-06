@@ -1,5 +1,6 @@
 ﻿using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
+using KerbalKonstructs.Modules.Career;
 
 
 namespace KerbalKonstructs.Career
@@ -19,14 +20,12 @@ namespace KerbalKonstructs.Career
         /// <param name="node">The name of the config node</param>
         public override void OnLoad(ConfigNode node)
         {
-            // check if we have been in the mainmenue before (gameTime == -1) or if we saved just before we load (scene switch)
-            if (KerbalKonstructs.gameTime == -1d || KerbalKonstructs.gameTime > HighLogic.CurrentGame.UniversalTime)
-            {
-            }
-            else
-            {
-                return;
-            }
+            // check if we have been in the mainmenue before (gameTime == -1)
+            if (KerbalKonstructs.gameTime != -1d) return;
+
+            CareerMapDecals.LoadDecals(node);
+
+            CareerGroups.LoadGroups(node);
 
             CareerObjects.LoadBuildings(node);
 
@@ -59,11 +58,8 @@ namespace KerbalKonstructs.Career
 
             KerbalKonstructs.instance.LoadKKConfig(node);
 
-            //if (CareerUtils.isCareerGame)
-            //{
             Log.Normal("KKScenario loading facility states");
             CareerState.Load(node);
-            //}
 
             ConnectionManager.LoadGroundStations();
 
@@ -87,11 +83,12 @@ namespace KerbalKonstructs.Career
 
             KerbalKonstructs.instance.SaveKKConfig(node);
 
-            //if (CareerUtils.isCareerGame)
-            //{
             Log.Normal("KKScenario saving career state");
             CareerState.Save(node);
-            //}
+
+            CareerMapDecals.SaveDecals(node);
+
+            CareerGroups.SaveGroups(node);
 
             CareerObjects.SaveBuildings(node);
         }

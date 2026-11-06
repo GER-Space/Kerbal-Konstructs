@@ -62,7 +62,7 @@ namespace KerbalKonstructs.UI
         internal string siteName, siteTrans, siteDesc, siteAuthor, siteHidden, ILSActive;
         float flOpenCost, flCloseValue;
 
-        private bool togglePositioning = false;
+        public bool togglePositioning = false;
 
         string stOpenCost;
         string stCloseValue;
