@@ -55,7 +55,7 @@ namespace KerbalKonstructs.UI
             if (HighLogic.LoadedScene == GameScenes.EDITOR)
             {
                 LaunchSiteSelectorGUI.instance.Close();
-                BaseManager.instance.Close();
+                UI2.BaseManager.Close();
                 return;
             }
             if ((HighLogic.LoadedScene == GameScenes.FLIGHT) && (!MapView.MapIsEnabled))

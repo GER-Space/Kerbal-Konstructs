@@ -55,7 +55,7 @@ namespace KerbalKonstructs.UI
         {
             InputLockManager.RemoveControlLock("KKEditorLock");
             InputLockManager.RemoveControlLock("KKEditorLock2");
-            BaseManager.instance.Close();
+            UI2.BaseManager.Close();
             base.Close();
         }
 
@@ -82,8 +82,8 @@ namespace KerbalKonstructs.UI
                 selectedSite = LaunchSiteManager.GetDefaultSite();
             }
 
-            BaseManager.selectedSite = selectedSite;
-            BaseManager.instance.Open();
+            UI2.BaseManager.selectedSite = selectedSite;
+            UI2.BaseManager.Open();
             LaunchSiteManager.setLaunchSite(selectedSite);
 
             base.Open();
@@ -299,7 +299,7 @@ namespace KerbalKonstructs.UI
                         if (GUILayout.Button(launchButtonName, GUILayout.Height(30)))
                         {
                             selectedSite = site;
-                            BaseManager.selectedSite = selectedSite;
+                            UI2.BaseManager.selectedSite = selectedSite;
 
                             //if (!MiscUtils.isCareerGame())
                             //{
@@ -378,7 +378,7 @@ namespace KerbalKonstructs.UI
                     selectedSite = LaunchSiteManager.GetDefaultSite();
                     LaunchSiteManager.setLaunchSite(selectedSite);
                     MiscUtils.HUDMessage(selectedSite.LaunchSiteName + " has been set as the launchsite", 10, 0);
-                    BaseManager.selectedSite = selectedSite;
+                    UI2.BaseManager.selectedSite = selectedSite;
                 }
             }
             GUILayout.EndHorizontal();
