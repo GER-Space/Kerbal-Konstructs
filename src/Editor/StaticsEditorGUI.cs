@@ -660,7 +660,7 @@ namespace KerbalKonstructs.UI
                         if (selectedObject != null)
                         {
                             selectedObjectPrevious = selectedObject;
-                            allStaticInstances[ix].HighlightObject(Color.clear);
+                            selectedObject.HighlightObject(Color.clear);
                         }
 
                         if (snapTargetInstance == allStaticInstances[ix])

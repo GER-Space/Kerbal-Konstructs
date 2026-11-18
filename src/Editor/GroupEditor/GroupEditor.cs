@@ -249,7 +249,7 @@ namespace KerbalKonstructs.UI
                 if (!foldedIn)
                 {
                     GUILayout.Label("Increment");
-                    increment = float.Parse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)));
+                    if (float.TryParse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)), out float inc)) increment = inc;
 
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
@@ -283,7 +283,7 @@ namespace KerbalKonstructs.UI
                 else
                 {
                     GUILayout.Label("i");
-                    increment = float.Parse(GUILayout.TextField(increment.ToString(), 3, GUILayout.Width(25)));
+                    if (float.TryParse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(35)), out float inc)) increment = inc;
 
                     if (GUILayout.Button("0.1", GUILayout.Height(23)))
                     {
@@ -436,7 +436,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
-                selectedGroup.RadiusOffset = float.Parse(GUILayout.TextField(selectedGroup.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)));
+                if (float.TryParse(GUILayout.TextField(selectedGroup.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)), out float radiusOffset)) selectedGroup.RadiusOffset = radiusOffset;
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                 {
                     if (editorMode == GroupEditorMode.Group)
@@ -953,15 +953,21 @@ namespace KerbalKonstructs.UI
 
         public void ApplyInputStrings()
         {
+            double lat, lng;
+            float tgtheading;
+            if (!double.TryParse(refLat, out lat) || !double.TryParse(refLng, out lng) || !float.TryParse(headingStr, out tgtheading))
+            {
+                Log.Normal("ApplyInputStrings: invalid latitude, longitude or heading input, ignoring");
+                return;
+            }
 
-            selectedGroup.RefLatitude = double.Parse(refLat);
-            selectedGroup.RefLongitude = double.Parse(refLng);
+            selectedGroup.RefLatitude = lat;
+            selectedGroup.RefLongitude = lng;
 
             selectedGroup.RadialPosition = KKMath.GetRadiadFromLatLng(selectedGroup.CelestialBody, selectedGroup.RefLatitude, selectedGroup.RefLongitude);
 
 
             float oldRotation = selectedGroup.RotationAngle;
-            float tgtheading = float.Parse(headingStr);
             float diffHeading = (tgtheading - selectedGroup.heading);
 
             selectedGroup.RotationAngle = oldRotation + diffHeading;
@@ -972,8 +978,8 @@ namespace KerbalKonstructs.UI
 
 
 
-            selectedGroup.RefLatitude = double.Parse(refLat);
-            selectedGroup.RefLongitude = double.Parse(refLng);
+            selectedGroup.RefLatitude = lat;
+            selectedGroup.RefLongitude = lng;
         }
 
 

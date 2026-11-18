@@ -71,6 +71,7 @@ namespace KerbalKonstructs.UI
             if (KerbalKonstructs.selectedInstance == null)
             {
                 Close();
+                return;
             }
             if (!guiInitialized)
             {
@@ -307,13 +308,14 @@ namespace KerbalKonstructs.UI
                 {
                     merchantScrollPos = GUILayout.BeginScrollView(merchantScrollPos);
                     {
+                        TradedResource resourceToRemove = null;
                         foreach (TradedResource tradedResource in facMerchant.tradedResources)
                         {
                             GUILayout.BeginHorizontal();
                             {
                                 if (GUILayout.Button("X", redButton, GUILayout.Width(18), GUILayout.Height(18)))
                                 {
-                                    facMerchant.tradedResources.Remove(tradedResource);
+                                    resourceToRemove = tradedResource;
                                 }
                                 GUILayout.Label("Name: ", GUILayout.Height(18));
                                 GUILayout.Label(tradedResource.resource.name, LabelWhite, GUILayout.Height(18), GUILayout.Width(120));
@@ -324,7 +326,7 @@ namespace KerbalKonstructs.UI
                             GUILayout.BeginHorizontal();
                             {
                                 GUILayout.Label("Buying mult: ", GUILayout.Width(100), GUILayout.Height(18));
-                                tradedResource.multiplierBuy = float.Parse(GUILayout.TextField(tradedResource.multiplierBuy.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)));
+                                if (float.TryParse(GUILayout.TextField(tradedResource.multiplierBuy.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)), out float multBuy)) tradedResource.multiplierBuy = multBuy;
                                 GUILayout.FlexibleSpace();
                                 GUILayout.Label("can be bought: ", GUILayout.Width(110), GUILayout.Height(18));
                                 tradedResource.canBeBought = GUILayout.Toggle(tradedResource.canBeBought, "buyable", GUILayout.Height(18));
@@ -333,13 +335,17 @@ namespace KerbalKonstructs.UI
                             GUILayout.BeginHorizontal();
                             {
                                 GUILayout.Label("Selling mult: ", GUILayout.Width(100), GUILayout.Height(18));
-                                tradedResource.multiplierSell = float.Parse(GUILayout.TextField(tradedResource.multiplierSell.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)));
+                                if (float.TryParse(GUILayout.TextField(tradedResource.multiplierSell.ToString(), 6, GUILayout.Width(50), GUILayout.Height(18)), out float multSell)) tradedResource.multiplierSell = multSell;
                                 GUILayout.FlexibleSpace();
                                 GUILayout.Label("can be sold: ", GUILayout.Width(110), GUILayout.Height(18));
                                 tradedResource.canBeSold = GUILayout.Toggle(tradedResource.canBeSold, "sellable", GUILayout.Height(18));
                             }
                             GUILayout.EndHorizontal();
                             GUILayout.Space(12);
+                        }
+                        if (resourceToRemove != null)
+                        {
+                            facMerchant.tradedResources.Remove(resourceToRemove);
                         }
                     }
                     GUILayout.EndScrollView();
@@ -369,7 +375,7 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             GUILayout.Label("MaxVolume: ", LabelGreen);
             GUILayout.FlexibleSpace();
-            facStorage.maxVolume = Math.Max(0, float.Parse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18))));
+            if (float.TryParse(GUILayout.TextField(facStorage.maxVolume.ToString(), 15, GUILayout.Width(130), GUILayout.Height(18)), out float maxVolume)) facStorage.maxVolume = Math.Max(0, maxVolume);
             GUILayout.Label(" m^3", LabelWhite);
             GUILayout.EndHorizontal();
         }

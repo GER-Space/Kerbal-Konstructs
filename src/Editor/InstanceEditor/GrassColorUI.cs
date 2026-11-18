@@ -53,6 +53,7 @@ namespace KerbalKonstructs.UI
             if (!StaticsEditorGUI.instance.IsOpen() || !EditorGUI.instance.IsOpen() || !EditorGUI.grasColorEnabled || EditorGUI.selectedInstance == null)
             {
                 this.Close();
+                return;
             }
 
             if (EditorGUI.selectedInstance != selectedInstance)
@@ -67,7 +68,10 @@ namespace KerbalKonstructs.UI
 
         public override void Close()
         {
-            selectedInstance.HighlightObject(XKCDColors.YellowGreen);
+            if (selectedInstance != null)
+            {
+                selectedInstance.HighlightObject(XKCDColors.YellowGreen);
+            }
             selectedInstance = null;
             base.Close();
         }

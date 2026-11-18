@@ -400,6 +400,21 @@ namespace KerbalKonstructs.UI
 
         internal void SaveSettings()
         {
+            // validate all input first, so a bad field doesn't leave the site half registered
+            float newLength, newWidth, newHeight, newMaxMass, newOpenCost, newCloseValue, newCameraRotation;
+            int newMaxParts;
+            bool newHidden, newILSActive;
+            if (!float.TryParse(stLength, out newLength) || !float.TryParse(stWidth, out newWidth) || !float.TryParse(stHeight, out newHeight) ||
+                !float.TryParse(sMaxMass, out newMaxMass) || !int.TryParse(sMaxParts, out newMaxParts) ||
+                !float.TryParse(stOpenCost, out newOpenCost) || !float.TryParse(stCloseValue, out newCloseValue) ||
+                !bool.TryParse(siteHidden, out newHidden) || !bool.TryParse(ILSActive, out newILSActive) ||
+                !float.TryParse(initialCameraRotation, out newCameraRotation))
+            {
+                Log.UserError("LaunchSite not saved: one or more numeric fields are invalid");
+                MiscUtils.HUDMessage("LaunchSite not saved: invalid numeric input", 10, 3);
+                return;
+            }
+
             bool addToDB = false;
             if (!selectedObject.hasLauchSites)
             {
@@ -428,26 +443,26 @@ namespace KerbalKonstructs.UI
 
 
             selectedObject.launchSite.LaunchSiteName = siteName;
-            selectedObject.launchSite.LaunchSiteLength = float.Parse(stLength);
-            selectedObject.launchSite.LaunchSiteWidth = float.Parse(stWidth);
-            selectedObject.launchSite.LaunchSiteHeight = float.Parse(stHeight);
+            selectedObject.launchSite.LaunchSiteLength = newLength;
+            selectedObject.launchSite.LaunchSiteWidth = newWidth;
+            selectedObject.launchSite.LaunchSiteHeight = newHeight;
 
-            selectedObject.launchSite.MaxCraftMass = float.Parse(sMaxMass);
-            selectedObject.launchSite.MaxCraftParts = int.Parse(sMaxParts);
+            selectedObject.launchSite.MaxCraftMass = newMaxMass;
+            selectedObject.launchSite.MaxCraftParts = newMaxParts;
 
             selectedObject.launchSite.LaunchSiteType = siteType;
             selectedObject.launchSite.LaunchPadTransform = siteTrans;
             selectedObject.launchSite.LaunchSiteDescription = siteDesc;
-            selectedObject.launchSite.OpenCost = float.Parse(stOpenCost);
-            selectedObject.launchSite.CloseValue = float.Parse(stCloseValue);
-            selectedObject.launchSite.LaunchSiteIsHidden = bool.Parse(siteHidden);
-            selectedObject.launchSite.ILSIsActive = bool.Parse(ILSActive);
+            selectedObject.launchSite.OpenCost = newOpenCost;
+            selectedObject.launchSite.CloseValue = newCloseValue;
+            selectedObject.launchSite.LaunchSiteIsHidden = newHidden;
+            selectedObject.launchSite.ILSIsActive = newILSActive;
             selectedObject.launchSite.LaunchSiteAuthor = siteAuthor;
             selectedObject.launchSite.refLat = (float)selectedObject.RefLatitude;
             selectedObject.launchSite.refLon = (float)selectedObject.RefLongitude;
             selectedObject.launchSite.refAlt = (float)selectedObject.CelestialBody.GetAltitude(selectedObject.position);
             selectedObject.launchSite.sitecategory = category;
-            selectedObject.launchSite.InitialCameraRotation = float.Parse(initialCameraRotation);
+            selectedObject.launchSite.InitialCameraRotation = newCameraRotation;
 
             selectedObject.launchSite.ToggleLaunchPositioning = togglePositioning;
 
@@ -463,7 +478,7 @@ namespace KerbalKonstructs.UI
                 Log.Debug("new name: " + selectedObject.launchSite.LaunchSiteName);
                 if (oldName != null && !oldName.Equals(siteName))
                 {
-                    ILSConfig.RenameSite(selectedObject.launchSite.LaunchSiteName, siteName);
+                    ILSConfig.RenameSite(oldName, siteName);
                     regenerateILSConfig = true;
                 }
 
@@ -474,7 +489,7 @@ namespace KerbalKonstructs.UI
                     regenerateILSConfig = true;
                 }
 
-                bool state = bool.Parse(ILSActive);
+                bool state = newILSActive;
                 Log.Normal("new state: " + state + "; old state: " + oldState);
                 if (oldState != state || regenerateILSConfig)
                 {
