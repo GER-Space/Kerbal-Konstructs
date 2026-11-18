@@ -37,6 +37,8 @@ namespace KerbalKonstructs.Core
             _allStaticInstances = new List<StaticInstance>();
             allStaticInstances = new StaticInstance[0];
             centersByPlanet = new Dictionary<string, Dictionary<string, GroupCenter>>();
+            allCenters = new Dictionary<string, GroupCenter>();
+            instancedByUUID = new Dictionary<string, StaticInstance>();
         }
 
         /// <summary>

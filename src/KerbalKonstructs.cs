@@ -1018,7 +1018,9 @@ namespace KerbalKonstructs
                 if (String.IsNullOrEmpty(modelName))
                 {
                     Log.UserWarning("No Name Found in configuration : " + conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg");
-                    modelName = Regex.Replace(conf.config.GetValue("title"), @"\s+", "");
+                    string modelTitle = conf.config.GetValue("title");
+                    // no title either: fall through to the config-path fallback below instead of throwing
+                    modelName = String.IsNullOrEmpty(modelTitle) ? "" : Regex.Replace(modelTitle, @"\s+", "");
                     if (String.IsNullOrEmpty(modelName))
                     {
                         modelName = conf.url.Substring(0, conf.url.LastIndexOf('/')) + ".cfg";
@@ -1043,6 +1045,12 @@ namespace KerbalKonstructs
                 };
 
                 ConfigParser.ParseModelConfig(model, conf.config);
+
+                if (String.IsNullOrEmpty(model.mesh))
+                {
+                    Log.UserError("No mesh found in configuration, skipping: " + model.configPath);
+                    continue;
+                }
 
                 if (model.mesh.Contains('.'))
                 {

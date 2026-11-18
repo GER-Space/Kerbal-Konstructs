@@ -94,6 +94,7 @@ namespace KerbalKonstructs.Core
                             if (variant.prefab == null)
                             {
                                 Log.UserError("Could not find " + instance.model.path + "/" + variant.newMeshName + ".mu! Did the modder forget to include it or did you actually install it?");
+                                return SpawnDefault(instance);
                             }
                         }
 
@@ -101,21 +102,35 @@ namespace KerbalKonstructs.Core
                     }
                     else
                     {
-                        Log.UserError("Cannot find variant: " + instance.VariantName + "on model " + instance.model.name);
-                        return null;
+                        Log.UserError("Cannot find variant: " + instance.VariantName + "on model " + instance.model.name + ", using the default model");
+                        return SpawnDefault(instance);
                     }
                 }
-                else
+                else if (instance.model.variants.Count > 0)
                 {
                     // Default is the first one
                     instance.VariantName = instance.model.variants.Keys.ToArray()[0];
                     return SpawnVariant(instance);
                 }
+                else
+                {
+                    return SpawnDefault(instance);
+                }
             }
             else
             {
-                return GameObject.Instantiate(instance.model.prefab);
+                return SpawnDefault(instance);
             }
+        }
+
+        private static GameObject SpawnDefault(StaticInstance instance)
+        {
+            if (instance.model.prefab == null)
+            {
+                Log.UserError("No prefab found for model: " + instance.model.name);
+                return null;
+            }
+            return GameObject.Instantiate(instance.model.prefab);
         }
 
         internal static void ApplyVariant(StaticInstance instance)

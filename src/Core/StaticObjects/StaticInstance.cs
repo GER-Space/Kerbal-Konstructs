@@ -96,6 +96,10 @@ namespace KerbalKonstructs.Core
             set
             {
                 _mesh = value;
+                if (_mesh == null)
+                {
+                    return;
+                }
                 _mesh.name = "Mesh";
 
                 if (_mesh != gameObject)
@@ -257,6 +261,23 @@ namespace KerbalKonstructs.Core
         }
 
 
+        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(t => t != null);
+            }
+            catch
+            {
+                return new Type[0];
+            }
+        }
+
+
         private void Spawn()
         {
             CelestialBody.CBUpdate();
@@ -283,7 +304,8 @@ namespace KerbalKonstructs.Core
             }
             InstanceUtil.SetLayerRecursively(this, 15);
 
-            mesh.SetActive(true);
+            // keep the mesh inactive while the modules are added, so their Awake() runs after the config fields are set
+            mesh.SetActive(false);
 
             //Scaling
             origScale = gameObject.transform.localScale;             // save the original scale for later use
@@ -299,8 +321,14 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => asm.assembly.GetTypes()).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => GetLoadableTypes(asm.assembly)).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
                     staticModules.Add(moduleKey, moduleType);
+                }
+
+                if (moduleType == null)
+                {
+                    Log.UserError("Module " + module.moduleNamespace + "." + module.moduleClassname + " not found for " + model.name);
+                    continue;
                 }
 
                 StaticModule mod = mesh.AddComponent(moduleType) as StaticModule;
@@ -328,6 +356,8 @@ namespace KerbalKonstructs.Core
                     Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
                 }
             }
+
+            mesh.SetActive(true);
 
 
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))

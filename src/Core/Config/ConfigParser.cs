@@ -124,12 +124,11 @@ namespace KerbalKonstructs.Core
                     Log.UserError("error in writing modelconfig: " + model.name + " key: " + modelsetting.Key);
                     throw;
                 }
+            }
 
-                foreach (ModelVariant vaiant in model.variants.Values)
-                {
-                    cfgNode.AddNode("VARIANT", vaiant.GetConfig());
-                }
-
+            foreach (ModelVariant vaiant in model.variants.Values)
+            {
+                cfgNode.AddNode("VARIANT", vaiant.GetConfig());
             }
         }
 
