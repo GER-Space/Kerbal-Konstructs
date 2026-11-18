@@ -32,6 +32,18 @@ namespace KerbalKonstructs
                               where t.gameObject != null && t.gameObject.name == collider
                               select t.gameObject).FirstOrDefault();
 
+            if (obj == null)
+            {
+                Log.UserError("GUIOnClick: no collider object found with name: " + collider);
+                return;
+            }
+
+            if (obj == gameObject)
+            {
+                // we are already on the collider object, nothing to move
+                return;
+            }
+
             GUIOnClick colliderObject = obj.AddComponent<GUIOnClick>();
             colliderObject.collider = collider;
             //colliderObject.animationName = animationName;

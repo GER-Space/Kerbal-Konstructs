@@ -31,6 +31,11 @@ namespace KerbalKonstructs
             }
 
             Transform receiverTransform = gameObject.transform.FindRecursive(smokeReceiverName);
+            if (receiverTransform == null)
+            {
+                Log.UserError("PadSmoke: no smokeReceiver found with name: " + smokeReceiverName);
+                return;
+            }
             Collider receiverCollider = receiverTransform.gameObject.GetComponent<Collider>();
 
             if (receiverCollider != null)
@@ -232,7 +237,11 @@ namespace KerbalKonstructs
                 float intensity = 1;
                 if (smokeNode.HasValue("Intensity"))
                 {
-                    intensity = float.Parse(smokeNode.GetValue("Intensity"));
+                    if (!float.TryParse(smokeNode.GetValue("Intensity"), out intensity))
+                    {
+                        Log.UserWarning("PadSmoke: could not parse Intensity: " + smokeNode.GetValue("Intensity"));
+                        intensity = 1;
+                    }
                 }
 
                 List<ParticleSystem> psEmitters = new List<ParticleSystem>();

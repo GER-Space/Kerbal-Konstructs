@@ -21,8 +21,6 @@ namespace KerbalKonstructs
         private GameObject waterSurface;
         private double waterLevel = 0d;
 
-        private List<KKCallBackWorker> workers = new List<KKCallBackWorker>();
-
 
         internal void Start()
         {
@@ -30,12 +28,13 @@ namespace KerbalKonstructs
             waterNames = WaterSurfaceQuadNames.Split(seperators, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (waterNames.Count > 0)
             {
-                waterSurface = gameObject.transform.FindRecursive(waterNames[0]).gameObject;
-                if (waterSurface == null)
+                Transform waterTransform = gameObject.transform.FindRecursive(waterNames[0]);
+                if (waterTransform == null)
                 {
                     Log.UserError("No WaterSurface found");
                     return;
                 }
+                waterSurface = waterTransform.gameObject;
             }
             else
             {
@@ -70,12 +69,9 @@ namespace KerbalKonstructs
                 kkCall.Start();
             }
 
-            foreach (KKCallBackWorker worker in gameObject.GetComponentsInChildren<KKCallBackWorker>(true))
-            {
-                workers.Add(worker);
-                worker.onEnterAction = MakePartFloat;
-                worker.onExitAction = RemoveCustomWaterLevel;
-            }
+            // only register on the workers of our own KKCallBack, so handlers of other modules are not overwritten
+            kkCall.RegisterEnterFunc(MakePartFloat);
+            kkCall.RegisterExitFunc(RemoveCustomWaterLevel);
         }
 
 

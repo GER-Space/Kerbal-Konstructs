@@ -61,6 +61,8 @@ namespace KerbalKonstructs
         void Start()
         {
             //Log.Normal("RunWay PAPI started: " + gameObject.name);
+            ParseSettings();
+
             if (animTooHigh == null)
             {
                 animTooHigh = (from animationList in gameObject.GetComponentsInChildren<Animation>()
@@ -69,7 +71,7 @@ namespace KerbalKonstructs
                                where animationState.name == AnimNameTooHigh
                                select animationList).FirstOrDefault();
                 //    animTooHigh.wrapMode = WrapMode.Loop;
-                isWhite.Add(AnimNameTooHigh, false);
+                AddAnimState(AnimNameTooHigh);
             }
 
             if (animHigh == null)
@@ -80,7 +82,7 @@ namespace KerbalKonstructs
                             where animationState.name == AnimNameHigh
                             select animationList).FirstOrDefault();
                 //    animHigh.wrapMode = WrapMode.Loop;
-                isWhite.Add(AnimNameHigh, false);
+                AddAnimState(AnimNameHigh);
             }
             if (animRight == null)
             {
@@ -90,7 +92,7 @@ namespace KerbalKonstructs
                              where animationState.name == AnimNameRight
                              select animationList).FirstOrDefault();
                 //    animRight.wrapMode = WrapMode.Loop;
-                isWhite.Add(AnimNameRight, false);
+                AddAnimState(AnimNameRight);
             }
             if (animLow == null)
             {
@@ -100,7 +102,7 @@ namespace KerbalKonstructs
                            where animationState.name == AminNameTooLow
                            select animationList).FirstOrDefault();
                 //    animLow.wrapMode = WrapMode.Loop;
-                isWhite.Add(AminNameTooLow, false);
+                AddAnimState(AminNameTooLow);
             }
         }
 
@@ -112,7 +114,10 @@ namespace KerbalKonstructs
         //    this.enabled = true;
         //}
 
-        public void Awake()
+        /// <summary>
+        /// Parses the cfg fields. Called from Start, so the fields are set regardless of Awake ordering.
+        /// </summary>
+        private void ParseSettings()
         {
             try
             {
@@ -277,8 +282,26 @@ namespace KerbalKonstructs
         }
 
 
+        private void AddAnimState(string animationName)
+        {
+            if (string.IsNullOrEmpty(animationName) || isWhite.ContainsKey(animationName))
+            {
+                return;
+            }
+            isWhite.Add(animationName, false);
+        }
+
+        private bool IsValidAnim(Animation anim, string animationName)
+        {
+            return (anim != null && !string.IsNullOrEmpty(animationName) && isWhite.ContainsKey(animationName) && anim[animationName] != null);
+        }
+
         internal void SetRed(Animation anim, string animationName)
         {
+            if (!IsValidAnim(anim, animationName))
+            {
+                return;
+            }
             if (isWhite[animationName])
             {
                 anim[animationName].speed = -1f;
@@ -290,6 +313,10 @@ namespace KerbalKonstructs
 
         internal void SetWhite(Animation anim, string animationName)
         {
+            if (!IsValidAnim(anim, animationName))
+            {
+                return;
+            }
             if (!isWhite[animationName])
             {
                 anim[animationName].speed = 1f;

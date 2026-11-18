@@ -32,8 +32,24 @@ namespace KerbalKonstructs
 
         //private string defaultGrasTextureName = "BUILTIN:/terrain_grass00_new";
 
-        public void Awake()
+        private bool settingsParsed = false;
+
+        public void Start()
         {
+            ParseSettings();
+        }
+
+        /// <summary>
+        /// Parses the cfg fields. Done in Start / lazily, so the fields are set regardless of Awake ordering.
+        /// </summary>
+        private void ParseSettings()
+        {
+            if (settingsParsed)
+            {
+                return;
+            }
+            settingsParsed = true;
+
             if (!bool.TryParse(UsePQSColor, out usePQS))
             {
                 Log.UserWarning("GrasColor Module: could not parse UsePQSColor to bool: " + UsePQSColor);
@@ -88,7 +104,7 @@ namespace KerbalKonstructs
                     //Log.Normal("GC: Setting Texture to: " + grasTextureName);
                     material.mainTexture = grasTexture;
 
-                    if (string.IsNullOrEmpty(GrasTextureNormalMap))
+                    if (!string.IsNullOrEmpty(GrasTextureNormalMap))
                     {
                         material.SetTexture("_BumpMap", KKGraphics.GetTexture(GrasTextureNormalMap, true, 0, true));
                     }
@@ -105,6 +121,7 @@ namespace KerbalKonstructs
 
         internal void Initialize()
         {
+            ParseSettings();
            
            FindModelGrasMaterials();
            
