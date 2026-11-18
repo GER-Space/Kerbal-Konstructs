@@ -77,8 +77,12 @@ namespace KerbalKonstructs.UI2
         //red
         internal static string SetGrassRStr(string newFloat)
         {
-            selectedColor.r = float.Parse(newFloat);
-            callBack.Invoke(selectedColor);
+            float value;
+            if (MiscUtils.TryParseFloat(newFloat, out value))
+            {
+                selectedColor.r = value;
+                callBack.Invoke(selectedColor);
+            }
             return newFloat;
         }
 
@@ -86,24 +90,36 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetGrassGStr(string newFloat)
         {
-            selectedColor.g = float.Parse(newFloat);
-            callBack.Invoke(selectedColor);
+            float value;
+            if (MiscUtils.TryParseFloat(newFloat, out value))
+            {
+                selectedColor.g = value;
+                callBack.Invoke(selectedColor);
+            }
             return newFloat;
         }
 
         //blue
         internal static string SetGrassBStr(string newFloat)
         {
-            selectedColor.b = float.Parse(newFloat);
-            callBack.Invoke(selectedColor);
+            float value;
+            if (MiscUtils.TryParseFloat(newFloat, out value))
+            {
+                selectedColor.b = value;
+                callBack.Invoke(selectedColor);
+            }
             return newFloat;
         }
 
         //Alpha
         internal static string SetGrassAStr(string newFloat)
         {
-            selectedColor.a = float.Parse(newFloat);
-            callBack.Invoke(selectedColor);
+            float value;
+            if (MiscUtils.TryParseFloat(newFloat, out value))
+            {
+                selectedColor.a = value;
+                callBack.Invoke(selectedColor);
+            }
             return newFloat;
         }
 
