@@ -143,7 +143,7 @@ namespace KerbalKonstructs
         internal static bool enableInflightHighlight => HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters1>().enableInflightHighlight;
 
         internal static bool focusLastLaunchSite { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters0>().focusLastLaunchSite; } }
-        internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().disableCareerStrategyLayer = value; } }
+        internal bool dontRemoveStockCommNet { get { return HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet; } set { HighLogic.CurrentGame.Parameters.CustomParams<KKCustomParameters2>().dontRemoveStockCommNet = value; } }
 
         // map icon settings. These are saved manually
         [KSPField]
@@ -667,11 +667,11 @@ namespace KerbalKonstructs
                     }
                 }
 
-                if (customSC != null)
+                if (customSC != null && recovery > 0)
                 {
                     float oldRecovery = recovery;
+                    double oldFundsEarned = dialog.fundsEarned;
                     double shipvalue = dialog.fundsEarned / oldRecovery;
-                    double missingvalue = shipvalue - dialog.fundsEarned;
                     if (smallestDist < 2500d)
                     {
                         recovery = 1;
@@ -701,7 +701,11 @@ namespace KerbalKonstructs
                         resource.totalValue = resource.totalValue / oldRecovery * recovery;
                     }
 
-                    Funding.Instance.AddFunds(missingvalue, TransactionReasons.VesselRecovery);
+                    double missingvalue = dialog.fundsEarned - oldFundsEarned;
+                    if (missingvalue > 0)
+                    {
+                        Funding.Instance.AddFunds(missingvalue, TransactionReasons.VesselRecovery);
+                    }
                 }
             }
         }

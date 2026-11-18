@@ -5,6 +5,8 @@ namespace KerbalKonstructs.Addons
 {
     class StageRecovery
     {
+        private static SpaceCenter originalSpaceCenter = null;
+
         internal static void AttachStageRecovery()
         {
             if (StageRecoveryWrapper.isAvailable)
@@ -26,6 +28,7 @@ namespace KerbalKonstructs.Addons
                 // Change the Space Centre to the nearest open base
                 double dist = 0d;
 
+                originalSpaceCenter = SpaceCenter.Instance;
                 SpaceCenter spaceCenter = null;
                 SpaceCenter closestSpaceCenter = SpaceCenter.Instance;
 
@@ -44,6 +47,10 @@ namespace KerbalKonstructs.Addons
                         }
 
                         spaceCenter = csc.GetSpaceCenter();
+                        if (spaceCenter.cb != vessel.mainBody)
+                        {
+                            continue;
+                        }
                         dist = spaceCenter.GreatCircleDistance(spaceCenter.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
                         Log.Normal("distance is: " + dist);
                         if (dist < smallestDist)
@@ -88,7 +95,8 @@ namespace KerbalKonstructs.Addons
             if (!KerbalKonstructs.instance.disableRemoteRecovery && CareerUtils.isCareerGame)
             {
                 //Log.Normal("Resetting SpaceCenter to KSC");
-                SpaceCenter.Instance = SpaceCenterManager.KSC;
+                SpaceCenter.Instance = (originalSpaceCenter != null) ? originalSpaceCenter : SpaceCenterManager.KSC;
+                originalSpaceCenter = null;
             }
         }
     }
