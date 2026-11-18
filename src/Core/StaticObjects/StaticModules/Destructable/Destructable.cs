@@ -10,16 +10,27 @@ namespace KerbalKonstructs
         private static bool isInitialized = false;
         private static VFXSequencer demolitionPrefab, secondaryPrefab;
 
+        // limit the number of wreck objects for long, thin statics
+        private static int maxWrecks = 50;
+
         private static void Initialize()
         {
-            foreach (DestructibleBuilding building in StaticDatabase.GetModelByName("KSC_VehicleAssemblyBuilding_level_3").prefab.GetComponentsInChildren<DestructibleBuilding>(true))
+            StaticModel vabModel = StaticDatabase.GetModelByName("KSC_VehicleAssemblyBuilding_level_3");
+            if (vabModel != null && vabModel.prefab != null)
             {
-                if (building.name == "mainBuilding")
+                foreach (DestructibleBuilding building in vabModel.prefab.GetComponentsInChildren<DestructibleBuilding>(true))
                 {
-                    demolitionPrefab = building.DemolitionFXPrefab;
+                    if (building.name == "mainBuilding")
+                    {
+                        demolitionPrefab = building.DemolitionFXPrefab;
+
+                    }
 
                 }
-
+            }
+            else
+            {
+                Log.UserWarning("Destructable: could not find model KSC_VehicleAssemblyBuilding_level_3");
             }
             foreach (DestructibleBuilding building in Resources.FindObjectsOfTypeAll<DestructibleBuilding>())
             {
@@ -78,7 +89,12 @@ namespace KerbalKonstructs
         {
 
             Bounds staticBounds = target.gameObject.GetAllRendererBounds();
-            GameObject wreckObj = GameObject.Instantiate(StaticDatabase.GetModelByName(wreckName).prefab);
+            StaticModel wreckModel = StaticDatabase.GetModelByName(wreckName);
+            if (wreckModel == null || wreckModel.prefab == null)
+            {
+                Log.UserError("Destructable: could not find wreck model: " + wreckName);
+                return;
+            }
 
 
             //wreckObj.SetActive(true);
@@ -114,10 +130,10 @@ namespace KerbalKonstructs
             float times = max / min;
 
             int counter = 0;
-            while (times > 0.3f)
+            while (times > 0.3f && counter < maxWrecks)
             {
                 float extrascale = Math.Min(times, 1);
-                GameObject replacementObject = GameObject.Instantiate(StaticDatabase.GetModelByName(wreckName).prefab);
+                GameObject replacementObject = GameObject.Instantiate(wreckModel.prefab);
                 replacementObject.name = "wreck_" + counter;
                 replacementObject.transform.position = target.position;
                 replacementObject.transform.rotation = target.rotation;

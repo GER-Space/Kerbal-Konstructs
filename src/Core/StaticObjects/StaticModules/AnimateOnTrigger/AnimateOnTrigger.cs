@@ -75,14 +75,12 @@ namespace KerbalKonstructs
                 kkCall.Start();
             }
 
-            foreach (KKCallBackWorker worker in gameObject.GetComponentsInChildren<KKCallBackWorker>(true))
+            // only register on the workers of our own KKCallBack, so handlers of other modules are not overwritten
+            kkCall.RegisterEnterFunc(PlayOnEnter);
+            kkCall.RegisterExitFunc(PlayOnExit);
+            if (stayAnim != null)
             {
-                worker.onEnterAction = PlayOnEnter;
-                worker.onExitAction = PlayOnExit;
-                if (stayAnim != null)
-                {
-                    worker.onStayAction = PlayOnStay;
-                }
+                kkCall.RegisterStayFunc(PlayOnStay);
             }
         }
 

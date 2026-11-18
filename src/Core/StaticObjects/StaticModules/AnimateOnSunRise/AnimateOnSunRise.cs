@@ -76,7 +76,8 @@ namespace KerbalKonstructs
                 return;
             }
 
-            animLength = targetAnimation.length * targetAnimation.normalizedSpeed;
+            // clip length in animation time (used for positioning via .time)
+            animLength = targetAnimation.length;
             animationSpeed = targetAnimation.speed;
 
             revAnimation = bool.Parse(reverseAnimation);
@@ -86,6 +87,18 @@ namespace KerbalKonstructs
 
             SetupCenter();
 
+        }
+
+        /// <summary>
+        /// Real time in seconds the animation needs to play once at its configured speed
+        /// </summary>
+        private float GetRealTimeLength()
+        {
+            if (animationSpeed != 0f)
+            {
+                return animLength / Math.Abs(animationSpeed);
+            }
+            return animLength;
         }
 
         internal void SetupCenter()
@@ -117,6 +130,11 @@ namespace KerbalKonstructs
             } 
             else
             {
+                if (isRunning)
+                {
+                    // wait until the running animation has finished
+                    return;
+                }
                 if (shouldBeActive)
                 {
                     this.StartCoroutine("SetActive");
@@ -147,7 +165,7 @@ namespace KerbalKonstructs
         private IEnumerator ResetAnimationState()
         {
             isRunning = true;
-            float waitTime = animLength;
+            float waitTime = GetRealTimeLength();
 
             if (revAnimation)
             {
@@ -175,7 +193,7 @@ namespace KerbalKonstructs
         private IEnumerator SetActive()
         {
             //Log.Normal("first");
-            if (isRunning)
+            while (isRunning)
             {
                 //Log.Normal("Still running");
                 yield return null;
@@ -183,7 +201,7 @@ namespace KerbalKonstructs
             //Log.Normal("playing");
             isRunning = true;
 
-            float waitTime = animLength;
+            float waitTime = GetRealTimeLength();
 
             if (revAnimation)
             {
@@ -211,13 +229,13 @@ namespace KerbalKonstructs
 
         private IEnumerator SetInActive()
         {
-            if (isRunning)
+            while (isRunning)
             {
                 yield return null;
             }
             isRunning = true;
 
-            float waitTime = animLength;
+            float waitTime = GetRealTimeLength();
 
             if (revAnimation)
             {
