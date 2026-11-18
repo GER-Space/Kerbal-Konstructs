@@ -165,9 +165,9 @@ namespace KerbalKonstructs.UI
                     {
                         maxProduced = selectedFacility.model.DefaultFundsOMax;
 
-                        if (maxProduced < 1)
+                        if (maxProduced < 1) maxProduced = 10000f;
                         {
-                            myBusiness.FundsOMax = 10000f;
+                            myBusiness.FundsOMax = maxProduced;
                         }
                     }
                     maxProduced = myBusiness.FundsOMax;
@@ -184,6 +184,7 @@ namespace KerbalKonstructs.UI
                 if (lastCheckTime > currentTime)
                 {
                     checkTimeField.SetValue(selectedFacility.myFacilities[0], currentTime);
+                    lastCheckTime = currentTime;
                 }
                 daysPast = ((currentTime - lastCheckTime) / 21600f);
                 currentProduced = daysPast * currentProductionRate;
