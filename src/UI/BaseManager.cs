@@ -272,7 +272,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
             }
 
-            GUI.enabled = !selectedSite.isOpen;
+            GUI.enabled = !selectedSite.isOpen && CareerUtils.isCareerGame;
 
             if (!KerbalKonstructs.instance.disableRemoteBaseOpening)
             {
@@ -293,8 +293,7 @@ namespace KerbalKonstructs.UI
                 }
             }
 
-            GUI.enabled = true;
-            GUI.enabled = selectedSite.isOpen;
+            GUI.enabled = selectedSite.isOpen && CareerUtils.isCareerGame;
 
 
             if (GUILayout.Button("Close Base for \n" + selectedSite.CloseValue + " funds", GUILayout.Height(38)))
