@@ -72,8 +72,36 @@ namespace KerbalKonstructs.Modules
         //internal static String facType = "None";
         //internal static String sGroup = "Ungrouped";
         private float increment = 1f;
-        private float tempIncrement = 1f;
-        private float tempOffset = 0f;
+
+        // Text buffers for the numeric text fields, so partial input ("", "-", "0.") can be typed
+        private string incrementText = null;
+        private float incrementLast;
+        private string radiusOffsetText = null;
+        private float radiusOffsetLast;
+
+        /// <summary>
+        /// Numeric text field that never throws. The text being typed is kept in a buffer;
+        /// the returned value only changes when the buffer parses to a valid number.
+        /// If value is changed from elsewhere (buttons, gizmo), the buffer is refreshed.
+        /// </summary>
+        private static float FloatField(float value, ref string text, ref float lastValue, int maxLength, float width)
+        {
+            if (text == null || value != lastValue)
+            {
+                text = value.ToString();
+                lastValue = value;
+            }
+
+            text = GUILayout.TextField(text, maxLength, GUILayout.Width(width));
+
+            float parsed;
+            if (MiscUtils.TryParseFloat(text, out parsed))
+            {
+                lastValue = parsed;
+                return parsed;
+            }
+            return value;
+        }
 
 
         private VectorRenderer upVR = new VectorRenderer();
@@ -148,6 +176,7 @@ namespace KerbalKonstructs.Modules
             if (selectedObjectPrevious != obj)
             {
                 selectedObjectPrevious = obj;
+                radiusOffsetText = null;
                 SetupVectors();
                 SetupGizmo();
             }
@@ -229,11 +258,7 @@ namespace KerbalKonstructs.Modules
                 if (!foldedIn)
                 {
                     GUILayout.Label("Increment");
-                    tempIncrement = increment;
-                    if (!float.TryParse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)), out increment))
-                    {
-                        increment = tempIncrement;
-                    }
+                    increment = FloatField(increment, ref incrementText, ref incrementLast, 5, 48f);
 
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
@@ -267,11 +292,8 @@ namespace KerbalKonstructs.Modules
                 else
                 {
                     GUILayout.Label("i");
-                    tempIncrement = increment;
-                    if (!float.TryParse(GUILayout.TextField(increment.ToString(), 3, GUILayout.Width(25)), out increment))
-                    {
-                        increment = tempIncrement;
-                    }
+                    // maxLength 5 (was 3): "0.001"/"0.01" must not be truncated to "0.0" (= 0)
+                    increment = FloatField(increment, ref incrementText, ref incrementLast, 5, 38f);
 
                     if (GUILayout.Button("0.1", GUILayout.Height(23)))
                     {
@@ -361,11 +383,7 @@ namespace KerbalKonstructs.Modules
             {
                 GUILayout.Label("Alt.");
                 GUILayout.FlexibleSpace();
-                tempOffset = selectedInstance.RadiusOffset;
-                if (!float.TryParse(GUILayout.TextField(selectedInstance.RadiusOffset.ToString(), 25, GUILayout.Width(fTempWidth)), out selectedInstance.RadiusOffset))
-                {
-                    selectedInstance.RadiusOffset = tempOffset;
-                }
+                selectedInstance.RadiusOffset = FloatField(selectedInstance.RadiusOffset, ref radiusOffsetText, ref radiusOffsetLast, 25, fTempWidth);
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(21)))
                     SetTransform(Vector3.down * increment);
                 if (GUILayout.Button(">", GUILayout.Width(30), GUILayout.Height(21)) | GUILayout.RepeatButton(">>", GUILayout.Width(30), GUILayout.Height(21)))

@@ -209,15 +209,23 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetThirdTile(string newTile)
         {
-            selectedMod.thirdTextureTiling = float.Parse(newTile);
-            selectedMod.ApplySettings();
+            float value;
+            if (MiscUtils.TryParseFloat(newTile, out value))
+            {
+                selectedMod.thirdTextureTiling = value;
+                selectedMod.ApplySettings();
+            }
             return newTile;
         }
 
         internal static string SetFourthTile(string newTile)
         {
-            selectedMod.fourthTextureTiling = float.Parse(newTile);
-            selectedMod.ApplySettings();
+            float value;
+            if (MiscUtils.TryParseFloat(newTile, out value))
+            {
+                selectedMod.fourthTextureTiling = value;
+                selectedMod.ApplySettings();
+            }
             return newTile;
         }
 
@@ -231,7 +239,11 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetTarmacUStr(string newUvalue)
         {
-            float uValue = float.Parse(newUvalue);
+            float uValue;
+            if (!MiscUtils.TryParseFloat(newUvalue, out uValue))
+            {
+                return newUvalue;
+            }
             selectedMod.tarmacTiling = new Vector2(uValue, selectedMod.tarmacTiling.y);
             selectedMod.ApplySettings();
             return selectedMod.tarmacTiling.x.ToString();
@@ -239,7 +251,11 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetTarmacVStr(string newVvalue)
         {
-            float vValue = float.Parse(newVvalue);
+            float vValue;
+            if (!MiscUtils.TryParseFloat(newVvalue, out vValue))
+            {
+                return newVvalue;
+            }
             selectedMod.tarmacTiling = new Vector2(selectedMod.tarmacTiling.x, vValue);
             selectedMod.ApplySettings();
             return selectedMod.tarmacTiling.y.ToString();
@@ -302,21 +318,33 @@ namespace KerbalKonstructs.UI2
 
         internal static string SetNearTile(string newTile)
         {
-            selectedMod.nearGrassTiling = float.Parse(newTile);
-            selectedMod.ApplySettings();
+            float value;
+            if (MiscUtils.TryParseFloat(newTile, out value))
+            {
+                selectedMod.nearGrassTiling = value;
+                selectedMod.ApplySettings();
+            }
             return newTile;
         }
 
         internal static string SetFarTile(string newTile)
         {
-            selectedMod.farGrassTiling = float.Parse(newTile);
-            selectedMod.ApplySettings();
+            float value;
+            if (MiscUtils.TryParseFloat(newTile, out value))
+            {
+                selectedMod.farGrassTiling = value;
+                selectedMod.ApplySettings();
+            }
             return newTile;
         }
         internal static string SetBlendDistance(string newTile)
         {
-            selectedMod.farGrassBlendDistance = float.Parse(newTile);
-            selectedMod.ApplySettings();
+            float value;
+            if (MiscUtils.TryParseFloat(newTile, out value))
+            {
+                selectedMod.farGrassBlendDistance = value;
+                selectedMod.ApplySettings();
+            }
             return newTile;
         }
 
