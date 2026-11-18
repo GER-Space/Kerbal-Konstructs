@@ -281,7 +281,7 @@ namespace KerbalKonstructs.UI
                 GUILayout.FlexibleSpace();
 
                 GUILayout.Label("Increment");
-                increment = float.Parse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)));
+                if (float.TryParse(GUILayout.TextField(increment.ToString(), 5, GUILayout.Width(48)), out float inc)) increment = inc;
 
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
@@ -557,7 +557,7 @@ namespace KerbalKonstructs.UI
             {
                 GUILayout.Label("Model Scale: ");
                 GUILayout.FlexibleSpace();
-                selectedInstance.ModelScale = Math.Max(0.01f, float.Parse(GUILayout.TextField(selectedInstance.ModelScale.ToString(), 4, GUILayout.Width(fTempWidth))));
+                if (float.TryParse(GUILayout.TextField(selectedInstance.ModelScale.ToString(), 8, GUILayout.Width(fTempWidth)), out float modelScale)) selectedInstance.ModelScale = Math.Max(0.01f, modelScale);
 
                 if (GUILayout.RepeatButton("<<", GUILayout.Width(30), GUILayout.Height(23)) | GUILayout.Button("<", GUILayout.Width(30), GUILayout.Height(23)))
                 {
@@ -1054,10 +1054,16 @@ namespace KerbalKonstructs.UI
 
         public void ApplyInputStrings()
         {
-            increment = float.Parse(incrementStr);
+            float posX, posY, posZ, oriX, oriY, oriZ;
+            if (!float.TryParse(posXStr, out posX) || !float.TryParse(posYStr, out posY) || !float.TryParse(posZStr, out posZ) ||
+                !float.TryParse(oriXStr, out oriX) || !float.TryParse(oriYStr, out oriY) || !float.TryParse(oriZStr, out oriZ))
+            {
+                Log.Normal("ApplyInputStrings: invalid position or orientation input, ignoring");
+                return;
+            }
 
-            selectedInstance.transform.localPosition = new Vector3(float.Parse(posXStr), float.Parse(posYStr), float.Parse(posZStr));
-            selectedInstance.transform.localEulerAngles = new Vector3(float.Parse(oriXStr), float.Parse(oriYStr), float.Parse(oriZStr));
+            selectedInstance.transform.localPosition = new Vector3(posX, posY, posZ);
+            selectedInstance.transform.localEulerAngles = new Vector3(oriX, oriY, oriZ);
 
 
             ApplySettings();

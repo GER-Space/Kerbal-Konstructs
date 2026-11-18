@@ -125,6 +125,7 @@ namespace KerbalKonstructs.UI
             EditorGizmo.CloseGizmo();
             base.Close();
             selectedDecal = null;
+            selectedDecalPrevious = null;
         }
 
         #region draw Methods
