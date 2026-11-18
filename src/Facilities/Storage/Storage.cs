@@ -39,7 +39,7 @@ namespace KerbalKonstructs.Modules
         /// <returns></returns>
         internal override void LoadCareerConfig(ConfigNode cfgNode)
         {
-            base.ParseConfig(cfgNode);
+            base.LoadCareerConfig(cfgNode);
             storedResources = new HashSet<StoredResource>();
 
             string resourceName = null;
@@ -71,7 +71,7 @@ namespace KerbalKonstructs.Modules
         {
             ConfigNode resourceNode = null;
 
-            base.WriteConfig(cfgNode);
+            base.SaveCareerConfig(cfgNode);
 
             foreach (StoredResource resource in storedResources)
             {

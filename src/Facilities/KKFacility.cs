@@ -182,8 +182,7 @@ namespace KerbalKonstructs.Modules
                 InitTypes();
             }
 
-            // Close everything before saving.
-            isOpen = false;
+            // Don't close the live facility here: OpenCloseState is written from defaultState below.
             myFields = allFields[this.GetType().Name];
             cfgNode.SetValue("FacilityType", this.GetType().Name, true);
 
