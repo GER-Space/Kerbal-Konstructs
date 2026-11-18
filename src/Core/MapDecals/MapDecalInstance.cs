@@ -92,8 +92,10 @@ namespace KerbalKonstructs.Core
 		public void Update(bool doUpdate = true)
         {
 
-            mapDecal.heightMap = DecalsDatabase.GetHeightMapByName(HeightMapName).map;
-            mapDecal.colorMap = DecalsDatabase.GetColorMapByName(ColorMapName).map;
+            MapDecalsMap heightMap = DecalsDatabase.GetHeightMapByName(HeightMapName);
+            MapDecalsMap colorMap = DecalsDatabase.GetColorMapByName(ColorMapName);
+            mapDecal.heightMap = (heightMap != null) ? heightMap.map : null;
+            mapDecal.colorMap = (colorMap != null) ? colorMap.map : null;
 
             if (mapDecal.heightMap == null && mapDecal.colorMap == null)
             {

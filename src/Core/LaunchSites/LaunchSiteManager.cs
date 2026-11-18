@@ -954,7 +954,7 @@ namespace KerbalKonstructs.Core
                     {
                         Log.UserError("DefaultSite is null");
                         defaultSite = GetLaunchSiteByName("LaunchPad");
-                        KerbalKonstructs.instance.defaultSPHlaunchsite = "LaunchPad";
+                        KerbalKonstructs.instance.defaultVABlaunchsite = "LaunchPad";
                         return defaultSite;
                     }
 
@@ -964,7 +964,7 @@ namespace KerbalKonstructs.Core
 
                     Log.Error("LaunchSite is broken");
                     defaultSite = GetLaunchSiteByName("LaunchPad");
-                    KerbalKonstructs.instance.defaultSPHlaunchsite = "LaunchPad";
+                    KerbalKonstructs.instance.defaultVABlaunchsite = "LaunchPad";
                     return defaultSite;
                 }
             }
@@ -974,7 +974,7 @@ namespace KerbalKonstructs.Core
                 try
                 {
                     defaultSite = GetLaunchSiteByName(KerbalKonstructs.instance.defaultSPHlaunchsite);
-                    if (defaultSite.isOpen)
+                    if (defaultSite != null && defaultSite.isOpen)
                     {
                         Log.Normal("defaultSite retuned: " + defaultSite.LaunchSiteName);
                         return defaultSite;
