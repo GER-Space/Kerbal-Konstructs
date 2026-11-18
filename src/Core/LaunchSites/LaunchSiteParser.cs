@@ -51,8 +51,7 @@ namespace KerbalKonstructs.Core
                 InitTypes();
             }
 
-            // Close everything before saving.
-            site.SetClosed();
+            // Don't close the live site here: OpenCloseState is written from defaultState below.
             cfgNode.SetValue("FacilityType", site.GetType().Name, true);
 
             foreach (var field in launchSiteFields)

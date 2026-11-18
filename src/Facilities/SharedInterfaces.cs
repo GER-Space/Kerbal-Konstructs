@@ -44,6 +44,10 @@ namespace KerbalKonstructs.UI
             if (iFundsClose2 == 0 && iFundsDefaultCost == 0)
                 cannotBeClosed2 = true;
 
+            // If it is 0 to open, isOpen always returns true, so closing would only pay out a refund
+            if (iFundsOpen2 == 0)
+                cannotBeClosed2 = true;
+
             if (MiscUtils.isCareerGame())
             {
                 bool isOpen2 = selectedFacility.myFacilities[0].isOpen;

@@ -30,7 +30,7 @@ namespace KerbalKonstructs.Modules
 
         internal override void LoadCareerConfig(ConfigNode cfgNode)
         {
-            base.ParseConfig(cfgNode);
+            base.LoadCareerConfig(cfgNode);
 
             storedVessels = new List<StoredVessel>();
 
@@ -50,7 +50,7 @@ namespace KerbalKonstructs.Modules
 
         internal override void SaveCareerConfig(ConfigNode facilityNode)
         {
-            base.WriteConfig(facilityNode);
+            base.SaveCareerConfig(facilityNode);
 
             foreach (StoredVessel vessel in storedVessels)
             {
