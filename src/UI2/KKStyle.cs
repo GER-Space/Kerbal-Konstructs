@@ -123,6 +123,86 @@ namespace KerbalKonstructs.UI2
         }
 
 
+        // icon buttons waiting for ApplyIconButtons (cleared when applied)
+        private static Dictionary<DialogGUIBase, UIStyle> pendingIconButtons = new Dictionary<DialogGUIBase, UIStyle>();
+
+
+        /// <summary>
+        /// Creates a button that shows an icon style (from CreateIconButtonStyle) in all states.
+        /// Call ApplyIconButtons(content) after the dialog was spawned.
+        /// </summary>
+        internal static DialogGUIButton IconButton(UIStyle iconStyle, Callback onClick, float width, float height)
+        {
+            DialogGUIButton button = new DialogGUIButton("", onClick, width, height, false, iconStyle);
+            pendingIconButtons[button] = iconStyle;
+            return button;
+        }
+
+
+        /// <summary>
+        /// KSP doesn't apply the normal-state image of a button style (the icon only showed
+        /// while pressed). Call this after the dialog was spawned: it sets the image for every
+        /// state directly on the created Unity buttons.
+        /// </summary>
+        internal static void ApplyIconButtons(IEnumerable<DialogGUIBase> items)
+        {
+            if (items == null)
+            {
+                return;
+            }
+            foreach (DialogGUIBase item in items)
+            {
+                ApplyIconButton(item);
+            }
+        }
+
+
+        private static void ApplyIconButton(DialogGUIBase item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            UIStyle style;
+            if (pendingIconButtons.TryGetValue(item, out style))
+            {
+                pendingIconButtons.Remove(item);
+                if (item.uiItem != null)
+                {
+                    UnityEngine.UI.Button button = item.uiItem.GetComponent<UnityEngine.UI.Button>();
+                    UnityEngine.UI.Image image = (button != null && button.image != null) ? button.image : item.uiItem.GetComponent<UnityEngine.UI.Image>();
+                    if (image != null)
+                    {
+                        image.sprite = style.normal.background;
+                        image.type = UnityEngine.UI.Image.Type.Simple;
+                        image.preserveAspect = true;
+                        image.color = Color.white;
+                    }
+                    if (button != null)
+                    {
+                        button.transition = UnityEngine.UI.Selectable.Transition.SpriteSwap;
+                        UnityEngine.UI.SpriteState states = new UnityEngine.UI.SpriteState();
+                        states.highlightedSprite = style.highlight.background;
+                        states.pressedSprite = style.active.background;
+                        // after a click Unity keeps the button "selected": show the normal icon
+                        states.selectedSprite = style.normal.background;
+                        states.disabledSprite = style.disabled.background;
+                        button.spriteState = states;
+                    }
+                }
+            }
+
+            if (item.children != null)
+            {
+                foreach (DialogGUIBase child in item.children)
+                {
+                    ApplyIconButton(child);
+                }
+            }
+        }
+
+
         /// <summary>
         /// KSP stores DialogGUIBase.tooltipText but doesn't create a tooltip from it.
         /// Call this after the dialog was spawned: it adds a tooltip to every created

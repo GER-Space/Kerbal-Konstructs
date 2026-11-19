@@ -107,7 +107,7 @@ namespace KerbalKonstructs.UI2
 
                 if (modeStyles.ContainsKey(thisMode))
                 {
-                    button = new DialogGUIButton("", delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize, false, modeStyles[thisMode]);
+                    button = KKStyle.IconButton(modeStyles[thisMode], delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize);
                 }
                 else
                 {
@@ -126,7 +126,7 @@ namespace KerbalKonstructs.UI2
             DialogGUIButton saveButton;
             if (saveStyle != null)
             {
-                saveButton = new DialogGUIButton("", SaveAll, buttonSize, buttonSize, false, saveStyle);
+                saveButton = KKStyle.IconButton(saveStyle, SaveAll, buttonSize, buttonSize);
             }
             else
             {
@@ -188,6 +188,7 @@ namespace KerbalKonstructs.UI2
             }
 
             // tooltipText alone doesn't show anything; attach real tooltips to the created buttons
+            KKStyle.ApplyIconButtons(content);
             KKStyle.AttachTooltips(content);
 
             //if (SDTest.pickerPrefab == null)
