@@ -84,10 +84,10 @@ namespace KerbalKonstructs.UI2
             {
                 // local copy for the delegates
                 MapDecalInstance decal = mapDecalInstance;
-                DialogGUIButton button = new DialogGUIButton(" " + decal.Name, delegate { EditDecal(decal); },
-                    delegate { return MapDecalEditor.selectedDecal != decal || !MapDecalEditor.Instance.IsOpen(); },
+                DialogGUIButton button = new DialogGUIButton(" " + decal.Name + " (" + decal.Group + ")", delegate { EditDecal(decal); },
+                    delegate { return IsInRange(decal) && (MapDecalEditor.selectedDecal != decal || !MapDecalEditor.Instance.IsOpen()); },
                     windowWidth - 40f, itemHeight, false);
-                button.tooltipText = "Edit this map decal";
+                button.tooltipText = "Edit this map decal (only within " + (maxEditDistance / 1000f).ToString("0") + " km of the vessel)";
                 list.Add(button);
             }
 
@@ -98,6 +98,30 @@ namespace KerbalKonstructs.UI2
 
             var layout = new DialogGUIVerticalLayout(10, 100, 2, new RectOffset(4, 20, 4, 4), TextAnchor.UpperLeft, list.ToArray());
             return new DialogGUIScrollList(new Vector2(windowWidth - 20f, listHeight), false, true, layout);
+        }
+
+
+        // decals further away from the active vessel than this (in m) can't be edited
+        private const float maxEditDistance = 30000f;
+
+
+        /// <summary>
+        /// True if the decal is on the active vessel's body and within maxEditDistance of it.
+        /// </summary>
+        internal static bool IsInRange(MapDecalInstance decal)
+        {
+            Vessel vessel = FlightGlobals.ActiveVessel;
+            if (vessel == null || decal == null || decal.gameObject == null)
+            {
+                return false;
+            }
+            if (decal.CelestialBody != null && decal.CelestialBody != vessel.mainBody)
+            {
+                return false;
+            }
+            // the decal's real world position (MapDecalInstance.position is never set)
+            Vector3 decalPosition = decal.gameObject.transform.position;
+            return Vector3.Distance(decalPosition, vessel.transform.position) <= maxEditDistance;
         }
 
 
@@ -140,7 +164,7 @@ namespace KerbalKonstructs.UI2
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
             foreach (MapDecalInstance decal in DecalsDatabase.allMapDecalInstances)
             {
-                signature.Append(decal.Name).Append('|');
+                signature.Append(decal.Name).Append('(').Append(decal.Group).Append(")|");
             }
             return signature.ToString();
         }
