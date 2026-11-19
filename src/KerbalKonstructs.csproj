@@ -247,7 +247,7 @@
 		<Compile Include="Utilities\CameraController.cs" />
 		<Compile Include="UI\BaseBossFlight.cs" />
 		<Compile Include="UI\AirRacing.cs" />
-		<Compile Include="UI\BaseManager.cs" />
+		<Compile Include="UI2\BaseManager.cs" />
 		<Compile Include="Editor\ModelInfo.cs" />
 		<Compile Include="Editor\StaticsEditorGUI.cs" />
 		<Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />

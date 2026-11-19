@@ -190,8 +190,8 @@ namespace KerbalKonstructs.UI
         {
             if (useLaunchSite)
             {
-                BaseManager.selectedSite = selectedSite;
-                BaseManager.instance.Open();
+                UI2.BaseManager.selectedSite = selectedSite;
+                UI2.BaseManager.Open();
             }
             else
             {

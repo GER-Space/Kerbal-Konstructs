@@ -33,6 +33,12 @@ namespace KerbalKonstructs.UI2
 
         internal static Vector2 GetPosition(string name)
         {
+            return GetPosition(name, new Vector2(0.5f, 0.5f));
+        }
+
+
+        internal static Vector2 GetPosition(string name, Vector2 defaultPosition)
+        {
 
             if (lastPositions.ContainsKey(name))
             {
@@ -41,7 +47,7 @@ namespace KerbalKonstructs.UI2
             else
             {
                 Log.Normal("Window not found: " + name);
-                return new Vector2(0.5f, 0.5f);
+                return defaultPosition;
             }
         }
 
