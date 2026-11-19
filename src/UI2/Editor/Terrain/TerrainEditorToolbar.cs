@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,8 +36,8 @@ namespace KerbalKonstructs.UI2
         internal static void CreateContent()
         {
             content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUIButton("show nearby maps", null, false),
-                new DialogGUIButton("spawn new map", null, false),
+                new DialogGUIButton("Map Decals", MapDecalList.Toggle, false),
+                new DialogGUIButton("Spawn new MapDecal", MapDecalList.SpawnNewDecal, false),
                 new DialogGUIFlexibleSpace()
 
                 ));
@@ -125,6 +126,8 @@ namespace KerbalKonstructs.UI2
             CreateMultiOptionDialog();
             CreatePopUp();
 
+            // the map decal list belongs to the terrain editor
+            MapDecalList.Open();
         }
 
 
@@ -137,6 +140,10 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+
+            // leaving the terrain editor closes its windows
+            MapDecalList.Close();
+            MapDecalEditor.Instance.Close();
         }
 
 
