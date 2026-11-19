@@ -110,26 +110,13 @@ namespace KerbalKonstructs.UI2
             {
                 return;
             }
-            if (HighLogic.LoadedScene == GameScenes.EDITOR)
-            {
-                // in the editor the window is closed together with the launch site selector
-                content.Add(new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("-KK-", KKStyle.windowTitle),
-                    new DialogGUIFlexibleSpace(),
-                    new DialogGUILabel(windowTitle, KKStyle.windowTitle),
-                    new DialogGUIFlexibleSpace()
-                    ));
-            }
-            else
-            {
-                content.Add(new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("-KK-", KKStyle.windowTitle),
-                    new DialogGUIFlexibleSpace(),
-                    new DialogGUILabel(windowTitle, KKStyle.windowTitle),
-                    new DialogGUIFlexibleSpace(),
-                    new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
-                    ));
-            }
+            content.Add(new DialogGUIHorizontalLayout(
+                new DialogGUILabel("-KK-", KKStyle.windowTitle),
+                new DialogGUIFlexibleSpace(),
+                new DialogGUILabel(windowTitle, KKStyle.windowTitle),
+                new DialogGUIFlexibleSpace(),
+                new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
+                ));
         }
 
 

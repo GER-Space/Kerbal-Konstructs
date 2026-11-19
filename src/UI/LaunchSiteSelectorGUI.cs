@@ -300,6 +300,7 @@ namespace KerbalKonstructs.UI
                         {
                             selectedSite = site;
                             UI2.BaseManager.selectedSite = selectedSite;
+                            if (!UI2.BaseManager.IsOpen()) { UI2.BaseManager.Open(); }
 
                             //if (!MiscUtils.isCareerGame())
                             //{
