@@ -179,6 +179,7 @@ namespace KerbalKonstructs.UI2
                 dialog.gameObject.GetChild("Title").SetActive(false);
             }
             dialog.dialogToDisplay.OnUpdate += OnUpdate;
+            KKStyle.AttachTooltips(content);
         }
 
 
