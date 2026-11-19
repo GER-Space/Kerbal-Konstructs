@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#c9cfd4"/>
+  </linearGradient>
+  <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#000" flood-opacity="0.55"/>
+  </filter>
+</defs>
+<g filter="url(#s)" fill="url(#g)">
+  <path fill-rule="evenodd" d="
+    M32 8 L58 30 L52 30 L52 56 L12 56 L12 30 L6 30 Z
+    M27 56 L27 41 Q27 38 30 38 L34 38 Q37 38 37 41 L37 56 Z
+    M17 34 L24 34 L24 41 L17 41 Z
+    M40 34 L47 34 L47 41 L40 41 Z"/>
+  <path d="M43 12 L49 12 L49 22 L43 17 Z"/>
+</g>
+</svg>

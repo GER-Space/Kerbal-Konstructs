@@ -19,47 +19,107 @@ namespace KerbalKonstructs.UI2
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 200f;
+        internal static float windowWidth = 190f;
         internal static float windowHeight = 50f;
 
         internal static bool showTitle = false;
 
+        private const float buttonSize = 48f;
+
+        private static Dictionary<KKEditorLogic.MainEditorMode, Sprite> modeIcons = null;
+
+
+        /// <summary>
+        /// Icon file (in KerbalKonstructs/Assets) for each editor mode
+        /// </summary>
+        private static string GetIconName(KKEditorLogic.MainEditorMode mode)
+        {
+            switch (mode)
+            {
+                case KKEditorLogic.MainEditorMode.Instance:
+                    return "KerbalKonstructs/Assets/editorModeInstance";
+                case KKEditorLogic.MainEditorMode.Group:
+                    return "KerbalKonstructs/Assets/editorModeGroup";
+                case KKEditorLogic.MainEditorMode.Terrain:
+                    return "KerbalKonstructs/Assets/editorModeTerrain";
+                default:
+                    return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Mouse-over text for each editor mode
+        /// </summary>
+        private static string GetTooltip(KKEditorLogic.MainEditorMode mode)
+        {
+            switch (mode)
+            {
+                case KKEditorLogic.MainEditorMode.Instance:
+                    return "Instance Editor: place, move and edit single statics";
+                case KKEditorLogic.MainEditorMode.Group:
+                    return "Group Editor: create, move and edit groups of statics";
+                case KKEditorLogic.MainEditorMode.Terrain:
+                    return "Terrain Editor: edit map decals and the terrain";
+                default:
+                    return mode.ToString();
+            }
+        }
+
+
+        private static void LoadIcons()
+        {
+            if (modeIcons != null)
+            {
+                return;
+            }
+            modeIcons = new Dictionary<KKEditorLogic.MainEditorMode, Sprite>();
+            foreach (KKEditorLogic.MainEditorMode mode in Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)))
+            {
+                string iconName = GetIconName(mode);
+                Texture2D texture = (iconName == null) ? null : GameDatabase.Instance.GetTexture(iconName, false);
+                if (texture == null)
+                {
+                    Log.UserWarning("EditorModeSelector: icon not found: " + iconName);
+                    continue;
+                }
+                modeIcons.Add(mode, Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
+            }
+        }
 
 
         internal static void CreateContent()
         {
-            content.Add(new DialogGUILabel("Select a Editor mode"));
+            LoadIcons();
 
-            content.Add(new DialogGUIButton("GetSize", GetSize, false));
+            List<DialogGUIBase> buttons = new List<DialogGUIBase>();
+            buttons.Add(new DialogGUIFlexibleSpace());
 
-            content.Add(VaiantList);
-
-        }
-
-
-        internal static DialogGUIScrollList VaiantList
-        {
-            get
+            foreach (KKEditorLogic.MainEditorMode mode in Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)))
             {
-                List<DialogGUIBase> list = new List<DialogGUIBase>();
-                list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-                //list.Add(new DialogGUIFlexibleSpace());
-                //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
+                // local copy for the delegates
+                KKEditorLogic.MainEditorMode thisMode = mode;
+                DialogGUIButton button;
 
-                foreach (KKEditorLogic.MainEditorMode mode in Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)))
+                if (modeIcons.ContainsKey(thisMode))
                 {
-                    list.Add(new DialogGUIHorizontalLayout(
-
-                        new DialogGUIButton(mode.ToString(), delegate { KKEditorLogic.SetMainMode(mode); }, () => CheckMode(mode), windowWidth - 20, 25.0f, false)
-
-                        ));
+                    button = new DialogGUIButton(modeIcons[thisMode], delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize, false);
+                }
+                else
+                {
+                    // fallback if the icon is missing
+                    button = new DialogGUIButton(thisMode.ToString(), delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize, false);
                 }
 
-                var layout = new DialogGUIVerticalLayout(windowWidth - 12, 10, 4, new RectOffset(6, 6, 6, 6), TextAnchor.MiddleCenter, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(windowWidth, 23f * list.Count), new Vector2(windowWidth, 23f * list.Count), false, false, layout);
-                return scroll;
+                // the button of the active mode is disabled
+                button.OptionInteractableCondition = () => CheckMode(thisMode);
+                button.tooltipText = GetTooltip(thisMode);
 
+                buttons.Add(button);
             }
+
+            buttons.Add(new DialogGUIFlexibleSpace());
+            content.Add(new DialogGUIHorizontalLayout(buttons.ToArray()));
         }
 
 
@@ -80,13 +140,6 @@ namespace KerbalKonstructs.UI2
                 new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
 
                 ));
-        }
-
-
-        internal static void GetSize()
-        {
-            Log.Normal("");
-            Log.Normal("window heigt: " + dialog.dialogToDisplay.dialogRect.height);
         }
 
 
