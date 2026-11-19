@@ -26,8 +26,8 @@ namespace KerbalKonstructs.UI2
 
         private const float buttonSize = 48f;
 
-        private static Dictionary<KKEditorLogic.MainEditorMode, Sprite> modeIcons = null;
-        private static Sprite saveIcon = null;
+        private static Dictionary<KKEditorLogic.MainEditorMode, UIStyle> modeStyles = null;
+        private static UIStyle saveStyle = null;
 
 
         /// <summary>
@@ -68,34 +68,27 @@ namespace KerbalKonstructs.UI2
         }
 
 
+        /// <summary>
+        /// Builds one button style per icon. The icon images contain the whole button
+        /// (plate + glyph) for each state, so the default button skin can't replace them on hover.
+        /// </summary>
         private static void LoadIcons()
         {
-            if (modeIcons != null)
+            if (modeStyles != null)
             {
                 return;
             }
-            modeIcons = new Dictionary<KKEditorLogic.MainEditorMode, Sprite>();
+            modeStyles = new Dictionary<KKEditorLogic.MainEditorMode, UIStyle>();
             foreach (KKEditorLogic.MainEditorMode mode in Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)))
             {
                 string iconName = GetIconName(mode);
-                Texture2D texture = (iconName == null) ? null : GameDatabase.Instance.GetTexture(iconName, false);
-                if (texture == null)
+                UIStyle style = (iconName == null) ? null : KKStyle.CreateIconButtonStyle(iconName);
+                if (style != null)
                 {
-                    Log.UserWarning("EditorModeSelector: icon not found: " + iconName);
-                    continue;
+                    modeStyles.Add(mode, style);
                 }
-                modeIcons.Add(mode, Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
             }
-
-            Texture2D saveTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/editorModeSave", false);
-            if (saveTexture != null)
-            {
-                saveIcon = Sprite.Create(saveTexture, new Rect(0, 0, saveTexture.width, saveTexture.height), new Vector2(0.5f, 0.5f));
-            }
-            else
-            {
-                Log.UserWarning("EditorModeSelector: icon not found: KerbalKonstructs/Assets/editorModeSave");
-            }
+            saveStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/editorModeSave");
         }
 
 
@@ -112,9 +105,9 @@ namespace KerbalKonstructs.UI2
                 KKEditorLogic.MainEditorMode thisMode = mode;
                 DialogGUIButton button;
 
-                if (modeIcons.ContainsKey(thisMode))
+                if (modeStyles.ContainsKey(thisMode))
                 {
-                    button = new DialogGUIButton(modeIcons[thisMode], delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize, false);
+                    button = new DialogGUIButton("", delegate { KKEditorLogic.SetMainMode(thisMode); }, buttonSize, buttonSize, false, modeStyles[thisMode]);
                 }
                 else
                 {
@@ -131,9 +124,9 @@ namespace KerbalKonstructs.UI2
 
             // "save all" button
             DialogGUIButton saveButton;
-            if (saveIcon != null)
+            if (saveStyle != null)
             {
-                saveButton = new DialogGUIButton(saveIcon, SaveAll, buttonSize, buttonSize, false);
+                saveButton = new DialogGUIButton("", SaveAll, buttonSize, buttonSize, false, saveStyle);
             }
             else
             {
@@ -191,6 +184,9 @@ namespace KerbalKonstructs.UI2
             {
                 dialog.gameObject.GetChild("Title").SetActive(false);
             }
+
+            // tooltipText alone doesn't show anything; attach real tooltips to the created buttons
+            KKStyle.AttachTooltips(content);
 
             //if (SDTest.pickerPrefab == null)
             //    return;

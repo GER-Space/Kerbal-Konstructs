@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using KerbalKonstructs.Core;
+using KSP.UI.TooltipTypes;
+using System.Collections.Generic;
+using UnityEngine;
 
 
 
@@ -79,6 +82,101 @@ namespace KerbalKonstructs.UI2
 
 
         //}
+
+
+        private static Sprite LoadSprite(string textureName)
+        {
+            Texture2D texture = GameDatabase.Instance.GetTexture(textureName, false);
+            if (texture == null)
+            {
+                return null;
+            }
+            return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        }
+
+
+        /// <summary>
+        /// Button style that shows an icon for every button state.
+        /// Expects baseName.png (normal) and optional baseName_hover / _down / _disabled.png;
+        /// missing state images fall back to the normal one. Returns null if baseName.png is missing.
+        /// </summary>
+        internal static UIStyle CreateIconButtonStyle(string baseName)
+        {
+            Sprite normal = LoadSprite(baseName);
+            if (normal == null)
+            {
+                Log.UserWarning("Icon not found: " + baseName);
+                return null;
+            }
+            Sprite hover = LoadSprite(baseName + "_hover") ?? normal;
+            Sprite down = LoadSprite(baseName + "_down") ?? hover;
+            Sprite disabled = LoadSprite(baseName + "_disabled") ?? normal;
+
+            UIStyle style = defaultStyle;
+            style.name = "KKIcon_" + baseName;
+            style.alignment = TextAnchor.MiddleCenter;
+            style.normal.background = normal;
+            style.highlight.background = hover;
+            style.active.background = down;
+            style.disabled.background = disabled;
+            return style;
+        }
+
+
+        /// <summary>
+        /// KSP stores DialogGUIBase.tooltipText but doesn't create a tooltip from it.
+        /// Call this after the dialog was spawned: it adds a tooltip to every created
+        /// element (recursively) that has a tooltipText.
+        /// </summary>
+        internal static void AttachTooltips(IEnumerable<DialogGUIBase> items)
+        {
+            if (items == null)
+            {
+                return;
+            }
+            Tooltip_Text prefab = null;
+            foreach (DialogGUIBase item in items)
+            {
+                AttachTooltip(item, ref prefab);
+            }
+        }
+
+
+        private static void AttachTooltip(DialogGUIBase item, ref Tooltip_Text prefab)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(item.tooltipText) && item.uiItem != null)
+            {
+                if (prefab == null)
+                {
+                    prefab = AssetBase.GetPrefab<Tooltip_Text>("Tooltip_Text");
+                }
+                if (prefab != null)
+                {
+                    TooltipController_Text tooltip = item.uiItem.GetComponent<TooltipController_Text>();
+                    if (tooltip == null)
+                    {
+                        tooltip = item.uiItem.AddComponent<TooltipController_Text>();
+                    }
+                    tooltip.prefab = prefab;
+                    tooltip.SetText(item.tooltipText);
+                    // also show the tooltip on disabled buttons (e.g. the active editor mode)
+                    tooltip.RequireInteractable = false;
+                }
+            }
+
+            if (item.children != null)
+            {
+                foreach (DialogGUIBase child in item.children)
+                {
+                    AttachTooltip(child, ref prefab);
+                }
+            }
+        }
 
 
         private static UIStyle defaultStyle
