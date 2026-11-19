@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#c9cfd4"/>
+  </linearGradient>
+  <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#000" flood-opacity="0.55"/>
+  </filter>
+</defs>
+<mask id="m">
+  <rect width="64" height="64" fill="#fff"/>
+  <path d="M32 20 L51 36 L46.5 36 L46.5 57 L17.5 57 L17.5 36 L13 36 Z" fill="#000" stroke="#000" stroke-width="5" stroke-linejoin="round"/>
+</mask>
+<g filter="url(#s)" fill="url(#g)">
+  <g mask="url(#m)">
+    <path fill-rule="evenodd" d="M16 11 L29.5 23 L26 23 L26 45 L6 45 L6 23 L2.5 23 Z M10 27 L15 27 L15 32 L10 32 Z"/>
+    <path fill-rule="evenodd" d="M48 11 L61.5 23 L58 23 L58 45 L38 45 L38 23 L34.5 23 Z M49 27 L54 27 L54 32 L49 32 Z"/>
+  </g>
+  <path fill-rule="evenodd" d="
+    M32 20 L51 36 L46.5 36 L46.5 57 L17.5 57 L17.5 36 L13 36 Z
+    M28 57 L28 47 Q28 45 30 45 L34 45 Q36 45 36 47 L36 57 Z
+    M21.5 39 L26.5 39 L26.5 44 L21.5 44 Z
+    M37.5 39 L42.5 39 L42.5 44 L37.5 44 Z"/>
+</g>
+</svg>

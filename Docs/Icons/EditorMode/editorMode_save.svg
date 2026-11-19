@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#c9cfd4"/>
+  </linearGradient>
+  <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#000" flood-opacity="0.55"/>
+  </filter>
+</defs>
+<g filter="url(#s)" fill="url(#g)">
+  <path fill-rule="evenodd" d="
+    M10 6 L48 6 L58 16 L58 54 Q58 58 54 58 L10 58 Q6 58 6 54 L6 10 Q6 6 10 6 Z
+    M17 6 L17 22 Q17 24 19 24 L43 24 Q45 24 45 22 L45 6 Z
+    M14 33 Q14 31 16 31 L48 31 Q50 31 50 33 L50 58 L14 58 Z"/>
+  <rect x="36" y="9" width="6" height="12" rx="1"/>
+  <rect x="19" y="38" width="26" height="3" rx="1.5"/>
+  <rect x="19" y="45" width="26" height="3" rx="1.5"/>
+</g>
+</svg>
