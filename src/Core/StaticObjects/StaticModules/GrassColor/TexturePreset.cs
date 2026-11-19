@@ -196,7 +196,7 @@ namespace KerbalKonstructs.Core
                    false,
                    null, isModal);
             // allow dragging the window up to the screen border
-            KerbalKonstructs.UI2.KKWindowDrag.Attach(dialog);
+            UI2.KKWindowDrag.Attach(dialog);
             if (!showTitle)
             {
                 dialog.gameObject.GetChild("Title").SetActive(false);

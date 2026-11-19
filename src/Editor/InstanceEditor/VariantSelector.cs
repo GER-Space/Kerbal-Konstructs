@@ -66,7 +66,7 @@ namespace KerbalKonstructs.Core
                    false,
                    HighLogic.UISkin, false);
             // allow dragging the window up to the screen border
-            KerbalKonstructs.UI2.KKWindowDrag.Attach(dialog);
+            UI2.KKWindowDrag.Attach(dialog);
         }
 
 
