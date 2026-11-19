@@ -190,8 +190,7 @@ namespace KerbalKonstructs.UI2
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
             foreach (MapDecalInstance decal in DecalsDatabase.allMapDecalInstances)
             {
-                // the range is part of it, so the list is re-sorted when a decal comes into or goes out of range
-                signature.Append(decal.Name).Append('(').Append(decal.Group).Append(')').Append(IsInRange(decal) ? '+' : '-').Append('|');
+                signature.Append(decal.Name).Append('(').Append(decal.Group).Append(")|");
             }
             return signature.ToString();
         }
