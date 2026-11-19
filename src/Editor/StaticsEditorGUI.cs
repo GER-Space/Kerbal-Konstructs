@@ -13,7 +13,6 @@ namespace KerbalKonstructs.UI
         {
             SPAWN,
             LOCAL,
-            PQS,
             GROUP
         }
 
@@ -267,19 +266,7 @@ namespace KerbalKonstructs.UI
                     KerbalKonstructs.instance.DeletePreviewObject();
                 }
 
-                GUI.enabled = true;
-                GUILayout.Space(2);
-                GUI.enabled = (mode != EditorMode.PQS);
-
-                if (GUILayout.Button("Edit MapDecals", GUILayout.Width(110), GUILayout.Height(23)))
-                {
-                    if (EditorGUI.instance.IsOpen())
-                    {
-                        EditorGUI.instance.Close();
-                    }
-                    mode = EditorMode.PQS;
-                    KerbalKonstructs.instance.DeletePreviewObject();
-                }
+                // map decals are edited in the Terrain editor now (UI2.MapDecalList)
 
 
                 GUI.enabled = true;
@@ -347,9 +334,6 @@ namespace KerbalKonstructs.UI
                     case EditorMode.LOCAL:
                         ShowInstancesScroll();
                         break;
-                    case EditorMode.PQS:
-                        ShowDecalsScroll();
-                        break;
                     case EditorMode.GROUP:
                         ShowGroupScroll();
                         break;
@@ -370,9 +354,6 @@ namespace KerbalKonstructs.UI
                     break;
                 case EditorMode.LOCAL:
                     ShowInstancesFootersLocal();
-                    break;
-                case EditorMode.PQS:
-                    ShowDecalsFooter();
                     break;
                 case EditorMode.GROUP:
                     ShowGroupFooter();
@@ -707,57 +688,6 @@ namespace KerbalKonstructs.UI
         {
             GUILayout.BeginHorizontal();
             GUILayout.EndHorizontal();
-        }
-
-
-        /// <summary>
-        /// Show Mapdecals
-        /// </summary>
-        internal void ShowDecalsScroll()
-        {
-            foreach (var mapDecalInstance in DecalsDatabase.allMapDecalInstances)
-            {
-                if (GUILayout.Button(new GUIContent(" " + mapDecalInstance.Name, "Edit this instance."), GUILayout.Height(23)))
-                {
-                    EditorGUI.CloseEditors();
-                    MapDecalEditor.Instance.Close();
-                    MapDecalEditor.selectedDecal = mapDecalInstance;
-                    MapDecalEditor.Instance.Open();
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Footer for Mapdecals
-        /// </summary>
-        internal void ShowDecalsFooter()
-        {
-            GUILayout.BeginHorizontal();
-
-            //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
-            //GUILayout.FlexibleSpace();
-            //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
-            if (GUILayout.Button("Spawn new MapDecal", GUILayout.Width(170)))
-            {
-                EditorGUI.instance.Close();
-                EditorGUI.selectedInstance = null;
-
-                MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
-
-                if (MapDecalEditor.selectedDecal == null)
-                {
-                    Log.UserError("No MapDecalInstance created");
-                }
-
-                MapDecalEditor.Instance.Open();
-
-                Log.Normal("MapDecal Editor spawned");
-
-            }
-            GUILayout.EndHorizontal();
-
-
         }
 
 
