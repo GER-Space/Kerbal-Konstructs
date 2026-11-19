@@ -8,6 +8,9 @@ namespace KerbalKonstructs.UI2
     internal static class WindowManager2
     {
         private static readonly string storagePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbalKonstructs/PluginData");
+        private static readonly string storageFile = Path.Combine(storagePath, "WindowPositions.cfg");
+        // older versions wrote the file next to PluginData because of a missing path separator
+        private static readonly string oldStorageFile = storagePath + "WindowPositions.cfg";
 
         private static Dictionary<string, Vector2> lastPositions = new Dictionary<string, Vector2>();
 
@@ -95,25 +98,27 @@ namespace KerbalKonstructs.UI2
             }
             ConfigNode masterNode = new ConfigNode("Master");
             masterNode.AddNode(positionsNode);
-            masterNode.Save(storagePath + "WindowPositions.cfg");
+            masterNode.Save(storageFile);
         }
 
 
         internal static void LoadPresets()
         {
             lastPositions.Clear();
-            if (!System.IO.Directory.Exists(storagePath))
+            string fileToLoad = storageFile;
+            if (!System.IO.File.Exists(fileToLoad))
             {
-                Log.Normal("No Directory found");
-                return;
+                // fall back to the file written by older versions
+                fileToLoad = oldStorageFile;
             }
-            if (!System.IO.File.Exists(storagePath + "WindowPositions.cfg"))
+            if (!System.IO.File.Exists(fileToLoad))
             {
                 Log.Normal("No file found");
                 return;
             }
 
-            ConfigNode positionsNode = ConfigNode.Load(storagePath + "WindowPositions.cfg").GetNode("WindowPositions");
+            ConfigNode loadedNode = ConfigNode.Load(fileToLoad);
+            ConfigNode positionsNode = (loadedNode != null) ? loadedNode.GetNode("WindowPositions") : null;
             if (positionsNode == null)
             {
                 Log.Normal("No Node Found");
