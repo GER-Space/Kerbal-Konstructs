@@ -19,7 +19,7 @@ namespace KerbalKonstructs.UI2
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 190f;
+        internal static float windowWidth = 245f;
         internal static float windowHeight = 50f;
 
         internal static bool showTitle = false;
@@ -27,6 +27,7 @@ namespace KerbalKonstructs.UI2
         private const float buttonSize = 48f;
 
         private static Dictionary<KKEditorLogic.MainEditorMode, Sprite> modeIcons = null;
+        private static Sprite saveIcon = null;
 
 
         /// <summary>
@@ -85,6 +86,16 @@ namespace KerbalKonstructs.UI2
                 }
                 modeIcons.Add(mode, Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
             }
+
+            Texture2D saveTexture = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/editorModeSave", false);
+            if (saveTexture != null)
+            {
+                saveIcon = Sprite.Create(saveTexture, new Rect(0, 0, saveTexture.width, saveTexture.height), new Vector2(0.5f, 0.5f));
+            }
+            else
+            {
+                Log.UserWarning("EditorModeSelector: icon not found: KerbalKonstructs/Assets/editorModeSave");
+            }
         }
 
 
@@ -118,8 +129,28 @@ namespace KerbalKonstructs.UI2
                 buttons.Add(button);
             }
 
+            // "save all" button
+            DialogGUIButton saveButton;
+            if (saveIcon != null)
+            {
+                saveButton = new DialogGUIButton(saveIcon, SaveAll, buttonSize, buttonSize, false);
+            }
+            else
+            {
+                saveButton = new DialogGUIButton("Save", SaveAll, buttonSize, buttonSize, false);
+            }
+            saveButton.tooltipText = "Save all: save all statics and groups to disk";
+            buttons.Add(saveButton);
+
             buttons.Add(new DialogGUIFlexibleSpace());
             content.Add(new DialogGUIHorizontalLayout(buttons.ToArray()));
+        }
+
+
+        internal static void SaveAll()
+        {
+            KerbalKonstructs.instance.SaveObjects();
+            MiscUtils.HUDMessage("All statics and groups saved", 5, 0);
         }
 
 
