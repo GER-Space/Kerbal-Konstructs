@@ -12,8 +12,7 @@ namespace KerbalKonstructs.UI
         private enum EditorMode
         {
             SPAWN,
-            LOCAL,
-            GROUP
+            LOCAL
         }
 
         private static StaticsEditorGUI _instance = null;
@@ -64,6 +63,17 @@ namespace KerbalKonstructs.UI
 
         private static GroupCenter activeGroup = null;
         private static GroupCenter[] localGroups;
+
+        /// <summary>
+        /// The groups near the vessel, as found by ResetLocalGroupList (used by UI2.GroupList)
+        /// </summary>
+        internal static GroupCenter[] LocalGroups
+        {
+            get
+            {
+                return localGroups;
+            }
+        }
 
         //internal static Color defaultGrasColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
         //internal static string defaultGrasTexture = "BUILTIN:/terrain_grass00_new";
@@ -267,23 +277,7 @@ namespace KerbalKonstructs.UI
                 }
 
                 // map decals are edited in the Terrain editor now (UI2.MapDecalList)
-
-
-                GUI.enabled = true;
-                GUILayout.Space(2);
-                GUI.enabled = (mode != EditorMode.GROUP);
-
-                if (GUILayout.Button("Edit Groups", GUILayout.Width(110), GUILayout.Height(23)))
-                {
-                    if (EditorGUI.instance.IsOpen())
-                    {
-                        EditorGUI.instance.Close();
-                    }
-                    MapDecalEditor.Instance.Close();
-
-                    mode = EditorMode.GROUP;
-                    KerbalKonstructs.instance.DeletePreviewObject();
-                }
+                // groups are edited in the Group editor now (UI2.GroupList)
 
                 GUI.enabled = true;
 
@@ -334,9 +328,6 @@ namespace KerbalKonstructs.UI
                     case EditorMode.LOCAL:
                         ShowInstancesScroll();
                         break;
-                    case EditorMode.GROUP:
-                        ShowGroupScroll();
-                        break;
                 }
 
             }
@@ -354,9 +345,6 @@ namespace KerbalKonstructs.UI
                     break;
                 case EditorMode.LOCAL:
                     ShowInstancesFootersLocal();
-                    break;
-                case EditorMode.GROUP:
-                    ShowGroupFooter();
                     break;
             }
 
@@ -690,104 +678,6 @@ namespace KerbalKonstructs.UI
             GUILayout.EndHorizontal();
         }
 
-
-        /// <summary>
-        /// Show Groups
-        /// </summary>
-        internal void ShowGroupScroll()
-        {
-            foreach (var groupCenter in localGroups)
-            {
-                if (groupCenter.isBuiltIn)
-                {
-                    continue;
-                }
-                if (GUILayout.Button(new GUIContent(" " + groupCenter.Group, "Edit this Group."), GUILayout.Height(23)))
-                {
-                    EditorGUI.CloseEditors();
-                    MapDecalEditor.Instance.Close();
-                    GroupEditor.instance.Close();
-                    GroupEditor.selectedGroup = groupCenter;
-                    // MapDecalEditor.selectedDecal = mapDecalInstance;
-                    GroupEditor.maxEditorRange = 0;
-                    GroupEditor.instance.Open();
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Footer for Groups
-        /// </summary>
-        internal void ShowGroupFooter()
-        {
-            GUILayout.BeginHorizontal();
-            {
-
-                //GUILayout.Label("Filter by Group:", GUILayout.Width(140));
-                //GUILayout.FlexibleSpace();
-                //groupfilter = GUILayout.TextField(groupfilter, 40, GUILayout.Width(140));
-                if (GUILayout.Button("Spawn new Group", GUILayout.Width(170)))
-                {
-                    EditorGUI.instance.Close();
-                    MapDecalEditor.Instance.Close();
-                    EditorGUI.selectedInstance = null;
-
-                    GroupCenter groupCenter = new GroupCenter
-                    {
-                        RadialPosition = FlightGlobals.currentMainBody.transform.InverseTransformPoint(FlightGlobals.ActiveVessel.transform.position),
-                        Group = "NewGroup",
-                        CelestialBody = FlightGlobals.currentMainBody
-                    };
-                    groupCenter.Spawn();
-
-                    GroupEditor.selectedGroup = groupCenter;
-
-                    if (GroupEditor.selectedGroup == null)
-                    {
-                        Log.UserError("No Group created");
-
-                    }
-                    else
-                    {
-                        GroupEditor.maxEditorRange = 0;
-                        GroupEditor.instance.Open();
-                        Log.Normal("Group Editor spawned");
-                    }
-                    ResetLocalGroupList();
-
-                }
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("active Group:" + ((activeGroup != null) ? activeGroup.Group : " not set") + "  ", UIMain.DeadButton3, GUILayout.Width(150), GUILayout.Height(23));
-
-                if (GUILayout.Button("Set Active Group", GUILayout.Width(170)))
-                {
-                    GroupSelectorUI.instance.Close();
-                    GroupSelectorUI.showOnlyLocal = true;
-                    GroupSelectorUI.callBack = SetActiveGroup;
-                    GroupSelectorUI.titleText = "Select active Group";
-                    GroupSelectorUI.instance.Open();
-                }
-
-
-                GUI.enabled = ((activeGroup != null) && Vector3.Distance(activeGroup.gameObject.transform.position, FlightGlobals.ActiveVessel.transform.position) < KerbalKonstructs.localGroupRange);
-                if (GUILayout.Button("clone group to active", GUILayout.Width(170)))
-                {
-                    GroupSelectorUI.instance.Close();
-                    GroupSelectorUI.showOnlyLocal = false;
-                    GroupSelectorUI.titleText = "Select Group to Clone";
-                    GroupSelectorUI.callBack = activeGroup.CopyGroup;
-                    GroupSelectorUI.instance.Open();
-
-                }
-
-                GUI.enabled = true;
-
-            }
-            GUILayout.EndHorizontal();
-        }
 
         /// <summary>
         /// Sets the localGroups

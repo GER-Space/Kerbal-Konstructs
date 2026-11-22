@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,8 +36,8 @@ namespace KerbalKonstructs.UI2
         internal static void CreateContent()
         {
             content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUIButton("Show nearby groups", null, false),
-                new DialogGUIButton("Spawn new group", null, false),
+                new DialogGUIButton("Show nearby groups", GroupList.Toggle, false),
+                new DialogGUIButton("Spawn new group", GroupList.SpawnNewGroup, false),
                 new DialogGUIFlexibleSpace()
 
                 ));
@@ -127,6 +128,8 @@ namespace KerbalKonstructs.UI2
             CreateMultiOptionDialog();
             CreatePopUp();
 
+            // the group list belongs to the group editor
+            GroupList.Open();
         }
 
 
@@ -139,6 +142,10 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+
+            // leaving the group editor closes its windows
+            GroupList.Close();
+            GroupEditor.instance.Close();
         }
 
 

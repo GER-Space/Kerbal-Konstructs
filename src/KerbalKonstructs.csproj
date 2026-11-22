@@ -220,6 +220,7 @@
 		<Compile Include="Modules\RemoteNet\ConnectionManager.cs" />
 		<Compile Include="Modules\RemoteNet\KKCommNetHome.cs" />
 		<Compile Include="UI2\Editor\EditorModeSelector.cs" />
+		<Compile Include="UI2\Editor\Group\GroupList.cs" />
 		<Compile Include="UI2\Editor\Group\GroupEditorToolbar.cs" />
 		<Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
 		<Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
