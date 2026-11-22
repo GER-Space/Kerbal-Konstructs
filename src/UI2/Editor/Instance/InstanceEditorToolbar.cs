@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,9 +37,8 @@ namespace KerbalKonstructs.UI2
         internal static void CreateContent()
         {
             content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUILabel("Hallo", HighLogic.UISkin.label),
-                new DialogGUIButton("show models", delegate { ModelList.Open(); }, false),
-                new DialogGUIButton("show nearby instances", null, false),
+                new DialogGUIButton("Spawn New", ModelList.Toggle, false),
+                new DialogGUIButton("Local Instances", InstanceList.Toggle, false),
                 new DialogGUIFlexibleSpace()
 
                 ));
@@ -129,6 +129,10 @@ namespace KerbalKonstructs.UI2
             CreateMultiOptionDialog();
             CreatePopUp();
 
+            // the local instance list belongs to the instance editor (like the old default mode)
+            ConfigUtil.CreateNewInstanceDirIfNeeded();
+            StaticsEditorGUI.ResetLocalGroupList();
+            InstanceList.Open();
         }
 
 
@@ -141,6 +145,12 @@ namespace KerbalKonstructs.UI2
             }
             dialog = null;
             optionDialog = null;
+
+            // leaving the instance editor closes its windows
+            InstanceList.Close();
+            ModelList.Close();
+            EditorGUI.instance.Close();
+            KerbalKonstructs.instance.DeletePreviewObject();
         }
 
 

@@ -804,7 +804,7 @@ namespace KerbalKonstructs
                 {
                     StaticsEditorGUI.instance.ToggleEditor();
                 }
-                if (Input.GetKeyDown(KeyCode.Tab) && StaticsEditorGUI.instance.IsOpen())
+                if (Input.GetKeyDown(KeyCode.Tab) && KKEditorLogic.IsEditorOpen())
                 {
                     StaticsEditorGUI.instance.SelectMouseObject();
                 }
@@ -852,7 +852,7 @@ namespace KerbalKonstructs
             if (HighLogic.LoadedSceneIsGame)
             {
                 // Don't update visiblility when Editor is open
-                if (StaticsEditorGUI.instance.IsOpen())
+                if (KKEditorLogic.IsEditorOpen())
                 {
                     return;
                 }

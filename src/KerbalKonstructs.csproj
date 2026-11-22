@@ -225,6 +225,7 @@
 		<Compile Include="UI2\Editor\Instance\ColorSelector.cs" />
 		<Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
 		<Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
+		<Compile Include="UI2\Editor\Instance\InstanceList.cs" />
 		<Compile Include="UI2\Editor\Instance\ModelList.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapDecalList.cs" />
 		<Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
