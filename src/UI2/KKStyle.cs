@@ -125,6 +125,29 @@ namespace KerbalKonstructs.UI2
 
         // icon buttons waiting for ApplyIconButtons (cleared when applied)
         private static Dictionary<DialogGUIBase, UIStyle> pendingIconButtons = new Dictionary<DialogGUIBase, UIStyle>();
+        // image buttons waiting for ApplyIconButtons (cleared when applied)
+        private static Dictionary<DialogGUIBase, Sprite> pendingImageButtons = new Dictionary<DialogGUIBase, Sprite>();
+        // cached sprites for image buttons, so a rebuilt window doesn't create new ones
+        private static Dictionary<Texture2D, Sprite> imageSprites = new Dictionary<Texture2D, Sprite>();
+
+
+        /// <summary>
+        /// Creates a button that shows a picture (e.g. a map decal image). On hover and press
+        /// the picture is tinted instead of replaced. Call ApplyIconButtons(content) after the
+        /// dialog was spawned.
+        /// </summary>
+        internal static DialogGUIButton ImageButton(Texture2D texture, Callback onClick, float width, float height)
+        {
+            DialogGUIButton button = new DialogGUIButton("", onClick, width, height, false);
+            Sprite sprite;
+            if (!imageSprites.TryGetValue(texture, out sprite) || sprite == null)
+            {
+                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                imageSprites[texture] = sprite;
+            }
+            pendingImageButtons[button] = sprite;
+            return button;
+        }
 
 
         /// <summary>
@@ -162,6 +185,43 @@ namespace KerbalKonstructs.UI2
             if (item == null)
             {
                 return;
+            }
+
+            Sprite picture;
+            if (pendingImageButtons.TryGetValue(item, out picture))
+            {
+                pendingImageButtons.Remove(item);
+                if (item.uiItem != null)
+                {
+                    UnityEngine.UI.Button button = item.uiItem.GetComponent<UnityEngine.UI.Button>();
+                    UnityEngine.UI.Image image = (button != null && button.image != null) ? button.image : item.uiItem.GetComponent<UnityEngine.UI.Image>();
+                    if (image != null)
+                    {
+                        image.sprite = picture;
+                        image.type = UnityEngine.UI.Image.Type.Simple;
+                        image.preserveAspect = true;
+                        image.color = Color.white;
+                    }
+                    if (button != null)
+                    {
+                        // keep the picture, tint it on hover / press
+                        button.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+                        UnityEngine.UI.ColorBlock colors = button.colors;
+                        colors.normalColor = Color.white;
+                        colors.highlightedColor = new Color(0.75f, 1f, 0.6f, 1f);
+                        colors.pressedColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+                        colors.selectedColor = Color.white;
+                        colors.disabledColor = new Color(0.6f, 0.8f, 0.45f, 1f);
+                        colors.colorMultiplier = 1f;
+                        button.colors = colors;
+                    }
+                    // remove the button's text so it doesn't cover the picture
+                    TMPro.TextMeshProUGUI text = item.uiItem.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+                    if (text != null)
+                    {
+                        text.text = "";
+                    }
+                }
             }
 
             UIStyle style;
