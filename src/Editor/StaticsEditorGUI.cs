@@ -6,7 +6,14 @@ using UnityEngine;
 
 namespace KerbalKonstructs.UI
 {
-    public class StaticsEditorGUI : KKWindow
+    /// <summary>
+    /// Shared state of the statics editor: selected object, snap target, active group,
+    /// the groups near the vessel and mouse selection.
+    /// The old IMGUI "Statics Editor" window is retired; its parts are UI2 windows now
+    /// (Editor Mode toolbar, Ctrl+L: UI2.ModelList, UI2.InstanceList, UI2.GroupList, UI2.MapDecalList,
+    /// Save and Export buttons).
+    /// </summary>
+    public class StaticsEditorGUI
     {
 
         private static StaticsEditorGUI _instance = null;
@@ -24,33 +31,10 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        Rect editorRect = new Rect(10, 25, 420, 110);
-
-        GUIStyle DeadButton;
-        GUIStyle DeadButtonRed;
-        GUIStyle DeadButton2;
-        GUIStyle KKWindow;
-        GUIStyle BoxNoBorder;
-
-        public Texture tHorizontalSep = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/horizontalsep3", false);
-        public Texture tTick = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingstick", false);
-        public Texture tCross = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/settingscross", false);
-        public Texture tSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/search", false);
-        public Texture tCancelSearch = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/cancelsearch", false);
-        public Texture tFocus = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/focuson", false);
-        public Texture tFoldOut = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldin", false);
-        public Texture tFoldIn = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-        public Texture tFolded = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/foldout", false);
-
-
-        public Boolean enableColliders = false;
-
-        public Boolean bDisableEditingSetting = false;
 
         public static StaticInstance selectedObject = null;
         public StaticInstance selectedObjectPrevious = null;
         public StaticInstance snapTargetInstance = null;
-        StaticInstance snapTargetInstancePrevious = null;
 
         private static GroupCenter activeGroup = null;
         private static GroupCenter[] localGroups;
@@ -66,204 +50,41 @@ namespace KerbalKonstructs.UI
             }
         }
 
-        //internal static Color defaultGrasColor = new Color(0.640f, 0.728f, 0.171f, 0.729f);
-        //internal static string defaultGrasTexture = "BUILTIN:/terrain_grass00_new";
-        //private string grasColorRStr = "0.640";
-        //private string grasColorGStr = "0.728";
-        //private string grasColorBStr = "0.171";
-        //private string grasColorAStr = "0.729";
-
         internal static GrassColorPresetUI2.ColorPreset2 defaultGrassPreset = new GrassColorPresetUI2.ColorPreset2();
-
-        public float fButtonWidth = 0f;
-
-
-        //float localRange = 10000f;
-
-        //public Boolean foldedIn = false;
-        //public Boolean doneFold = false;
-        private string smessage = "";
-
 
         //static need only be loaded once per three seconnds
         private static float lastloaded = 0f;
         internal static StaticInstance[] allStaticInstances;
 
-        private static bool isInitialized = false;
 
+        /// <summary>
+        /// True while the editor is open (the Editor Mode toolbar, Ctrl+L)
+        /// </summary>
+        public bool IsOpen()
+        {
+            return KKEditorLogic.IsEditorOpen();
+        }
+
+
+        /// <summary>
+        /// Opens or closes the editor (the Editor Mode toolbar). Kept for the Ctrl+K shortcut.
+        /// </summary>
         public void ToggleEditor()
         {
-            if (KerbalKonstructs.selectedInstance != null)
-            {
-                KerbalKonstructs.DeselectObject(true, true);
-            }
-
-            this.Toggle();
-
-            if (snapTargetInstance != null)
-            {
-                snapTargetInstance.HighlightObject(Color.clear);
-                snapTargetInstance = null;
-            }
+            UI2.EditorModeSelector.Toggle();
         }
 
 
         /// <summary>
-        /// Basic GUI drawing function
+        /// Removes the highlight of the snap target and clears it
         /// </summary>
-        public override void Draw()
+        internal static void ClearSnapTarget()
         {
-            if (MapView.MapIsEnabled)
+            if (instance.snapTargetInstance != null)
             {
-                return;
+                instance.snapTargetInstance.HighlightObject(Color.clear);
+                instance.snapTargetInstance = null;
             }
-            DrawEditor();
-        }
-
-        public override void Open()
-        {
-            ConfigUtil.CreateNewInstanceDirIfNeeded();
-            ResetLocalGroupList();
-            base.Open();
-        }
-
-        public override void Close()
-        {
-            EditorGUI.instance.Close();
-            KerbalKonstructs.instance.DeletePreviewObject();
-            MapDecalEditor.Instance.Close();
-            base.Close();
-        }
-
-        public void DrawEditor()
-        {
-
-            KKWindow = new GUIStyle(GUI.skin.window)
-            {
-                padding = new RectOffset(8, 8, 3, 3)
-            };
-
-            editorRect = GUI.Window(0xB00B1E5, editorRect, DrawEditorWindow, "", KKWindow);
-        }
-
-
-        private void InititializeLayout()
-        {
-            BoxNoBorder = new GUIStyle(GUI.skin.box);
-            BoxNoBorder.normal.background = null;
-            BoxNoBorder.normal.textColor = Color.white;
-
-            DeadButton = new GUIStyle(GUI.skin.button);
-            DeadButton.normal.background = null;
-            DeadButton.hover.background = null;
-            DeadButton.active.background = null;
-            DeadButton.focused.background = null;
-            DeadButton.normal.textColor = Color.yellow;
-            DeadButton.hover.textColor = Color.white;
-            DeadButton.active.textColor = Color.yellow;
-            DeadButton.focused.textColor = Color.yellow;
-            DeadButton.fontSize = 14;
-            DeadButton.fontStyle = FontStyle.Normal;
-
-            DeadButton2 = new GUIStyle(GUI.skin.button);
-            DeadButton2.normal.background = null;
-            DeadButton2.hover.background = null;
-            DeadButton2.active.background = null;
-            DeadButton2.focused.background = null;
-            DeadButton2.normal.textColor = Color.white;
-            DeadButton2.hover.textColor = Color.green;
-            DeadButton2.active.textColor = Color.white;
-            DeadButton2.focused.textColor = Color.white;
-            DeadButton2.fontSize = 14;
-            DeadButton2.fontStyle = FontStyle.Bold;
-
-            DeadButtonRed = new GUIStyle(GUI.skin.button);
-            DeadButtonRed.normal.background = null;
-            DeadButtonRed.hover.background = null;
-            DeadButtonRed.active.background = null;
-            DeadButtonRed.focused.background = null;
-            DeadButtonRed.normal.textColor = Color.red;
-            DeadButtonRed.hover.textColor = Color.yellow;
-            DeadButtonRed.active.textColor = Color.red;
-            DeadButtonRed.focused.textColor = Color.red;
-            DeadButtonRed.fontSize = 12;
-            DeadButtonRed.fontStyle = FontStyle.Bold;
-
-            isInitialized = true;
-        }
-
-        /// <summary>
-        /// draw the editor window
-        /// </summary>
-        /// <param name="id"></param>
-        private void DrawEditorWindow(int id)
-        {
-
-            if (isInitialized == false)
-            {
-                InititializeLayout();
-            }
-
-            GUILayout.BeginHorizontal();
-            {
-                GUI.enabled = false;
-                GUILayout.Button("-KK-", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Button("Statics Editor", DeadButton, GUILayout.Height(21));
-
-                GUILayout.FlexibleSpace();
-
-                GUI.enabled = true;
-
-                if (GUILayout.Button("X", DeadButtonRed, GUILayout.Height(21)))
-                {
-                    ToggleEditor();
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            GUILayout.BeginHorizontal();
-            {
-
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Export", "Export everyting into zip files"), UIMain.ButtonDefault, GUILayout.Width(90), GUILayout.Height(23)))
-                {
-                    ConfigParser.ExportAll();
-                }
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Save", "Save all new and edited instances."), KerbalKonstructs.instance.hasDeletedInstances ? UIMain.ButtonTextOrange : UIMain.ButtonDefault, GUILayout.Width(90), GUILayout.Height(23)))
-                {
-                    KerbalKonstructs.instance.SaveObjects();
-                    smessage = "Saved all changes to all objects.";
-                    MiscUtils.HUDMessage(smessage, 10, 2);
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            // spawning and the local instances are in the Instance editor now (UI2.ModelList / UI2.InstanceList),
-            // map decals in the Terrain editor (UI2.MapDecalList) and groups in the Group editor (UI2.GroupList)
-            GUILayout.Space(4);
-            GUILayout.Label("Use the Editor toolbar (Ctrl+L) to spawn and edit.");
-
-            GUILayout.Space(1);
-            GUILayout.Box(tHorizontalSep, BoxNoBorder, GUILayout.Height(4));
-
-            GUILayout.Space(2);
-
-            if (GUI.tooltip != "")
-            {
-                var labelSize = GUI.skin.GetStyle("Label").CalcSize(new GUIContent(GUI.tooltip));
-                GUI.Box(new Rect(Event.current.mousePosition.x - (25 + (labelSize.x / 2)), Event.current.mousePosition.y - 40, labelSize.x + 10, labelSize.y + 5), GUI.tooltip);
-            }
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
 
 

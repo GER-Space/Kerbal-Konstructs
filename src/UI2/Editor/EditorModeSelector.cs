@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace KerbalKonstructs.UI2
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 245f;
+        internal static float windowWidth = 300f;
         internal static float windowHeight = 50f;
 
         internal static bool showTitle = false;
@@ -28,6 +29,7 @@ namespace KerbalKonstructs.UI2
 
         private static Dictionary<KKEditorLogic.MainEditorMode, UIStyle> modeStyles = null;
         private static UIStyle saveStyle = null;
+        private static UIStyle exportStyle = null;
 
 
         /// <summary>
@@ -89,6 +91,7 @@ namespace KerbalKonstructs.UI2
                 }
             }
             saveStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/editorModeSave");
+            exportStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/editorModeExport");
         }
 
 
@@ -135,6 +138,19 @@ namespace KerbalKonstructs.UI2
             saveButton.tooltipText = "Save all: save all statics and groups to disk";
             buttons.Add(saveButton);
 
+            // "export all" button (was in the old Statics Editor)
+            DialogGUIButton exportButton;
+            if (exportStyle != null)
+            {
+                exportButton = KKStyle.IconButton(exportStyle, ExportAll, buttonSize, buttonSize);
+            }
+            else
+            {
+                exportButton = new DialogGUIButton("Export", ExportAll, buttonSize, buttonSize, false);
+            }
+            exportButton.tooltipText = "Export all: export all groups and map decals into zip files";
+            buttons.Add(exportButton);
+
             buttons.Add(new DialogGUIFlexibleSpace());
             content.Add(new DialogGUIHorizontalLayout(buttons.ToArray()));
         }
@@ -144,6 +160,13 @@ namespace KerbalKonstructs.UI2
         {
             KerbalKonstructs.instance.SaveObjects();
             MiscUtils.HUDMessage("All statics and groups saved", 5, 0);
+        }
+
+
+        internal static void ExportAll()
+        {
+            ConfigParser.ExportAll();
+            MiscUtils.HUDMessage("Exported all groups and map decals to GameData/KerbalKonstructs/ExportedInstances", 5, 0);
         }
 
 
@@ -222,6 +245,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void Close()
         {
+            bool wasOpen = (dialog != null);
             if (dialog != null)
             {
                 WindowManager2.SavePosition(dialog);
@@ -230,6 +254,20 @@ namespace KerbalKonstructs.UI2
             dialog = null;
 
             WindowManager2.SavePresets();
+
+            if (wasOpen)
+            {
+                // leaving the editor: close the current editor's windows right away
+                // and clean up the selection (was StaticsEditorGUI.ToggleEditor / Close)
+                KKEditorLogic.CloseCurrentEditor();
+                MapDecalEditor.Instance.Close();
+                KerbalKonstructs.instance.DeletePreviewObject();
+                if (KerbalKonstructs.selectedInstance != null)
+                {
+                    KerbalKonstructs.DeselectObject(true, true);
+                }
+                StaticsEditorGUI.ClearSnapTarget();
+            }
         }
 
 

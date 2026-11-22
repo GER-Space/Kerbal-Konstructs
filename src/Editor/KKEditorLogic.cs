@@ -1,5 +1,4 @@
-﻿using KerbalKonstructs.UI;
-using KerbalKonstructs.UI2;
+﻿using KerbalKonstructs.UI2;
 
 namespace KerbalKonstructs.Core
 {
@@ -21,13 +20,12 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// True while one of the editors is open: the old Statics Editor (Ctrl+K)
-        /// or the new Editor Mode toolbar (Ctrl+L). Editor windows use this to decide
-        /// whether they may stay open.
+        /// True while the editor (the Editor Mode toolbar, Ctrl+L or Ctrl+K) is open.
+        /// Editor windows use this to decide whether they may stay open.
         /// </summary>
         internal static bool IsEditorOpen()
         {
-            return StaticsEditorGUI.instance.IsOpen() || EditorModeSelector.IsOpen();
+            return EditorModeSelector.IsOpen();
         }
 
         internal static string GetMainMode()
