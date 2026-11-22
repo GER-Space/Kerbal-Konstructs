@@ -8,19 +8,27 @@ using UnityEngine.UI;
 namespace KerbalKonstructs.UI2
 {
     /// <summary>
-    /// Shows the height maps as pictures in a grid of 3 x 3; scrolls when there are more than 9.
-    /// Clicking a picture sets it as the height map of the decal in the MapDecal editor.
-    /// (was the text list under the "Height Map" button of the MapDecal editor)
+    /// Shows the height maps or the color maps as pictures in a grid of 3 x 3; scrolls when there are more than 9.
+    /// Clicking a picture sets it as the height / color map of the decal in the MapDecal editor.
+    /// (was the text lists under the "Height Map" and "Color Map" buttons of the MapDecal editor)
     /// </summary>
-    internal class HeightMapSelector
+    internal class MapSelector
     {
+        internal enum MapType
+        {
+            Height,
+            Color
+        }
         internal static PopupDialog dialog;
         internal static MultiOptionDialog optionDialog;
         internal static List<DialogGUIBase> content;
 
-        internal static string windowName = "HeightMapSelector";
+        internal static string windowName = "MapSelector";
         internal static string windowMessage = null;
         internal static string windowTitle = "Select Height Map";
+
+        // which maps the window shows
+        private static MapType mapType = MapType.Height;
 
         internal static Rect windowRect;
 
@@ -65,7 +73,7 @@ namespace KerbalKonstructs.UI2
         internal static void CreateContent()
         {
             content.Add(MapGrid());
-            content.Add(new DialogGUILabel("Current: " + decal.HeightMapName, KKStyle.whiteLabel));
+            content.Add(new DialogGUILabel("Current: " + GetCurrentMapName(), KKStyle.whiteLabel));
         }
 
 
@@ -77,7 +85,7 @@ namespace KerbalKonstructs.UI2
             List<DialogGUIBase> rows = new List<DialogGUIBase>();
             rows.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
 
-            List<MapDecalsMap> maps = DecalsDatabase.allHeightMaps;
+            List<MapDecalsMap> maps = (mapType == MapType.Height) ? DecalsDatabase.allHeightMaps : DecalsDatabase.allColorMaps;
             for (int i = 0; i < maps.Count; i += columns)
             {
                 List<DialogGUIBase> row = new List<DialogGUIBase>();
@@ -98,7 +106,7 @@ namespace KerbalKonstructs.UI2
 
             if (maps.Count == 0)
             {
-                rows.Add(new DialogGUILabel("No height maps found", KKStyle.whiteLabel));
+                rows.Add(new DialogGUILabel((mapType == MapType.Height) ? "No height maps found" : "No color maps found", KKStyle.whiteLabel));
             }
 
             var layout = new DialogGUIVerticalLayout(10, 100, spacing, new RectOffset(4, 20, 4, 4), TextAnchor.UpperLeft, rows.ToArray());
@@ -108,13 +116,13 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// One height map: its picture (click to select it) with its name below.
+        /// One map: its picture (click to select it) with its name below.
         /// </summary>
         private static DialogGUIBase MapCell(MapDecalsMap map)
         {
             // local copy for the delegates
             MapDecalsMap thisMap = map;
-            bool isCurrent = (decal.HeightMapName == thisMap.Name);
+            bool isCurrent = (GetCurrentMapName() == thisMap.Name);
 
             DialogGUIButton button;
             Texture2D picture = GetPicture(thisMap);
@@ -127,8 +135,8 @@ namespace KerbalKonstructs.UI2
                 // e.g. "None": no picture
                 button = new DialogGUIButton(thisMap.Name, delegate { SelectMap(thisMap); }, imageSize, imageSize, false);
             }
-            // the current height map can't be selected again
-            button.OptionInteractableCondition = () => decal == null || decal.HeightMapName != thisMap.Name;
+            // the current map can't be selected again
+            button.OptionInteractableCondition = () => decal == null || GetCurrentMapName() != thisMap.Name;
             button.tooltipText = thisMap.Name;
 
             DialogGUILabel label = new DialogGUILabel(thisMap.Name, isCurrent ? KKStyle.goldLabel : KKStyle.whiteLabel);
@@ -145,8 +153,8 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// The map's image, or for maps without one (the stock KSP maps) a small greyscale
-        /// picture made from the map data. Null for "None".
+        /// The map's image, or for maps without one (the stock KSP maps) a small picture made
+        /// from the map data (greyscale for height maps). Null for "None".
         /// </summary>
         private static Texture2D GetPicture(MapDecalsMap map)
         {
@@ -175,8 +183,19 @@ namespace KerbalKonstructs.UI2
                     {
                         for (int x = 0; x < previewSize; x++)
                         {
-                            float value = map.map.GetPixelFloat(x * width / previewSize, y * height / previewSize);
-                            preview.SetPixel(x, y, new Color(value, value, value, 1f));
+                            int px = x * width / previewSize;
+                            int py = y * height / previewSize;
+                            if (map.isHeightMap)
+                            {
+                                float value = map.map.GetPixelFloat(px, py);
+                                preview.SetPixel(x, y, new Color(value, value, value, 1f));
+                            }
+                            else
+                            {
+                                Color color = map.map.GetPixelColor(px, py);
+                                color.a = 1f;
+                                preview.SetPixel(x, y, color);
+                            }
                         }
                     }
                     preview.Apply();
@@ -184,7 +203,7 @@ namespace KerbalKonstructs.UI2
             }
             catch (Exception e)
             {
-                Log.Normal("HeightMapSelector: no preview for " + map.Name + ": " + e.Message);
+                Log.Normal("MapSelector: no preview for " + map.Name + ": " + e.Message);
                 preview = null;
             }
             // also remember a failed preview, so it isn't retried every time the window opens
@@ -193,11 +212,28 @@ namespace KerbalKonstructs.UI2
         }
 
 
+        private static string GetCurrentMapName()
+        {
+            if (decal == null)
+            {
+                return "";
+            }
+            return (mapType == MapType.Height) ? decal.HeightMapName : decal.ColorMapName;
+        }
+
+
         private static void SelectMap(MapDecalsMap map)
         {
             if (decal != null)
             {
-                decal.HeightMapName = map.Name;
+                if (mapType == MapType.Height)
+                {
+                    decal.HeightMapName = map.Name;
+                }
+                else
+                {
+                    decal.ColorMapName = map.Name;
+                }
             }
             Close();
         }
@@ -239,9 +275,9 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// Opens the window for the decal selected in the MapDecal editor
+        /// Opens the window with the height or color maps, for the decal selected in the MapDecal editor
         /// </summary>
-        internal static void Open()
+        internal static void Open(MapType type)
         {
             if (MapDecalEditor.selectedDecal == null)
             {
@@ -249,13 +285,15 @@ namespace KerbalKonstructs.UI2
             }
             if (dialog != null)
             {
-                if (decal == MapDecalEditor.selectedDecal)
+                if (decal == MapDecalEditor.selectedDecal && mapType == type)
                 {
                     return;
                 }
                 Close();
             }
             decal = MapDecalEditor.selectedDecal;
+            mapType = type;
+            windowTitle = (type == MapType.Height) ? "Select Height Map" : "Select Color Map";
             KKStyle.Init();
             content = new List<DialogGUIBase>();
             KKTitle();
@@ -291,15 +329,18 @@ namespace KerbalKonstructs.UI2
             return (dialog != null);
         }
 
-        internal static void Toggle()
+        /// <summary>
+        /// Closes the window if it shows this map type, otherwise opens it with this map type
+        /// </summary>
+        internal static void Toggle(MapType type)
         {
-            if (isOpen)
+            if (isOpen && mapType == type)
             {
                 Close();
             }
             else
             {
-                Open();
+                Open(type);
             }
         }
     }

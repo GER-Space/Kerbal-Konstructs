@@ -59,7 +59,6 @@ namespace KerbalKonstructs.UI
 
         // ComboBox siteTypeMenu;
         #endregion
-        private Vector2 selectColorMapScroll;
 
         #region Holders
         // Holders
@@ -92,7 +91,6 @@ namespace KerbalKonstructs.UI
         private static double altitude = 0;
         private static double latitude, longitude = 0;
 
-        private bool selectColorMap = false;
 
         private bool guiInitialized = false;
         private string smessage = "";
@@ -543,7 +541,7 @@ namespace KerbalKonstructs.UI
             if (GUILayout.Button("Height Map", GUILayout.Height(23)))
             {
                 // pick the height map from its picture
-                UI2.HeightMapSelector.Toggle();
+                UI2.MapSelector.Toggle(UI2.MapSelector.MapType.Height);
             }
             GUILayout.Label(selectedDecal.HeightMapName, GUILayout.Width(200));
             GUILayout.EndHorizontal();
@@ -584,27 +582,11 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Color Map", GUILayout.Height(23)))
             {
-                selectColorMap = true;
+                // pick the color map from its picture
+                UI2.MapSelector.Toggle(UI2.MapSelector.MapType.Color);
             }
             GUILayout.Label(selectedDecal.ColorMapName, GUILayout.Width(200));
             GUILayout.EndHorizontal();
-
-
-            if (selectColorMap)
-            {
-                selectColorMapScroll = GUILayout.BeginScrollView(selectColorMapScroll);
-
-                foreach (var newmap in DecalsDatabase.allColorMaps)
-                {
-                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
-                    {
-                        selectedDecal.ColorMapName = newmap.Name;
-                        selectColorMap = false;
-                    }
-
-                }
-                GUILayout.EndScrollView();
-            }
 
             GUILayout.BeginHorizontal();
             {
