@@ -80,7 +80,7 @@ namespace KerbalKonstructs.UI2
             List<DialogGUIBase> list = new List<DialogGUIBase>();
             list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
 
-            foreach (MapDecalInstance mapDecalInstance in DecalsDatabase.allMapDecalInstances)
+            foreach (MapDecalInstance mapDecalInstance in GetSortedDecals())
             {
                 // local copy for the delegates
                 MapDecalInstance decal = mapDecalInstance;
@@ -122,6 +122,32 @@ namespace KerbalKonstructs.UI2
             // the decal's real world position (MapDecalInstance.position is never set)
             Vector3 decalPosition = decal.gameObject.transform.position;
             return Vector3.Distance(decalPosition, vessel.transform.position) <= maxEditDistance;
+        }
+
+
+        /// <summary>
+        /// Decals that can be edited (in range) first, then the ones out of range; each part sorted by name.
+        /// </summary>
+        private static List<MapDecalInstance> GetSortedDecals()
+        {
+            List<MapDecalInstance> inRange = new List<MapDecalInstance>();
+            List<MapDecalInstance> outOfRange = new List<MapDecalInstance>();
+            foreach (MapDecalInstance decal in DecalsDatabase.allMapDecalInstances)
+            {
+                if (IsInRange(decal))
+                {
+                    inRange.Add(decal);
+                }
+                else
+                {
+                    outOfRange.Add(decal);
+                }
+            }
+            Comparison<MapDecalInstance> byName = (a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
+            inRange.Sort(byName);
+            outOfRange.Sort(byName);
+            inRange.AddRange(outOfRange);
+            return inRange;
         }
 
 
