@@ -59,7 +59,6 @@ namespace KerbalKonstructs.UI
 
         // ComboBox siteTypeMenu;
         #endregion
-        private Vector2 selectHeightMapScroll;
         private Vector2 selectColorMapScroll;
 
         #region Holders
@@ -93,7 +92,6 @@ namespace KerbalKonstructs.UI
         private static double altitude = 0;
         private static double latitude, longitude = 0;
 
-        private bool selectHeightMap = false;
         private bool selectColorMap = false;
 
         private bool guiInitialized = false;
@@ -544,27 +542,11 @@ namespace KerbalKonstructs.UI
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Height Map", GUILayout.Height(23)))
             {
-                selectHeightMap = true;
+                // pick the height map from its picture
+                UI2.HeightMapSelector.Toggle();
             }
             GUILayout.Label(selectedDecal.HeightMapName, GUILayout.Width(200));
             GUILayout.EndHorizontal();
-
-
-            if (selectHeightMap)
-            {
-                selectHeightMapScroll = GUILayout.BeginScrollView(selectHeightMapScroll);
-
-                foreach (var newmap in DecalsDatabase.allHeightMaps)
-                {
-                    if (GUILayout.Button(newmap.Name, GUILayout.Height(23)))
-                    {
-                        selectedDecal.HeightMapName = newmap.Name;
-                        selectHeightMap = false;
-                    }
-
-                }
-                GUILayout.EndScrollView();
-            }
 
             GUILayout.BeginHorizontal();
             {
