@@ -19,8 +19,14 @@ namespace KerbalKonstructs.UI2
 
         internal static Rect windowRect;
 
-        //internal static float windowWidth = Screen.width * 0.9f;
-        internal static float windowWidth = 600f;
+        // the window is as wide as its buttons
+        private const int buttonCount = 2;
+        private const float buttonWidth = 150f;
+        private const float buttonHeight = 25f;
+        private const float buttonSpacing = 4f;
+        private const float windowPadding = 28f;
+
+        internal static float windowWidth = buttonCount * buttonWidth + (buttonCount - 1) * buttonSpacing + windowPadding;
         internal static float windowHeight = 30f;
 
         internal static bool showTitle = false;
@@ -36,11 +42,9 @@ namespace KerbalKonstructs.UI2
 
         internal static void CreateContent()
         {
-            content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUIButton("Spawn New", ModelList.Toggle, false),
-                new DialogGUIButton("Local Instances", InstanceList.Toggle, false),
-                new DialogGUIFlexibleSpace()
-
+            content.Add(new DialogGUIHorizontalLayout(false, false, buttonSpacing, new RectOffset(), TextAnchor.MiddleCenter,
+                new DialogGUIButton("Spawn New", ModelList.Toggle, buttonWidth, buttonHeight, false),
+                new DialogGUIButton("Local Instances", InstanceList.Toggle, buttonWidth, buttonHeight, false)
                 ));
             //content.Add(new DialogGUILabel("Hallo", HighLogic.UISkin.label));
             //content.Add(VaiantList);

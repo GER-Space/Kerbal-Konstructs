@@ -20,7 +20,11 @@ namespace KerbalKonstructs.UI2
 
         internal static Rect windowRect;
 
-        internal static float windowWidth = 300f;
+        // the window is as wide as its buttons: one per editor mode, plus Save and Export
+        private const float buttonSpacing = 4f;
+        private const float windowPadding = 28f;
+        private static int buttonCount = Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)).Length + 2;
+        internal static float windowWidth = buttonCount * buttonSize + (buttonCount - 1) * buttonSpacing + windowPadding;
         internal static float windowHeight = 50f;
 
         internal static bool showTitle = false;
@@ -100,7 +104,6 @@ namespace KerbalKonstructs.UI2
             LoadIcons();
 
             List<DialogGUIBase> buttons = new List<DialogGUIBase>();
-            buttons.Add(new DialogGUIFlexibleSpace());
 
             foreach (KKEditorLogic.MainEditorMode mode in Enum.GetValues(typeof(KKEditorLogic.MainEditorMode)))
             {
@@ -151,8 +154,7 @@ namespace KerbalKonstructs.UI2
             exportButton.tooltipText = "Export all: export all groups and map decals into zip files";
             buttons.Add(exportButton);
 
-            buttons.Add(new DialogGUIFlexibleSpace());
-            content.Add(new DialogGUIHorizontalLayout(buttons.ToArray()));
+            content.Add(new DialogGUIHorizontalLayout(false, false, buttonSpacing, new RectOffset(), TextAnchor.MiddleCenter, buttons.ToArray()));
         }
 
 
