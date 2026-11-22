@@ -20,7 +20,7 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// True while the editor (the Editor Mode toolbar, Ctrl+L or Ctrl+K) is open.
+        /// True while the editor (the Editor Mode toolbar, Ctrl+K) is open.
         /// Editor windows use this to decide whether they may stay open.
         /// </summary>
         internal static bool IsEditorOpen()

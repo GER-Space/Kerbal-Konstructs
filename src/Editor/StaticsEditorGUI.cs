@@ -10,7 +10,7 @@ namespace KerbalKonstructs.UI
     /// Shared state of the statics editor: selected object, snap target, active group,
     /// the groups near the vessel and mouse selection.
     /// The old IMGUI "Statics Editor" window is retired; its parts are UI2 windows now
-    /// (Editor Mode toolbar, Ctrl+L: UI2.ModelList, UI2.InstanceList, UI2.GroupList, UI2.MapDecalList,
+    /// (Editor Mode toolbar, Ctrl+K: UI2.ModelList, UI2.InstanceList, UI2.GroupList, UI2.MapDecalList,
     /// Save and Export buttons).
     /// </summary>
     public class StaticsEditorGUI
@@ -58,7 +58,7 @@ namespace KerbalKonstructs.UI
 
 
         /// <summary>
-        /// True while the editor is open (the Editor Mode toolbar, Ctrl+L)
+        /// True while the editor is open (the Editor Mode toolbar, Ctrl+K)
         /// </summary>
         public bool IsOpen()
         {
