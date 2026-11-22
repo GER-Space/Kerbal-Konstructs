@@ -61,7 +61,7 @@ namespace KerbalKonstructs.UI
                 return;
             }
 
-            if (!StaticsEditorGUI.instance.IsOpen())
+            if (!KKEditorLogic.IsEditorOpen())
             {
                 this.Close();
             }
