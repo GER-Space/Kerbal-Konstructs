@@ -31,7 +31,10 @@ namespace KerbalKonstructs.UI2
 
             foreach (StaticModule module in model.modules)
             {
-                if (module == null)
+                // The model's module entries are created with "new StaticModule()". A MonoBehaviour made
+                // with new has no Unity object behind it, so Unity's == operator says it is null even though
+                // the C# object and its fields are fine. Check the C# reference instead.
+                if (ReferenceEquals(module, null))
                 {
                     continue;
                 }
