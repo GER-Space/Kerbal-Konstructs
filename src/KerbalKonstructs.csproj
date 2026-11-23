@@ -183,7 +183,6 @@
 		<Compile Include="Editor\KKEditorLogic.cs" />
 		<Compile Include="Editor\Shared\DrawObject.cs" />
 		<Compile Include="Editor\Shared\DrawTools.cs" />
-		<Compile Include="Editor\TerrainEditor.cs" />
 		<Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
 		<Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
 		<Compile Include="Editor\Shared\EditorGizmo.cs" />
@@ -229,6 +228,7 @@
 		<Compile Include="UI2\Editor\Instance\ModelList.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapSelector.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapDecalList.cs" />
+		<Compile Include="UI2\Editor\Terrain\TerrainEditor.cs" />
 		<Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
 		<Compile Include="UI2\KKControls.cs" />
 		<Compile Include="UI2\KKStyle.cs" />

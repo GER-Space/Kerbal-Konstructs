@@ -1,11 +1,11 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.UI2;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-namespace KerbalKonstructs.UI
+namespace KerbalKonstructs.UI2
 {
     /// <summary>
     /// Terrain editor: edits a map decal, which shapes and colors the terrain (was "MapDecalEditor").
