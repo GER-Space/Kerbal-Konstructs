@@ -10,6 +10,7 @@ namespace KerbalKonstructs.UI2
     /// like the part icons in the KSP vessel editor.
     /// The previews are mesh-only copies of the model prefabs (no scripts, no colliders) on their
     /// own layer, seen only by this renderer's camera. They are only active while being rendered.
+    /// The look of AdvancedTextures and GrassColor modules is applied to them (ModelPreviewModules).
     /// </summary>
     internal class ModelPreviewRenderer : MonoBehaviour
     {
@@ -34,6 +35,29 @@ namespace KerbalKonstructs.UI2
             internal GameObject root;
             internal Transform pivot;
             internal float radius;
+            // material copies made for this preview (modules), destroyed with it
+            internal List<Material> materials = new List<Material>();
+        }
+
+
+        private static void DestroyPreview(Preview preview)
+        {
+            if (preview == null)
+            {
+                return;
+            }
+            if (preview.root != null)
+            {
+                Destroy(preview.root);
+            }
+            foreach (Material material in preview.materials)
+            {
+                if (material != null)
+                {
+                    Destroy(material);
+                }
+            }
+            preview.materials.Clear();
         }
 
 
@@ -104,7 +128,7 @@ namespace KerbalKonstructs.UI2
             {
                 if (previews[i] != null)
                 {
-                    Destroy(previews[i].root);
+                    DestroyPreview(previews[i]);
                     previews[i] = null;
                 }
                 if (models != null && i < models.Count && models[i] != null)
@@ -219,6 +243,8 @@ namespace KerbalKonstructs.UI2
             root.SetActive(false);
 
             Preview preview = new Preview();
+            // the look of the model's AdvancedTextures / GrassColor modules
+            ModelPreviewModules.Apply(model, meshes, preview.materials);
             preview.root = root;
             preview.pivot = pivotObject.transform;
             preview.radius = Mathf.Max(bounds.extents.magnitude, 0.1f);
@@ -335,10 +361,7 @@ namespace KerbalKonstructs.UI2
             {
                 foreach (Preview preview in previews)
                 {
-                    if (preview != null && preview.root != null)
-                    {
-                        Destroy(preview.root);
-                    }
+                    DestroyPreview(preview);
                 }
             }
             if (textures != null)

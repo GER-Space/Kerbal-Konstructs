@@ -227,6 +227,7 @@
 		<Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
 		<Compile Include="UI2\Editor\Instance\InstanceList.cs" />
 		<Compile Include="UI2\Editor\Instance\ModelList.cs" />
+		<Compile Include="UI2\Editor\Instance\ModelPreviewModules.cs" />
 		<Compile Include="UI2\Editor\Instance\ModelPreviewRenderer.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapSelector.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapDecalList.cs" />

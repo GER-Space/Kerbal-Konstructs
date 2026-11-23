@@ -13,7 +13,7 @@ namespace KerbalKonstructs.UI2
     /// "Spawn New" window, laid out like the parts list of the KSP vessel editor:
     /// categories on the left, the models of the category as spinning 3D previews
     /// in a 3 x 3 grid on the right, with pages and a search field.
-    /// Click a preview to spawn the static (or to open its config in "Edit Config" mode).
+    /// Left-click a preview to spawn the static, right-click it to open the model editor.
     /// Opened from the Instance editor toolbar, closed together with it.
     /// </summary>
     internal class ModelList
@@ -61,9 +61,6 @@ namespace KerbalKonstructs.UI2
         // text typed into the search field, and the search that is applied
         private static string searchText = "";
         private static string search = "";
-        // when on, clicking a model opens its config instead of spawning it
-        private static bool editConfig = false;
-
         private static ModelPreviewRenderer previewRenderer = null;
         private static List<StaticModel> pageModels = new List<StaticModel>();
 
@@ -113,13 +110,11 @@ namespace KerbalKonstructs.UI2
                 gridColumn
                 ));
 
-            // mode and grass preset
-            DialogGUIButton modeButton = new DialogGUIButton(editConfig ? "Click: Edit Config" : "Click: Spawn", ToggleEditConfig, 140f, itemHeight, false);
-            modeButton.tooltipText = "Switch between spawning a model and opening its config when it is clicked";
+            // hint and grass preset
             DialogGUIButton loadPreset = new DialogGUIButton("Load Preset", LoadGrassPreset, 90f, itemHeight, false);
             loadPreset.tooltipText = "Choose the grass color preset used for new statics";
             content.Add(new DialogGUIHorizontalLayout(
-                modeButton,
+                new DialogGUILabel("Left-click: spawn   Right-click: edit model", KKStyle.whiteLabel),
                 new DialogGUIFlexibleSpace(),
                 new DialogGUILabel("Grass Preset: " + StaticsEditorGUI.defaultGrassPreset.name, KKStyle.whiteLabel),
                 loadPreset
@@ -195,9 +190,12 @@ namespace KerbalKonstructs.UI2
             // local copy for the delegates
             StaticModel model = staticModel;
 
-            DialogGUIImage preview = KKStyle.ClickableImage(previewRenderer.GetTexture(slot), delegate { ModelClicked(model); }, previewSize, previewSize);
+            DialogGUIImage preview = KKStyle.ClickableImage(previewRenderer.GetTexture(slot),
+                delegate { SpawnModel(model); },
+                delegate { EditModel(model); },
+                previewSize, previewSize);
             preview.tooltipText = model.title + "\nCategory: " + model.category + "\nMesh: " + model.mesh +
-                (editConfig ? "\nClick to edit its config" : "\nClick to spawn");
+                "\nLeft-click: spawn, right-click: edit model";
 
             DialogGUILabel title = new DialogGUILabel(Shorten(model.title, 20), KKStyle.whiteLabel);
 
@@ -289,29 +287,10 @@ namespace KerbalKonstructs.UI2
             Reload();
         }
 
-        private static void ToggleEditConfig()
-        {
-            editConfig = !editConfig;
-            Reload();
-        }
-
         #endregion
 
 
         #region actions
-
-        private static void ModelClicked(StaticModel model)
-        {
-            if (editConfig)
-            {
-                EditModel(model);
-            }
-            else
-            {
-                SpawnModel(model);
-            }
-        }
-
 
         /// <summary>
         /// Spawns an instance of the model at the vessel, in the active (or closest local) group.
