@@ -826,15 +826,13 @@ namespace KerbalKonstructs
 
         #region Object Methods
 
+        /// <summary>
+        /// The model config editor used to spawn a preview static in the world, which was removed here.
+        /// It shows a spinning preview in its window now (UI2.ModelEditor), so there is nothing to delete.
+        /// Kept because many editor actions call it.
+        /// </summary>
         public void DeletePreviewObject()
         {
-            if (selectedModel != null)
-            {
-                if (ModelInfo.currPreview != null)
-                {
-                    ModelInfo.DestroyPreviewInstance(null);
-                }
-            }
         }
 
         /// <summary>

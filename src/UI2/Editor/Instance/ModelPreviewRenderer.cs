@@ -30,6 +30,9 @@ namespace KerbalKonstructs.UI2
         private Preview[] previews;
         private float angle = 0f;
 
+        // the previews stop turning while this is false
+        internal bool spinning = true;
+
         private class Preview
         {
             internal GameObject root;
@@ -311,7 +314,10 @@ namespace KerbalKonstructs.UI2
             {
                 return;
             }
-            angle = (angle + spinSpeed * Time.unscaledDeltaTime) % 360f;
+            if (spinning)
+            {
+                angle = (angle + spinSpeed * Time.unscaledDeltaTime) % 360f;
+            }
 
             for (int i = 0; i < previews.Length; i++)
             {

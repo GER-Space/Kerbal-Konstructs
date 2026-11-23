@@ -323,21 +323,13 @@ namespace KerbalKonstructs.UI2
         }
 
 
+        /// <summary>
+        /// Opens the model config editor, which shows the model as a spinning preview
+        /// (no preview static in the game world, so no local group is needed)
+        /// </summary>
         internal static void EditModel(StaticModel model)
         {
-            if (FlightGlobals.ActiveVessel == null)
-            {
-                return;
-            }
-            StaticsEditorGUI.ResetLocalGroupList();
-            if (StaticsEditorGUI.GetCloesedCenter(FlightGlobals.ActiveVessel.transform.position) == null)
-            {
-                Log.UserError("No Local Group found");
-                MiscUtils.HUDMessage("Create and place a local Group, then try again!");
-                return;
-            }
-            KerbalKonstructs.instance.selectedModel = model;
-            ModelInfo.instance.Open();
+            ModelEditor.Open(model);
         }
 
 
