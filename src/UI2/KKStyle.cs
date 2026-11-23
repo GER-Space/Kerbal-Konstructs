@@ -127,6 +127,36 @@ namespace KerbalKonstructs.UI2
         private static Dictionary<DialogGUIBase, UIStyle> pendingIconButtons = new Dictionary<DialogGUIBase, UIStyle>();
         // image buttons waiting for ApplyIconButtons (cleared when applied)
         private static Dictionary<DialogGUIBase, Sprite> pendingImageButtons = new Dictionary<DialogGUIBase, Sprite>();
+        // clickable pictures (e.g. live RenderTextures) waiting for ApplyIconButtons (cleared when applied)
+        private static Dictionary<DialogGUIBase, Callback> pendingClickableImages = new Dictionary<DialogGUIBase, Callback>();
+        private static Dictionary<DialogGUIBase, Callback> pendingRightClicks = new Dictionary<DialogGUIBase, Callback>();
+
+
+        /// <summary>
+        /// A picture that works as a button. Unlike ImageButton it takes any Texture, also a
+        /// RenderTexture that changes every frame. Tinted on hover / press.
+        /// Call ApplyIconButtons(content) after the dialog was spawned.
+        /// </summary>
+        internal static DialogGUIImage ClickableImage(Texture texture, Callback onClick, float width, float height)
+        {
+            return ClickableImage(texture, onClick, null, width, height);
+        }
+
+
+        /// <summary>
+        /// Like ClickableImage, with a separate action for the right mouse button.
+        /// </summary>
+        internal static DialogGUIImage ClickableImage(Texture texture, Callback onClick, Callback onRightClick, float width, float height)
+        {
+            DialogGUIImage image = new DialogGUIImage(new Vector2(width, height), Vector2.zero, Color.white, texture);
+            pendingClickableImages[image] = onClick;
+            if (onRightClick != null)
+            {
+                pendingRightClicks[image] = onRightClick;
+            }
+            return image;
+        }
+
         // cached sprites for image buttons, so a rebuilt window doesn't create new ones
         private static Dictionary<Texture2D, Sprite> imageSprites = new Dictionary<Texture2D, Sprite>();
 
@@ -185,6 +215,48 @@ namespace KerbalKonstructs.UI2
             if (item == null)
             {
                 return;
+            }
+
+            Callback clickAction;
+            if (pendingClickableImages.TryGetValue(item, out clickAction))
+            {
+                pendingClickableImages.Remove(item);
+                if (item.uiItem != null)
+                {
+                    UnityEngine.UI.Graphic graphic = item.uiItem.GetComponent<UnityEngine.UI.Graphic>();
+                    if (graphic != null)
+                    {
+                        graphic.raycastTarget = true;
+                    }
+                    UnityEngine.UI.Button button = item.uiItem.GetComponent<UnityEngine.UI.Button>();
+                    if (button == null)
+                    {
+                        button = item.uiItem.AddComponent<UnityEngine.UI.Button>();
+                    }
+                    button.targetGraphic = graphic;
+                    button.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+                    UnityEngine.UI.ColorBlock colors = button.colors;
+                    colors.normalColor = Color.white;
+                    colors.highlightedColor = new Color(0.75f, 1f, 0.6f, 1f);
+                    colors.pressedColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+                    colors.selectedColor = Color.white;
+                    colors.colorMultiplier = 1f;
+                    button.colors = colors;
+                    Callback action = clickAction;
+                    button.onClick.AddListener(delegate { if (action != null) { action(); } });
+
+                    Callback rightClickAction;
+                    if (pendingRightClicks.TryGetValue(item, out rightClickAction))
+                    {
+                        KKRightClick rightClick = item.uiItem.GetComponent<KKRightClick>();
+                        if (rightClick == null)
+                        {
+                            rightClick = item.uiItem.AddComponent<KKRightClick>();
+                        }
+                        rightClick.onRightClick = rightClickAction;
+                    }
+                }
+                pendingRightClicks.Remove(item);
             }
 
             Sprite picture;
@@ -341,5 +413,23 @@ namespace KerbalKonstructs.UI2
         }
 
 
+    }
+
+
+    /// <summary>
+    /// Calls onRightClick when the UI element is clicked with the right mouse button
+    /// (Unity's Button only reacts to the left one).
+    /// </summary>
+    internal class KKRightClick : MonoBehaviour, UnityEngine.EventSystems.IPointerClickHandler
+    {
+        internal Callback onRightClick = null;
+
+        public void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            if (eventData.button == UnityEngine.EventSystems.PointerEventData.InputButton.Right && onRightClick != null)
+            {
+                onRightClick();
+            }
+        }
     }
 }

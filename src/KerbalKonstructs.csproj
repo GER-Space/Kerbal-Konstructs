@@ -226,7 +226,10 @@
 		<Compile Include="UI2\Editor\Instance\InstanceEditorToolbar.cs" />
 		<Compile Include="UI2\Editor\Instance\GrassEditor.cs" />
 		<Compile Include="UI2\Editor\Instance\InstanceList.cs" />
+		<Compile Include="UI2\Editor\Instance\ModelEditor.cs" />
 		<Compile Include="UI2\Editor\Instance\ModelList.cs" />
+		<Compile Include="UI2\Editor\Instance\ModelPreviewModules.cs" />
+		<Compile Include="UI2\Editor\Instance\ModelPreviewRenderer.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapSelector.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapDecalList.cs" />
 		<Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
@@ -253,7 +256,6 @@
 		<Compile Include="UI\BaseBossFlight.cs" />
 		<Compile Include="UI\AirRacing.cs" />
 		<Compile Include="UI2\BaseManager.cs" />
-		<Compile Include="Editor\ModelInfo.cs" />
 		<Compile Include="Editor\StaticsEditorGUI.cs" />
 		<Compile Include="Facilities\GroundStation\TrackingStationGUI.cs" />
 		<Compile Include="Facilities\StaffGUI.cs" />
