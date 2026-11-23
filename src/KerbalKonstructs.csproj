@@ -230,6 +230,7 @@
 		<Compile Include="UI2\Editor\Terrain\MapSelector.cs" />
 		<Compile Include="UI2\Editor\Terrain\MapDecalList.cs" />
 		<Compile Include="UI2\Editor\Terrain\TerrainEditorToolbar.cs" />
+		<Compile Include="UI2\KKControls.cs" />
 		<Compile Include="UI2\KKStyle.cs" />
 		<Compile Include="UI2\KKWindow2.cs" />
 		<Compile Include="UI2\KKWindowDrag.cs" />
