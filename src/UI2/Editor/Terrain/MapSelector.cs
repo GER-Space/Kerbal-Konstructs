@@ -147,6 +147,10 @@ namespace KerbalKonstructs.UI2
         }
 
 
+        // height deformity set when a height map is chosen while the deformity is still 0
+        private const double defaultHeightMapDeformity = 300;
+
+
         // pictures made from map data, for maps without an image file (the stock KSP maps)
         private static Dictionary<MapDecalsMap, Texture2D> previews = new Dictionary<MapDecalsMap, Texture2D>();
         private const int previewSize = 96;
@@ -229,6 +233,11 @@ namespace KerbalKonstructs.UI2
                 if (mapType == MapType.Height)
                 {
                     decal.HeightMapName = map.Name;
+                    // a height map does nothing with a deformity of 0: start with a useful value
+                    if (map.Name != "None" && decal.HeightMapDeformity == 0)
+                    {
+                        decal.HeightMapDeformity = defaultHeightMapDeformity;
+                    }
                 }
                 else
                 {

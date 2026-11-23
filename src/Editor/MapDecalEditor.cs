@@ -359,10 +359,13 @@ namespace KerbalKonstructs.UI
 
             Separator();
 
+            // like "Group" in the instance editor: a button that opens the group selector
+            DialogGUIButton groupButton = new DialogGUIButton(delegate { return selectedDecal.Group; }, SelectGroup, delegate { return !GroupSelectorUI.instance.IsOpen(); }, 185f, itemHeight, false);
+            groupButton.tooltipText = "Choose the group of this map decal";
             content.Add(new DialogGUIHorizontalLayout(
                 new DialogGUILabel("Group:", KKStyle.whiteLabel),
                 new DialogGUIFlexibleSpace(),
-                TextField(delegate { return selectedDecal.Group; }, delegate (string s) { selectedDecal.Group = s; }, 30, 185f)
+                groupButton
                 ));
 
             Separator();
@@ -512,6 +515,26 @@ namespace KerbalKonstructs.UI
             altitude = (selectedDecal.CelestialBody.pqsController.GetSurfaceHeight(selectedDecal.CelestialBody.GetRelSurfaceNVector(latitude, longitude)) - selectedDecal.CelestialBody.Radius + 1);
             selectedDecal.mapDecal.transform.position = selectedDecal.CelestialBody.GetWorldSurfacePosition(latitude, longitude, altitude);
             selectedDecal.AbsolutOffset = (float)altitude;
+        }
+
+
+        private void SelectGroup()
+        {
+            GroupSelectorUI.instance.Close();
+            GroupSelectorUI.showOnlyLocal = true;
+            GroupSelectorUI.titleText = "Select a new Group";
+            GroupSelectorUI.callBack = SetGroup;
+            GroupSelectorUI.instance.Open();
+        }
+
+
+        private void SetGroup(GroupCenter newGroup)
+        {
+            if (newGroup == null || selectedDecal == null)
+            {
+                return;
+            }
+            selectedDecal.Group = newGroup.Group;
         }
 
 
