@@ -45,6 +45,11 @@ namespace KerbalKonstructs
 
         public string MaterialOffset = "0";
 
+        // When true, the grass uses the ground texture and colour of the planet's own terrain (PQS) at the static's position
+        // instead of the near/far grass textures and grass colour configured here. Tarmac, blend mask and the third and
+        // fourth textures are unchanged. Can be overridden per instance ("UsePlanetTextures" in the GrassColor2 node).
+        public string DefaultUsePlanetTextures = "False";
+
         // internal variables below
 
 
@@ -89,6 +94,11 @@ namespace KerbalKonstructs
         internal static Color defaultColor = new Color(0.576471f, 0.611765f, 0.392157f, 1.00000f);
 
         internal bool useLegacy = false;
+
+        internal bool usePlanetTextures = false;
+        // what ApplySettings actually used, for the editor
+        internal bool planetTexturesActive = false;
+        internal string planetTextureBand = null;
 
 
 
@@ -147,6 +157,21 @@ namespace KerbalKonstructs
 
             //Material material = grassMaterials.ElementAt(matOffset);
 
+            Texture2D activeNearGrassTexture = nearGrassTexture;
+            Texture2D activeFarGrassTexture = farGrassTexture;
+            Color activeGrassColor = grassColor;
+
+            planetTexturesActive = false;
+            planetTextureBand = null;
+            if (usePlanetTextures && PlanetGroundTextures.TryGet(staticInstance, out PlanetGround planetGround))
+            {
+                activeNearGrassTexture = planetGround.texture;
+                activeFarGrassTexture = planetGround.texture;
+                activeGrassColor = planetGround.color;
+                planetTexturesActive = true;
+                planetTextureBand = planetGround.bandName;
+            }
+
             foreach (Material material in grassMaterials)
             {
 
@@ -155,7 +180,7 @@ namespace KerbalKonstructs
                 //    renderer.material.SetFloat("_TilingOffset", tilingOffset);
                 //}
 
-                material.SetColor("_GrassColor", grassColor);
+                material.SetColor("_GrassColor", activeGrassColor);
                 material.SetColor("_TarmacColor", tarmacColor);
                 //if (!staticInstance.model.isSquad)
                 //{
@@ -166,9 +191,9 @@ namespace KerbalKonstructs
 
 
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                material.SetTexture("_NearGrassTexture", nearGrassTexture);
+                material.SetTexture("_NearGrassTexture", activeNearGrassTexture);
                 //Log.Normal("GC: Setting Texture to: " + grasTextureName);
-                material.SetTexture("_FarGrassTexture", farGrassTexture);
+                material.SetTexture("_FarGrassTexture", activeFarGrassTexture);
                 //if (farGrassTexture != null)
                 //{
                 //    material.SetTexture("_FarGrassNormalTexture", KKGraphics.GetNormalMap(farGrassTexture));
@@ -344,6 +369,8 @@ namespace KerbalKonstructs
                 fourthTextureColor = ConfigNode.ParseColor(DefaultFourthTextureColor);
                 fourthTextureTileRandom = bool.Parse(DefaultFourthTextureTileRandom);
 
+                usePlanetTextures = ParseBool(DefaultUsePlanetTextures, false);
+
 
                 // try to import legacy values
                 if (staticInstance.GrasColor != Color.clear)
@@ -421,6 +448,8 @@ namespace KerbalKonstructs
                     thirdTextureGray = grassConfig.HasValue("ThirdTextureGrayScale") ? bool.Parse(grassConfig.GetValue("ThirdTextureGrayScale")) : false;
                     fourthTextureGray = grassConfig.HasValue("FourthTextureGrayScale") ? bool.Parse(grassConfig.GetValue("FourthTextureGrayScale")) : false;
 
+                    usePlanetTextures = grassConfig.HasValue("UsePlanetTextures") ? ParseBool(grassConfig.GetValue("UsePlanetTextures"), false) : ParseBool(DefaultUsePlanetTextures, false);
+
                     break;
                 }
 
@@ -482,7 +511,20 @@ namespace KerbalKonstructs
                 grassNode.AddValue("FourthTextureGrayScale", fourthTextureGray);
             }
 
+            // always written, so turning it off on a model that defaults to on is kept
+            grassNode.AddValue("UsePlanetTextures", usePlanetTextures);
+
             return grassNode;
+        }
+
+        private static bool ParseBool(string value, bool fallback)
+        {
+            return bool.TryParse(value, out bool result) ? result : fallback;
+        }
+
+        public void OnDestroy()
+        {
+            PlanetGroundTextures.Forget(staticInstance);
         }
 
 

@@ -150,54 +150,67 @@ namespace KerbalKonstructs.Core
         /// <returns></returns>
         public static Color GetSurfaceColorPQS(CelestialBody body, Double lat, Double lon)
         {
-            // Tell the PQS that our actions are not supposed to end up in the terrain
-            body.pqsController.isBuildingMaps = true;
-            body.pqsController.isFakeBuild = true;
-
-            // Create the vertex information
-            PQS.VertexBuildData data = new PQS.VertexBuildData
-            {
-                directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
-                //vertHeight = body.pqsController.radius
-                vertHeight = body.pqsController.GetSurfaceHeight(body.GetRelSurfaceNVector(lat, lon).normalized * body.Radius)
-            };
-
-            // Fetch all enabled Mods
-            //PQSMod[] mods = body.GetComponentsInChildren<PQSMod>(true).Where(m => m.modEnabled && m.sphere == body.pqsController).ToArray();
-            List<PQSMod> modsList = body.GetComponentsInChildren<PQSMod>(true).Where(m => m.modEnabled && m.sphere == body.pqsController).ToList();
-
-            modsList.Sort(delegate (PQSMod first, PQSMod second)
-            {
-                return first.order.CompareTo(second.order);
-            });
-            PQSMod[] mods = modsList.ToArray();
-
-
-            // Iterate over them and build the height at this point
-            // This is neccessary for mods that use the terrain height to 
-            // color the terrain (like HeightColorMap)
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuildHeight(data);
-            }
-
-            // Iterate over the mods again, this time build the color component 
-            foreach (PQSMod mod in mods)
-            {
-                mod.OnVertexBuild(data);
-            }
-
-            // Reset the PQS
-            body.pqsController.isBuildingMaps = false;
-            body.pqsController.isFakeBuild = false;
-
-            Color vertColor = data.vertColor;
+            Color vertColor = SampleSurfaceVertexColorPQS(body, lat, lon);
 
             vertColor += new Color(0.01f, 0.01f, 0.02f);
             vertColor.a = 1;
             // The terrain color is now stored in data.vertColor. 
             // For getting the height at this point you can use data.vertHeight
             return vertColor;
+        }
+
+        /// <summary>
+        /// Runs the PQS mods for one point and returns the raw vertex colour, as a terrain quad would get it.
+        /// The alpha channel is what the PQS terrain shaders use to blend the low, mid and high textures.
+        /// </summary>
+        internal static Color SampleSurfaceVertexColorPQS(CelestialBody body, Double lat, Double lon)
+        {
+            // Tell the PQS that our actions are not supposed to end up in the terrain
+            body.pqsController.isBuildingMaps = true;
+            body.pqsController.isFakeBuild = true;
+
+            try
+            {
+                // Create the vertex information
+                PQS.VertexBuildData data = new PQS.VertexBuildData
+                {
+                    directionFromCenter = body.GetRelSurfaceNVector(lat, lon).normalized,
+                    //vertHeight = body.pqsController.radius
+                    vertHeight = body.pqsController.GetSurfaceHeight(body.GetRelSurfaceNVector(lat, lon).normalized * body.Radius)
+                };
+
+                // Fetch all enabled Mods
+                List<PQSMod> modsList = body.GetComponentsInChildren<PQSMod>(true).Where(m => m.modEnabled && m.sphere == body.pqsController).ToList();
+
+                modsList.Sort(delegate (PQSMod first, PQSMod second)
+                {
+                    return first.order.CompareTo(second.order);
+                });
+                PQSMod[] mods = modsList.ToArray();
+
+
+                // Iterate over them and build the height at this point
+                // This is neccessary for mods that use the terrain height to 
+                // color the terrain (like HeightColorMap)
+                foreach (PQSMod mod in mods)
+                {
+                    mod.OnVertexBuildHeight(data);
+                }
+
+                // Iterate over the mods again, this time build the color component 
+                foreach (PQSMod mod in mods)
+                {
+                    mod.OnVertexBuild(data);
+                }
+
+                return data.vertColor;
+            }
+            finally
+            {
+                // Reset the PQS, even if a (third party) PQS mod threw
+                body.pqsController.isBuildingMaps = false;
+                body.pqsController.isFakeBuild = false;
+            }
         }
 
 

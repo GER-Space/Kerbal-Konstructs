@@ -76,6 +76,12 @@ namespace KerbalKonstructs.UI2
                 }, 80, 25, false)
                 ));
 
+            content.Add(new DialogGUIHorizontalLayout(
+                new DialogGUIToggle(selectedMod.usePlanetTextures, "Use planet ground textures", delegate (bool state) { selectedMod.usePlanetTextures = state; selectedMod.ApplySettings(); }, 200, 21),
+                new DialogGUIFlexibleSpace(),
+                new DialogGUILabel(delegate { return GetPlanetTextureStatus(); }, KKStyle.whiteLabel)
+                ));
+
 
             content.Add(VaiantList);
 
@@ -165,6 +171,20 @@ namespace KerbalKonstructs.UI2
         }
 
 
+
+        internal static string GetPlanetTextureStatus()
+        {
+            if (selectedMod == null || !selectedMod.usePlanetTextures)
+            {
+                return "";
+            }
+            if (selectedMod.planetTexturesActive)
+            {
+                return "PQS " + selectedMod.planetTextureBand + " texture";
+            }
+            // e.g. the "Ultra" terrain shader (texture arrays) or an unknown terrain shader
+            return "not available, using the textures below";
+        }
 
         internal static void SetGrassColor (Color color)
         {
