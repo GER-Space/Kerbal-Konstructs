@@ -72,7 +72,7 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// One button per map decal; clicking it opens the MapDecal editor for that decal.
+        /// One button per map decal; clicking it opens the Terrain editor for that decal.
         /// (was StaticsEditorGUI.ShowDecalsScroll)
         /// </summary>
         internal static DialogGUIScrollList DecalsList()
@@ -85,7 +85,7 @@ namespace KerbalKonstructs.UI2
                 // local copy for the delegates
                 MapDecalInstance decal = mapDecalInstance;
                 DialogGUIButton button = new DialogGUIButton(" " + decal.Name + " (" + decal.Group + ")", delegate { EditDecal(decal); },
-                    delegate { return IsInRange(decal) && (MapDecalEditor.selectedDecal != decal || !MapDecalEditor.Instance.IsOpen()); },
+                    delegate { return IsInRange(decal) && (TerrainEditor.selectedDecal != decal || !TerrainEditor.Instance.IsOpen()); },
                     windowWidth - 40f, itemHeight, false);
                 button.tooltipText = "Edit this map decal (only within " + (maxEditDistance / 1000f).ToString("0") + " km of the vessel)";
                 list.Add(button);
@@ -154,9 +154,9 @@ namespace KerbalKonstructs.UI2
         internal static void EditDecal(MapDecalInstance decal)
         {
             EditorGUI.CloseEditors();
-            MapDecalEditor.Instance.Close();
-            MapDecalEditor.selectedDecal = decal;
-            MapDecalEditor.Instance.Open();
+            TerrainEditor.Instance.Close();
+            TerrainEditor.selectedDecal = decal;
+            TerrainEditor.Instance.Open();
         }
 
 
@@ -168,16 +168,16 @@ namespace KerbalKonstructs.UI2
             EditorGUI.instance.Close();
             EditorGUI.selectedInstance = null;
 
-            MapDecalEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
+            TerrainEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 
-            if (MapDecalEditor.selectedDecal == null)
+            if (TerrainEditor.selectedDecal == null)
             {
                 Log.UserError("No MapDecalInstance created");
                 return;
             }
 
-            MapDecalEditor.Instance.Open();
-            Log.Normal("MapDecal Editor spawned");
+            TerrainEditor.Instance.Open();
+            Log.Normal("Terrain Editor spawned");
             // the list is rebuilt by OnUpdate, because the decal list changed
         }
 

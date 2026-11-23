@@ -8,21 +8,22 @@ using UnityEngine;
 namespace KerbalKonstructs.UI
 {
     /// <summary>
-    /// MapDecal editor (UI2 / PopupDialog version; was an IMGUI KKWindow).
-    /// Keeps the old API (MapDecalEditor.Instance.Open / Close / IsOpen, selectedDecal), so the
+    /// Terrain editor: edits a map decal, which shapes and colors the terrain (was "MapDecalEditor").
+    /// UI2 / PopupDialog version; was an IMGUI KKWindow.
+    /// Keeps the old API (TerrainEditor.Instance.Open / Close / IsOpen, selectedDecal), so the
     /// windows that use it don't change. The toggles are on/off switches (KKControls.Switch).
     /// </summary>
-    public class MapDecalEditor
+    public class TerrainEditor
     {
 
-        private static MapDecalEditor _instance = null;
-        public static MapDecalEditor Instance
+        private static TerrainEditor _instance = null;
+        public static TerrainEditor Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new MapDecalEditor();
+                    _instance = new TerrainEditor();
 
                 }
                 return _instance;
@@ -37,8 +38,8 @@ namespace KerbalKonstructs.UI
         private MultiOptionDialog optionDialog;
         private List<DialogGUIBase> content;
 
-        private const string windowName = "MapDecalEditor";
-        private const string windowTitle = "MapDecal Editor";
+        private const string windowName = "TerrainEditor";
+        private const string windowTitle = "Terrain Editor";
         // the widest row: label + number field + 4 buttons
         private const float windowWidth = 370f;
         private const float windowHeight = 100f;

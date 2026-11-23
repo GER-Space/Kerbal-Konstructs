@@ -210,7 +210,7 @@ namespace KerbalKonstructs
             if (StaticDatabase.HasGroupCenter(groupNameB))
             {
                 EditorGUI.CloseEditors();
-                MapDecalEditor.Instance.Close();
+                TerrainEditor.Instance.Close();
                 GroupEditor.instance.Close();
                 GroupEditor.selectedGroup = StaticDatabase.GetGroupCenter(groupNameB);
                 GroupEditor.instance.Open();

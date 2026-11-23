@@ -149,7 +149,7 @@ namespace KerbalKonstructs.UI2
 
             // leaving the terrain editor closes its windows
             MapDecalList.Close();
-            MapDecalEditor.Instance.Close();
+            TerrainEditor.Instance.Close();
         }
 
 

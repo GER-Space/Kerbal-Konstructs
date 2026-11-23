@@ -183,7 +183,7 @@
 		<Compile Include="Editor\KKEditorLogic.cs" />
 		<Compile Include="Editor\Shared\DrawObject.cs" />
 		<Compile Include="Editor\Shared\DrawTools.cs" />
-		<Compile Include="Editor\MapDecalEditor.cs" />
+		<Compile Include="Editor\TerrainEditor.cs" />
 		<Compile Include="Editor\InstanceEditor\FacilityEditor.cs" />
 		<Compile Include="Editor\InstanceEditor\LaunchSiteEditor.cs" />
 		<Compile Include="Editor\Shared\EditorGizmo.cs" />

@@ -262,7 +262,7 @@ namespace KerbalKonstructs.UI2
                 // leaving the editor: close the current editor's windows right away
                 // and clean up the selection (was StaticsEditorGUI.ToggleEditor / Close)
                 KKEditorLogic.CloseCurrentEditor();
-                MapDecalEditor.Instance.Close();
+                TerrainEditor.Instance.Close();
                 KerbalKonstructs.instance.DeletePreviewObject();
                 if (KerbalKonstructs.selectedInstance != null)
                 {

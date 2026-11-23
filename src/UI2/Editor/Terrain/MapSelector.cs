@@ -9,8 +9,8 @@ namespace KerbalKonstructs.UI2
 {
     /// <summary>
     /// Shows the height maps or the color maps as pictures in a grid of 3 x 3; scrolls when there are more than 9.
-    /// Clicking a picture sets it as the height / color map of the decal in the MapDecal editor.
-    /// (was the text lists under the "Height Map" and "Color Map" buttons of the MapDecal editor)
+    /// Clicking a picture sets it as the height / color map of the decal in the Terrain editor.
+    /// (was the text lists under the "Height Map" and "Color Map" buttons of the Terrain editor)
     /// </summary>
     internal class MapSelector
     {
@@ -250,8 +250,8 @@ namespace KerbalKonstructs.UI2
 
         private static void OnUpdate()
         {
-            // close with the MapDecal editor, or when another decal is selected there
-            if (!MapDecalEditor.Instance.IsOpen() || MapDecalEditor.selectedDecal != decal)
+            // close with the Terrain editor, or when another decal is selected there
+            if (!TerrainEditor.Instance.IsOpen() || TerrainEditor.selectedDecal != decal)
             {
                 Close();
             }
@@ -284,23 +284,23 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// Opens the window with the height or color maps, for the decal selected in the MapDecal editor
+        /// Opens the window with the height or color maps, for the decal selected in the Terrain editor
         /// </summary>
         internal static void Open(MapType type)
         {
-            if (MapDecalEditor.selectedDecal == null)
+            if (TerrainEditor.selectedDecal == null)
             {
                 return;
             }
             if (dialog != null)
             {
-                if (decal == MapDecalEditor.selectedDecal && mapType == type)
+                if (decal == TerrainEditor.selectedDecal && mapType == type)
                 {
                     return;
                 }
                 Close();
             }
-            decal = MapDecalEditor.selectedDecal;
+            decal = TerrainEditor.selectedDecal;
             mapType = type;
             windowTitle = (type == MapType.Height) ? "Select Height Map" : "Select Color Map";
             KKStyle.Init();
