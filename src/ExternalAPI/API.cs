@@ -17,6 +17,64 @@ namespace KerbalKonstructs
         public static Action<StaticInstance> OnStaticMouseExit = delegate { };
         public static Action<GroupCenter> OnGroupSaved = delegate { };
 
+        /// <summary>
+        /// Raised after a GrassColor2 or GrasColor module has found its grass renderers and switched them to the
+        /// KK ground shaders (KK/Ground_Multi_NoUV or KK/Diffuse_Multiply_Random).
+        /// Mods that replace the ground shader of statics (e.g. Parallax) can subscribe here instead of patching
+        /// FindModelGrasMaterials / FindSquadGrasMaterial by name.
+        /// The renderers belong to the static, so a subscriber may change their materials.
+        /// </summary>
+        public static Action<StaticInstance, Renderer[]> OnGrassMaterialsReady = delegate { };
+
+        /// <summary>
+        /// Raised after a static has been updated (moved, rotated, rescaled, activated or deactivated),
+        /// for example while it is edited in the instance editor.
+        /// Mods that cache anything about the static's position (such as the terrain colour below it) can refresh it here.
+        /// </summary>
+        public static Action<StaticInstance> OnStaticUpdated = delegate { };
+
+        /// <summary>
+        /// Calls every subscriber of an event separately, so an exception in another mod's handler
+        /// neither breaks KK nor stops the remaining subscribers.
+        /// </summary>
+        internal static void InvokeSafe<T>(Action<T> handlers, T arg)
+        {
+            if (handlers == null)
+            {
+                return;
+            }
+            foreach (Action<T> handler in handlers.GetInvocationList())
+            {
+                try
+                {
+                    handler(arg);
+                }
+                catch (Exception e)
+                {
+                    Log.UserError("API: an event subscriber threw an exception: " + e);
+                }
+            }
+        }
+
+        internal static void InvokeSafe<T1, T2>(Action<T1, T2> handlers, T1 arg1, T2 arg2)
+        {
+            if (handlers == null)
+            {
+                return;
+            }
+            foreach (Action<T1, T2> handler in handlers.GetInvocationList())
+            {
+                try
+                {
+                    handler(arg1, arg2);
+                }
+                catch (Exception e)
+                {
+                    Log.UserError("API: an event subscriber threw an exception: " + e);
+                }
+            }
+        }
+
         public static string SpawnObject(string modelName)
         {
             StaticModel model = StaticDatabase.GetModelByName(modelName);

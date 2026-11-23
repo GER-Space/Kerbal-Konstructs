@@ -152,18 +152,31 @@ namespace KerbalKonstructs
         /// <returns></returns>
 
 
+        // Compatibility note: Parallax patches this method by name (and the KK/Diffuse_Multiply_Random shader name)
+        // to replace the ground shader. Keep the name and keep it public. New integrations should use API.OnGrassMaterialsReady.
         public void FindModelGrasMaterials()
         {
+            List<Renderer> foundRenderers = new List<Renderer>();
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrasMeshName).ToArray();
             foreach (var transform in allTransforms)
             {
                 transform.name = "KKGrass";
                 Renderer grasRenderer = transform.GetComponent<Renderer>();
+                if (grasRenderer == null)
+                {
+                    continue;
+                }
+                foundRenderers.Add(grasRenderer);
                 grasMaterials.Add(grasRenderer.material);
                 //grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage);
                 grasRenderer.material.mainTexture = KKGraphics.GetTexture(GrasTextureImage, false, 0, true);
                 //grasRenderer.material.shader = Shader.Find("KSP/Scenery/Diffuse Multiply");
                 grasRenderer.material.shader = KKGraphics.GetShader("KK/Diffuse_Multiply_Random");
+            }
+
+            if (foundRenderers.Count > 0)
+            {
+                API.InvokeSafe(API.OnGrassMaterialsReady, staticInstance, foundRenderers.ToArray());
             }
         }
 

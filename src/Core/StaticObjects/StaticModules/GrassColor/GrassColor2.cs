@@ -266,8 +266,12 @@ namespace KerbalKonstructs
 
 
 
+        // Compatibility note: Parallax patches FindModelGrasMaterials and FindSquadGrasMaterial of this class by name
+        // (and the KK/Ground_Multi_NoUV shader name) to replace the ground shader. Keep these names and keep them public,
+        // or other mods break silently. New integrations should use API.OnGrassMaterialsReady instead.
         public void FindModelGrasMaterials()
         {
+            int firstNew = grassRenderers.Count;
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
             foreach (var transform in allTransforms)
             {
@@ -276,12 +280,29 @@ namespace KerbalKonstructs
                 grassRenderers.Add(grassRenderer);
                 grassMaterials.Add(grassRenderer.material);
                 grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
-                
 
+
+            }
+            RaiseGrassMaterialsReady(firstNew);
+        }
+
+        private void RaiseGrassMaterialsReady(int firstNew)
+        {
+            Renderer[] newRenderers = grassRenderers.Skip(firstNew).Where(r => r != null).Distinct().ToArray();
+            if (newRenderers.Length > 0)
+            {
+                API.InvokeSafe(API.OnGrassMaterialsReady, staticInstance, newRenderers);
             }
         }
 
         public void FindSquadGrasMaterial()
+        {
+            int firstNew = grassRenderers.Count;
+            FindSquadGrasMaterialRenderers();
+            RaiseGrassMaterialsReady(firstNew);
+        }
+
+        private void FindSquadGrasMaterialRenderers()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
             foreach (var transform in allTransforms)

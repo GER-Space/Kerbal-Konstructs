@@ -204,6 +204,8 @@ namespace KerbalKonstructs.Core
 
             // Notify modules about update
             gameObject.BroadcastMessage("StaticObjectUpdate");
+
+            API.InvokeSafe(API.OnStaticUpdated, this);
         }
 
         internal void HighlightObject(Color highlightColor)
