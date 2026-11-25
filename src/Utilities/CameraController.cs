@@ -94,10 +94,95 @@ namespace KerbalKonstructs.Core
         /// Set the SpaceCenterCam to the location os the current LaunchSite
         /// </summary>
         /// <param name="currentSite"></param>
+        // true once the stock camera start position has been saved to the KSC launch sites
+        private static bool stockCamSaved = false;
+
+        /// <summary>
+        /// Saves the space center camera's own start position and heading (as KSP, or a planet pack, set it up)
+        /// to the KSC launch sites LaunchPad and Runway. Must run in the space center scene before KK changes the camera;
+        /// it only saves once per game session.
+        /// </summary>
+        internal static void SaveStockSpaceCenterCam()
+        {
+            if (stockCamSaved)
+            {
+                return;
+            }
+
+            SpaceCenterCamera2 scCam = GetSceneSpaceCenterCam();
+            if (scCam == null || string.IsNullOrEmpty(scCam.initialPositionTransformName))
+            {
+                Log.Normal("No space center camera found to save the KSC camera position from");
+                return;
+            }
+
+            foreach (KKLaunchSite site in new KKLaunchSite[] { LaunchSiteManager.launchpad, LaunchSiteManager.runway })
+            {
+                site.cameraPQSName = scCam.pqsName;
+                site.cameraTransformName = scCam.initialPositionTransformName;
+                site.InitialCameraRotation = scCam.rotationInitial;
+                site.cameraAltitude = scCam.altitudeInitial;
+                site.cameraElevation = scCam.elevationInitial;
+                site.cameraZoom = scCam.zoomInitial;
+                site.hasStockCamera = true;
+            }
+            stockCamSaved = true;
+
+            Log.Normal("Saved KSC camera: transform: " + scCam.initialPositionTransformName + ", heading: " + scCam.rotationInitial +
+                ", altitude: " + scCam.altitudeInitial + ", elevation: " + scCam.elevationInitial + ", zoom: " + scCam.zoomInitial);
+        }
+
+        /// <summary>
+        /// The camera of the loaded space center scene (FindObjectsOfTypeAll also returns prefabs and inactive copies)
+        /// </summary>
+        private static SpaceCenterCamera2 GetSceneSpaceCenterCam()
+        {
+            SpaceCenterCamera2[] cams = Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>();
+            SpaceCenterCamera2 sceneCam = cams.FirstOrDefault(cam => cam.gameObject.scene.IsValid());
+            return sceneCam ?? cams.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Puts the space center camera back to the start position and heading saved for a KSC launch site
+        /// </summary>
+        private static void ApplyStockSpaceCenterCam(SpaceCenterCamera2 scCam, KKLaunchSite site)
+        {
+            scCam.pqsName = site.cameraPQSName;
+            scCam.initialPositionTransformName = site.cameraTransformName;
+            scCam.rotationInitial = site.InitialCameraRotation;
+            scCam.altitudeInitial = site.cameraAltitude;
+            scCam.elevationInitial = site.cameraElevation;
+            scCam.zoomInitial = site.cameraZoom;
+
+            // The camera nests itself under this transform in its Start(). If Start() has already run, do it here.
+            Transform stockParent = site.body.pqsController.transform.Find(site.cameraTransformName);
+            if (stockParent != null)
+            {
+                scCam.transform.parent = stockParent;
+                scCam.transform.position = stockParent.position;
+            }
+            else
+            {
+                Log.UserWarning("Cannot find the KSC camera transform: " + site.cameraTransformName);
+            }
+            scCam.ResetCamera();
+        }
+
         public static void SetSpaceCenterCam(KKLaunchSite currentSite)
         {
+            KKLaunchSite kscSite = LaunchSiteManager.launchpad;
 
-            if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
+            if (KerbalKonstructs.focusLastLaunchSite && currentSite.hasStockCamera && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
+            {
+                // KSC launch sites: use the camera's own start position and heading
+                foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                {
+                    Log.Normal("Resetting to: " + currentSite.LaunchSiteName + " (KSC camera)");
+                    ApplyStockSpaceCenterCam(scCam, currentSite);
+                }
+                KerbalKonstructs.scCamWasAltered = false;
+            }
+            else if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body.name == ConfigUtil.GetCelestialBody("HomeWorld").name))
             //if (KerbalKonstructs.focusLastLaunchSite && (currentSite.body == FlightGlobals.currentMainBody))
             {
                 float nomHeight = 45f - (float)currentSite.body.GetAltitude(currentSite.staticInstance.transform.position);
@@ -115,6 +200,15 @@ namespace KerbalKonstructs.Core
                     scCam.ResetCamera();
                     KerbalKonstructs.scCamWasAltered = true;
                 }
+            }
+            else if (kscSite.hasStockCamera)
+            {
+                foreach (SpaceCenterCamera2 scCam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                {
+                    Log.Normal("Resetting to KSC (KSC camera)");
+                    ApplyStockSpaceCenterCam(scCam, kscSite);
+                }
+                KerbalKonstructs.scCamWasAltered = false;
             }
             else
             {
