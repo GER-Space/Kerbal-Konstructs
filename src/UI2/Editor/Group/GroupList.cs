@@ -140,7 +140,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void EditGroup(GroupCenter group)
         {
-            EditorGUI.CloseEditors();
+            InstanceEditor.CloseEditors();
             TerrainEditor.Instance.Close();
             GroupEditor.instance.Close();
             GroupEditor.selectedGroup = group;
@@ -158,9 +158,9 @@ namespace KerbalKonstructs.UI2
             {
                 return;
             }
-            EditorGUI.instance.Close();
+            InstanceEditor.instance.Close();
             TerrainEditor.Instance.Close();
-            EditorGUI.selectedInstance = null;
+            InstanceEditor.selectedInstance = null;
 
             GroupCenter groupCenter = new GroupCenter
             {

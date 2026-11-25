@@ -153,7 +153,7 @@ namespace KerbalKonstructs.UI2
 
         internal static void EditDecal(MapDecalInstance decal)
         {
-            EditorGUI.CloseEditors();
+            InstanceEditor.CloseEditors();
             TerrainEditor.Instance.Close();
             TerrainEditor.selectedDecal = decal;
             TerrainEditor.Instance.Open();
@@ -165,8 +165,8 @@ namespace KerbalKonstructs.UI2
         /// </summary>
         internal static void SpawnNewDecal()
         {
-            EditorGUI.instance.Close();
-            EditorGUI.selectedInstance = null;
+            InstanceEditor.instance.Close();
+            InstanceEditor.selectedInstance = null;
 
             TerrainEditor.selectedDecal = MapDecalUtils.SpawnNewDecalInstance();
 

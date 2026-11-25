@@ -210,7 +210,7 @@ namespace KerbalKonstructs
             string groupNameB = $"{bodyName}_{groupName}";
             if (StaticDatabase.HasGroupCenter(groupNameB))
             {
-                EditorGUI.CloseEditors();
+                InstanceEditor.CloseEditors();
                 TerrainEditor.Instance.Close();
                 GroupEditor.instance.Close();
                 GroupEditor.selectedGroup = StaticDatabase.GetGroupCenter(groupNameB);
@@ -309,8 +309,8 @@ namespace KerbalKonstructs
                 StaticInstance instance = StaticDatabase.instancedByUUID[uuid];
                 GroupCenter group = StaticDatabase.GetGroupCenter($"{bodyName}_{groupName}");
 
-                EditorGUI.selectedInstance = instance;
-                EditorGUI.instance.SetGroup(group);
+                InstanceEditor.selectedInstance = instance;
+                InstanceEditor.instance.SetGroup(group);
 
                 return true;
             }

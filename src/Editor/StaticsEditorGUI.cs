@@ -1,4 +1,5 @@
 ﻿using KerbalKonstructs.Core;
+using KerbalKonstructs.UI2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,9 +187,9 @@ namespace KerbalKonstructs.UI
                 //Log.Normal("Try to select Object: " + myHitinstance.mesh.name);
                 myHitinstance.HighlightObject(XKCDColors.Green_Yellow);
                 KerbalKonstructs.SelectInstance(myHitinstance, true);
-                if (!EditorGUI.instance.IsOpen())
+                if (!InstanceEditor.instance.IsOpen())
                 {
-                    EditorGUI.instance.Open();
+                    InstanceEditor.instance.Open();
                 }
             }
 

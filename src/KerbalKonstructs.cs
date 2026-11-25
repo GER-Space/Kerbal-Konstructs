@@ -2,6 +2,7 @@
 using KerbalKonstructs.Core;
 using KerbalKonstructs.Modules;
 using KerbalKonstructs.UI;
+using KerbalKonstructs.UI2;
 using KSP.UI.Screens;
 using System;
 using System.Collections;
@@ -792,7 +793,7 @@ namespace KerbalKonstructs
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                EditorGUI.instance.CheckEditorKeys();
+                InstanceEditor.instance.CheckEditorKeys();
 
                 GroupEditor.instance.CheckEditorKeys();
 

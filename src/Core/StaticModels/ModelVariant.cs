@@ -159,7 +159,7 @@ namespace KerbalKonstructs.Core
 
             variant.DeactivateGameObjects(instance.mesh);
 
-            if (instance == UI.EditorGUI.selectedInstance)
+            if (instance == UI2.InstanceEditor.selectedInstance)
             {
                 instance.gameObject.BroadcastMessage("StaticObjectUpdate");
             }

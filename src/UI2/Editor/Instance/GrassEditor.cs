@@ -1,514 +1,80 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Globalization;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-
-
 
 namespace KerbalKonstructs.UI2
 {
-    class GrassEditor
+    /// <summary>
+    /// Grass Editor: edits the GrassColor2 module(s) of the static selected in the Instance editor.
+    /// The texture rows are buttons that open the TexturePicker (pictures in a 3 x 3 grid);
+    /// the grayscale / random options are on/off switches. Changes apply at once.
+    /// </summary>
+    internal class GrassEditor : KKEditorWindow
     {
-        internal static PopupDialog dialog;
-        internal static MultiOptionDialog optionDialog;
-        internal static List<DialogGUIBase> content;
+        private static GrassEditor _instance = null;
+        internal static GrassEditor instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GrassEditor();
+                }
+                return _instance;
+            }
+        }
 
-        internal static string windowName = "GrassEditor";
-        internal static string windowMessage = null;
-        internal static string windowTitle = "Grass Editor";
+        protected override string WindowName => "GrassEditor";
+        protected override string WindowTitle => "Grass Editor";
+        protected override float WindowWidth => 380f;
+        protected override Vector2 DefaultPosition => new Vector2(0.55f, 0.5f);
 
-        internal static Rect windowRect;
-
-        //internal static float windowWidth = Screen.width * 0.9f;
-        internal static float windowWidth = 300f;
-        internal static float windowHeight = 300f;
-
-        internal static bool showTitle = false;
-        internal static bool showKKTitle = true;
-        internal static bool isModal = true;
-
-
-        internal static bool placeToParent = false;
-        internal static bool checkForParent = true;
-
-        internal static Func<bool> parentWindow = EditorGUI.instance.IsOpen;
-
-        internal static string NearGrassTexture;
-        internal static string FarGrassTexture;
-        internal static string TamarcTexture;
-        internal static string BlendMaskTexture;
-
-        //internal static string GrassColor = "1,1,1,1";
-        //internal static string TarmacColor = "1,1,1,1";
-        //internal static string ThirdColor = "1,1,1,0";
-        //internal static string FourthcColor = "1,1,1,0";
-
-        internal static string NearGrassTiling;
-        internal static string FarGrassTiling;
-        internal static string BlendDistance;
-
-        internal static string ThirdTexture;
-        internal static string ThirdTextureTiling;
-
-        internal static string FourthTexture;
-        internal static string FourthTextureTiling;
+        private const float textureButtonWidth = 200f;
+        private const float colorFieldWidth = 150f;
 
         internal static StaticInstance staticInstance = null;
         internal static GrassColor2 selectedMod = null;
-        internal static int offset = 0;
 
 
-
-        internal static void CreateContent()
-        {
-            content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUILabel("Grass Color Editor", HighLogic.UISkin.label),
-                new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("select preset", delegate { GrassColorPresetUI2.callBack = selectedMod.UpdateCallBack; GrassColorPresetUI2.instance.Open(); }, 50, 25, false),
-                new DialogGUIFlexibleSpace(),
-                new DialogGUIButton("Pick Surface Color", delegate {
-                    selectedMod.grassColor = GrassColorUtils.GetUnderGroundColor(selectedMod);
-                    selectedMod.ApplySettings();
-                }, 80, 25, false)
-                ));
-
-
-            content.Add(VaiantList);
-
-            content.Add(new DialogGUIVerticalLayout(
-                 new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Grass Color : ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.grassColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.grassColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetGrassColor; ; ColorSelector.selectedColor = selectedMod.grassColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("NearGrassTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(NearGrassTexture, false, 40, SetNearGrassTexture, delegate { return GetTextureName("nearGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("nearGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("NearGrassTiling", KKStyle.whiteLabel),
-                    new DialogGUITextInput(NearGrassTiling, NearGrassTiling, false, 10, SetNearTile, 25),
-                    new DialogGUIToggle(selectedMod.nearGrassTextureGray, "GrayScale", delegate (bool state) { selectedMod.nearGrassTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
-
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("FarGrassTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FarGrassTexture, false, 40, SetFarGrassTexture, delegate { return GetTextureName("farGrassTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("farGrassTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("FarGrassTiling", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FarGrassTiling, FarGrassTiling, false, 10, SetFarTile, 25),
-                    new DialogGUIToggle(selectedMod.farGrassTextureGray, "GrayScale", delegate (bool state) { selectedMod.farGrassTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("FarBlendDistance", KKStyle.whiteLabel),
-                    new DialogGUITextInput(BlendDistance, BlendDistance, false, 10, SetBlendDistance, 25)),
-                new DialogGUIHorizontalLayout(
-
-                    new DialogGUILabel("TamarcTexture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(TamarcTexture, false, 40, SetTarmacTexture, delegate { return GetTextureName("tarmacTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("tarmacTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac Color : ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.tarmacColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.tarmacColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetTarmacColor; ; ColorSelector.selectedColor = selectedMod.tarmacColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
-               new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Tarmac Tiling: U: ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("0", false, 10, SetTarmacUStr, GetTarmacUStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25),
-                    new DialogGUILabel("V: ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("0", false, 10, SetTarmacVStr, GetTarmacVStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25)),
-               new DialogGUIHorizontalLayout(
-                   new DialogGUIToggle(selectedMod.tarmacTileRandom,"Tarmac Random", delegate(bool state) { selectedMod.tarmacTileRandom = state; selectedMod.ApplySettings(); }, 120,21),
-                   new DialogGUIToggle(selectedMod.tarmacTextureGray, "Tarmac GrayScale", delegate (bool state) { selectedMod.tarmacTextureGray = state; selectedMod.ApplySettings(); }, 120, 21)),
-
-                new DialogGUIHorizontalLayout(
-                    new DialogGUIButton("  R", ReloadBlendMask, 21f, 21.0f, false, HighLogic.UISkin.label),
-                    new DialogGUILabel("BlendMask", KKStyle.whiteLabel),
-                    new DialogGUITextInput(BlendMaskTexture, false, 40, SetBlendMaskTexture, delegate { return GetTextureName("blendMaskTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("blendMaskTextureName", TextureUsage.BlendMask); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-
-                  new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Third Texture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(ThirdTexture, false, 40, SetThirdTexture, delegate { return GetTextureName("thirdTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("thirdTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                  new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Third Texture Tiling: ", KKStyle.whiteLabel),
-                    new DialogGUITextInput(ThirdTextureTiling, ThirdTextureTiling, false, 10, SetThirdTile, 25),
-                    new DialogGUIToggle(selectedMod.thirdTextureTileRandom, "Random", delegate (bool state) { selectedMod.thirdTextureTileRandom = state; selectedMod.ApplySettings(); }, 60, 21),
-                    new DialogGUIToggle(selectedMod.thirdTextureGray, "Gray", delegate (bool state) { selectedMod.thirdTextureGray = state; selectedMod.ApplySettings(); }, 60, 21)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Third Color : ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("", false, 40, delegate(string colorString) { selectedMod.thirdTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.thirdTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetThirdColor; ; ColorSelector.selectedColor = selectedMod.thirdTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel)),
-
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Fourth Texture", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FourthTexture, false, 40, SetFourthTexture, delegate { return GetTextureName("fourthTextureName"); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("  S", delegate { OpenTextureSelector("fourthTextureName"); }, 21f, 21.0f, false, HighLogic.UISkin.label)),
-                  new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Fourth Texture Tiling: ", KKStyle.whiteLabel),
-                    new DialogGUITextInput(FourthTextureTiling, FourthTextureTiling, false, 10, SetFourthTile, 25),
-                    new DialogGUIToggle(selectedMod.fourthTextureTileRandom, "Random", delegate (bool state) { selectedMod.fourthTextureTileRandom = state; selectedMod.ApplySettings(); }, 60, 21),
-                    new DialogGUIToggle(selectedMod.fourthTextureGray, "Gray", delegate (bool state) { selectedMod.fourthTextureGray = state; selectedMod.ApplySettings(); }, 60, 21)),
-                new DialogGUIHorizontalLayout(
-                    new DialogGUILabel("Fourth Color : ", KKStyle.whiteLabel),
-                    new DialogGUITextInput("", false, 40, delegate (string colorString) { selectedMod.fourthTextureColor = ConfigNode.ParseColor(colorString); return colorString; }, delegate { return ConfigNode.WriteColor(selectedMod.fourthTextureColor); }, TMPro.TMP_InputField.ContentType.Standard, 25),
-                    new DialogGUIButton("Edit", delegate { ColorSelector.callBack = SetFourthColor; ; ColorSelector.selectedColor = selectedMod.fourthTextureColor; ColorSelector.Open(); }, 40f, 21.0f, false, KKStyle.whiteLabel))
-
-                //new DialogGUIHorizontalLayout(
-                //    new DialogGUILabel("Overall Tiling", KKStyle.whiteLabel),
-                //    new DialogGUISlider(GetOffsetTiling, 0, 200f, true, 140, 25, SetOffsetTiling),
-                //    new DialogGUITextInput("0", false, 10, SetOffsetTilingStr, GetOffsetTilingStr, TMPro.TMP_InputField.ContentType.DecimalNumber, 25))
-
-                )); ;
-        }
-
-
-
-        internal static void SetGrassColor (Color color)
-        {
-            selectedMod.grassColor = color;
-            selectedMod.ApplySettings();
-        }
-
-        internal static void SetTarmacColor(Color color)
-        {
-            selectedMod.tarmacColor = color;
-            selectedMod.ApplySettings();
-        }
-
-        internal static string SetThirdTexture(string newTexture)
-        {
-            selectedMod.thirdTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-        internal static void SetThirdColor(Color color)
-        {
-            selectedMod.thirdTextureColor = color;
-            selectedMod.ApplySettings();
-        }
-
-
-        internal static string SetFourthTexture(string newTexture)
-        {
-            selectedMod.fourthTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-        internal static void SetFourthColor(Color color)
-        {
-            selectedMod.fourthTextureColor = color;
-            selectedMod.ApplySettings();
-        }
-
-
-
-        internal static string SetThirdTile(string newTile)
-        {
-            float value;
-            if (MiscUtils.TryParseFloat(newTile, out value))
-            {
-                selectedMod.thirdTextureTiling = value;
-                selectedMod.ApplySettings();
-            }
-            return newTile;
-        }
-
-        internal static string SetFourthTile(string newTile)
-        {
-            float value;
-            if (MiscUtils.TryParseFloat(newTile, out value))
-            {
-                selectedMod.fourthTextureTiling = value;
-                selectedMod.ApplySettings();
-            }
-            return newTile;
-        }
-
-
-        internal static void ReloadBlendMask()
-        {
-            KKGraphics.RemoveCache(selectedMod.blendMaskTextureName);
-            selectedMod.ApplySettings();
-        }
-
-
-        internal static string SetTarmacUStr(string newUvalue)
-        {
-            float uValue;
-            if (!MiscUtils.TryParseFloat(newUvalue, out uValue))
-            {
-                return newUvalue;
-            }
-            selectedMod.tarmacTiling = new Vector2(uValue, selectedMod.tarmacTiling.y);
-            selectedMod.ApplySettings();
-            return selectedMod.tarmacTiling.x.ToString();
-        }
-
-        internal static string SetTarmacVStr(string newVvalue)
-        {
-            float vValue;
-            if (!MiscUtils.TryParseFloat(newVvalue, out vValue))
-            {
-                return newVvalue;
-            }
-            selectedMod.tarmacTiling = new Vector2(selectedMod.tarmacTiling.x, vValue);
-            selectedMod.ApplySettings();
-            return selectedMod.tarmacTiling.y.ToString();
-        }
-
-        internal static string GetTarmacUStr()
-        {
-            return selectedMod.tarmacTiling.x.ToString();
-        }
-
-        internal static string GetTarmacVStr()
-        {
-            return selectedMod.tarmacTiling.y.ToString();
-        }
-
-
-
-        internal static string GetTextureName(string fieldName)
-        {
-            return typeof(GrassColor2).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedMod) as string;
-        }
-
-
-        internal static void OpenTextureSelector(string fieldName, TextureUsage filter = TextureUsage.Texture)
-        {
-            TextureSelector.fieldName = fieldName;
-            TextureSelector.textureFilter = filter;
-            TextureSelector.Open();
-        }
-
-
-        internal static string SetNearGrassTexture(string newTexture)
-        {
-            selectedMod.nearGrassTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-        internal static string SetFarGrassTexture(string newTexture)
-        {
-            selectedMod.farGrassTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-        internal static string SetTarmacTexture(string newTexture)
-        {
-            selectedMod.tarmacTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-        internal static string SetBlendMaskTexture(string newTexture)
-        {
-            selectedMod.blendMaskTextureName = newTexture;
-            selectedMod.ApplySettings();
-            return newTexture;
-        }
-
-
-        internal static string SetNearTile(string newTile)
-        {
-            float value;
-            if (MiscUtils.TryParseFloat(newTile, out value))
-            {
-                selectedMod.nearGrassTiling = value;
-                selectedMod.ApplySettings();
-            }
-            return newTile;
-        }
-
-        internal static string SetFarTile(string newTile)
-        {
-            float value;
-            if (MiscUtils.TryParseFloat(newTile, out value))
-            {
-                selectedMod.farGrassTiling = value;
-                selectedMod.ApplySettings();
-            }
-            return newTile;
-        }
-        internal static string SetBlendDistance(string newTile)
-        {
-            float value;
-            if (MiscUtils.TryParseFloat(newTile, out value))
-            {
-                selectedMod.farGrassBlendDistance = value;
-                selectedMod.ApplySettings();
-            }
-            return newTile;
-        }
-
-
-        
-
-
-        internal static DialogGUIScrollList VaiantList
-        {
-            get
-            {
-                List<DialogGUIBase> list = new List<DialogGUIBase>();
-                list.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-                list.Add(new DialogGUIFlexibleSpace());
-                //list.Add(new DialogGUIButton("Default", delegate { SetVariant(null);}, 140.0f, 30.0f, true));
-
-                foreach (var grassMod in EditorGUI.selectedInstance.mesh.GetComponents<GrassColor2>())
-                {
-
-                        list.Add(new DialogGUIButton(grassMod.GrassMeshName, delegate { SelectGrass(grassMod);  }, delegate { return (selectedMod != grassMod) ; }, 210.0f, 21.0f, false));
-
-                }
-                list.Add(new DialogGUIFlexibleSpace());
-                var layout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(6, 24, 10, 10), TextAnchor.MiddleLeft, list.ToArray());
-                var scroll = new DialogGUIScrollList(new Vector2(210, 60), new Vector2(200, 25f * (list.Count-3)), false, true, layout);
-                return scroll;
-            }
-        }
-
-
-        internal static void KKTitle()
-        {
-            if (!showKKTitle)
-            {
-                return;
-            }
-
-
-            var button = new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
-            {
-                image = null,
-                tint = new Color(0, 0, 0, 0),
-                useColor = false
-            };
-
-            content.Add(new DialogGUIHorizontalLayout(
-                new DialogGUILabel("-KK-", KKStyle.windowTitle),
-                new DialogGUIFlexibleSpace(),
-
-                new DialogGUILabel(windowTitle, KKStyle.windowTitle),
-                new DialogGUIFlexibleSpace(),
-                //new DialogGUIButton("X", delegate { Close(); }, 21f, 21.0f, true, KKStyle.DeadButtonRed)
-                button
-                ));
-        }
-
-
-
-
-
-        internal static void CreateMultiOptionDialog()
-        {
-            windowRect = new Rect(WindowManager2.GetPosition(windowName), new Vector2(windowWidth, windowHeight));
-            optionDialog = new MultiOptionDialog(windowName, windowMessage, windowTitle, null, windowRect, content.ToArray());
-
-        }
-
-
-        internal static void CreatePopUp()
-        {
-            dialog = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
-                   new Vector2(0.5f, 0.5f), optionDialog,
-                   false,
-                   null, isModal);
-            // allow dragging the window up to the screen border
-            KKWindowDrag.Attach(dialog);
-            if (!showTitle)
-            {
-                dialog.gameObject.GetChild("Title").SetActive(false);
-            }
-            if (checkForParent)
-            {
-                dialog.dialogToDisplay.OnUpdate += CheckForParent;
-            }
-            if (placeToParent)
-            {
-                dialog.dialogToDisplay.OnUpdate += PlaceToParent;
-            }
-
-        }
-
-        internal static void PlaceToParent()
-        {
-
-        }
-
-
-        internal static void CheckForParent()
-        {
-            if (checkForParent)
-            {
-                if (parentWindow != null && !parentWindow.Invoke())
-                {
-                    Close();
-                }
-                if (staticInstance != EditorGUI.selectedInstance)
-                {
-                    Close();
-                }
-            }
-        }
-
-
-
+        #region Window handling (static API used by the Instance editor)
 
         internal static void Open()
         {
-            KKStyle.Init();
-            staticInstance = EditorGUI.selectedInstance;
+            StaticInstance instanceToEdit = InstanceEditor.selectedInstance;
+            if (instanceToEdit == null || instanceToEdit.mesh == null)
+            {
+                return;
+            }
+            GrassColor2[] mods = instanceToEdit.mesh.GetComponents<GrassColor2>();
+            if (mods.Length == 0)
+            {
+                Log.UserError("No Grass Mod Found");
+                return;
+            }
+            instance.DismissDialog();
+            staticInstance = instanceToEdit;
             staticInstance.HighlightObject(Color.clear);
-            selectedMod = EditorGUI.selectedInstance.mesh.GetComponents<GrassColor2>()[0];
-            ReadMod(selectedMod);
-            //windowRect = new Rect(CreateBesidesMainwindow(), new Vector2(windowWidth, windowHeight));
-            content = new List<DialogGUIBase>();
-            KKTitle();
-            CreateContent();
-            CreateMultiOptionDialog();
-            CreatePopUp();
-
+            selectedMod = mods[0];
+            instance.Build();
         }
 
 
-        internal static void Close()
+        internal static void CloseWindow()
         {
-            if (EditorGUI.instance.IsOpen() && (EditorGUI.selectedInstance == staticInstance))
-            {
-                staticInstance.HighlightObject(XKCDColors.Green_Yellow);
-            }
-
-            if (dialog != null)
-            {
-                WindowManager2.SavePosition(dialog);
-                dialog.Dismiss();
-            }
-
-            dialog = null;
-            optionDialog = null;
-
+            instance.Close();
         }
 
 
-        internal static bool isOpen
-        {
-            get
-            {
-                return (dialog != null);
-            }
-        }
+        internal static bool isOpen => (_instance != null && _instance.IsOpen());
+
 
         internal static void Toggle()
         {
             if (isOpen)
             {
-                Close();
+                CloseWindow();
             }
             else
             {
@@ -516,38 +82,235 @@ namespace KerbalKonstructs.UI2
             }
         }
 
-        internal static void ReadMod(GrassColor2 mod)
+
+        public override void Close()
         {
-            if (mod == null)
+            if (InstanceEditor.instance.IsOpen() && staticInstance != null && InstanceEditor.selectedInstance == staticInstance)
             {
-                Log.UserError("No Grass Mod Found");
-                return;
+                staticInstance.HighlightObject(XKCDColors.Green_Yellow);
             }
-            NearGrassTexture = mod.nearGrassTexture != null ? mod.nearGrassTextureName : "no texture";
-            FarGrassTexture = mod.farGrassTexture != null ? mod.farGrassTextureName : "no texture";
-            TamarcTexture = mod.tarmacTexture != null ? mod.tarmacTextureName : "no texture";
-            BlendMaskTexture = mod.blendMaskTexture != null ? mod.blendMaskTextureName : "no texture";
-
-            NearGrassTiling = mod.nearGrassTiling.ToString();
-            FarGrassTiling = mod.farGrassTiling.ToString();
-            BlendDistance = mod.farGrassBlendDistance.ToString();
-
-            ThirdTexture = mod.thirdTexture != null ? mod.thirdTextureName : "no texture";
-            ThirdTextureTiling = mod.thirdTextureTiling.ToString();
-
-            FourthTexture = mod.fourthTexture != null ? mod.fourthTextureName : "no texture";
-            FourthTextureTiling = mod.fourthTextureTiling.ToString();
-
+            TexturePicker.CloseWindow();
+            ColorSelector.Close();
+            DismissDialog();
         }
 
 
-        internal static void SelectGrass(GrassColor2 grass)
+        protected override void OnUpdate()
+        {
+            // close with the Instance editor, or when another static is selected there
+            if (!InstanceEditor.instance.IsOpen() || staticInstance != InstanceEditor.selectedInstance || selectedMod == null)
+            {
+                Close();
+            }
+        }
+
+        #endregion
+
+
+        #region Content
+
+        protected override void CreateContent()
+        {
+            DialogGUIButton presetButton = new DialogGUIButton("Select Preset", OpenPresets, 120f, itemHeight, false);
+            presetButton.tooltipText = "Set colors and textures from a grass preset";
+            DialogGUIButton surfaceButton = new DialogGUIButton("Pick Surface Color", delegate { selectedMod.grassColor = GrassColorUtils.GetUnderGroundColor(selectedMod); selectedMod.ApplySettings(); }, 140f, itemHeight, false);
+            surfaceButton.tooltipText = "Use the color of the terrain below the static as grass color";
+            content.Add(new DialogGUIHorizontalLayout(presetButton, new DialogGUIFlexibleSpace(), surfaceButton));
+
+            // more than one grass mesh: choose which one to edit
+            GrassColor2[] mods = staticInstance.mesh.GetComponents<GrassColor2>();
+            if (mods.Length > 1)
+            {
+                List<DialogGUIBase> meshButtons = new List<DialogGUIBase> { Label("Mesh:"), new DialogGUIFlexibleSpace() };
+                foreach (GrassColor2 mod in mods)
+                {
+                    GrassColor2 thisMod = mod;
+                    meshButtons.Add(new DialogGUIButton(thisMod.GrassMeshName, delegate { SelectGrass(thisMod); }, delegate { return selectedMod != thisMod; }, 90f, itemHeight, false));
+                }
+                content.Add(new DialogGUIHorizontalLayout(meshButtons.ToArray()));
+            }
+
+            // grass
+            Separator();
+            content.Add(ColorRow("Grass color:", delegate { return selectedMod.grassColor; }, delegate (Color c) { selectedMod.grassColor = c; }));
+            content.Add(TextureRow("Near texture:", "Near Grass Texture", TextureUsage.Texture, delegate { return selectedMod.nearGrassTextureName; }, delegate (string t) { selectedMod.nearGrassTextureName = t; }));
+            content.Add(FloatRow("Near tiling:", delegate { return selectedMod.nearGrassTiling; }, delegate (float v) { selectedMod.nearGrassTiling = v; }));
+            content.Add(SwitchRow("Near texture grayscale:", delegate { return selectedMod.nearGrassTextureGray; }, delegate (bool v) { selectedMod.nearGrassTextureGray = v; selectedMod.ApplySettings(); }));
+            content.Add(TextureRow("Far texture:", "Far Grass Texture", TextureUsage.Texture, delegate { return selectedMod.farGrassTextureName; }, delegate (string t) { selectedMod.farGrassTextureName = t; }));
+            content.Add(FloatRow("Far tiling:", delegate { return selectedMod.farGrassTiling; }, delegate (float v) { selectedMod.farGrassTiling = v; }));
+            content.Add(SwitchRow("Far texture grayscale:", delegate { return selectedMod.farGrassTextureGray; }, delegate (bool v) { selectedMod.farGrassTextureGray = v; selectedMod.ApplySettings(); }));
+            content.Add(FloatRow("Far blend distance:", delegate { return selectedMod.farGrassBlendDistance; }, delegate (float v) { selectedMod.farGrassBlendDistance = v; }));
+
+            // tarmac
+            Separator();
+            content.Add(TextureRow("Tarmac texture:", "Tarmac Texture", TextureUsage.Texture, delegate { return selectedMod.tarmacTextureName; }, delegate (string t) { selectedMod.tarmacTextureName = t; }));
+            content.Add(ColorRow("Tarmac color:", delegate { return selectedMod.tarmacColor; }, delegate (Color c) { selectedMod.tarmacColor = c; }));
+            content.Add(new DialogGUIHorizontalLayout(
+                Label("Tarmac tiling U:"),
+                TextField(delegate { return selectedMod.tarmacTiling.x.ToString(CultureInfo.InvariantCulture); }, delegate (string s) { float u; if (TryParseFloat(s, out u)) { selectedMod.tarmacTiling = new Vector2(u, selectedMod.tarmacTiling.y); selectedMod.ApplySettings(); } }, 10, 60f),
+                new DialogGUIFlexibleSpace(),
+                Label("V:"),
+                TextField(delegate { return selectedMod.tarmacTiling.y.ToString(CultureInfo.InvariantCulture); }, delegate (string s) { float v; if (TryParseFloat(s, out v)) { selectedMod.tarmacTiling = new Vector2(selectedMod.tarmacTiling.x, v); selectedMod.ApplySettings(); } }, 10, 60f)
+                ));
+            content.Add(SwitchRow("Tarmac random tiling:", delegate { return selectedMod.tarmacTileRandom; }, delegate (bool v) { selectedMod.tarmacTileRandom = v; selectedMod.ApplySettings(); }));
+            content.Add(SwitchRow("Tarmac grayscale:", delegate { return selectedMod.tarmacTextureGray; }, delegate (bool v) { selectedMod.tarmacTextureGray = v; selectedMod.ApplySettings(); }));
+
+            // blend mask
+            Separator();
+            DialogGUIButton reloadButton = new DialogGUIButton("Reload", ReloadBlendMask, 60f, itemHeight, false);
+            reloadButton.tooltipText = "Load the blend mask file again (after editing it outside of KSP)";
+            content.Add(new DialogGUIHorizontalLayout(
+                Label("Blend mask:"),
+                new DialogGUIFlexibleSpace(),
+                TextureButton("Blend Mask", TextureUsage.BlendMask, delegate { return selectedMod.blendMaskTextureName; }, delegate (string t) { selectedMod.blendMaskTextureName = t; }, textureButtonWidth - 64f),
+                reloadButton
+                ));
+
+            // third and fourth texture
+            Separator();
+            content.Add(TextureRow("Third texture:", "Third Texture", TextureUsage.Texture, delegate { return selectedMod.thirdTextureName; }, delegate (string t) { selectedMod.thirdTextureName = t; }));
+            content.Add(ColorRow("Third color:", delegate { return selectedMod.thirdTextureColor; }, delegate (Color c) { selectedMod.thirdTextureColor = c; }));
+            content.Add(FloatRow("Third tiling:", delegate { return selectedMod.thirdTextureTiling; }, delegate (float v) { selectedMod.thirdTextureTiling = v; }));
+            content.Add(TwoSwitchRow(
+                "Random:", delegate { return selectedMod.thirdTextureTileRandom; }, delegate (bool v) { selectedMod.thirdTextureTileRandom = v; selectedMod.ApplySettings(); },
+                "Grayscale:", delegate { return selectedMod.thirdTextureGray; }, delegate (bool v) { selectedMod.thirdTextureGray = v; selectedMod.ApplySettings(); }));
+
+            Separator();
+            content.Add(TextureRow("Fourth texture:", "Fourth Texture", TextureUsage.Texture, delegate { return selectedMod.fourthTextureName; }, delegate (string t) { selectedMod.fourthTextureName = t; }));
+            content.Add(ColorRow("Fourth color:", delegate { return selectedMod.fourthTextureColor; }, delegate (Color c) { selectedMod.fourthTextureColor = c; }));
+            content.Add(FloatRow("Fourth tiling:", delegate { return selectedMod.fourthTextureTiling; }, delegate (float v) { selectedMod.fourthTextureTiling = v; }));
+            content.Add(TwoSwitchRow(
+                "Random:", delegate { return selectedMod.fourthTextureTileRandom; }, delegate (bool v) { selectedMod.fourthTextureTileRandom = v; selectedMod.ApplySettings(); },
+                "Grayscale:", delegate { return selectedMod.fourthTextureGray; }, delegate (bool v) { selectedMod.fourthTextureGray = v; selectedMod.ApplySettings(); }));
+
+            Separator();
+            content.Add(new DialogGUIHorizontalLayout(new DialogGUIFlexibleSpace(), new DialogGUIButton("Close", Close, 100f, itemHeight, false)));
+        }
+
+
+        /// <summary>
+        /// label ...... [texture name] : the button opens the texture picker
+        /// </summary>
+        private DialogGUIBase TextureRow(string label, string pickerTitle, TextureUsage usage, Func<string> getTexture, Action<string> setTexture)
+        {
+            return new DialogGUIHorizontalLayout(
+                Label(label),
+                new DialogGUIFlexibleSpace(),
+                TextureButton(pickerTitle, usage, getTexture, setTexture, textureButtonWidth)
+                );
+        }
+
+
+        private DialogGUIButton TextureButton(string pickerTitle, TextureUsage usage, Func<string> getTexture, Action<string> setTexture, float width)
+        {
+            DialogGUIButton button = new DialogGUIButton(
+                delegate { return TexturePicker.ShortName(getTexture()); },
+                delegate
+                {
+                    GrassColor2 mod = selectedMod;
+                    TexturePicker.Open(pickerTitle, usage, getTexture, delegate (string texture) { if (mod == selectedMod) { setTexture(texture); selectedMod.ApplySettings(); } }, delegate { return isOpen && mod == selectedMod; });
+                },
+                delegate { return true; },
+                width, itemHeight, false);
+            button.tooltipText = "Choose the " + pickerTitle.ToLower();
+            return button;
+        }
+
+
+        /// <summary>
+        /// label ...... [r,g,b,a] [Edit] : Edit opens the color selector
+        /// </summary>
+        private DialogGUIBase ColorRow(string label, Func<Color> getColor, Action<Color> setColor)
+        {
+            DialogGUIButton editButton = new DialogGUIButton("Edit", delegate
+            {
+                GrassColor2 mod = selectedMod;
+                ColorSelector.callBack = delegate (Color c) { if (mod == selectedMod) { setColor(c); selectedMod.ApplySettings(); } };
+                ColorSelector.selectedColor = getColor();
+                ColorSelector.Open();
+            }, 46f, itemHeight, false);
+            editButton.tooltipText = "Pick the color";
+
+            return new DialogGUIHorizontalLayout(
+                Label(label),
+                new DialogGUIFlexibleSpace(),
+                TextField(delegate { return ConfigNode.WriteColor(getColor()); }, delegate (string s) { Color c; if (TryParseColor(s, out c)) { setColor(c); selectedMod.ApplySettings(); } }, 40, colorFieldWidth),
+                editButton
+                );
+        }
+
+
+        private DialogGUIBase FloatRow(string label, Func<float> getValue, Action<float> setValue)
+        {
+            return TextRow(label,
+                delegate { return getValue().ToString(CultureInfo.InvariantCulture); },
+                delegate (string s) { float value; if (TryParseFloat(s, out value)) { setValue(value); selectedMod.ApplySettings(); } },
+                10, numberWidth);
+        }
+
+
+        private DialogGUIBase TwoSwitchRow(string label1, Func<bool> get1, Action<bool> set1, string label2, Func<bool> get2, Action<bool> set2)
+        {
+            return new DialogGUIHorizontalLayout(
+                Label(label1),
+                KKControls.Switch(get1, set1),
+                new DialogGUIFlexibleSpace(),
+                Label(label2),
+                KKControls.Switch(get2, set2)
+                );
+        }
+
+
+        private static bool TryParseColor(string text, out Color color)
+        {
+            color = Color.white;
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+            string[] parts = text.Split(',');
+            if (parts.Length < 3 || parts.Length > 4)
+            {
+                return false;
+            }
+            float[] values = new float[] { 1f, 1f, 1f, 1f };
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (!TryParseFloat(parts[i], out values[i]))
+                {
+                    return false;
+                }
+            }
+            color = new Color(values[0], values[1], values[2], values[3]);
+            return true;
+        }
+
+        #endregion
+
+
+        #region Actions
+
+        private void OpenPresets()
+        {
+            GrassColor2 mod = selectedMod;
+            GrassColorPresetUI2.callBack = delegate (GrassColorPresetUI2.ColorPreset2 preset) { if (mod != null) { mod.UpdateCallBack(preset); } };
+            GrassColorPresetUI2.instance.Open();
+        }
+
+
+        private static void ReloadBlendMask()
+        {
+            KKGraphics.RemoveCache(selectedMod.blendMaskTextureName);
+            selectedMod.ApplySettings();
+        }
+
+
+        private void SelectGrass(GrassColor2 grass)
         {
             selectedMod = grass;
-            //selectedMod.matOffset = offset;
-
-            ReadMod(selectedMod);
+            TexturePicker.CloseWindow();
         }
 
+        #endregion
     }
 }

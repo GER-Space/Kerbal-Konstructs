@@ -37,7 +37,7 @@ namespace KerbalKonstructs.UI2
         internal static bool setToParent = false;
 
         internal static bool checkForParent = false;
-        internal static Func<bool> parentWindow = EditorGUI.instance.IsOpen;
+        internal static Func<bool> parentWindow = InstanceEditor.instance.IsOpen;
 
         internal static Color selectedColor = Color.white;
 

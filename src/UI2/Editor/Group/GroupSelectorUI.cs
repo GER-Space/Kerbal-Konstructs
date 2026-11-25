@@ -1,12 +1,12 @@
 ﻿using KerbalKonstructs.Core;
-using KerbalKonstructs.UI2;
+using KerbalKonstructs.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KerbalKonstructs.UI
+namespace KerbalKonstructs.UI2
 {
     /// <summary>
     /// Lets the player choose a group and passes it to callBack (UI2 / PopupDialog version;

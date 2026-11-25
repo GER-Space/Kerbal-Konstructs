@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using KerbalKonstructs.UI2;
 
 
 namespace KerbalKonstructs
