@@ -191,6 +191,15 @@ namespace KerbalKonstructs.Core
 
         internal bool isSquad = false;
 
+        // The space center camera's own start position, saved for the KSC launch sites (LaunchPad and Runway)
+        // by CameraController.SaveStockSpaceCenterCam(). InitialCameraRotation holds the heading.
+        internal bool hasStockCamera = false;
+        internal string cameraPQSName = null;
+        internal string cameraTransformName = null;
+        internal float cameraAltitude = 10f;
+        internal float cameraElevation = 45f;
+        internal float cameraZoom = 45f;
+
         internal FinePrint.Waypoint wayPoint = null;
 
         public void ParseLSConfig(StaticInstance instance, ConfigNode cfgNode)

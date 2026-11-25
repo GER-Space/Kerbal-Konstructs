@@ -553,6 +553,8 @@ namespace KerbalKonstructs
                         Log.Normal("SC Body is: " + currentBody.name);
                         StaticDatabase.OnBodyChanged(currentBody);
                         //updateCache();
+                        // save the camera's own KSC start position to the LaunchPad and Runway sites, before KK changes the camera
+                        CameraController.SaveStockSpaceCenterCam();
                         if (scCamWasAltered || focusLastLaunchSite)
                         {
                             CameraController.SetSpaceCenterCam(currentSite);
