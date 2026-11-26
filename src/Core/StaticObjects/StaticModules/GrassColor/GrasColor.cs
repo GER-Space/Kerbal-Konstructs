@@ -17,8 +17,6 @@ namespace KerbalKonstructs
         public string UsePQSColor = "False";
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = null;
-        // "True": the model keeps this legacy module and shader instead of being converted to GrassColor2 at load
-        public string KeepLegacyShader = "False";
 
         internal bool usePQS = true;
         private bool useNormalMap = false;
@@ -132,14 +130,17 @@ namespace KerbalKonstructs
             isInitialized = true;
         }
 
-        /// <summary>
-        /// The color for the shader. An old blend color (alpha between 0 and 1) is converted to a multiplier
-        /// (see LegacyGrassColorConverter). The instance value is not changed any more, so the GrassColor2 import
-        /// reads the same value whichever module runs first.
-        /// </summary>
         internal Color GetColor()
         {
-            return LegacyGrassColorConverter.ToLegacyMultiplier(staticInstance.GrasColor, staticInstance.GrasTexture, GrasTextureImage);
+            Color underGroundColor = staticInstance.GrasColor;
+
+            if (underGroundColor.a != 1f && underGroundColor.a != 0f)
+            {
+                underGroundColor = GrassColorUtils.ManualCalcNewColor(underGroundColor, grasTextureName, grasTextureName);
+                // convert it once and for all
+                staticInstance.GrasColor = underGroundColor;
+            }
+            return underGroundColor;
         }
 
         /// <summary>

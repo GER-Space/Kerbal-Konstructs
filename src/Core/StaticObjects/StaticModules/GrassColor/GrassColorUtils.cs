@@ -11,6 +11,43 @@ namespace KerbalKonstructs.Core
     {
 
 
+        internal static Color ManualCalcNewColor(Color oldColor, string oldTextrueName, string newTextureName)
+        {
+
+            if (String.IsNullOrEmpty(oldTextrueName) || oldTextrueName == "BUILTIN:/terrain_grass00_new")
+            {
+                oldTextrueName = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
+            }
+
+            if (String.IsNullOrEmpty(newTextureName))
+            {
+                newTextureName = "BUILTIN:/terrain_grass00_new_detail";
+            }
+
+
+            Texture2D oldTexture = KKGraphics.GetTexture(oldTextrueName).BlitTexture(64);
+            Texture2D newTexture = KKGraphics.GetTexture(newTextureName).BlitTexture(64);
+
+            Color oldAvgTexColor = AverageColor(oldTexture.GetPixels());
+            Color newAvgTexColor = AverageColor(newTexture.GetPixels());
+
+            //Log.Normal("oldAvgTexColor: " + oldAvgTexColor.ToString());
+            //Log.Normal("newAvgTexColor: " + newAvgTexColor.ToString());
+
+            Color legacyColor = Color.Lerp(oldColor, oldAvgTexColor, oldColor.a);
+            legacyColor.a = 1;
+
+            //Color firstNewColor = newAvgTexColor * legacyColor;
+            //Log.Normal("firstNewColor : " + firstNewColor.ToString());
+
+
+            Color finalColor = legacyColor.DivideWith(newAvgTexColor).LimitTo(6f);
+            finalColor.a = 1;
+            //Log.Normal("final Color: " + finalColor.ToString());
+
+            return finalColor;
+        }
+
         internal static Color GetAverageColor(string textureName)
         {
             Texture2D texture = KKGraphics.GetTexture(textureName).BlitTexture(64);
