@@ -350,26 +350,18 @@ namespace KerbalKonstructs
                 if (staticInstance.GrasColor != Color.clear)
                 {
 
-                    Log.Normal("Loading Legacy Grass Config" + staticInstance.gameObject.name);
-                    //useLegacy = true;
-                    grassColor = staticInstance.GrasColor;
-                    string oldGrassTexture = staticInstance.GrasTexture;
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture) ||staticInstance.GrasTexture == "BUILTIN:/terrain_grass00_new")
-                    {
-                        oldGrassTexture = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
-                    }
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture))
-                    {
-                        staticInstance.GrasTexture = "BUILTIN:/terrain_grass00_new_detail";
-                    }
+                    // the legacy texture becomes the near and far grass texture; the color is converted so the
+                    // average color on screen stays the same (see LegacyGrassColorConverter). The instance's
+                    // legacy values are left as they are.
+                    string newTexture = LegacyGrassColorConverter.GrassColor2Texture(staticInstance.GrasTexture);
+                    nearGrassTextureName = newTexture;
+                    farGrassTextureName = newTexture;
 
-                    //farGrassTiling = 10;
-                    //nearGrassTiling = 1;
-                    nearGrassTextureName = staticInstance.GrasTexture;
-                    farGrassTextureName = staticInstance.GrasTexture;
+                    grassColor = LegacyGrassColorConverter.ToGrassColor2(staticInstance.GrasColor, staticInstance.GrasTexture,
+                        nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray);
 
-                    
-                    grassColor = GrassColorUtils.ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
+                    Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": " +
+                        LegacyGrassColorConverter.Describe(staticInstance.GrasColor, staticInstance.GrasTexture, grassColor, newTexture));
 
                     staticInstance.grassColor2Configs.Add(GiveConfig());
 
