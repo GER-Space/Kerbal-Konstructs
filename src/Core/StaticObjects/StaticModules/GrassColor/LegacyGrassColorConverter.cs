@@ -58,12 +58,20 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// The texture a GrassColor2 module gets when it imports a legacy config
-        /// (the stock detail texture when the instance had no texture of its own)
+        /// The texture a GrassColor2 module gets when it imports a legacy config: the instance's own texture,
+        /// else the legacy module's own default texture, else (stock grass) the stock detail texture
         /// </summary>
-        internal static string GrassColor2Texture(string legacyTexture)
+        internal static string GrassColor2Texture(string legacyTexture, string moduleDefaultTexture = null)
         {
-            return string.IsNullOrEmpty(legacyTexture) ? newDefaultTexture : legacyTexture;
+            if (!string.IsNullOrEmpty(legacyTexture))
+            {
+                return legacyTexture;
+            }
+            if (!string.IsNullOrEmpty(moduleDefaultTexture) && moduleDefaultTexture != legacyDefaultTexture)
+            {
+                return moduleDefaultTexture;
+            }
+            return newDefaultTexture;
         }
 
 
@@ -75,8 +83,8 @@ namespace KerbalKonstructs.Core
             Color displayed;
             if (IsBlendColor(legacyColor))
             {
-                string blendTexture = legacyTexture;
-                if (string.IsNullOrEmpty(blendTexture) || blendTexture == legacyDefaultTexture)
+                string blendTexture = ShownLegacyTexture(legacyTexture, moduleDefaultTexture);
+                if (blendTexture == legacyDefaultTexture)
                 {
                     blendTexture = legacyBlendTexture;
                 }
@@ -131,6 +139,65 @@ namespace KerbalKonstructs.Core
             Color newAverage = (nearAverage + farAverage) * 0.5f;
 
             return Divide(displayed, newAverage);
+        }
+
+
+        /// <summary>
+        /// Turns a legacy GrasColor MODULE of a model config into a GrassColor2 MODULE, so all instances of the model
+        /// use the GrassColor2 shader. The instance colors are converted when the GrassColor2 module reads them.
+        /// A GrasColor module with "KeepLegacyShader = True" (or without GrasMeshName) is left as it is.
+        /// Returns true when the module was converted.
+        /// </summary>
+        internal static bool ConvertLegacyModule(StaticModule module, string modelName)
+        {
+            if (module == null || module.moduleClassname != "GrasColor" || (module.moduleNamespace != null && module.moduleNamespace != "KerbalKonstructs"))
+            {
+                return false;
+            }
+
+            Dictionary<string, string> fields = module.moduleFields;
+            string keepLegacy;
+            bool keep;
+            if (fields.TryGetValue("KeepLegacyShader", out keepLegacy) && bool.TryParse(keepLegacy, out keep) && keep)
+            {
+                return false;
+            }
+            string meshName;
+            if (!fields.TryGetValue("GrasMeshName", out meshName) || string.IsNullOrEmpty(meshName))
+            {
+                Log.UserWarning("GrasColor module of " + modelName + " has no GrasMeshName, not converted to GrassColor2");
+                return false;
+            }
+
+            Dictionary<string, string> newFields = new Dictionary<string, string>();
+            newFields.Add("GrassMeshName", meshName);
+
+            string textureImage;
+            if (fields.TryGetValue("GrasTextureImage", out textureImage) && !string.IsNullOrEmpty(textureImage))
+            {
+                newFields.Add("LegacyGrasTextureImage", textureImage);
+                if (textureImage != legacyDefaultTexture)
+                {
+                    // a model with its own grass texture keeps it
+                    newFields.Add("DefaultNearGrassTexture", textureImage);
+                    newFields.Add("DefaultFarGrassTexture", textureImage);
+                }
+            }
+
+            if (fields.ContainsKey("GrasTextureNormalMap"))
+            {
+                Log.Normal("GrasColor of " + modelName + ": the normal map is not carried over to GrassColor2");
+            }
+
+            module.moduleNamespace = "KerbalKonstructs";
+            module.moduleClassname = "GrassColor2";
+            module.moduleFields.Clear();
+            foreach (KeyValuePair<string, string> field in newFields)
+            {
+                module.moduleFields.Add(field.Key, field.Value);
+            }
+            Log.Normal("Converted the GrasColor module of " + modelName + " (mesh " + meshName + ") to GrassColor2");
+            return true;
         }
 
 

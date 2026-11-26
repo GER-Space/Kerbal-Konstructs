@@ -46,6 +46,10 @@ namespace KerbalKonstructs
 
         public string MaterialOffset = "0";
 
+        // set when this module was converted from a legacy GrasColor module: that module's GrasTextureImage,
+        // the texture its instances showed when they had no GrasTexture of their own
+        public string LegacyGrasTextureImage = "";
+
         // internal variables below
 
 
@@ -353,12 +357,12 @@ namespace KerbalKonstructs
                     // the legacy texture becomes the near and far grass texture; the color is converted so the
                     // average color on screen stays the same (see LegacyGrassColorConverter). The instance's
                     // legacy values are left as they are.
-                    string newTexture = LegacyGrassColorConverter.GrassColor2Texture(staticInstance.GrasTexture);
+                    string newTexture = LegacyGrassColorConverter.GrassColor2Texture(staticInstance.GrasTexture, LegacyGrasTextureImage);
                     nearGrassTextureName = newTexture;
                     farGrassTextureName = newTexture;
 
                     grassColor = LegacyGrassColorConverter.ToGrassColor2(staticInstance.GrasColor, staticInstance.GrasTexture,
-                        nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray);
+                        nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray, LegacyGrasTextureImage);
 
                     Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": " +
                         LegacyGrassColorConverter.Describe(staticInstance.GrasColor, staticInstance.GrasTexture, grassColor, newTexture));

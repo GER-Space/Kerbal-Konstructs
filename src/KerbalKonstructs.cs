@@ -1087,6 +1087,9 @@ namespace KerbalKonstructs
                         }
                     }
 
+                    // legacy grass: use the GrassColor2 module and shader instead (the instance colors are converted on load)
+                    LegacyGrassColorConverter.ConvertLegacyModule(module, model.name);
+
                     // check for unused AdvTexture Modules
                     if (module.moduleClassname == "AdvancedTextures")
                     {

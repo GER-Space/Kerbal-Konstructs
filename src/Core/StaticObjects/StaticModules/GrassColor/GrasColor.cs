@@ -17,6 +17,8 @@ namespace KerbalKonstructs
         public string UsePQSColor = "False";
         public string UseNormalMap = "False";
         public string GrasTextureNormalMap = null;
+        // "True": the model keeps this legacy module and shader instead of being converted to GrassColor2 at load
+        public string KeepLegacyShader = "False";
 
         internal bool usePQS = true;
         private bool useNormalMap = false;
