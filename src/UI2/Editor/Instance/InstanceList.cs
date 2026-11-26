@@ -183,10 +183,10 @@ namespace KerbalKonstructs.UI2
         {
             StaticsEditorGUI editor = StaticsEditorGUI.instance;
 
-            EditorGUI.CloseEditors();
-            if (!EditorGUI.instance.IsOpen())
+            InstanceEditor.CloseEditors();
+            if (!InstanceEditor.instance.IsOpen())
             {
-                EditorGUI.instance.Open();
+                InstanceEditor.instance.Open();
             }
 
             if (StaticsEditorGUI.selectedObject != null)

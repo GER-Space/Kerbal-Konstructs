@@ -153,7 +153,7 @@ namespace KerbalKonstructs.UI2
             // leaving the instance editor closes its windows
             InstanceList.Close();
             ModelList.Close();
-            EditorGUI.instance.Close();
+            InstanceEditor.instance.Close();
             KerbalKonstructs.instance.DeletePreviewObject();
         }
 

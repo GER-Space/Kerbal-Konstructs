@@ -311,13 +311,13 @@ namespace KerbalKonstructs.UI2
                 return;
             }
 
-            EditorGUI.CloseEditors();
+            InstanceEditor.CloseEditors();
             KerbalKonstructs.instance.DeletePreviewObject();
 
-            EditorGUI.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
-            if (!EditorGUI.instance.IsOpen())
+            InstanceEditor.instance.SpawnInstance(model, center, FlightGlobals.ActiveVessel.transform.position, Vector3.zero);
+            if (!InstanceEditor.instance.IsOpen())
             {
-                EditorGUI.instance.Open();
+                InstanceEditor.instance.Open();
             }
             MiscUtils.HUDMessage("Spawned " + model.title, 10, 2);
         }
