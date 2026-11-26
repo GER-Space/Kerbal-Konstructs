@@ -301,7 +301,8 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// (like the legacy GrasColor module, with the default grass color)
+        /// (like the legacy GrasColor module: the GrassColor2 shader with the module's texture as near and far grass
+        /// texture, and the default grass color; a preview has no ground to take the color from)
         /// </summary>
         private static void ApplyGrasColor(Dictionary<string, string> fields, GameObject root, HashSet<Renderer> ownMaterials, List<Material> createdMaterials)
         {
@@ -310,10 +311,9 @@ namespace KerbalKonstructs.UI2
             {
                 return;
             }
-            Shader shader = KKGraphics.GetShader("KK/Diffuse_Multiply_Random");
-            Texture2D texture = KKGraphics.GetTexture(GetField(fields, "GrasTextureImage", "BUILTIN:/terrain_grass00_new"), false, 0, true);
-            string normalMapName = GetField(fields, "GrasTextureNormalMap", null);
-            Texture2D normalMap = string.IsNullOrEmpty(normalMapName) ? null : KKGraphics.GetTexture(normalMapName, true, 0, true);
+            Shader shader = KKGraphics.GetShader(GrasColor.shaderName);
+            Texture2D texture = KKGraphics.GetTexture(GetField(fields, "GrasTextureImage", LegacyGrassColorConverter.legacyDefaultTexture), false, 0, true);
+            Texture2D blendMask = KKGraphics.GetTexture(GrasColor.blendMaskTexture);
 
             foreach (Renderer renderer in RenderersNamed(root, grasMeshName))
             {
@@ -327,15 +327,20 @@ namespace KerbalKonstructs.UI2
                 {
                     material.shader = shader;
                 }
-                material.SetColor("_Color", GrassColor2.defaultColor);
+                material.SetColor("_GrassColor", GrassColor2.defaultColor);
                 if (texture != null)
                 {
-                    material.mainTexture = texture;
-                    if (normalMap != null)
-                    {
-                        material.SetTexture("_BumpMap", normalMap);
-                    }
+                    material.SetTexture("_NearGrassTexture", texture);
+                    material.SetTexture("_FarGrassTexture", texture);
                 }
+                material.SetFloat("_NearGrassTiling", GetFloat(fields, "NearGrassTiling", 0.03f));
+                material.SetFloat("_FarGrassTiling", GetFloat(fields, "FarGrassTiling", 0.01f));
+                material.SetFloat("_FarGrassBlendDistance", GetFloat(fields, "FarGrassBlendDistance", 100f));
+                material.SetFloat("_NearGrassGrayScale", 0f);
+                material.SetFloat("_FarGrassGrayScale", 0f);
+                material.SetTexture("_BlendMaskTexture", blendMask);
+                material.SetColor("_ThirdTextureColor", Color.clear);
+                material.SetColor("_FourthTextureColor", Color.clear);
             }
         }
     }

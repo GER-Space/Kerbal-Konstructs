@@ -105,6 +105,18 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
+        /// The _GrassColor that gives the grass the average color of the ground underneath
+        /// (groundColor: the PQS / camera color of the terrain)
+        /// </summary>
+        internal static Color FromGroundColor(Color groundColor, string nearTexture, bool nearGray, string farTexture, bool farGray)
+        {
+            Color ground = new Color(groundColor.r, groundColor.g, groundColor.b, 1f);
+            Color newAverage = (Average(nearTexture, nearGray) + Average(farTexture, farGray)) * 0.5f;
+            return Divide(ground, newAverage);
+        }
+
+
+        /// <summary>
         /// The multiplier color for the legacy GrasColor module itself (same texture, KK/Diffuse_Multiply_Random).
         /// A multiplier color comes back unchanged (alpha set to 1).
         /// </summary>
