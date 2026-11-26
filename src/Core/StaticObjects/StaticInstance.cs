@@ -313,7 +313,22 @@ namespace KerbalKonstructs.Core
 
             foreach (StaticModule module in model.modules)
             {
-                moduleKey = (module.moduleNamespace + "_" + module.moduleClassname);
+                string moduleNamespace = module.moduleNamespace;
+                string moduleClassname = module.moduleClassname;
+                Dictionary<string, string> moduleFields = module.moduleFields;
+
+                // legacy grass: the instance gets a GrassColor2 module (new shader) instead of GrasColor.
+                // GrassColor2 converts the instance's legacy GrasColor / GrasTexture values when it reads its config.
+                Dictionary<string, string> grassColor2Fields;
+                if (LegacyGrassColorConverter.TryGetGrassColor2Fields(module, model.name, out grassColor2Fields))
+                {
+                    moduleNamespace = "KerbalKonstructs";
+                    moduleClassname = "GrassColor2";
+                    moduleFields = grassColor2Fields;
+                    Log.Normal("Using GrassColor2 instead of GrasColor on " + gameObject.name + " (mesh " + grassColor2Fields["GrassMeshName"] + ")");
+                }
+
+                moduleKey = (moduleNamespace + "_" + moduleClassname);
                 Type moduleType;
                 if (staticModules.ContainsKey(moduleKey))
                 {
@@ -321,13 +336,13 @@ namespace KerbalKonstructs.Core
                 }
                 else
                 {
-                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => GetLoadableTypes(asm.assembly)).FirstOrDefault(t => t.Namespace == module.moduleNamespace && t.Name == module.moduleClassname);
+                    moduleType = AssemblyLoader.loadedAssemblies.SelectMany(asm => GetLoadableTypes(asm.assembly)).FirstOrDefault(t => t.Namespace == moduleNamespace && t.Name == moduleClassname);
                     staticModules.Add(moduleKey, moduleType);
                 }
 
                 if (moduleType == null)
                 {
-                    Log.UserError("Module " + module.moduleNamespace + "." + module.moduleClassname + " not found for " + model.name);
+                    Log.UserError("Module " + moduleNamespace + "." + moduleClassname + " not found for " + model.name);
                     continue;
                 }
 
@@ -337,23 +352,23 @@ namespace KerbalKonstructs.Core
                 {
                     mod.enabled = false;
                     mod.staticInstance = this;
-                    foreach (string fieldName in module.moduleFields.Keys)
+                    foreach (string fieldName in moduleFields.Keys)
                     {
                         FieldInfo field = mod.GetType().GetField(fieldName);
                         if (field != null)
                         {
-                            field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
+                            field.SetValue(mod, Convert.ChangeType(moduleFields[fieldName], field.FieldType));
                         }
                         else
                         {
-                            Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
+                            Log.UserWarning("Field " + fieldName + " does not exist in " + moduleClassname);
                         }
                     }
                     //myStaticModules.Add(mod);
                 }
                 else
                 {
-                    Log.UserError("Module " + module.moduleClassname + " could not be loaded in " + gameObject.name);
+                    Log.UserError("Module " + moduleClassname + " could not be loaded in " + gameObject.name);
                 }
             }
 
