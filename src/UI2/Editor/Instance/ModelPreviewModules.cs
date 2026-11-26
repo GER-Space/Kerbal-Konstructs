@@ -333,8 +333,8 @@ namespace KerbalKonstructs.UI2
                     material.SetTexture("_NearGrassTexture", texture);
                     material.SetTexture("_FarGrassTexture", texture);
                 }
-                material.SetFloat("_NearGrassTiling", GetFloat(fields, "NearGrassTiling", 0.03f));
-                material.SetFloat("_FarGrassTiling", GetFloat(fields, "FarGrassTiling", 0.01f));
+                material.SetFloat("_NearGrassTiling", GetFloat(fields, "NearGrassTiling", 1f));
+                material.SetFloat("_FarGrassTiling", GetFloat(fields, "FarGrassTiling", 1f));
                 material.SetFloat("_FarGrassBlendDistance", GetFloat(fields, "FarGrassBlendDistance", 100f));
                 material.SetFloat("_NearGrassGrayScale", 0f);
                 material.SetFloat("_FarGrassGrayScale", 0f);

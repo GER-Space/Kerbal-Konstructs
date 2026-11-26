@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KerbalKonstructs.Core;
@@ -23,9 +23,9 @@ namespace KerbalKonstructs
         public string GrasTextureNormalMap = null;
 
         // GrassColor2 shader settings (optional in the model config). The shader places the texture by position,
-        // not by the mesh UVs; these are the GrassColor2 defaults.
-        public string NearGrassTiling = "0.03";
-        public string FarGrassTiling = "0.01";
+        // not by the mesh UVs.
+        public string NearGrassTiling = "1.0";
+        public string FarGrassTiling = "1.0";
         public string FarGrassBlendDistance = "100";
 
         internal const string shaderName = "KK/Ground_Multi_NoUV";
@@ -41,8 +41,8 @@ namespace KerbalKonstructs
         private Texture2D grasTexture = null;
         private string grasTextureName = "";
 
-        private float nearTiling = 0.03f;
-        private float farTiling = 0.01f;
+        private float nearTiling = 1f;
+        private float farTiling = 1f;
         private float farBlendDistance = 100f;
 
         // the ground color is only sampled again when the static moved
@@ -78,8 +78,8 @@ namespace KerbalKonstructs
             {
                 Log.UserWarning("GrasColor Module: could not parse UseNormalMap to bool: " + UseNormalMap);
             }
-            nearTiling = ParseFloat(NearGrassTiling, 0.03f, "NearGrassTiling");
-            farTiling = ParseFloat(FarGrassTiling, 0.01f, "FarGrassTiling");
+            nearTiling = ParseFloat(NearGrassTiling, 1f, "NearGrassTiling");
+            farTiling = ParseFloat(FarGrassTiling, 1f, "FarGrassTiling");
             farBlendDistance = ParseFloat(FarGrassBlendDistance, 100f, "FarGrassBlendDistance");
         }
 
