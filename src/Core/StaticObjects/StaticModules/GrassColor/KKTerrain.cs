@@ -108,10 +108,24 @@ namespace KerbalKonstructs
         }
 
 
+        // diagnostics: the first renderers' values go to the log
+        private static int loggedRenderers = 0;
+        private const int maxLoggedRenderers = 12;
+        private bool loggedNoPosition = false;
+
         private void ApplyTerrain()
         {
-            if (!UsesTerrainShader || staticInstance == null)
+            if (staticInstance == null)
             {
+                return;
+            }
+            if (!UsesTerrainShader)
+            {
+                if (loggedRenderers < maxLoggedRenderers)
+                {
+                    loggedRenderers++;
+                    Log.Normal("KKTerrain " + staticInstance.UUID + ": not on KK/Terrain (" + (grassMaterials.Count > 0 && grassMaterials[0] != null ? grassMaterials[0].shader.name : "no grass material") + ")");
+                }
                 return;
             }
             CelestialBody body = staticInstance.CelestialBody;
@@ -127,6 +141,12 @@ namespace KerbalKonstructs
                 Vector3d position;
                 if (renderer == null || !KKTerrainShader.TryGetPlanetFramePosition(renderer.transform, planet, out position))
                 {
+                    if (!loggedNoPosition)
+                    {
+                        loggedNoPosition = true;
+                        Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": grass mesh not under the planet's PQS transform (yet): " +
+                            (renderer != null ? Path(renderer.transform) : "no renderer"));
+                    }
                     continue;
                 }
                 Color sample = GetTerrainSample(body, renderer, position);
@@ -136,7 +156,24 @@ namespace KerbalKonstructs
                 }
                 Color color = overwrite_color ? grassColor : sample;
                 KKTerrainShader.SetTerrainProperties(grassMaterials[i], body, position, sample, color, thirdTextureTiling, fourthTextureTiling);
+                if (loggedRenderers < maxLoggedRenderers)
+                {
+                    loggedRenderers++;
+                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + " mesh " + renderer.name + ": distance " + position.magnitude.ToString("F1") +
+                        " sample " + sample + (overwrite_color ? " overwritten by " + grassColor : "") + " -> " + KKTerrainShader.DescribeRendererMaterial(grassMaterials[i]));
+                }
             }
+        }
+
+
+        private static string Path(Transform transform)
+        {
+            string path = transform.name;
+            for (Transform t = transform.parent; t != null; t = t.parent)
+            {
+                path = t.name + "/" + path;
+            }
+            return path;
         }
 
 
