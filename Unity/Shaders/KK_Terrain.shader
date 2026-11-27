@@ -113,7 +113,8 @@ Shader "KK/Terrain"
 		// the surface shader analysis pass doesn't support the DX11 syntax, so it gets plain sampler2D
 		#if defined(UNITY_SEPARATE_TEXTURE_SAMPLER) && !defined(SHADER_TARGET_SURFACE_ANALYSIS)
 			#define KK_TEXTURE(t) Texture2D t
-			#define KK_SAMPLER(t) SamplerState sampler##t
+			// with its own semicolon: in the analysis pass it is empty, and a lone ";" is an error there
+			#define KK_SAMPLER(t) SamplerState sampler##t;
 			#define KK_TEXTURE_PARAMS(t, s) Texture2D t, SamplerState s
 			// a declared texture with the sampler of the declared texture s
 			#define KK_TEXTURE_ARGS(t, s) t, sampler##s
@@ -140,7 +141,7 @@ Shader "KK/Terrain"
 		// shared samplers: the third and fourth texture and their normal maps use the sampler of the third texture, the
 		// planet's textures that of layer A
 		KK_TEXTURE(_ThirdTexture);
-		KK_SAMPLER(_ThirdTexture);
+		KK_SAMPLER(_ThirdTexture)
 		KK_TEXTURE(_ThirdNormalTexture);
 		float4 _ThirdTextureColor;
 		float _ThirdTextureTiling;
@@ -160,7 +161,7 @@ Shader "KK/Terrain"
 		float _KKPowerFar;
 
 		KK_TEXTURE(_KKLayerATex);
-		KK_SAMPLER(_KKLayerATex);
+		KK_SAMPLER(_KKLayerATex)
 		KK_TEXTURE(_KKLayerABump);
 		float _KKLayerAWeight;
 		float4 _KKLayerATilings;
