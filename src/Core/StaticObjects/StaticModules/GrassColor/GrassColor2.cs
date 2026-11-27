@@ -132,6 +132,12 @@ namespace KerbalKonstructs
         /// </summary>
         internal static void SetFlatNormals(Material material)
         {
+            // the fixed shader (marked by _KKNormalFix) unpacks its normal maps and defaults to flat ones:
+            // the workaround texture would be read as a tilted normal there, so leave its normal textures alone
+            if (material == null || material.HasProperty("_KKNormalFix"))
+            {
+                return;
+            }
             Texture2D flat = flatNormalTexture;
             material.SetTexture("_FarGrassNormalTexture", flat);
             material.SetTexture("_TarmacNormalTexture", flat);
