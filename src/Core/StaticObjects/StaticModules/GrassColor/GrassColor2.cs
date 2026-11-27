@@ -444,6 +444,18 @@ namespace KerbalKonstructs
 
             grassNode.AddValue("GrassMeshName", GrassMeshName);
             grassNode.AddValue("MaterialOffset", MaterialOffset);
+            // which module draws this mesh (StaticInstance.Spawn), see KKTerrain.terrainShaderKey
+            grassNode.AddValue(KKTerrain.terrainShaderKey, this is KKTerrain);
+            if (!(this is KKTerrain) && instanceConfig != null)
+            {
+                foreach (string key in KKTerrain.terrainKeys)
+                {
+                    if (instanceConfig.HasValue(key))
+                    {
+                        grassNode.AddValue(key, instanceConfig.GetValue(key));
+                    }
+                }
+            }
 
             grassNode.AddValue("GrassColor", grassColor);
 

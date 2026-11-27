@@ -87,6 +87,51 @@ namespace KerbalKonstructs
 
 
         /// <summary>
+        /// Value of the instance's GrassColor2 config node: true (default) draws the grass mesh with KKTerrain (terrain
+        /// shader), false with GrassColor2 (KK/Ground_Multi_NoUV and the grass editor's textures). Switched in the grass
+        /// editor, which respawns the instance: StaticInstance.Spawn attaches the module of the saved choice.
+        /// </summary>
+        internal const string terrainShaderKey = "TerrainShader";
+
+        /// <summary>
+        /// The KKTerrain values a GrassColor2 keeps in its config, so switching back to the terrain shader finds them
+        /// </summary>
+        internal static readonly string[] terrainKeys = new string[] { "overwrite_color", "TerrainSample", "TerrainSamplePosition" };
+
+
+        /// <summary>
+        /// For StaticInstance.Spawn: false when the instance's config node of this grass module chose GrassColor2
+        /// </summary>
+        internal static bool TerrainShaderSelected(StaticInstance instance, StaticModule description)
+        {
+            string meshName;
+            if (instance == null || !description.moduleFields.TryGetValue("GrassMeshName", out meshName))
+            {
+                return true;
+            }
+            string materialOffset;
+            if (!description.moduleFields.TryGetValue("MaterialOffset", out materialOffset))
+            {
+                materialOffset = "0";
+            }
+            foreach (ConfigNode node in instance.grassColor2Configs)
+            {
+                if (node.GetValue("GrassMeshName") != meshName || (node.HasValue("MaterialOffset") && node.GetValue("MaterialOffset") != materialOffset))
+                {
+                    continue;
+                }
+                bool terrainShader;
+                if (node.HasValue(terrainShaderKey) && bool.TryParse(node.GetValue(terrainShaderKey), out terrainShader))
+                {
+                    return terrainShader;
+                }
+                return true;
+            }
+            return true;
+        }
+
+
+        /// <summary>
         /// For KerbalKonstructs.LoadModels: makes a GrasColor or GrassColor2 module description a KKTerrain one. A GrasColor
         /// module keeps only its grass mesh name (its color and texture settings are not converted).
         /// </summary>

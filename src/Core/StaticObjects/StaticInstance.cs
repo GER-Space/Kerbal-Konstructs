@@ -331,6 +331,13 @@ namespace KerbalKonstructs.Core
                     continue;
                 }
 
+                // grass: the instance may have switched this mesh from the terrain shader (KKTerrain) to GrassColor2
+                bool grassColor2InsteadOfTerrain = moduleType == typeof(KKTerrain) && !KKTerrain.TerrainShaderSelected(this, module);
+                if (grassColor2InsteadOfTerrain)
+                {
+                    moduleType = typeof(GrassColor2);
+                }
+
                 StaticModule mod = mesh.AddComponent(moduleType) as StaticModule;
 
                 if (mod != null)
@@ -344,8 +351,9 @@ namespace KerbalKonstructs.Core
                         {
                             field.SetValue(mod, Convert.ChangeType(module.moduleFields[fieldName], field.FieldType));
                         }
-                        else
+                        else if (!grassColor2InsteadOfTerrain)
                         {
+                            // (a GrassColor2 in place of a KKTerrain has no KKTerrain fields)
                             Log.UserWarning("Field " + fieldName + " does not exist in " + module.moduleClassname);
                         }
                     }

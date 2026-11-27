@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 namespace KerbalKonstructs.UI2
@@ -130,6 +131,12 @@ namespace KerbalKonstructs.UI2
                     meshButtons.Add(new DialogGUIButton(thisMod.GrassMeshName, delegate { SelectGrass(thisMod); }, delegate { return selectedMod != thisMod; }, 90f, itemHeight, false));
                 }
                 content.Add(new DialogGUIHorizontalLayout(meshButtons.ToArray()));
+            }
+
+            // which shader draws the selected mesh (switching respawns the instance)
+            if (KKTerrainShader.TerrainShader != null)
+            {
+                content.Add(SwitchRow("Terrain shader:", delegate { return selectedMod is KKTerrain; }, SwitchShader));
             }
 
             // grass
@@ -381,6 +388,42 @@ namespace KerbalKonstructs.UI2
         {
             KKGraphics.RemoveCache(selectedMod.blendMaskTextureName);
             selectedMod.ApplySettings();
+        }
+
+
+        /// <summary>
+        /// Switches the selected grass mesh between KKTerrain (terrain shader) and GrassColor2. A component can't be
+        /// replaced in place, so the instance is respawned: Despawn() saves every grass module's config, the selected
+        /// mesh's node gets the new choice (KKTerrain.terrainShaderKey), and Spawn() attaches the chosen module.
+        /// </summary>
+        private void SwitchShader(bool terrainShader)
+        {
+            if (selectedMod == null || staticInstance == null || (selectedMod is KKTerrain) == terrainShader)
+            {
+                return;
+            }
+            string meshName = selectedMod.GrassMeshName;
+            string materialOffset = selectedMod.MaterialOffset;
+            TexturePicker.CloseWindow();
+
+            staticInstance.Despawn();
+            foreach (ConfigNode node in staticInstance.grassColor2Configs)
+            {
+                if (node.GetValue("GrassMeshName") == meshName && node.GetValue("MaterialOffset") == materialOffset)
+                {
+                    node.SetValue(KKTerrain.terrainShaderKey, terrainShader.ToString(), true);
+                }
+            }
+            staticInstance.TrySpawn();
+
+            GrassColor2[] mods = staticInstance.mesh.GetComponents<GrassColor2>();
+            selectedMod = mods.FirstOrDefault(m => m.GrassMeshName == meshName && m.MaterialOffset == materialOffset);
+            if (selectedMod == null && mods.Length > 0)
+            {
+                selectedMod = mods[0];
+            }
+            staticInstance.HighlightObject(XKCDColors.Green_Yellow);
+            Build();
         }
 
 
