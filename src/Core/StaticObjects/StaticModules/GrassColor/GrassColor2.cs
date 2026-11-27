@@ -332,7 +332,7 @@ namespace KerbalKonstructs
 
                 grassRenderers.Add(grassRenderer);
                 grassMaterials.Add(grassRenderer.material);
-                grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+                grassRenderer.material.shader = KKTerrainShader.GroundShader;
                 
 
             }
@@ -349,7 +349,7 @@ namespace KerbalKonstructs
                 {
                     foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
                     {
-                        material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+                        material.shader = KKTerrainShader.GroundShader;
 
                         grassRenderers.Add(renderer);
                         grassMaterials.Add(material);

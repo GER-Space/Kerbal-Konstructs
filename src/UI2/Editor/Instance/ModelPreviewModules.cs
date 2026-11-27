@@ -228,7 +228,7 @@ namespace KerbalKonstructs.UI2
         private static void ApplyGrassColor2(StaticModel model, Dictionary<string, string> fields, GameObject root, HashSet<Renderer> ownMaterials, List<Material> createdMaterials)
         {
             string grassMeshName = GetField(fields, "GrassMeshName", "Nix");
-            Shader groundShader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+            Shader groundShader = KKTerrainShader.GroundShader;
             if (groundShader == null)
             {
                 return;

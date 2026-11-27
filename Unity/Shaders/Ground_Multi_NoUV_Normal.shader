@@ -1,22 +1,15 @@
-// KK ground shader (GrassColor2), drawn like the stock PQS terrain it continues:
-//  - textures are mapped in the planet's frame (triplanar, like the PQS shaders), so they don't turn with the static and
-//    continue seamlessly between statics. The coordinates are anchored per renderer by GrassColor2 (KKTerrainShader.cs):
-//    exact offsets in double precision, plus the small distance of the pixel to the renderer's origin.
-//  - steep surfaces get the planet's steep texture, like the terrain
-//  - lighting: Lambert, as the stock "Terrain/PQS/PQS Main - Extras" and "KSP/Scenery/Diffuse Multiply KSC Terrain"
-//  - atmospheric haze: the stock PQS aerial perspective (applied to the albedo, before the lighting)
-//  - tarmac (red), third (green) and fourth (blue) texture over the grass by the blend mask
 Shader "KK/Ground_Multi_NoUV"
 {
-	Properties
-	{
-		[NoScaleOffset] _NearGrassTexture("_NearGrassTexture", 2D) = "grey" {}
-		_NearGrassTiling("_NearGrassTiling (per meter)", Float) = 1
+    Properties
+    {
+
+        [NoScaleOffset] _NearGrassTexture("_NearGrassTexture", 2D) = "grey" {}
+		_NearGrassTiling("_NearGrassTiling ", Float) = 1
 		[ToggleUI] _NearGrassGrayScale("_NearGrassGrayScale ", Float) = 0
 		[NoScaleOffset] _NearGrassNormalTexture("_NearGrassNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _FarGrassTexture("_FarGrassTexture", 2D) = "grey" {}
-		_FarGrassTiling("_FarGrassTiling (per meter)", Float) = 1
+		_FarGrassTiling("_FarGrassTiling ", Float) = 1
 		[ToggleUI] _FarGrassGrayScale("_FarGrassGrayScale ", Float) = 0
 		[NoScaleOffset] _FarGrassNormalTexture("_FarGrassNormalTexture", 2D) = "bump" {}
 
@@ -31,14 +24,14 @@ Shader "KK/Ground_Multi_NoUV"
 		[NoScaleOffset] _TarmacNormalTexture("_TarmacNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _ThirdTexture("Optional Green areas on the mask", 2D)  = "black" {}
-		_ThirdTextureTiling("_ThirdTextureTiling (per meter)", Float) = 1
+		_ThirdTextureTiling("_ThirdTextureTiling", Float) = 1
 		_ThirdTextureColor("_ThirdTextureColor", Color) = (0,0,0,0)
 		[ToggleUI]_ThirdTextureTileRandom("Radom tiling for third Teture", Float) = 0
 		[ToggleUI] _ThirdTextureGrayScale("_ThirdTextureGrayScale ", Float) = 0
 		[NoScaleOffset] _ThirdNormalTexture("_ThirdNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _FourthTexture("Optional Blue areas on the mask", 2D) = "black" {}
-		_FourthTextureTiling("_FourthTextureTiling (per meter)", Float) = 1
+		_FourthTextureTiling("_FourthTextureTiling", Float) = 1
 		_FourthTextureColor("_FourthTextureColor", Color) = (0,0,0,0)
 		[ToggleUI]_FourthTextureTileRandom("Radom tiling for fourth Teture", Float) = 0
 		[ToggleUI] _FourthTextureGrayScale("_FourthTextureGrayScale ", Float) = 0
@@ -46,34 +39,24 @@ Shader "KK/Ground_Multi_NoUV"
 
 		// marks the shader version with the fixed normals: GrassColor2 then stops setting its flat-normal workaround textures
 		[HideInInspector] _KKNormalFix("_KKNormalFix", Float) = 1
-		// marks the terrain shader: GrassColor2 sets the planet anchored coordinates below
-		[HideInInspector] _KKTerrainMode("_KKTerrainMode", Float) = 1
 
-		// per renderer, set by GrassColor2 (KKTerrainShader.SetRendererProperties): the planet's up direction at the
-		// renderer (planet frame), and frac(planet frame position of the renderer's origin * tiling) per texture
-		[HideInInspector] _KKAnchorUp("_KKAnchorUp", Vector) = (0,1,0,0)
-		[HideInInspector] _KKNearOffset("_KKNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKFarOffset("_KKFarOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKThirdOffset("_KKThirdOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKFourthOffset("_KKFourthOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKSteepNearOffset("_KKSteepNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKSteepFarOffset("_KKSteepFarOffset", Vector) = (0,0,0,0)
-		// the planet's steep tilings converted to repeats per meter at the renderer
-		[HideInInspector] _KKSteepNearTiling("_KKSteepNearTiling", Float) = 0
-		[HideInInspector] _KKSteepFarTiling("_KKSteepFarTiling", Float) = 0
-
-		_Opacity("_Opacity ", Range(0, 1)) = 1
-		_RimFalloff("_RimFalloff ", Range(0.01, 5)) = 0.1
-		_RimColor("_RimColor", Color) = (0,0,0,0)
-		_UnderwaterFogFactor("_UnderwaterFogFactor ", Range(0, 1)) = 0
-		_TemperatureColor("_TemperatureColor", Color) = (0,0,0,0)
-	}
+		// atmospheric haze like the PQS terrain (inputs: KSP's aerial perspective globals and KK's _KK* globals)
+		_KKAerialStrength("_KKAerialStrength", Range(0, 4)) = 1
+		_KKFogRampV("_KKFogRampV (row of the fog color ramp)", Range(0, 1)) = 0.75
 
 
-	SubShader
-	{
-		Tags { "RenderType"="Opaque" }
-		LOD 200
+        _Opacity("_Opacity ", Range(0, 1)) = 1
+        _RimFalloff("_RimFalloff ", Range(0.01, 5)) = 0.1
+        _RimColor("_RimColor", Color) = (0,0,0,0)
+        _UnderwaterFogFactor("_UnderwaterFogFactor ", Range(0, 1)) = 0
+        _TemperatureColor("_TemperatureColor", Color) = (0,0,0,0)
+    }
+
+
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+        LOD 200
 		ZWrite On
 		ZTest LEqual
 
@@ -86,45 +69,47 @@ Shader "KK/Ground_Multi_NoUV"
 			Pass Replace
 		}
 
-		CGPROGRAM
-		#pragma exclude_renderers gles
+        CGPROGRAM
+        // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
+        #pragma exclude_renderers gles
+        
+        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog finalcolor:KKAerialPerspective
 
-		// Lambert like the stock terrain; no Unity fog (KSP doesn't use it), the stock aerial perspective instead
-		#pragma surface surf LambertKSP vertex:vert fullforwardshadows nofog exclude_path:prepass
+        // Use shader model 3.0 target, to get nicer looking lighting
+        #pragma target 3.0
 
-		#pragma target 3.0
-
+		//#include "TileRandom-include.cginc"
 		#include "TileRandom2-include.cginc"
 		#include "LightingKSP.cginc"
 		#include "KSP-include.cginc"
 
-		sampler2D _BlendMaskTexture;
+    	sampler2D _BlendMaskTexture;
 
-		float _FarGrassBlendDistance;
+   		float _FarGrassBlendDistance;
 		sampler2D _FarGrassTexture;
 		sampler2D _FarGrassNormalTexture;
 		float _FarGrassTiling;
 
 		float4 _GrassColor;
 
-		sampler2D _NearGrassTexture;
+    	sampler2D _NearGrassTexture;
 		sampler2D _NearGrassNormalTexture;
-		float _NearGrassTiling;
+		float _NearGrassTiling;	
 
 		sampler2D _TarmacTexture;
 		sampler2D _TarmacNormalTexture;
-		float4 _TarmacColor;
+    	float4 _TarmacColor;
 		fixed _TarmacTileRandom;
 
 		sampler2D _ThirdTexture;
 		sampler2D _ThirdNormalTexture;
-		float4 _ThirdTextureColor;
+    	float4 _ThirdTextureColor;
 		float _ThirdTextureTiling;
 		fixed _ThirdTextureTileRandom;
 
 		sampler2D _FourthTexture;
 		sampler2D _FourthNormalTexture;
-		float4 _FourthTextureColor;
+    	float4 _FourthTextureColor;
 		float _FourthTextureTiling;
 		fixed _FourthTextureTileRandom;
 
@@ -134,37 +119,16 @@ Shader "KK/Ground_Multi_NoUV"
 		float _ThirdTextureGrayScale;
 		float _FourthTextureGrayScale;
 
-		// per renderer (GrassColor2)
-		float4 _KKAnchorUp;
-		float4 _KKNearOffset;
-		float4 _KKFarOffset;
-		float4 _KKThirdOffset;
-		float4 _KKFourthOffset;
-		float4 _KKSteepNearOffset;
-		float4 _KKSteepFarOffset;
-		float _KKSteepNearTiling;
-		float _KKSteepFarTiling;
+        
 
-		// --- globals of the current planet, set every frame by KK (KKTerrainShader.UpdateGlobals) ---
-		float4x4 _KKWorldToPlanet;      // rotation world -> planet frame (the PQS transform)
-		float4x4 _KKPlanetToWorld;      // rotation planet frame -> world
-		float3 _KKSunDirection;         // world space, from the planet to the sun
-		// aerial perspective, from the planet's terrain material
-		float _KKAerialEnabled;
-		float _KKGlobalDensity;
-		sampler2D _KKFogColorRamp;
-		// steep texture, from the planet's terrain material
-		float _KKSteepEnabled;
-		sampler2D _KKSteepTex;
-		sampler2D _KKSteepBumpMap;
-		float _KKSteepPower;
-		float _KKSteepTexStart;
-		float _KKSteepTexEnd;
-		float _KKGroundTexStart;
-		float _KKGroundTexEnd;
-		// set by KSP (PQSMod_AerialPerspectiveMaterial)
-		float _heightDensityAtViewer;
+		//sampler2D _BumpMap;
+		//sampler2D _Emissive;
+		
+		//standard KSP shader property values
+		//float4 _EmissiveColor;
 
+		//standard shader params for adjusting color/etc
+		// float4 _Color;
 
 		struct Input
 		{
@@ -172,97 +136,126 @@ Shader "KK/Ground_Multi_NoUV"
 			float2 uv_TarmacTexture;
 			float3 viewDir;
 			float3 worldPos;
-			float3 worldNormal;
-			// pixel position relative to the renderer's origin, in the planet frame (meters)
-			float3 planetDelta;
-			// view space depth, like the PQS shaders use it for their distance blends and the haze
-			float viewDepth;
+			float3 worldNormal; 
 			INTERNAL_DATA
 		};
 
 
-		void vert(inout appdata_full v, out Input o)
+        float3 WorldToTangentNormalVector(Input IN, float3 normal) 
 		{
-			UNITY_INITIALIZE_OUTPUT(Input, o);
-			float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-			float3 rendererOrigin = unity_ObjectToWorld._m03_m13_m23;
-			o.planetDelta = mul((float3x3)_KKWorldToPlanet, worldPos - rendererOrigin);
-			o.viewDepth = -UnityObjectToViewPos(v.vertex).z;
-		}
+            float3 t2w0 = WorldNormalVector(IN, float3(1,0,0));
+            float3 t2w1 = WorldNormalVector(IN, float3(0,1,0));
+            float3 t2w2 = WorldNormalVector(IN, float3(0,0,1));
+            float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
+            return normalize(mul(t2w, normal));
+
+        }
 
 
-		float3 WorldToTangentNormalVector(Input IN, float3 normal)
+		// --- aerial perspective (atmospheric haze), the exponential height fog of the PQS terrain shaders ---
+		// set by KSP (PQSMod_AerialPerspectiveMaterial); altitudes are divided by _atmosphereDepth
+		float _heightFallOff;
+		float _atmosphereDepth;
+		float _cameraAltitude;
+		float _heightDensityAtViewer;
+		// set by KK (KKAerialPerspective.cs)
+		float _KKAerialEnabled;
+		float3 _KKPlanetOrigin;
+		float _KKPlanetRadius;
+		float3 _KKSunDirection;
+		float _KKGlobalDensity;
+		sampler2D _KKFogColorRamp;
+		// material
+		float _KKAerialStrength;
+		float _KKFogRampV;
+
+		void KKAerialPerspective(Input IN, SurfaceOutput o, inout fixed4 color)
 		{
-			float3 t2w0 = WorldNormalVector(IN, float3(1,0,0));
-			float3 t2w1 = WorldNormalVector(IN, float3(0,1,0));
-			float3 t2w2 = WorldNormalVector(IN, float3(0,0,1));
-			float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
-			return normalize(mul(t2w, normal));
-		}
-
-
-		float3 GrayScale(float3 color)
-		{
-			float a =(0.3*color.r+0.59*color.g+0.11*color.b);
-			float b = (max(max(color.r, color.g),color.b ) + min(min(color.r, color.g),color.b))*0.5;
-			float g = (a+b)/2;
-			return float3(g,g,g);
-		}
-
-
-		// --- triplanar mapping in the planet frame, the projections and weights of the PQS shaders ---
-		// projections: xy weighted by |n.z|, zy by |n.x|, zx by |n.y|. The stock shaders don't normalize these weights,
-		// which brightens their textures by up to 1.73 depending on the place on the planet: the planet's steep texture
-		// is drawn like that (it continues the terrain's), KK's own textures get normalized weights so their colors stay
-		// the ones set in the editor.
-
-		float4 Triplanar(sampler2D tex, float3 coord, float3 weights, float stochastic)
-		{
-			if (stochastic > 0.5)
+			if (_KKAerialEnabled < 0.5 || _atmosphereDepth <= 0)
 			{
-				return tex2DStochastic(tex, coord.xy) * weights.z + tex2DStochastic(tex, coord.zy) * weights.x
-					+ tex2DStochastic(tex, coord.zx) * weights.y;
+				return;
 			}
-			return tex2D(tex, coord.xy) * weights.z + tex2D(tex, coord.zy) * weights.x + tex2D(tex, coord.zx) * weights.y;
+			float3 cameraToPixel = IN.worldPos - _WorldSpaceCameraPos;
+			float distanceToPixel = length(cameraToPixel);
+
+			// fog integral along the view: density at the viewer times distance, corrected for the change of density
+			// with height (density(h) = exp(-falloff * h), h = altitude / atmosphereDepth)
+			float pixelAltitude = (length(IN.worldPos - _KKPlanetOrigin) - _KKPlanetRadius) / _atmosphereDepth;
+			float t = clamp(_heightFallOff * (_cameraAltitude - pixelAltitude), -20, 20);
+			float fogIntegral = distanceToPixel * _heightDensityAtViewer;
+			if (abs(t) > 0.0001)
+			{
+				fogIntegral *= (exp(t) - 1.0) / t;
+			}
+			float transmittance = exp(-abs(_KKGlobalDensity) * fogIntegral * _KKAerialStrength);
+
+			// haze color by the angle between view and sun
+			float sunAngle = dot(cameraToPixel / max(distanceToPixel, 0.001), _KKSunDirection) * 0.5 + 0.5;
+			float3 fogColor = tex2D(_KKFogColorRamp, float2(sunAngle, _KKFogRampV)).rgb;
+
+#ifdef UNITY_PASS_FORWARDADD
+			// additional lights: only attenuate, the haze is added once in the base pass
+			color.rgb *= transmittance;
+#else
+			color.rgb = lerp(fogColor, color.rgb, transmittance);
+#endif
 		}
 
-		// normal map of a triplanar texture, as a planet frame normal (whiteout blend with the surface normal n)
-		float3 TriplanarNormal(sampler2D normalMap, float3 coord, float3 n, float3 weights)
-		{
-			// projection on z: uv = (x, y)
-			float3 tz = UnpackNormal(tex2D(normalMap, coord.xy));
-			tz = float3(tz.xy + n.xy, abs(tz.z) * n.z);
-			// projection on x: uv = (z, y)
-			float3 tx = UnpackNormal(tex2D(normalMap, coord.zy));
-			tx = float3(tx.xy + n.zy, abs(tx.z) * n.x);
-			// projection on y: uv = (z, x)
-			float3 ty = UnpackNormal(tex2D(normalMap, coord.zx));
-			ty = float3(ty.xy + n.zx, abs(ty.z) * n.y);
-			// back into the planet frame: x: (u, v, n) = (z, y, x), y: (z, x, y), z: (x, y, z)
-			return normalize(tz.xyz * weights.z + tx.zyx * weights.x + ty.yzx * weights.y);
-		}
 
+    	float3 GrayScale(float3 color) 
+    	{
+	        float a =(0.3*color.r+0.59*color.g+0.11*color.b);
+        	float b = (max(max(color.r, color.g),color.b ) + min(min(color.r, color.g),color.b))*0.5;
+			float g = (a+b)/2;
+        	return float3(g,g,g);
+    	}
 
 		void surf(Input IN, inout SurfaceOutput o)
 		{
-			float3 worldNormal = WorldNormalVector(IN, float3(0,0,1));
-			float3 planetNormal = normalize(mul((float3x3)_KKWorldToPlanet, worldNormal));
-			float3 stockWeights = abs(planetNormal);
-			float3 weights = stockWeights / dot(stockWeights, float3(1, 1, 1));
-			float3 planetUp = normalize(_KKAnchorUp.xyz);
-			float3 worldUp = normalize(mul((float3x3)_KKPlanetToWorld, planetUp));
 
-			float cameraDistance = distance(IN.worldPos, _WorldSpaceCameraPos);
-			float distanceBlendFactor = saturate(cameraDistance / max(_FarGrassBlendDistance, 0.001));
+			IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
+           // get scale from matrix
+            float3 scale = float3(
+                length(unity_WorldToObject._m00_m01_m02),
+                length(unity_WorldToObject._m10_m11_m12),
+                length(unity_WorldToObject._m20_m21_m22)
+                );
+ 
+            // get translation from matrix
+            float3 pos = unity_WorldToObject._m03_m13_m23 / scale;
+ 
+            // get unscaled rotation from matrix
+            float3x3 rot = float3x3(
+                normalize(unity_WorldToObject._m00_m01_m02),
+                normalize(unity_WorldToObject._m10_m11_m12),
+                normalize(unity_WorldToObject._m20_m21_m22)
+                );
+            // make box mapping with rotation preserved
+            float3 map = mul(rot, IN.worldPos) + pos;
+			float3 worldNormal = IN.worldNormal;
+            float3 norm = mul(rot, worldNormal);
+ 
+            float3 blend = abs(norm) / dot(abs(norm), float3(1,1,1));
+            float2 planarUV;
+            if (blend.x > max(blend.y, blend.z)) {
+                planarUV = map.yz;
+            } else if (blend.z > blend.y) {
+                planarUV = map.xy;
+            } else {
+                planarUV = map.xz;
+            }
+			planarUV *= scale;
 
-			float3 blendmask = tex2D(_BlendMaskTexture, IN.uv2_BlendMaskTexture).rgb;
+			
 
-			// --- grass ---
-			float3 nearCoord = _KKNearOffset.xyz + IN.planetDelta * _NearGrassTiling;
-			float3 farCoord = _KKFarOffset.xyz + IN.planetDelta * _FarGrassTiling;
+			float distanceBlendFactor = clamp(pow(distance(IN.worldPos, _WorldSpaceCameraPos)/_FarGrassBlendDistance, 1),0,1);
+		   
+			float3 blendmask =  tex2D(_BlendMaskTexture, IN.uv2_BlendMaskTexture);
 
-			float4 nearGrassPixel = Triplanar(_NearGrassTexture, nearCoord, weights, 1);
-			float4 farGrassPixel = Triplanar(_FarGrassTexture, farCoord, weights, 1);
+
+			float4 nearGrassPixel = tex2DStochastic(_NearGrassTexture, (planarUV * _NearGrassTiling));
+			float4 farGrassPixel = tex2DStochastic(_FarGrassTexture, (planarUV * _FarGrassTiling));
+
 			if (_NearGrassGrayScale)
 			{
 				nearGrassPixel.rgb = GrayScale(nearGrassPixel.rgb);
@@ -271,42 +264,29 @@ Shader "KK/Ground_Multi_NoUV"
 			{
 				farGrassPixel.rgb = GrayScale(farGrassPixel.rgb);
 			}
-			float3 grassColor = lerp(nearGrassPixel.rgb, farGrassPixel.rgb, distanceBlendFactor) * _GrassColor.rgb;
 
-			float3 nearNormal = TriplanarNormal(_NearGrassNormalTexture, nearCoord, planetNormal, weights);
-			float3 farNormal = TriplanarNormal(_FarGrassNormalTexture, farCoord, planetNormal, weights);
-			float3 grassPlanetNormal = normalize(lerp(nearNormal, farNormal, distanceBlendFactor));
 
-			// --- steep texture of the planet, blended in like the PQS terrain does it (it replaces the color) ---
-			if (_KKSteepEnabled > 0.5)
-			{
-				float slope = 1.0 - dot(planetUp, planetNormal);
-				float steep = saturate(slope * _KKSteepPower) * (1.0 - smoothstep(_KKSteepTexStart, _KKSteepTexEnd, IN.viewDepth));
-				float nearFar = smoothstep(_KKGroundTexStart, _KKGroundTexEnd, IN.viewDepth);
+			float4 grassTextureBlended = lerp(nearGrassPixel, farGrassPixel, distanceBlendFactor);
 
-				float3 steepNearCoord = _KKSteepNearOffset.xyz + IN.planetDelta * _KKSteepNearTiling;
-				float3 steepFarCoord = _KKSteepFarOffset.xyz + IN.planetDelta * _KKSteepFarTiling;
+			grassTextureBlended *= _GrassColor;
 
-				// no branches around the samples: their texture gradients must stay valid
-				float steepNear = steep * (1.0 - nearFar);
-				float steepFar = steep * nearFar;
-				grassColor = lerp(grassColor, Triplanar(_KKSteepTex, steepNearCoord, stockWeights, 0).rgb, steepNear);
-				grassColor = lerp(grassColor, Triplanar(_KKSteepTex, steepFarCoord, stockWeights, 0).rgb, steepFar);
-				grassPlanetNormal = normalize(lerp(grassPlanetNormal,
-					TriplanarNormal(_KKSteepBumpMap, steepNearCoord, planetNormal, weights), steepNear));
-				grassPlanetNormal = normalize(lerp(grassPlanetNormal,
-					TriplanarNormal(_KKSteepBumpMap, steepFarCoord, planetNormal, weights), steepFar));
-			}
+			// grass normal map: tangent space of the projected plane (planarUV), blended near / far like the color
+			float3 nearNormal = UnpackNormal(tex2DStochastic(_NearGrassNormalTexture, (planarUV * _NearGrassTiling)));
+			float3 farNormal = UnpackNormal(tex2DStochastic(_FarGrassNormalTexture, (planarUV * _FarGrassTiling)));
+			float3 grassTangentNormal = normalize(lerp(nearNormal, farNormal, distanceBlendFactor));
 
-			// --- tarmac (red), mapped by the mesh's uv ---
+
+			// float3 blendmask =  tex2D(_BlendMaskTexture, uv+(0.5,0.5));
+
+			// first map
 			fixed4 tarmacPixel;
-			float3 tarmacNormal;
-			if (_TarmacTileRandom)
+			float3 tarmacNormal = float3(0, 0, 1);
+			if (_TarmacTileRandom) 
 			{
 				tarmacPixel = tex2DStochastic(_TarmacTexture, IN.uv_TarmacTexture);
 				tarmacNormal = UnpackNormal(tex2DStochastic(_TarmacNormalTexture, IN.uv_TarmacTexture));
-			}
-			else
+			} 
+			else 
 			{
 				tarmacPixel = tex2D(_TarmacTexture, IN.uv_TarmacTexture);
 				tarmacNormal = UnpackNormal(tex2D(_TarmacNormalTexture, IN.uv_TarmacTexture));
@@ -315,61 +295,100 @@ Shader "KK/Ground_Multi_NoUV"
 			{
 				tarmacPixel.rgb = GrayScale(tarmacPixel.rgb);
 			}
-			float4 tarmacColor = _TarmacColor * tarmacPixel;
 
-			// --- third (green) and fourth (blue) texture, mapped in the planet frame like the grass ---
-			float3 thirdCoord = _KKThirdOffset.xyz + IN.planetDelta * _ThirdTextureTiling;
-			float4 thirdPixel = Triplanar(_ThirdTexture, thirdCoord, weights, _ThirdTextureTileRandom);
+
+			float4 tarmacColor = _TarmacColor * tarmacPixel;
+		
+			// second texture
+			fixed4 thirdMapPixel;
+			float3 thirdNormal = float3(0, 0, 1);
+			if (_ThirdTextureTileRandom) 
+			{
+				thirdMapPixel = tex2DStochastic(_ThirdTexture, planarUV * _ThirdTextureTiling);
+				thirdNormal = UnpackNormal(tex2DStochastic(_ThirdNormalTexture, IN.uv_TarmacTexture));
+			} 
+			else 
+			{
+				thirdMapPixel = tex2D(_ThirdTexture, planarUV * _ThirdTextureTiling);
+				thirdNormal = UnpackNormal(tex2D(_ThirdNormalTexture, IN.uv_TarmacTexture));
+			}
 			if (_ThirdTextureGrayScale)
 			{
-				thirdPixel.rgb = GrayScale(thirdPixel.rgb);
+				thirdMapPixel.rgb = GrayScale(thirdMapPixel.rgb);
 			}
-			float4 thirdColor = thirdPixel * _ThirdTextureColor;
-			float3 thirdPlanetNormal = TriplanarNormal(_ThirdNormalTexture, thirdCoord, planetNormal, weights);
 
-			float3 fourthCoord = _KKFourthOffset.xyz + IN.planetDelta * _FourthTextureTiling;
-			float4 fourthPixel = Triplanar(_FourthTexture, fourthCoord, weights, _FourthTextureTileRandom);
+
+			float4 thirtColor = thirdMapPixel * _ThirdTextureColor;
+
+
+			// third texture
+			fixed4 fourthMapPixel;
+			float3 fourthNormal = float3(0, 0, 1);
+			if (_FourthTextureTileRandom) 
+			{
+				fourthMapPixel = tex2DStochastic(_FourthTexture, planarUV * _FourthTextureTiling);
+				fourthNormal = UnpackNormal(tex2DStochastic(_FourthNormalTexture, IN.uv_TarmacTexture));
+			} 
+			else 
+			{
+				fourthMapPixel = tex2D(_FourthTexture, planarUV * _FourthTextureTiling);
+				fourthNormal = UnpackNormal(tex2D(_FourthNormalTexture, IN.uv_TarmacTexture));
+			}
+
 			if (_FourthTextureGrayScale)
 			{
-				fourthPixel.rgb = GrayScale(fourthPixel.rgb);
+				fourthMapPixel.rgb = GrayScale(fourthMapPixel.rgb);
 			}
-			float4 fourthColor = fourthPixel * _FourthTextureColor;
-			float3 fourthPlanetNormal = TriplanarNormal(_FourthNormalTexture, fourthCoord, planetNormal, weights);
 
-			// --- blend everything over ---
-			float tarmacBlend = blendmask.r * tarmacColor.a;
-			float thirdBlend = blendmask.g * thirdColor.a;
-			float fourthBlend = blendmask.b * fourthColor.a;
+			float4 fourthColor = fourthMapPixel * _FourthTextureColor;
 
-			float3 outputColor = lerp(grassColor, tarmacColor.rgb, tarmacBlend);
-			outputColor = lerp(outputColor, thirdColor.rgb, thirdBlend);
-			outputColor = lerp(outputColor, fourthColor.rgb, fourthBlend);
+			// Blend everything over
+			float3 outputColor = 0;
+			outputColor = lerp (grassTextureBlended.rgb, tarmacColor, blendmask.r * tarmacColor.a);
+			outputColor = lerp (outputColor, thirtColor.rgb, blendmask.g * thirtColor.a);
+			outputColor = lerp (outputColor, fourthColor.rgb, blendmask.b * fourthColor.a );
+			
 
-			// normals: planet frame -> world -> the mesh's tangent space; the tarmac normal map is in tangent space (uv)
-			float3 normal = WorldToTangentNormalVector(IN, mul((float3x3)_KKPlanetToWorld, grassPlanetNormal));
-			normal = lerp(normal, tarmacNormal, tarmacBlend);
-			normal = lerp(normal, WorldToTangentNormalVector(IN, mul((float3x3)_KKPlanetToWorld, thirdPlanetNormal)), thirdBlend);
-			normal = lerp(normal, WorldToTangentNormalVector(IN, mul((float3x3)_KKPlanetToWorld, fourthPlanetNormal)), fourthBlend);
+			// grass normal: from the projected plane into the box space of the mapping (whiteout blend with the
+			// mesh normal), then into world space and the mesh's tangent space
+			float3 boxNormal;
+			if (blend.x > max(blend.y, blend.z)) {
+				// planarUV = map.yz
+				float2 nUV = grassTangentNormal.xy + norm.yz;
+				boxNormal = float3(abs(grassTangentNormal.z) * norm.x, nUV.x, nUV.y);
+			} else if (blend.z > blend.y) {
+				// planarUV = map.xy
+				float2 nUV = grassTangentNormal.xy + norm.xy;
+				boxNormal = float3(nUV.x, nUV.y, abs(grassTangentNormal.z) * norm.z);
+			} else {
+				// planarUV = map.xz
+				float2 nUV = grassTangentNormal.xy + norm.xz;
+				boxNormal = float3(nUV.x, abs(grassTangentNormal.z) * norm.y, nUV.y);
+			}
+			// rot is a pure rotation (world -> box), its transpose turns it back
+			float3 grassWorldNormal = normalize(mul(transpose(rot), boxNormal));
+			float3 normal = WorldToTangentNormalVector(IN, grassWorldNormal);
+
+			// tarmac, third and fourth normal maps are in the mesh's tangent space (uv)
+			// (the third and fourth used the red mask channel before, now green and blue like their colors)
+			normal = lerp(normal, tarmacNormal, blendmask.r * tarmacColor.a);
+			normal = lerp(normal, thirdNormal, blendmask.g * thirtColor.a);
+			normal = lerp(normal, fourthNormal, blendmask.b * fourthColor.a);
 			normal = normalize(normal);
 
-			// --- aerial perspective of the PQS shaders: the albedo is blended to the fog color before the lighting ---
-			// fog = 1 - exp(depth * _globalDensity * _heightDensityAtViewer) (the material's density is negative),
-			// fog color from the ramp by the sun's height over the horizon at the pixel, row 0.75
-			if (_KKAerialEnabled > 0.5)
-			{
-				float aerialFog = max(0.0, 1.0 - exp(IN.viewDepth * _KKGlobalDensity * _heightDensityAtViewer));
-				float3 fogColor = tex2D(_KKFogColorRamp, float2(dot(_KKSunDirection, worldUp), 0.75)).rgb;
-				outputColor = lerp(outputColor, fogColor, aerialFog);
-			}
-
+			//emission always sampled and assigned to surface along with stock part-highlighting functionality
+			//fixed4 glow = tex2D(_Emissive, (IN.uv_MainTex));
+			//o.Emission = glow.rgb * glow.aaa * _EmissiveColor.rgb * _EmissiveColor.aaa + stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 			o.Emission = stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
 
+
+			//apply the standard shader param multipliers to the sampled/computed values.
 			fixed4 fog = UnderwaterFog(IN.worldPos, outputColor);
 			o.Normal = normal;
 			o.Albedo = fog.rgb;
 			o.Emission *= fog.a;
-			o.Specular = 0;
-			o.Gloss = 0;
+        	o.Specular = (0);
+			
 
 #if UNITY_PASS_DEFERRED
 			// In deferred rendering do not use the flat ambient because Deferred adds its own ambient as a composite of flat ambient and probe
@@ -379,8 +398,8 @@ Shader "KK/Ground_Multi_NoUV"
 #endif
 		}
 
-		ENDCG
+        ENDCG
 
-	}
-	Fallback "Diffuse"
+    }
+    Fallback "Standard"
 }

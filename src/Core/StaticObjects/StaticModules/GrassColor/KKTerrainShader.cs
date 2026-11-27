@@ -5,8 +5,9 @@ using UnityEngine;
 namespace KerbalKonstructs.Core
 {
     /// <summary>
-    /// Inputs of the KK ground shader (KK/Ground_Multi_NoUV, GrassColor2), which draws the KK ground like the stock PQS
-    /// terrain it continues.
+    /// Inputs of the KK terrain shader (KK/Terrain, GrassColor2), which draws the KK ground like the stock PQS terrain it
+    /// continues. The old ground shader (KK/Ground_Multi_NoUV) stays in the bundle; GrassColor2 uses it only with an older
+    /// bundle that has no KK/Terrain.
     ///
     /// Globals of the current planet, set every frame (UpdateGlobals):
     ///  _KKWorldToPlanet / _KKPlanetToWorld  rotation between world space and the planet frame (the PQS transform)
@@ -33,9 +34,40 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal const double offsetPeriod = 1351d;
 
+        internal const string terrainShaderName = "KK/Terrain";
+        internal const string oldGroundShaderName = "KK/Ground_Multi_NoUV";
+
+        private static Shader groundShader = null;
+
+        /// <summary>
+        /// The shader for GrassColor2: KK/Terrain, or the old KK/Ground_Multi_NoUV with an older shader bundle
+        /// </summary>
+        internal static Shader GroundShader
+        {
+            get
+            {
+                if (groundShader == null)
+                {
+                    if (KKGraphics.HasShader(terrainShaderName))
+                    {
+                        groundShader = KKGraphics.GetShader(terrainShaderName);
+                    }
+                    else
+                    {
+                        Log.UserWarning(terrainShaderName + " is not in the shader bundle (an older bundle?): GrassColor2 uses " + oldGroundShaderName);
+                        groundShader = KKGraphics.GetShader(oldGroundShaderName);
+                    }
+                }
+                return groundShader;
+            }
+        }
+
         private static readonly int worldToPlanetID = Shader.PropertyToID("_KKWorldToPlanet");
         private static readonly int planetToWorldID = Shader.PropertyToID("_KKPlanetToWorld");
         private static readonly int sunID = Shader.PropertyToID("_KKSunDirection");
+        // used only by the haze of the old KK/Ground_Multi_NoUV
+        private static readonly int originID = Shader.PropertyToID("_KKPlanetOrigin");
+        private static readonly int radiusID = Shader.PropertyToID("_KKPlanetRadius");
         private static readonly int aerialEnabledID = Shader.PropertyToID("_KKAerialEnabled");
         private static readonly int densityID = Shader.PropertyToID("_KKGlobalDensity");
         private static readonly int rampID = Shader.PropertyToID("_KKFogColorRamp");
@@ -117,6 +149,9 @@ namespace KerbalKonstructs.Core
             Shader.SetGlobalMatrix(worldToPlanetID, Matrix4x4.Rotate(Quaternion.Inverse(planetRotation)));
             Shader.SetGlobalMatrix(planetToWorldID, Matrix4x4.Rotate(planetRotation));
 
+            Shader.SetGlobalVector(originID, (Vector3)body.position);
+            Shader.SetGlobalFloat(radiusID, (float)body.Radius);
+
             CelestialBody sun = Planetarium.fetch != null ? Planetarium.fetch.Sun : null;
             if (sun != null)
             {
@@ -165,7 +200,7 @@ namespace KerbalKonstructs.Core
             }
             Shader.SetGlobalFloat(steepEnabledID, hasSteep ? 1f : 0f);
 
-            Log.Normal("KK ground shader on " + body.name + " (" + (surfaceMaterial != null ? surfaceMaterial.shader.name : "no PQS material") +
+            Log.Normal("KK terrain shader on " + body.name + " (" + (surfaceMaterial != null ? surfaceMaterial.shader.name : "no PQS material") +
                 "): haze " + (hasHaze ? "on" : "off") + ", steep texture " + (hasSteep ? "on" : "off"));
         }
 

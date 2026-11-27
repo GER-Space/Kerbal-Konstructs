@@ -109,7 +109,7 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// The _GrassColor for GrassColor2 (KK/Ground_Multi_NoUV), with the near and far grass textures it will use.
+        /// The _GrassColor for GrassColor2 (KK/Terrain), with the near and far grass textures it will use.
         /// </summary>
         internal static Color ToGrassColor2(Color legacyColor, string legacyTexture, string nearTexture, bool nearGray, string farTexture, bool farGray, string moduleDefaultTexture = null)
         {
@@ -262,7 +262,7 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// Same as GrayScale() in the GrassColor2 shader (Ground_Multi_NoUV)
+        /// Same as GrayScale() in the GrassColor2 shaders (KK/Terrain, KK/Ground_Multi_NoUV)
         /// </summary>
         private static float GrayScale(Color color)
         {
