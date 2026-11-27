@@ -109,6 +109,26 @@ Shader "KK/Terrain"
 		#include "LightingKSP.cginc"
 		#include "KSP-include.cginc"
 
+		// Separate textures and samplers (a pass may use at most 16 samplers), like Unity's UNITY_DECLARE_TEX2D macros:
+		// the surface shader analysis pass doesn't support the DX11 syntax, so it gets plain sampler2D
+		#if defined(UNITY_SEPARATE_TEXTURE_SAMPLER) && !defined(SHADER_TARGET_SURFACE_ANALYSIS)
+			#define KK_TEXTURE(t) Texture2D t
+			#define KK_SAMPLER(t) SamplerState sampler##t
+			#define KK_TEXTURE_PARAMS(t, s) Texture2D t, SamplerState s
+			// a declared texture with the sampler of the declared texture s
+			#define KK_TEXTURE_ARGS(t, s) t, sampler##s
+			// a texture and a sampler that are function parameters
+			#define KK_PASS_TEXTURE(t, s) t, s
+			#define KK_SAMPLE_GRAD(t, s, uv, dx, dy) t.SampleGrad(s, uv, dx, dy)
+		#else
+			#define KK_TEXTURE(t) sampler2D t
+			#define KK_SAMPLER(t)
+			#define KK_TEXTURE_PARAMS(t, s) sampler2D t
+			#define KK_TEXTURE_ARGS(t, s) t
+			#define KK_PASS_TEXTURE(t, s) t
+			#define KK_SAMPLE_GRAD(t, s, uv, dx, dy) tex2Dgrad(t, uv, dx, dy)
+		#endif
+
 		sampler2D _BlendMaskTexture;
 
 		sampler2D _TarmacTexture;
@@ -117,17 +137,17 @@ Shader "KK/Terrain"
 		fixed _TarmacTileRandom;
 		float _TarmacGrayScale;
 
-		// DX11 style textures with shared samplers (a pass may use at most 16 samplers): the third and fourth texture and
-		// their normal maps share the sampler of the third texture, the planet's textures that of layer A
-		Texture2D _ThirdTexture;
-		SamplerState sampler_ThirdTexture;
-		Texture2D _ThirdNormalTexture;
+		// shared samplers: the third and fourth texture and their normal maps use the sampler of the third texture, the
+		// planet's textures that of layer A
+		KK_TEXTURE(_ThirdTexture);
+		KK_SAMPLER(_ThirdTexture);
+		KK_TEXTURE(_ThirdNormalTexture);
 		float4 _ThirdTextureColor;
 		float _ThirdTextureTiling;
 		float _ThirdTextureGrayScale;
 
-		Texture2D _FourthTexture;
-		Texture2D _FourthNormalTexture;
+		KK_TEXTURE(_FourthTexture);
+		KK_TEXTURE(_FourthNormalTexture);
 		float4 _FourthTextureColor;
 		float _FourthTextureTiling;
 		float _FourthTextureGrayScale;
@@ -139,9 +159,9 @@ Shader "KK/Terrain"
 		float _KKPowerNear;
 		float _KKPowerFar;
 
-		Texture2D _KKLayerATex;
-		SamplerState sampler_KKLayerATex;
-		Texture2D _KKLayerABump;
+		KK_TEXTURE(_KKLayerATex);
+		KK_SAMPLER(_KKLayerATex);
+		KK_TEXTURE(_KKLayerABump);
 		float _KKLayerAWeight;
 		float4 _KKLayerATilings;
 		float4 _KKLayerANearOffset;
@@ -149,8 +169,8 @@ Shader "KK/Terrain"
 		float4 _KKLayerABumpNearOffset;
 		float4 _KKLayerABumpFarOffset;
 
-		Texture2D _KKLayerBTex;
-		Texture2D _KKLayerBBump;
+		KK_TEXTURE(_KKLayerBTex);
+		KK_TEXTURE(_KKLayerBBump);
 		float _KKLayerBWeight;
 		float4 _KKLayerBTilings;
 		float4 _KKLayerBNearOffset;
@@ -176,8 +196,8 @@ Shader "KK/Terrain"
 		sampler2D _KKFogColorRamp;
 		// steep texture and distance blends, from the planet's terrain material
 		float _KKSteepEnabled;
-		Texture2D _KKSteepTex;
-		Texture2D _KKSteepBumpMap;
+		KK_TEXTURE(_KKSteepTex);
+		KK_TEXTURE(_KKSteepBumpMap);
 		float _KKSteepPower;
 		float _KKSteepTexStart;
 		float _KKSteepTexEnd;
@@ -225,52 +245,52 @@ Shader "KK/Terrain"
 		// The weights are per renderer: a projection without weight is skipped. The gradients come from the caller
 		// (derivatives of the coordinates), so these may be used inside branches.
 
-		float4 TriSample(Texture2D tex, SamplerState s, float3 coord, float3 dx, float3 dy, float3 w)
+		float4 TriSample(KK_TEXTURE_PARAMS(tex, s), float3 coord, float3 dx, float3 dy, float3 w)
 		{
 			float4 result = 0;
 			UNITY_BRANCH
 			if (w.z > 0.001)
 			{
-				result += tex.SampleGrad(s, coord.xy, dx.xy, dy.xy) * w.z;
+				result += KK_SAMPLE_GRAD(tex, s, coord.xy, dx.xy, dy.xy) * w.z;
 			}
 			UNITY_BRANCH
 			if (w.x > 0.001)
 			{
-				result += tex.SampleGrad(s, coord.zy, dx.zy, dy.zy) * w.x;
+				result += KK_SAMPLE_GRAD(tex, s, coord.zy, dx.zy, dy.zy) * w.x;
 			}
 			UNITY_BRANCH
 			if (w.y > 0.001)
 			{
-				result += tex.SampleGrad(s, coord.zx, dx.zx, dy.zx) * w.y;
+				result += KK_SAMPLE_GRAD(tex, s, coord.zx, dx.zx, dy.zx) * w.y;
 			}
 			return result;
 		}
 
 		// the PQS shaders add their unpacked triplanar normals with the same weights and use the sum as tangent normal
-		float3 TriNormal(Texture2D normalMap, SamplerState s, float3 coord, float3 dx, float3 dy, float3 w)
+		float3 TriNormal(KK_TEXTURE_PARAMS(normalMap, s), float3 coord, float3 dx, float3 dy, float3 w)
 		{
 			float3 result = 0;
 			UNITY_BRANCH
 			if (w.z > 0.001)
 			{
-				result += UnpackNormal(normalMap.SampleGrad(s, coord.xy, dx.xy, dy.xy)) * w.z;
+				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.xy, dx.xy, dy.xy)) * w.z;
 			}
 			UNITY_BRANCH
 			if (w.x > 0.001)
 			{
-				result += UnpackNormal(normalMap.SampleGrad(s, coord.zy, dx.zy, dy.zy)) * w.x;
+				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.zy, dx.zy, dy.zy)) * w.x;
 			}
 			UNITY_BRANCH
 			if (w.y > 0.001)
 			{
-				result += UnpackNormal(normalMap.SampleGrad(s, coord.zx, dx.zx, dy.zx)) * w.y;
+				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.zx, dx.zx, dy.zx)) * w.y;
 			}
 			return result;
 		}
 
 
 		// one of the planet's low / mid / high layers, added with the stock weights
-		void AddLayer(Texture2D tex, Texture2D bump, float layerWeight, float4 tilings, float4 nearOffset, float4 farOffset,
+		void AddLayer(KK_TEXTURE_PARAMS(tex, texSampler), KK_TEXTURE_PARAMS(bump, bumpSampler), float layerWeight, float4 tilings, float4 nearOffset, float4 farOffset,
 			float4 bumpNearOffset, float4 bumpFarOffset, float nearWeight, float farWeight,
 			float3 delta, float3 ddxDelta, float3 ddyDelta, float3 w, inout float3 color, inout float3 normal)
 		{
@@ -279,14 +299,14 @@ Shader "KK/Terrain"
 			UNITY_BRANCH
 			if (nearAmount > 0.0001)
 			{
-				color += TriSample(tex, sampler_KKLayerATex, nearOffset.xyz + delta * tilings.x, ddxDelta * tilings.x, ddyDelta * tilings.x, w).rgb * nearAmount;
-				normal += TriNormal(bump, sampler_KKLayerATex, bumpNearOffset.xyz + delta * tilings.z, ddxDelta * tilings.z, ddyDelta * tilings.z, w) * nearAmount;
+				color += TriSample(KK_PASS_TEXTURE(tex, texSampler), nearOffset.xyz + delta * tilings.x, ddxDelta * tilings.x, ddyDelta * tilings.x, w).rgb * nearAmount;
+				normal += TriNormal(KK_PASS_TEXTURE(bump, bumpSampler), bumpNearOffset.xyz + delta * tilings.z, ddxDelta * tilings.z, ddyDelta * tilings.z, w) * nearAmount;
 			}
 			UNITY_BRANCH
 			if (farAmount > 0.0001)
 			{
-				color += TriSample(tex, sampler_KKLayerATex, farOffset.xyz + delta * tilings.y, ddxDelta * tilings.y, ddyDelta * tilings.y, w).rgb * farAmount;
-				normal += TriNormal(bump, sampler_KKLayerATex, bumpFarOffset.xyz + delta * tilings.w, ddxDelta * tilings.w, ddyDelta * tilings.w, w) * farAmount;
+				color += TriSample(KK_PASS_TEXTURE(tex, texSampler), farOffset.xyz + delta * tilings.y, ddxDelta * tilings.y, ddyDelta * tilings.y, w).rgb * farAmount;
+				normal += TriNormal(KK_PASS_TEXTURE(bump, bumpSampler), bumpFarOffset.xyz + delta * tilings.w, ddxDelta * tilings.w, ddyDelta * tilings.w, w) * farAmount;
 			}
 		}
 
@@ -312,13 +332,13 @@ Shader "KK/Terrain"
 
 			float3 terrainTexture = 0;
 			float3 terrainNormal = 0;
-			AddLayer(_KKLayerATex, _KKLayerABump, _KKLayerAWeight, _KKLayerATilings, _KKLayerANearOffset, _KKLayerAFarOffset,
+			AddLayer(KK_TEXTURE_ARGS(_KKLayerATex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerABump, _KKLayerATex), _KKLayerAWeight, _KKLayerATilings, _KKLayerANearOffset, _KKLayerAFarOffset,
 				_KKLayerABumpNearOffset, _KKLayerABumpFarOffset, nearWeight, farWeight, delta, ddxDelta, ddyDelta, w,
 				terrainTexture, terrainNormal);
 			UNITY_BRANCH
 			if (_KKLayerBWeight > 0.0001)
 			{
-				AddLayer(_KKLayerBTex, _KKLayerBBump, _KKLayerBWeight, _KKLayerBTilings, _KKLayerBNearOffset, _KKLayerBFarOffset,
+				AddLayer(KK_TEXTURE_ARGS(_KKLayerBTex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerBBump, _KKLayerATex), _KKLayerBWeight, _KKLayerBTilings, _KKLayerBNearOffset, _KKLayerBFarOffset,
 					_KKLayerBBumpNearOffset, _KKLayerBBumpFarOffset, nearWeight, farWeight, delta, ddxDelta, ddyDelta, w,
 					terrainTexture, terrainNormal);
 			}
@@ -339,8 +359,8 @@ Shader "KK/Terrain"
 					float3 coord = _KKSteepNearOffset.xyz + delta * _KKSteepNearTiling;
 					float3 dx = ddxDelta * _KKSteepNearTiling;
 					float3 dy = ddyDelta * _KKSteepNearTiling;
-					groundColor = lerp(groundColor, TriSample(_KKSteepTex, sampler_KKLayerATex, coord, dx, dy, w).rgb, steepNear);
-					terrainNormal = lerp(terrainNormal, TriNormal(_KKSteepBumpMap, sampler_KKLayerATex, coord, dx, dy, w), steepNear);
+					groundColor = lerp(groundColor, TriSample(KK_TEXTURE_ARGS(_KKSteepTex, _KKLayerATex), coord, dx, dy, w).rgb, steepNear);
+					terrainNormal = lerp(terrainNormal, TriNormal(KK_TEXTURE_ARGS(_KKSteepBumpMap, _KKLayerATex), coord, dx, dy, w), steepNear);
 				}
 				UNITY_BRANCH
 				if (steepFar > 0.0001)
@@ -348,8 +368,8 @@ Shader "KK/Terrain"
 					float3 coord = _KKSteepFarOffset.xyz + delta * _KKSteepFarTiling;
 					float3 dx = ddxDelta * _KKSteepFarTiling;
 					float3 dy = ddyDelta * _KKSteepFarTiling;
-					groundColor = lerp(groundColor, TriSample(_KKSteepTex, sampler_KKLayerATex, coord, dx, dy, w).rgb, steepFar);
-					terrainNormal = lerp(terrainNormal, TriNormal(_KKSteepBumpMap, sampler_KKLayerATex, coord, dx, dy, w), steepFar);
+					groundColor = lerp(groundColor, TriSample(KK_TEXTURE_ARGS(_KKSteepTex, _KKLayerATex), coord, dx, dy, w).rgb, steepFar);
+					terrainNormal = lerp(terrainNormal, TriNormal(KK_TEXTURE_ARGS(_KKSteepBumpMap, _KKLayerATex), coord, dx, dy, w), steepFar);
 				}
 			}
 			float3 normal = normalize(terrainNormal + float3(0, 0, 0.0001));
@@ -386,7 +406,7 @@ Shader "KK/Terrain"
 				float3 coord = _KKThirdOffset.xyz + delta * _ThirdTextureTiling;
 				float3 dx = ddxDelta * _ThirdTextureTiling;
 				float3 dy = ddyDelta * _ThirdTextureTiling;
-				float4 thirdPixel = TriSample(_ThirdTexture, sampler_ThirdTexture, coord, dx, dy, wNormalized);
+				float4 thirdPixel = TriSample(KK_TEXTURE_ARGS(_ThirdTexture, _ThirdTexture), coord, dx, dy, wNormalized);
 				if (_ThirdTextureGrayScale)
 				{
 					thirdPixel.rgb = GrayScale(thirdPixel.rgb);
@@ -394,7 +414,7 @@ Shader "KK/Terrain"
 				float4 thirdColor = thirdPixel * _ThirdTextureColor;
 				float thirdBlend = blendmask.g * thirdColor.a;
 				outputColor = lerp(outputColor, thirdColor.rgb, thirdBlend);
-				normal = lerp(normal, normalize(TriNormal(_ThirdNormalTexture, sampler_ThirdTexture, coord, dx, dy, wNormalized)), thirdBlend);
+				normal = lerp(normal, normalize(TriNormal(KK_TEXTURE_ARGS(_ThirdNormalTexture, _ThirdTexture), coord, dx, dy, wNormalized)), thirdBlend);
 			}
 
 			float fourthMask = blendmask.b * _FourthTextureColor.a;
@@ -404,7 +424,7 @@ Shader "KK/Terrain"
 				float3 coord = _KKFourthOffset.xyz + delta * _FourthTextureTiling;
 				float3 dx = ddxDelta * _FourthTextureTiling;
 				float3 dy = ddyDelta * _FourthTextureTiling;
-				float4 fourthPixel = TriSample(_FourthTexture, sampler_ThirdTexture, coord, dx, dy, wNormalized);
+				float4 fourthPixel = TriSample(KK_TEXTURE_ARGS(_FourthTexture, _ThirdTexture), coord, dx, dy, wNormalized);
 				if (_FourthTextureGrayScale)
 				{
 					fourthPixel.rgb = GrayScale(fourthPixel.rgb);
@@ -412,7 +432,7 @@ Shader "KK/Terrain"
 				float4 fourthColor = fourthPixel * _FourthTextureColor;
 				float fourthBlend = blendmask.b * fourthColor.a;
 				outputColor = lerp(outputColor, fourthColor.rgb, fourthBlend);
-				normal = lerp(normal, normalize(TriNormal(_FourthNormalTexture, sampler_ThirdTexture, coord, dx, dy, wNormalized)), fourthBlend);
+				normal = lerp(normal, normalize(TriNormal(KK_TEXTURE_ARGS(_FourthNormalTexture, _ThirdTexture), coord, dx, dy, wNormalized)), fourthBlend);
 			}
 			normal = normalize(normal);
 
