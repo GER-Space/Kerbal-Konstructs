@@ -268,7 +268,6 @@ namespace KerbalKonstructs.UI2
 
             foreach (Material material in grassMaterials)
             {
-                GrassColor2.SetFlatNormals(material);
                 material.SetColor("_GrassColor", GrassColor2.defaultColor);
                 material.SetColor("_TarmacColor", GetColor(fields, "DefaultTarmacColor", Color.white));
                 material.SetFloat("_NearGrassTiling", GetFloat(fields, "DefaultNearGrassTiling", 0.03f));

@@ -46,9 +46,6 @@ namespace KerbalKonstructs
 
         public string MaterialOffset = "0";
 
-        // set by LoadModels() when this module replaces a legacy GrasColor module: that module's GrasTextureImage
-        public string LegacyGrasTextureImage = "";
-
         // internal variables below
 
 
@@ -102,50 +99,6 @@ namespace KerbalKonstructs
         internal List<Material> grassMaterials = new List<Material>();
 
 
-        private static Texture2D _flatNormalTexture = null;
-
-        /// <summary>
-        /// Workaround for KK/Ground_Multi_NoUV until the shader is fixed: it samples its normal textures as raw colors
-        /// and adds (color * 2 - 1) to the world space normal. The normal textures are never set (and have no "bump"
-        /// default), so the lighting normal was bent away from the surface and the grass was too dark in sunlight.
-        /// A texture of exactly 0.5 gray gives (0, 0, 0): the shader then uses the mesh normal.
-        /// </summary>
-        internal static Texture2D flatNormalTexture
-        {
-            get
-            {
-                if (_flatNormalTexture == null)
-                {
-                    // linear: the 0.5 must not be changed by a color space conversion
-                    _flatNormalTexture = new Texture2D(1, 1, TextureFormat.RGBA32, false, true);
-                    _flatNormalTexture.name = "KKFlatNormalWorkaround";
-                    _flatNormalTexture.SetPixels32(new Color32[] { new Color32(128, 128, 128, 128) });
-                    _flatNormalTexture.Apply(false, true);
-                }
-                return _flatNormalTexture;
-            }
-        }
-
-
-        /// <summary>
-        /// Sets all normal textures of the ground shader to the flat workaround texture (see flatNormalTexture)
-        /// </summary>
-        internal static void SetFlatNormals(Material material)
-        {
-            // the fixed shader (marked by _KKNormalFix) unpacks its normal maps and defaults to flat ones:
-            // the workaround texture would be read as a tilted normal there, so leave its normal textures alone
-            if (material == null || material.HasProperty("_KKNormalFix"))
-            {
-                return;
-            }
-            Texture2D flat = flatNormalTexture;
-            material.SetTexture("_FarGrassNormalTexture", flat);
-            material.SetTexture("_TarmacNormalTexture", flat);
-            material.SetTexture("_ThirdNormalTexture", flat);
-            material.SetTexture("_FourthNormalTexture", flat);
-        }
-
-
         public void Awake()
         {
             if (staticInstance != null)
@@ -195,10 +148,8 @@ namespace KerbalKonstructs
 
             //Material material = grassMaterials.ElementAt(matOffset);
 
-            for (int i = 0; i < grassMaterials.Count; i++)
+            foreach (Material material in grassMaterials)
             {
-                Material material = grassMaterials[i];
-                SetFlatNormals(material);
 
                 //if (useLegacy)
                 //{
@@ -338,11 +289,6 @@ namespace KerbalKonstructs
         {
         }
 
-        /// <summary>
-        /// True: an imported legacy instance without a color gets the ground color underneath as grass color
-        /// </summary>
-        protected virtual bool ImportsGroundColor => true;
-
         public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
@@ -384,72 +330,6 @@ namespace KerbalKonstructs
         }
 
 
-        /// <summary>
-        /// Converts the instance's legacy GrasColor / GrasTexture values with LegacyGrassColorConverter, and stores the
-        /// result as this instance's GrassColor2 config (so it is converted only once and saved with the instance).
-        /// Converted legacy modules (LegacyGrasTextureImage set): the legacy texture is the near and far grass texture,
-        /// tiling 1, blend distance 200; an instance without a legacy color gets the color of the ground underneath.
-        /// </summary>
-        private void ImportLegacyValues()
-        {
-            bool isConvertedModule = !string.IsNullOrEmpty(LegacyGrasTextureImage);
-
-            if (staticInstance.GrasColor == Color.clear && !isConvertedModule)
-            {
-                // nothing to import: model defaults
-                return;
-            }
-
-            string legacyTexture = staticInstance.GrasTexture;
-            string grasTextureName;
-            if (isConvertedModule)
-            {
-                grasTextureName = LegacyGrassColorConverter.ShownLegacyTexture(legacyTexture, LegacyGrasTextureImage);
-                nearGrassTiling = LegacyGrassColorConverter.convertedTiling;
-                farGrassTiling = LegacyGrassColorConverter.convertedTiling;
-                farGrassBlendDistance = LegacyGrassColorConverter.convertedBlendDistance;
-            }
-            else
-            {
-                grasTextureName = LegacyGrassColorConverter.GrassColor2Texture(legacyTexture);
-            }
-            nearGrassTextureName = grasTextureName;
-            farGrassTextureName = grasTextureName;
-
-            if (staticInstance.GrasColor == Color.clear && !ImportsGroundColor)
-            {
-                grassColor = defaultColor;
-            }
-            else if (staticInstance.GrasColor == Color.clear)
-            {
-                Color ground;
-                try
-                {
-                    ground = KerbalKonstructs.useCam ? GrasColorCam.instance.GetCameraColor(staticInstance)
-                        : GrassColorUtils.GetSurfaceColorPQS(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
-                }
-                catch (Exception e)
-                {
-                    Log.UserWarning("GrassColor2: could not get the ground color for " + staticInstance.gameObject.name + ": " + e.Message);
-                    ground = Color.clear;
-                }
-                grassColor = (ground == Color.clear) ? defaultColor
-                    : LegacyGrassColorConverter.FromGroundColor(ground, nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray);
-                Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": no legacy color, ground color " +
-                    ConfigNode.WriteColor(grassColor) + " on " + grasTextureName);
-            }
-            else
-            {
-                grassColor = LegacyGrassColorConverter.ToGrassColor2(staticInstance.GrasColor, legacyTexture,
-                    nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray, LegacyGrasTextureImage);
-                Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": " +
-                    LegacyGrassColorConverter.Describe(staticInstance.GrasColor, legacyTexture, grassColor, grasTextureName));
-            }
-
-            staticInstance.grassColor2Configs.Add(GiveConfig());
-        }
-
-
         public void ReadConfig()
         {
             instanceConfig = null;
@@ -488,9 +368,6 @@ namespace KerbalKonstructs
                 fourthTextureColor = ConfigNode.ParseColor(DefaultFourthTextureColor);
                 fourthTextureTileRandom = bool.Parse(DefaultFourthTextureTileRandom);
 
-
-                // try to import legacy values
-                ImportLegacyValues();
 
                 return;
             }

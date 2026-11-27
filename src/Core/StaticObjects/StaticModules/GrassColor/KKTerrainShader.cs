@@ -22,26 +22,18 @@ namespace KerbalKonstructs.Core
     ///                    _heightDensityAtViewer and _floatingOriginOffset.
     ///  _KKSteepEnabled, _KKSteepTex, _KKSteepBumpMap, _KKSteepPower, _KKSteepTiling, _KKSteepBumpTiling,
     ///  _KKSteepTexStart, _KKSteepTexEnd   the steep texture
-    ///  _KKPlanetOrigin, _KKPlanetRadius   only for the haze of the old KK/Ground_Multi_NoUV
     ///
     /// Per renderer (SetTerrainProperties): the terrain color at the renderer (SampleTerrain, the PQS vertex color: once
     /// per renderer, not per frame) with the material's saturation, contrast and tint applied as the stock vertex shader
     /// does, two of the planet's low/mid/high layers chosen by the altitude value there, and the planet frame offsets of
     /// KK's third and fourth texture (a float position on a planet is too imprecise for texture coordinates: the offsets
-    /// are computed here in double precision, reduced by offsetPeriod).
+    /// are computed here in double precision, reduced to their fractional part).
     ///
     /// With Scatterer installed the haze stays off: Scatterer replaces the stock terrain haze with its own atmosphere,
     /// which it also applies to the statics, so a stock-like haze on top of it would be doubled.
     /// </summary>
     internal static class KKTerrainShader
     {
-        /// <summary>
-        /// The texture coordinate offsets are reduced modulo this. It is an integer (the textures repeat every 1) and
-        /// nearly a multiple of the row spacing (sqrt 3) of the hex grid of the stochastic sampling: 1351 = 780 * 1.7320508
-        /// - 0.0004.
-        /// </summary>
-        internal const double offsetPeriod = 1351d;
-
         /// <summary>
         /// The PQS shaders scale their world coordinates by this before the tiling
         /// </summary>
@@ -80,8 +72,6 @@ namespace KerbalKonstructs.Core
         private static readonly int worldToPlanetID = Shader.PropertyToID("_KKWorldToPlanet");
         private static readonly int planetToWorldID = Shader.PropertyToID("_KKPlanetToWorld");
         private static readonly int sunID = Shader.PropertyToID("_KKSunDirection");
-        private static readonly int originID = Shader.PropertyToID("_KKPlanetOrigin");
-        private static readonly int radiusID = Shader.PropertyToID("_KKPlanetRadius");
         private static readonly int zoomFactorID = Shader.PropertyToID("_KKZoomFactor");
         private static readonly int zoomBlendWidthID = Shader.PropertyToID("_KKZoomBlendWidth");
         private static readonly int zoomRotationID = Shader.PropertyToID("_KKZoomRotation");
@@ -209,8 +199,6 @@ namespace KerbalKonstructs.Core
             Quaternion planetRotation = body.pqsController.transform.rotation;
             Shader.SetGlobalMatrix(worldToPlanetID, Matrix4x4.Rotate(Quaternion.Inverse(planetRotation)));
             Shader.SetGlobalMatrix(planetToWorldID, Matrix4x4.Rotate(planetRotation));
-            Shader.SetGlobalVector(originID, (Vector3)body.position);
-            Shader.SetGlobalFloat(radiusID, (float)body.Radius);
 
             CelestialBody sun = Planetarium.fetch != null ? Planetarium.fetch.Sun : null;
             if (sun != null)
@@ -284,10 +272,7 @@ namespace KerbalKonstructs.Core
             Shader.SetGlobalFloat(steepEnabledID, hasSteep ? 1f : 0f);
 
             Log.Normal("KK terrain shader on " + body.name + " (" + (surfaceMaterial != null ? surfaceMaterial.shader.name : "no PQS material") +
-                "): " + (zoom ? "zoom rotation" : "near tiling") + ", haze " + (hasHaze ? "on" : "off") + ", steep texture " + (hasSteep ? "on" : "off") +
-                ", density material " + GetFloat(surfaceMaterial, pqsDensityID, float.NaN) + " global " + Shader.GetGlobalFloat(pqsDensityID) +
-                ", heightDensityAtViewer " + Shader.GetGlobalFloat("_heightDensityAtViewer") +
-                ", material properties: " + DescribeTerrainMaterial(surfaceMaterial));
+                "): " + (zoom ? "zoom rotation" : "near tiling") + ", haze " + (hasHaze ? "on" : "off") + ", steep texture " + (hasSteep ? "on" : "off"));
         }
 
         #endregion
@@ -479,80 +464,6 @@ namespace KerbalKonstructs.Core
         #endregion
 
 
-        #region diagnostics
-
-        private static readonly string[] terrainProperties = new string[] {
-            "_lowTex", "_midTex", "_highTex", "_steepTex",
-            "_lowNearTiling", "_lowMultiFactor", "_lowTiling", "_lowBumpNearTiling", "_lowBumpFarTiling", "_lowBumpTiling",
-            "_midTiling", "_highTiling", "_steepNearTiling", "_steepTiling",
-            "_lowStart", "_lowEnd", "_highStart", "_highEnd", "_powerNear", "_powerFar", "_groundTexStart", "_groundTexEnd",
-            "_steepTexStart", "_steepTexEnd", "_factor", "_factorBlendWidth", "_factorRotation",
-            "_albedoBrightness", "_saturation", "_contrast", "_tintColor", "_specularColor", "_globalDensity", "_PlanetOpacity" };
-
-        /// <summary>
-        /// The values of the planet's terrain material that KK/Terrain could use (for the log)
-        /// </summary>
-        internal static string DescribeTerrainMaterial(Material material)
-        {
-            if (material == null)
-            {
-                return "none";
-            }
-            List<string> values = new List<string>();
-            foreach (string name in terrainProperties)
-            {
-                if (!material.HasProperty(name))
-                {
-                    continue;
-                }
-                if (name.EndsWith("Tex"))
-                {
-                    Texture t = material.GetTexture(name);
-                    values.Add(name + "=" + (t != null ? t.name : "null"));
-                }
-                else if (name.EndsWith("Color"))
-                {
-                    values.Add(name + "=" + material.GetColor(name));
-                }
-                else
-                {
-                    values.Add(name + "=" + material.GetFloat(name));
-                }
-            }
-            return string.Join(" ", values.ToArray());
-        }
-
-        /// <summary>
-        /// The KK/Terrain values of one renderer's material (for the log)
-        /// </summary>
-        internal static string DescribeRendererMaterial(Material material)
-        {
-            if (material == null || !material.HasProperty(terrainModeID))
-            {
-                return "not KK/Terrain";
-            }
-            string result = "color " + material.GetColor(terrainColorID) + " up " + V(material.GetVector(anchorUpID)) +
-                " texture strength " + material.GetFloat(textureStrengthID) +
-                " | globals zoom " + Shader.GetGlobalFloat(zoomFactorID) + " brightness " + Shader.GetGlobalFloat(albedoBrightnessID) +
-                " specular " + Shader.GetGlobalColor(specularColorID) + " steep tiling " + Shader.GetGlobalFloat(steepTilingID);
-            foreach (LayerSlot slot in layerSlots)
-            {
-                Texture t = material.GetTexture(slot.tex);
-                result += " | layer " + (t != null ? t.name : "null") + " weight " + material.GetFloat(slot.weight) + " tilings " + V(material.GetVector(slot.tilings));
-            }
-            result += " | mask " + (material.GetTexture("_BlendMaskTexture") != null ? material.GetTexture("_BlendMaskTexture").name : "null") +
-                " tarmac " + material.GetColor("_TarmacColor") + " third " + material.GetColor("_ThirdTextureColor") + " fourth " + material.GetColor("_FourthTextureColor");
-            return result;
-        }
-
-        private static string V(Vector4 v)
-        {
-            return "(" + v.x.ToString("G4") + "," + v.y.ToString("G4") + "," + v.z.ToString("G4") + "," + v.w.ToString("G4") + ")";
-        }
-
-        #endregion
-
-
         #region helpers
 
         /// <summary>
@@ -582,7 +493,7 @@ namespace KerbalKonstructs.Core
 
         private static float Reduce(double value)
         {
-            return (float)(value - Math.Floor(value / offsetPeriod) * offsetPeriod);
+            return (float)(value - Math.Floor(value));
         }
 
         private static float SmoothStep(float edge0, float edge1, float x)

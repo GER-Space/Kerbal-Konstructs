@@ -31,6 +31,11 @@ namespace KerbalKonstructs
         public string overwrite_color = "";
 
         /// <summary>
+        /// Model setting, set by ReplaceGrassModule: this module replaces a GrasColor module
+        /// </summary>
+        public bool ConvertedFromGrasColor = false;
+
+        /// <summary>
         /// The terrain color at the static (shown in the grass editor while the terrain color is used)
         /// </summary>
         internal Color terrainColor = defaultColor;
@@ -60,18 +65,10 @@ namespace KerbalKonstructs
             }
         }
 
-        // the terrain color is sampled once and saved; the legacy import doesn't need it
-        protected override bool ImportsGroundColor => false;
-
         /// <summary>
         /// True when the grass meshes use KK/Terrain (not the old shader of an older bundle)
         /// </summary>
         internal bool UsesTerrainShader => grassMaterials.Count > 0 && grassMaterials[0] != null && grassMaterials[0].HasProperty("_KKTerrainMode");
-
-        /// <summary>
-        /// True for models converted from a GrasColor module (KerbalKonstructs.LoadModels)
-        /// </summary>
-        internal bool IsConverted => !string.IsNullOrEmpty(LegacyGrasTextureImage);
 
         /// <summary>
         /// True: the grass color is used, false: the terrain color at the static
@@ -85,8 +82,45 @@ namespace KerbalKonstructs
                 {
                     return value;
                 }
-                return !IsConverted;
+                return !ConvertedFromGrasColor;
             }
+        }
+
+
+        /// <summary>
+        /// For KerbalKonstructs.LoadModels: makes a GrasColor or GrassColor2 module description a KKTerrain one. A GrasColor
+        /// module keeps only its grass mesh name (its color and texture settings are not converted).
+        /// </summary>
+        internal static bool ReplaceGrassModule(StaticModule module, string modelName)
+        {
+            if (ReferenceEquals(module, null) || (!string.IsNullOrEmpty(module.moduleNamespace) && module.moduleNamespace != "KerbalKonstructs"))
+            {
+                return false;
+            }
+            if (module.moduleClassname == "GrassColor2")
+            {
+                module.moduleNamespace = "KerbalKonstructs";
+                module.moduleClassname = "KKTerrain";
+                return true;
+            }
+            if (module.moduleClassname != "GrasColor")
+            {
+                return false;
+            }
+            string meshName;
+            if (!module.moduleFields.TryGetValue("GrasMeshName", out meshName) || string.IsNullOrEmpty(meshName))
+            {
+                Log.UserWarning("GrasColor module of " + modelName + " has no GrasMeshName, not replaced by KKTerrain");
+                return false;
+            }
+            module.moduleNamespace = "KerbalKonstructs";
+            module.moduleClassname = "KKTerrain";
+            module.moduleFields = new Dictionary<string, string>
+            {
+                { "GrassMeshName", meshName },
+                { "ConvertedFromGrasColor", "True" }
+            };
+            return true;
         }
 
 
@@ -190,11 +224,6 @@ namespace KerbalKonstructs
         }
 
 
-        // diagnostics: the first renderers' values go to the log
-        private static int loggedRenderers = 0;
-        private const int maxLoggedRenderers = 12;
-        private bool loggedNoPosition = false;
-
         private void ApplyTerrain()
         {
             if (staticInstance == null)
@@ -203,30 +232,19 @@ namespace KerbalKonstructs
             }
             if (!UsesTerrainShader)
             {
-                if (loggedRenderers < maxLoggedRenderers)
-                {
-                    loggedRenderers++;
-                    Log.Normal("KKTerrain " + staticInstance.UUID + ": not on KK/Terrain (" + (grassMaterials.Count > 0 && grassMaterials[0] != null ? grassMaterials[0].shader.name : "no grass material") + ")");
-                }
                 return;
             }
             CelestialBody body = staticInstance.CelestialBody;
             Vector3d staticPosition;
             if (body == null || body.pqsController == null || !GetStaticPosition(out staticPosition))
             {
-                if (!loggedNoPosition)
-                {
-                    loggedNoPosition = true;
-                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": not under the planet's PQS transform (yet)");
-                }
                 return;
             }
 
             // once per instance (and again after a move): the terrain color and altitude value at the static
             Color sample = GetTerrainSample(body, staticPosition);
             terrainColor = sample;
-            bool overwrite = OverwriteColor;
-            Color color = overwrite ? grassColor : sample;
+            Color color = OverwriteColor ? grassColor : sample;
 
             Transform planet = body.pqsController.transform;
             List<Renderer> renderers = GrassRenderers;
@@ -242,13 +260,6 @@ namespace KerbalKonstructs
                 // the vessel; with it the specular terrain lighting turned the grass bluish.
                 renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
                 KKTerrainShader.SetTerrainProperties(grassMaterials[i], body, position, sample, color, thirdTextureTiling, fourthTextureTiling);
-                if (loggedRenderers < maxLoggedRenderers)
-                {
-                    loggedRenderers++;
-                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + " mesh " + renderer.name +
-                        (IsConverted ? " (converted)" : "") + ": sample " + sample + (overwrite ? " overwritten by " + grassColor : "") +
-                        " -> " + KKTerrainShader.DescribeRendererMaterial(grassMaterials[i]));
-                }
             }
             applied = true;
             appliedPosition = staticPosition;
@@ -290,7 +301,6 @@ namespace KerbalKonstructs
             terrainSamplePosition = position;
             hasTerrainSample = true;
             UpdateInstanceConfig();
-            Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": terrain sampled " + color);
             return color;
         }
 

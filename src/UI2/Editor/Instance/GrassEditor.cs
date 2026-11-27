@@ -147,13 +147,13 @@ namespace KerbalKonstructs.UI2
             }
             else
             {
-            content.Add(TextureRow("Near texture:", "Near Grass Texture", TextureUsage.Texture, delegate { return selectedMod.nearGrassTextureName; }, delegate (string t) { selectedMod.nearGrassTextureName = t; }));
-            content.Add(FloatRow("Near tiling:", delegate { return selectedMod.nearGrassTiling; }, delegate (float v) { selectedMod.nearGrassTiling = v; }));
-            content.Add(SwitchRow("Near texture grayscale:", delegate { return selectedMod.nearGrassTextureGray; }, delegate (bool v) { selectedMod.nearGrassTextureGray = v; selectedMod.ApplySettings(); }));
-            content.Add(TextureRow("Far texture:", "Far Grass Texture", TextureUsage.Texture, delegate { return selectedMod.farGrassTextureName; }, delegate (string t) { selectedMod.farGrassTextureName = t; }));
-            content.Add(FloatRow("Far tiling:", delegate { return selectedMod.farGrassTiling; }, delegate (float v) { selectedMod.farGrassTiling = v; }));
-            content.Add(SwitchRow("Far texture grayscale:", delegate { return selectedMod.farGrassTextureGray; }, delegate (bool v) { selectedMod.farGrassTextureGray = v; selectedMod.ApplySettings(); }));
-            content.Add(FloatRow("Far blend distance:", delegate { return selectedMod.farGrassBlendDistance; }, delegate (float v) { selectedMod.farGrassBlendDistance = v; }));
+                content.Add(TextureRow("Near texture:", "Near Grass Texture", TextureUsage.Texture, delegate { return selectedMod.nearGrassTextureName; }, delegate (string t) { selectedMod.nearGrassTextureName = t; }));
+                content.Add(FloatRow("Near tiling:", delegate { return selectedMod.nearGrassTiling; }, delegate (float v) { selectedMod.nearGrassTiling = v; }));
+                content.Add(SwitchRow("Near texture grayscale:", delegate { return selectedMod.nearGrassTextureGray; }, delegate (bool v) { selectedMod.nearGrassTextureGray = v; selectedMod.ApplySettings(); }));
+                content.Add(TextureRow("Far texture:", "Far Grass Texture", TextureUsage.Texture, delegate { return selectedMod.farGrassTextureName; }, delegate (string t) { selectedMod.farGrassTextureName = t; }));
+                content.Add(FloatRow("Far tiling:", delegate { return selectedMod.farGrassTiling; }, delegate (float v) { selectedMod.farGrassTiling = v; }));
+                content.Add(SwitchRow("Far texture grayscale:", delegate { return selectedMod.farGrassTextureGray; }, delegate (bool v) { selectedMod.farGrassTextureGray = v; selectedMod.ApplySettings(); }));
+                content.Add(FloatRow("Far blend distance:", delegate { return selectedMod.farGrassBlendDistance; }, delegate (float v) { selectedMod.farGrassBlendDistance = v; }));
             }
 
             // tarmac
