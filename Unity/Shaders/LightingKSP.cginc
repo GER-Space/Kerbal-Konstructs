@@ -87,6 +87,28 @@ inline void LightingBlinnPhongKSP_GI(inout SurfaceOutput s, UnityGIInput gi_inpu
     #endif
 }
 
+// LAMBERT LIGHTING FUNCTION FOR KSP (the lighting of the stock PQS terrain and KSC ground shaders)
+// diffuse N.L times light color and attenuation, plus the ambient (spherical harmonics) light, no specular
+
+inline fixed4 LightingLambertKSP(SurfaceOutput s, UnityGI gi)
+{
+    return LightingLambert(s, gi);
+}
+
+inline half4 LightingLambertKSP_Deferred(SurfaceOutput s, UnityGI gi, out half4 outGBuffer0, out half4 outGBuffer1,
+                                         out half4 outGBuffer2)
+{
+    return LightingLambert_Deferred(s, gi, outGBuffer0, outGBuffer1, outGBuffer2);
+}
+
+inline void LightingLambertKSP_GI(SurfaceOutput s, UnityGIInput gi_input, inout UnityGI gi)
+{
+    // in deferred the Deferred mod adds its own ambient light
+    #ifndef UNITY_PASS_DEFERRED
+    gi = UnityGlobalIllumination(gi_input, 1.0, s.Normal);
+    #endif
+}
+
 // STANDARD UNITY LIGHTING FUNCTION FOR KSP
 
 inline float4 LightingStandardKSP(SurfaceOutputStandard s, float3 worldViewDir, UnityGI gi)

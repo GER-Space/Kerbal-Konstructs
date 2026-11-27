@@ -790,10 +790,10 @@ namespace KerbalKonstructs
                 CareerState.FixKSCFacilities();
             }
 
-            // atmospheric haze for the KK grass shader
+            // planet inputs of the KK ground shader (planet frame, haze, steep texture)
             if (HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
-                KKAerialPerspective.UpdateGlobals(GetCurrentBody());
+                KKTerrainShader.UpdateGlobals(GetCurrentBody());
             }
 
 

@@ -195,8 +195,9 @@ namespace KerbalKonstructs
 
             //Material material = grassMaterials.ElementAt(matOffset);
 
-            foreach (Material material in grassMaterials)
+            for (int i = 0; i < grassMaterials.Count; i++)
             {
+                Material material = grassMaterials[i];
                 SetFlatNormals(material);
 
                 //if (useLegacy)
@@ -287,6 +288,13 @@ namespace KerbalKonstructs
                 material.SetFloat("_TarmacGrayScale", tarmacTextureGray ? 1f : 0);
                 material.SetFloat("_ThirdTextureGrayScale", thirdTextureGray ? 1f : 0);
                 material.SetFloat("_FourthTextureGrayScale", fourthTextureGray ? 1f : 0);
+
+                // terrain shader: texture coordinates anchored on the planet (grassRenderers[i] holds grassMaterials[i])
+                if (i < grassRenderers.Count)
+                {
+                    KKTerrainShader.SetRendererProperties(material, grassRenderers[i], staticInstance.CelestialBody,
+                        nearGrassTiling, farGrassTiling, thirdTextureTiling, fourthTextureTiling);
+                }
             }
         }
 
