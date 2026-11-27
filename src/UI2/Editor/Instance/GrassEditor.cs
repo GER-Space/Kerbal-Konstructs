@@ -7,7 +7,9 @@ using UnityEngine;
 namespace KerbalKonstructs.UI2
 {
     /// <summary>
-    /// Grass Editor: edits the GrassColor2 module(s) of the static selected in the Instance editor.
+    /// Grass Editor: edits the GrassColor2 / KKTerrain module(s) of the static selected in the Instance editor.
+    /// KKTerrain: the grass shows the terrain color at the static's position; setting a color here (or a preset) turns on
+    /// overwrite_color, the "Terrain color" switch turns it off again. The grass textures are the planet's there.
     /// The texture rows are buttons that open the TexturePicker (pictures in a 3 x 3 grid);
     /// the grayscale / random options are on/off switches. Changes apply at once.
     /// </summary>
@@ -113,7 +115,7 @@ namespace KerbalKonstructs.UI2
         {
             DialogGUIButton presetButton = new DialogGUIButton("Select Preset", OpenPresets, 120f, itemHeight, false);
             presetButton.tooltipText = "Set colors and textures from a grass preset";
-            DialogGUIButton surfaceButton = new DialogGUIButton("Pick Surface Color", delegate { selectedMod.grassColor = GrassColorUtils.GetUnderGroundColor(selectedMod); selectedMod.ApplySettings(); }, 140f, itemHeight, false);
+            DialogGUIButton surfaceButton = new DialogGUIButton("Pick Surface Color", PickSurfaceColor, 140f, itemHeight, false);
             surfaceButton.tooltipText = "Use the color of the terrain below the static as grass color";
             content.Add(new DialogGUIHorizontalLayout(presetButton, new DialogGUIFlexibleSpace(), surfaceButton));
 
@@ -132,7 +134,19 @@ namespace KerbalKonstructs.UI2
 
             // grass
             Separator();
-            content.Add(ColorRow("Grass color:", delegate { return selectedMod.grassColor; }, delegate (Color c) { selectedMod.grassColor = c; }));
+            bool terrain = IsTerrain(selectedMod);
+            if (terrain)
+            {
+                content.Add(SwitchRow("Terrain color:", delegate { KKTerrain t = selectedMod as KKTerrain; return t != null && !t.overwrite_color; },
+                    delegate (bool v) { KKTerrain t = selectedMod as KKTerrain; if (t != null) { t.SetOverwriteColor(!v); } }));
+            }
+            content.Add(ColorRow("Grass color:", delegate { return ShownGrassColor(selectedMod); }, delegate (Color c) { if (!SameColor(c, ShownGrassColor(selectedMod))) { selectedMod.grassColor = c; selectedMod.OnUserColorChange(); } }));
+            if (terrain)
+            {
+                content.Add(new DialogGUIHorizontalLayout(Label("Grass textures:"), new DialogGUIFlexibleSpace(), Label("the planet's (terrain shader)")));
+            }
+            else
+            {
             content.Add(TextureRow("Near texture:", "Near Grass Texture", TextureUsage.Texture, delegate { return selectedMod.nearGrassTextureName; }, delegate (string t) { selectedMod.nearGrassTextureName = t; }));
             content.Add(FloatRow("Near tiling:", delegate { return selectedMod.nearGrassTiling; }, delegate (float v) { selectedMod.nearGrassTiling = v; }));
             content.Add(SwitchRow("Near texture grayscale:", delegate { return selectedMod.nearGrassTextureGray; }, delegate (bool v) { selectedMod.nearGrassTextureGray = v; selectedMod.ApplySettings(); }));
@@ -140,6 +154,7 @@ namespace KerbalKonstructs.UI2
             content.Add(FloatRow("Far tiling:", delegate { return selectedMod.farGrassTiling; }, delegate (float v) { selectedMod.farGrassTiling = v; }));
             content.Add(SwitchRow("Far texture grayscale:", delegate { return selectedMod.farGrassTextureGray; }, delegate (bool v) { selectedMod.farGrassTextureGray = v; selectedMod.ApplySettings(); }));
             content.Add(FloatRow("Far blend distance:", delegate { return selectedMod.farGrassBlendDistance; }, delegate (float v) { selectedMod.farGrassBlendDistance = v; }));
+            }
 
             // tarmac
             Separator();
@@ -171,17 +186,32 @@ namespace KerbalKonstructs.UI2
             content.Add(TextureRow("Third texture:", "Third Texture", TextureUsage.Texture, delegate { return selectedMod.thirdTextureName; }, delegate (string t) { selectedMod.thirdTextureName = t; }));
             content.Add(ColorRow("Third color:", delegate { return selectedMod.thirdTextureColor; }, delegate (Color c) { selectedMod.thirdTextureColor = c; }));
             content.Add(FloatRow("Third tiling:", delegate { return selectedMod.thirdTextureTiling; }, delegate (float v) { selectedMod.thirdTextureTiling = v; }));
-            content.Add(TwoSwitchRow(
-                "Random:", delegate { return selectedMod.thirdTextureTileRandom; }, delegate (bool v) { selectedMod.thirdTextureTileRandom = v; selectedMod.ApplySettings(); },
-                "Grayscale:", delegate { return selectedMod.thirdTextureGray; }, delegate (bool v) { selectedMod.thirdTextureGray = v; selectedMod.ApplySettings(); }));
+            if (terrain)
+            {
+                // the terrain shader maps the third texture like the terrain, without random tiling
+                content.Add(SwitchRow("Third texture grayscale:", delegate { return selectedMod.thirdTextureGray; }, delegate (bool v) { selectedMod.thirdTextureGray = v; selectedMod.ApplySettings(); }));
+            }
+            else
+            {
+                content.Add(TwoSwitchRow(
+                    "Random:", delegate { return selectedMod.thirdTextureTileRandom; }, delegate (bool v) { selectedMod.thirdTextureTileRandom = v; selectedMod.ApplySettings(); },
+                    "Grayscale:", delegate { return selectedMod.thirdTextureGray; }, delegate (bool v) { selectedMod.thirdTextureGray = v; selectedMod.ApplySettings(); }));
+            }
 
             Separator();
             content.Add(TextureRow("Fourth texture:", "Fourth Texture", TextureUsage.Texture, delegate { return selectedMod.fourthTextureName; }, delegate (string t) { selectedMod.fourthTextureName = t; }));
             content.Add(ColorRow("Fourth color:", delegate { return selectedMod.fourthTextureColor; }, delegate (Color c) { selectedMod.fourthTextureColor = c; }));
             content.Add(FloatRow("Fourth tiling:", delegate { return selectedMod.fourthTextureTiling; }, delegate (float v) { selectedMod.fourthTextureTiling = v; }));
-            content.Add(TwoSwitchRow(
-                "Random:", delegate { return selectedMod.fourthTextureTileRandom; }, delegate (bool v) { selectedMod.fourthTextureTileRandom = v; selectedMod.ApplySettings(); },
-                "Grayscale:", delegate { return selectedMod.fourthTextureGray; }, delegate (bool v) { selectedMod.fourthTextureGray = v; selectedMod.ApplySettings(); }));
+            if (terrain)
+            {
+                content.Add(SwitchRow("Fourth texture grayscale:", delegate { return selectedMod.fourthTextureGray; }, delegate (bool v) { selectedMod.fourthTextureGray = v; selectedMod.ApplySettings(); }));
+            }
+            else
+            {
+                content.Add(TwoSwitchRow(
+                    "Random:", delegate { return selectedMod.fourthTextureTileRandom; }, delegate (bool v) { selectedMod.fourthTextureTileRandom = v; selectedMod.ApplySettings(); },
+                    "Grayscale:", delegate { return selectedMod.fourthTextureGray; }, delegate (bool v) { selectedMod.fourthTextureGray = v; selectedMod.ApplySettings(); }));
+            }
 
             Separator();
             content.Add(new DialogGUIHorizontalLayout(new DialogGUIFlexibleSpace(), new DialogGUIButton("Close", Close, 100f, itemHeight, false)));
@@ -293,8 +323,57 @@ namespace KerbalKonstructs.UI2
         private void OpenPresets()
         {
             GrassColor2 mod = selectedMod;
-            GrassColorPresetUI2.callBack = delegate (GrassColorPresetUI2.ColorPreset2 preset) { if (mod != null) { mod.UpdateCallBack(preset); } };
+            GrassColorPresetUI2.callBack = delegate (GrassColorPresetUI2.ColorPreset2 preset) { if (mod != null) { mod.OnUserColorChange(); mod.UpdateCallBack(preset); } };
             GrassColorPresetUI2.instance.Open();
+        }
+
+
+        private static void PickSurfaceColor()
+        {
+            KKTerrain terrain = selectedMod as KKTerrain;
+            if (terrain != null && IsTerrain(terrain))
+            {
+                // the terrain shader takes the terrain color itself
+                terrain.SetOverwriteColor(false);
+                return;
+            }
+            selectedMod.grassColor = GrassColorUtils.GetUnderGroundColor(selectedMod);
+            selectedMod.ApplySettings();
+        }
+
+
+        /// <summary>
+        /// The color field calls its setter whenever it loses the focus: only a real change sets the color (and so turns
+        /// on overwrite_color)
+        /// </summary>
+        private static bool SameColor(Color a, Color b)
+        {
+            return Mathf.Abs(a.r - b.r) < 0.002f && Mathf.Abs(a.g - b.g) < 0.002f && Mathf.Abs(a.b - b.b) < 0.002f && Mathf.Abs(a.a - b.a) < 0.002f;
+        }
+
+
+        /// <summary>
+        /// A KKTerrain module drawn by the terrain shader
+        /// </summary>
+        private static bool IsTerrain(GrassColor2 mod)
+        {
+            KKTerrain terrain = mod as KKTerrain;
+            return terrain != null && terrain.UsesTerrainShader;
+        }
+
+
+        /// <summary>
+        /// The grass color as it is shown: the terrain color of a KKTerrain module that doesn't overwrite it
+        /// </summary>
+        private static Color ShownGrassColor(GrassColor2 mod)
+        {
+            KKTerrain terrain = mod as KKTerrain;
+            if (terrain != null && IsTerrain(terrain) && !terrain.overwrite_color)
+            {
+                Color c = terrain.terrainColor;
+                return new Color(c.r, c.g, c.b, 1f);
+            }
+            return mod.grassColor;
         }
 
 
@@ -307,8 +386,14 @@ namespace KerbalKonstructs.UI2
 
         private void SelectGrass(GrassColor2 grass)
         {
+            bool rebuild = IsTerrain(grass) != IsTerrain(selectedMod);
             selectedMod = grass;
             TexturePicker.CloseWindow();
+            if (rebuild)
+            {
+                // the rows differ between the terrain shader and GrassColor2
+                Build();
+            }
         }
 
         #endregion

@@ -169,7 +169,8 @@ namespace KerbalKonstructs
                             grassMaterial = material;
                             StaticModule module = new StaticModule();
                             module.moduleNamespace = "KerbalKonstructs";
-                            module.moduleClassname = "GrassColor2";
+                            // drawn like the terrain underneath (KKTerrain is GrassColor2 with the terrain shader)
+                            module.moduleClassname = "KKTerrain";
                             module.moduleFields.Add("DefaultBlendMaskTexture", "BUILTIN:/" + grassMaterial.GetTexture("_BlendMaskTexture").name);
                             module.moduleFields.Add("DefaultNearGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_NearGrassTexture").name);
                             module.moduleFields.Add("DefaultFarGrassTexture", "BUILTIN:/" + grassMaterial.GetTexture("_FarGrassTexture").name);

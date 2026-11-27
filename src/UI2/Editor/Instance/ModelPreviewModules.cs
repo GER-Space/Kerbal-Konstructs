@@ -46,6 +46,8 @@ namespace KerbalKonstructs.UI2
                             ApplyAdvancedTextures(module.moduleFields, previewMeshes, ownMaterials, createdMaterials);
                             break;
                         case "GrassColor2":
+                        // off the planet there is no terrain to look like: the preview shows the grass as GrassColor2 does
+                        case "KKTerrain":
                             ApplyGrassColor2(model, module.moduleFields, previewMeshes, ownMaterials, createdMaterials);
                             break;
                         case "GrasColor":
@@ -228,7 +230,7 @@ namespace KerbalKonstructs.UI2
         private static void ApplyGrassColor2(StaticModel model, Dictionary<string, string> fields, GameObject root, HashSet<Renderer> ownMaterials, List<Material> createdMaterials)
         {
             string grassMeshName = GetField(fields, "GrassMeshName", "Nix");
-            Shader groundShader = KKTerrainShader.GroundShader;
+            Shader groundShader = KKTerrainShader.OldGroundShader;
             if (groundShader == null)
             {
                 return;

@@ -1093,14 +1093,21 @@ namespace KerbalKonstructs
                         }
                     }
 
-                    // legacy grass: add a GrassColor2 module instead of the GrasColor module
+                    // grass: a KKTerrain module (drawn like the terrain underneath) instead of the GrasColor or the
+                    // GrassColor2 module. A GrasColor module's settings are converted to GrassColor2 settings first.
                     Dictionary<string, string> grassColor2Fields;
                     if (LegacyGrassColorConverter.TryGetGrassColor2Fields(module, model.name, out grassColor2Fields))
                     {
                         module.moduleNamespace = "KerbalKonstructs";
-                        module.moduleClassname = "GrassColor2";
+                        module.moduleClassname = "KKTerrain";
                         module.moduleFields = grassColor2Fields;
-                        Log.Normal("Model " + model.name + ": GrassColor2 instead of GrasColor (mesh " + grassColor2Fields["GrassMeshName"] + ")");
+                        Log.Normal("Model " + model.name + ": KKTerrain instead of GrasColor (mesh " + grassColor2Fields["GrassMeshName"] + ")");
+                    }
+                    else if (module.moduleNamespace == "KerbalKonstructs" && module.moduleClassname == "GrassColor2")
+                    {
+                        module.moduleClassname = "KKTerrain";
+                        Log.Normal("Model " + model.name + ": KKTerrain instead of GrassColor2" +
+                            (module.moduleFields.ContainsKey("GrassMeshName") ? " (mesh " + module.moduleFields["GrassMeshName"] + ")" : ""));
                     }
 
                     // check for unused AdvTexture Modules

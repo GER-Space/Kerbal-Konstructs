@@ -165,7 +165,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Sets the texture in all transforms of the right name
         /// </summary>
-        internal void ApplySettings()
+        internal virtual void ApplySettings()
         {
 
             if (!isInitialized)
@@ -288,13 +288,6 @@ namespace KerbalKonstructs
                 material.SetFloat("_TarmacGrayScale", tarmacTextureGray ? 1f : 0);
                 material.SetFloat("_ThirdTextureGrayScale", thirdTextureGray ? 1f : 0);
                 material.SetFloat("_FourthTextureGrayScale", fourthTextureGray ? 1f : 0);
-
-                // terrain shader: texture coordinates anchored on the planet (grassRenderers[i] holds grassMaterials[i])
-                if (i < grassRenderers.Count)
-                {
-                    KKTerrainShader.SetRendererProperties(material, grassRenderers[i], staticInstance.CelestialBody,
-                        nearGrassTiling, farGrassTiling, thirdTextureTiling, fourthTextureTiling);
-                }
             }
         }
 
@@ -323,6 +316,33 @@ namespace KerbalKonstructs
 
 
 
+        /// <summary>
+        /// The shader of the grass meshes
+        /// </summary>
+        protected virtual Shader GroundShader => KKTerrainShader.OldGroundShader;
+
+        /// <summary>
+        /// The renderers of the grass meshes, grassRenderers[i] holds grassMaterials[i]
+        /// </summary>
+        internal List<Renderer> GrassRenderers => grassRenderers;
+
+        /// <summary>
+        /// The instance's GrassColor2 config node that ReadConfig() used (null when there was none)
+        /// </summary>
+        protected ConfigNode instanceConfig = null;
+
+        /// <summary>
+        /// Called when the user sets the grass color in the editor or by a preset
+        /// </summary>
+        internal virtual void OnUserColorChange()
+        {
+        }
+
+        /// <summary>
+        /// True: an imported legacy instance without a color gets the ground color underneath as grass color
+        /// </summary>
+        protected virtual bool ImportsGroundColor => true;
+
         public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
@@ -332,7 +352,7 @@ namespace KerbalKonstructs
 
                 grassRenderers.Add(grassRenderer);
                 grassMaterials.Add(grassRenderer.material);
-                grassRenderer.material.shader = KKTerrainShader.GroundShader;
+                grassRenderer.material.shader = GroundShader;
                 
 
             }
@@ -349,7 +369,7 @@ namespace KerbalKonstructs
                 {
                     foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
                     {
-                        material.shader = KKTerrainShader.GroundShader;
+                        material.shader = GroundShader;
 
                         grassRenderers.Add(renderer);
                         grassMaterials.Add(material);
@@ -396,7 +416,11 @@ namespace KerbalKonstructs
             nearGrassTextureName = grasTextureName;
             farGrassTextureName = grasTextureName;
 
-            if (staticInstance.GrasColor == Color.clear)
+            if (staticInstance.GrasColor == Color.clear && !ImportsGroundColor)
+            {
+                grassColor = defaultColor;
+            }
+            else if (staticInstance.GrasColor == Color.clear)
             {
                 Color ground;
                 try
@@ -428,6 +452,7 @@ namespace KerbalKonstructs
 
         public void ReadConfig()
         {
+            instanceConfig = null;
 
             if (staticInstance.grassColor2Configs.Count == 0)
             {
@@ -481,6 +506,7 @@ namespace KerbalKonstructs
                     }
 
                     //Log.Normal("found instance grassnode");
+                    instanceConfig = grassConfig;
                         grassColor = (grassConfig.HasValue("GrassColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
 
                     nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") : DefaultNearGrassTexture;
@@ -524,7 +550,7 @@ namespace KerbalKonstructs
 
           
 
-        public ConfigNode GiveConfig()
+        public virtual ConfigNode GiveConfig()
         {
             ConfigNode grassNode = new ConfigNode("GrassColor2");
 
