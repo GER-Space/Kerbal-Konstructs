@@ -40,6 +40,10 @@ Shader "KK/Ground_Multi_NoUV"
 		// marks the shader version with the fixed normals: GrassColor2 then stops setting its flat-normal workaround textures
 		[HideInInspector] _KKNormalFix("_KKNormalFix", Float) = 1
 
+		// atmospheric haze like the PQS terrain (inputs: KSP's aerial perspective globals and KK's _KK* globals)
+		_KKAerialStrength("_KKAerialStrength", Range(0, 4)) = 1
+		_KKFogRampV("_KKFogRampV (row of the fog color ramp)", Range(0, 1)) = 0.75
+
 
         _Opacity("_Opacity ", Range(0, 1)) = 1
         _RimFalloff("_RimFalloff ", Range(0.01, 5)) = 0.1
@@ -67,7 +71,7 @@ Shader "KK/Ground_Multi_NoUV"
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
         #pragma exclude_renderers gles
         
-        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog
+        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog finalcolor:KKAerialPerspective
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -144,6 +148,56 @@ Shader "KK/Ground_Multi_NoUV"
             return normalize(mul(t2w, normal));
 
         }
+
+
+		// --- aerial perspective (atmospheric haze), the exponential height fog of the PQS terrain shaders ---
+		// set by KSP (PQSMod_AerialPerspectiveMaterial); altitudes are divided by _atmosphereDepth
+		float _heightFallOff;
+		float _atmosphereDepth;
+		float _cameraAltitude;
+		float _heightDensityAtViewer;
+		// set by KK (KKAerialPerspective.cs)
+		float _KKAerialEnabled;
+		float3 _KKPlanetOrigin;
+		float _KKPlanetRadius;
+		float3 _KKSunDirection;
+		float _KKGlobalDensity;
+		sampler2D _KKFogColorRamp;
+		// material
+		float _KKAerialStrength;
+		float _KKFogRampV;
+
+		void KKAerialPerspective(Input IN, SurfaceOutput o, inout fixed4 color)
+		{
+			if (_KKAerialEnabled < 0.5 || _atmosphereDepth <= 0)
+			{
+				return;
+			}
+			float3 cameraToPixel = IN.worldPos - _WorldSpaceCameraPos;
+			float distanceToPixel = length(cameraToPixel);
+
+			// fog integral along the view: density at the viewer times distance, corrected for the change of density
+			// with height (density(h) = exp(-falloff * h), h = altitude / atmosphereDepth)
+			float pixelAltitude = (length(IN.worldPos - _KKPlanetOrigin) - _KKPlanetRadius) / _atmosphereDepth;
+			float t = clamp(_heightFallOff * (_cameraAltitude - pixelAltitude), -20, 20);
+			float fogIntegral = distanceToPixel * _heightDensityAtViewer;
+			if (abs(t) > 0.0001)
+			{
+				fogIntegral *= (exp(t) - 1.0) / t;
+			}
+			float transmittance = exp(-abs(_KKGlobalDensity) * fogIntegral * _KKAerialStrength);
+
+			// haze color by the angle between view and sun
+			float sunAngle = dot(cameraToPixel / max(distanceToPixel, 0.001), _KKSunDirection) * 0.5 + 0.5;
+			float3 fogColor = tex2D(_KKFogColorRamp, float2(sunAngle, _KKFogRampV)).rgb;
+
+#ifdef UNITY_PASS_FORWARDADD
+			// additional lights: only attenuate, the haze is added once in the base pass
+			color.rgb *= transmittance;
+#else
+			color.rgb = lerp(fogColor, color.rgb, transmittance);
+#endif
+		}
 
 
     	float3 GrayScale(float3 color) 

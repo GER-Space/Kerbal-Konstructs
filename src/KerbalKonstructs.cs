@@ -790,6 +790,12 @@ namespace KerbalKonstructs
                 CareerState.FixKSCFacilities();
             }
 
+            // atmospheric haze for the KK grass shader
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                KKAerialPerspective.UpdateGlobals(GetCurrentBody());
+            }
+
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
