@@ -39,9 +39,6 @@ Shader "KK/Terrain"
 		[ToggleUI] _FourthTextureGrayScale("_FourthTextureGrayScale ", Float) = 0
 		[NoScaleOffset] _FourthNormalTexture("_FourthNormalTexture", 2D) = "bump" {}
 
-		// marks the terrain shader for the C# code
-		[HideInInspector] _KKTerrainMode("_KKTerrainMode", Float) = 2
-
 		// --- per renderer, set by KKTerrainShader.SetTerrainProperties ---
 		_KKTerrainColor("Terrain color (adjusted PQS vertex color or the grass editor's)", Color) = (0.5,0.5,0.5,1)
 		// the planet's up direction at the renderer (planet frame)

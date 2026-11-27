@@ -42,26 +42,10 @@ namespace KerbalKonstructs.Core
         internal const string terrainShaderName = "KK/Terrain";
         internal const string oldGroundShaderName = "KK/Ground_Multi_NoUV";
 
-        private static bool? hasTerrainShader = null;
-
         /// <summary>
-        /// KK/Terrain, or null with an older shader bundle that doesn't have it
+        /// The shader of KKTerrain
         /// </summary>
-        internal static Shader TerrainShader
-        {
-            get
-            {
-                if (!hasTerrainShader.HasValue)
-                {
-                    hasTerrainShader = KKGraphics.HasShader(terrainShaderName);
-                    if (!hasTerrainShader.Value)
-                    {
-                        Log.UserWarning(terrainShaderName + " is not in the shader bundle (an older bundle?): KKTerrain uses " + oldGroundShaderName);
-                    }
-                }
-                return hasTerrainShader.Value ? KKGraphics.GetShader(terrainShaderName) : null;
-            }
-        }
+        internal static Shader TerrainShader => KKGraphics.GetShader(terrainShaderName);
 
         /// <summary>
         /// The old ground shader of GrassColor2
@@ -92,7 +76,6 @@ namespace KerbalKonstructs.Core
         private static readonly int steepEndID = Shader.PropertyToID("_KKSteepTexEnd");
 
         // per renderer
-        private static readonly int terrainModeID = Shader.PropertyToID("_KKTerrainMode");
         private static readonly int terrainColorID = Shader.PropertyToID("_KKTerrainColor");
         private static readonly int anchorUpID = Shader.PropertyToID("_KKAnchorUp");
         private static readonly int textureStrengthID = Shader.PropertyToID("_KKTextureStrength");
@@ -313,7 +296,7 @@ namespace KerbalKonstructs.Core
         internal static void SetTerrainProperties(Material material, CelestialBody body, Vector3d position, Color terrainSample,
             Color color, float thirdTiling, float fourthTiling)
         {
-            if (material == null || !material.HasProperty(terrainModeID) || body == null || body.pqsController == null)
+            if (material == null || body == null || body.pqsController == null)
             {
                 return;
             }

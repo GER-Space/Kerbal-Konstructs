@@ -18,8 +18,7 @@ namespace KerbalKonstructs
     /// the sample is kept in the instance's GrassColor2 config node (TerrainSample, TerrainSamplePosition), saved with
     /// the instance, and only taken again when the static was moved. A scene switch (Activate) doesn't apply the settings
     /// again unless the static moved.
-    /// The grass texture settings of GrassColor2 are not used by KK/Terrain. With an older shader bundle without
-    /// KK/Terrain, it works like GrassColor2.
+    /// The grass texture settings of GrassColor2 are not used by KK/Terrain.
     /// </summary>
     public class KKTerrain : GrassColor2
     {
@@ -55,19 +54,8 @@ namespace KerbalKonstructs
         private Quaternion appliedRotation = Quaternion.identity;
         private Vector3 appliedScale = Vector3.one;
 
-        protected override Shader GroundShader
-        {
-            get
-            {
-                Shader terrainShader = KKTerrainShader.TerrainShader;
-                return terrainShader != null ? terrainShader : base.GroundShader;
-            }
-        }
+        protected override Shader GroundShader => KKTerrainShader.TerrainShader;
 
-        /// <summary>
-        /// True when the grass meshes use KK/Terrain (not the old shader of an older bundle)
-        /// </summary>
-        internal bool UsesTerrainShader => grassMaterials.Count > 0 && grassMaterials[0] != null && grassMaterials[0].HasProperty("_KKTerrainMode");
 
         /// <summary>
         /// True: the grass color is used, false: the terrain color at the static
@@ -271,10 +259,6 @@ namespace KerbalKonstructs
         private void ApplyTerrain()
         {
             if (staticInstance == null)
-            {
-                return;
-            }
-            if (!UsesTerrainShader)
             {
                 return;
             }

@@ -134,14 +134,11 @@ namespace KerbalKonstructs.UI2
             }
 
             // which shader draws the selected mesh (switching respawns the instance)
-            if (KKTerrainShader.TerrainShader != null)
-            {
-                content.Add(SwitchRow("Terrain shader:", delegate { return selectedMod is KKTerrain; }, SwitchShader));
-            }
+            content.Add(SwitchRow("Terrain shader:", delegate { return selectedMod is KKTerrain; }, SwitchShader));
 
             // grass
             Separator();
-            bool terrain = IsTerrain(selectedMod);
+            bool terrain = selectedMod is KKTerrain;
             if (terrain)
             {
                 content.Add(SwitchRow("Terrain color:", delegate { KKTerrain t = selectedMod as KKTerrain; return t != null && !t.OverwriteColor; },
@@ -338,7 +335,7 @@ namespace KerbalKonstructs.UI2
         private static void PickSurfaceColor()
         {
             KKTerrain terrain = selectedMod as KKTerrain;
-            if (terrain != null && IsTerrain(terrain))
+            if (terrain != null)
             {
                 // the terrain shader takes the terrain color itself
                 terrain.SetOverwriteColor(false);
@@ -360,22 +357,12 @@ namespace KerbalKonstructs.UI2
 
 
         /// <summary>
-        /// A KKTerrain module drawn by the terrain shader
-        /// </summary>
-        private static bool IsTerrain(GrassColor2 mod)
-        {
-            KKTerrain terrain = mod as KKTerrain;
-            return terrain != null && terrain.UsesTerrainShader;
-        }
-
-
-        /// <summary>
         /// The grass color as it is shown: the terrain color of a KKTerrain module that doesn't overwrite it
         /// </summary>
         private static Color ShownGrassColor(GrassColor2 mod)
         {
             KKTerrain terrain = mod as KKTerrain;
-            if (terrain != null && IsTerrain(terrain) && !terrain.OverwriteColor)
+            if (terrain != null && !terrain.OverwriteColor)
             {
                 Color c = terrain.terrainColor;
                 return new Color(c.r, c.g, c.b, 1f);
@@ -429,7 +416,7 @@ namespace KerbalKonstructs.UI2
 
         private void SelectGrass(GrassColor2 grass)
         {
-            bool rebuild = IsTerrain(grass) != IsTerrain(selectedMod);
+            bool rebuild = (grass is KKTerrain) != (selectedMod is KKTerrain);
             selectedMod = grass;
             TexturePicker.CloseWindow();
             if (rebuild)

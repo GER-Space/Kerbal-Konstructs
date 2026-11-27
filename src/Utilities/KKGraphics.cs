@@ -23,14 +23,6 @@ namespace KerbalKonstructs
         private static Dictionary<string, Texture2D> normalMaps = new Dictionary<string, Texture2D>();
 
         /// <summary>
-        /// True if the shader is in KK's asset bundles or known to Unity (without logging an error)
-        /// </summary>
-        internal static bool HasShader(string name)
-        {
-            return assetBundleShaders.ContainsKey(name) || Shader.Find(name) != null;
-        }
-
-        /// <summary>
         /// Return shaders loaded from KSP asset bundles (with autoload on), then fallback to Shader.Find
         /// </summary>
         /// <param name="name"></param>
