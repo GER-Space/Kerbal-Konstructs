@@ -1,6 +1,7 @@
 using KerbalKonstructs.Core;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace KerbalKonstructs
 {
@@ -149,6 +150,9 @@ namespace KerbalKonstructs
                     }
                     continue;
                 }
+                // like the PQS terrain quads: no reflection probes. In flight KSP has a reflection probe of the sky around
+                // the vessel; with it the specular terrain lighting turned the grass bluish.
+                renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
                 Color sample = GetTerrainSample(body, renderer, position);
                 if (i == 0)
                 {
