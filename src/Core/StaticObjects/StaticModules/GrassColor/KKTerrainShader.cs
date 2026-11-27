@@ -7,23 +7,28 @@ using UnityEngine;
 namespace KerbalKonstructs.Core
 {
     /// <summary>
-    /// Inputs of the KK terrain shader (KK/Terrain, used by the KKTerrain module), which draws KK ground meshes with the
-    /// stock PQS terrain formula so they look like the terrain underneath.
+    /// Inputs of the KK terrain shader (KK/Terrain, used by the KKTerrain module), which draws KK ground meshes like the
+    /// stock PQS terrain underneath. KK/Terrain follows "Terrain/PQS/PQS Main Shader - Triplanar Zoom Rotation" (the
+    /// terrain shader of the higher terrain qualities); for planets with another PQS shader the parameters below make it
+    /// work like those (no zoom, no specular, brightness 1, their near tiling and texture strength).
     ///
-    /// Globals of the current planet, set every frame (UpdateGlobals):
+    /// Globals of the current planet (UpdateGlobals; the rotation and sun every frame, the rest when the planet or its
+    /// terrain material changes):
     ///  _KKWorldToPlanet / _KKPlanetToWorld  rotation between world space and the planet frame (the PQS transform)
     ///  _KKSunDirection   world direction from the planet to the sun
-    ///  _KKAerialEnabled, _KKGlobalDensity, _KKFogColorRamp   the aerial perspective (haze) of the planet's PQS material.
-    ///                    KSP itself sets _heightDensityAtViewer (PQSMod_AerialPerspectiveMaterial).
-    ///  _KKSteepEnabled, _KKSteepTex, _KKSteepBumpMap, _KKSteepPower, _KKSteepTexStart, _KKSteepTexEnd,
-    ///  _KKGroundTexStart, _KKGroundTexEnd   the steep texture and the near/far distances of the planet's PQS material
+    ///  _KKZoomFactor, _KKZoomBlendWidth, _KKZoomRotation   the zoom levels (_factor, _factorBlendWidth, _factorRotation)
+    ///  _KKAlbedoBrightness, _KKSpecularColor, _KKSmoothnessScale   the lighting
+    ///  _KKAerialEnabled, _KKGlobalDensity, _KKFogColorRamp, _KKFogRampV   the haze. KSP itself sets
+    ///                    _heightDensityAtViewer and _floatingOriginOffset.
+    ///  _KKSteepEnabled, _KKSteepTex, _KKSteepBumpMap, _KKSteepPower, _KKSteepTiling, _KKSteepBumpTiling,
+    ///  _KKSteepTexStart, _KKSteepTexEnd   the steep texture
     ///  _KKPlanetOrigin, _KKPlanetRadius   only for the haze of the old KK/Ground_Multi_NoUV
     ///
     /// Per renderer (SetTerrainProperties): the terrain color at the renderer (SampleTerrain, the PQS vertex color: once
-    /// per renderer, not per frame), two of the planet's low/mid/high layers chosen by the altitude there, and the texture
-    /// coordinates. Those are mapped in the planet frame: a float position on a planet is too imprecise for texture
-    /// coordinates, so the shader adds the small distance of the pixel from the renderer's origin to an offset that is
-    /// computed here in double precision (planet frame position * tiling, reduced by offsetPeriod).
+    /// per renderer, not per frame) with the material's saturation, contrast and tint applied as the stock vertex shader
+    /// does, two of the planet's low/mid/high layers chosen by the altitude value there, and the planet frame offsets of
+    /// KK's third and fourth texture (a float position on a planet is too imprecise for texture coordinates: the offsets
+    /// are computed here in double precision, reduced by offsetPeriod).
     ///
     /// With Scatterer installed the haze stays off: Scatterer replaces the stock terrain haze with its own atmosphere,
     /// which it also applies to the statics, so a stock-like haze on top of it would be doubled.
@@ -36,6 +41,11 @@ namespace KerbalKonstructs.Core
         /// - 0.0004.
         /// </summary>
         internal const double offsetPeriod = 1351d;
+
+        /// <summary>
+        /// The PQS shaders scale their world coordinates by this before the tiling
+        /// </summary>
+        private const double pqsCoordinateScale = 0.00001;
 
         internal const string terrainShaderName = "KK/Terrain";
         internal const string oldGroundShaderName = "KK/Ground_Multi_NoUV";
@@ -72,29 +82,30 @@ namespace KerbalKonstructs.Core
         private static readonly int sunID = Shader.PropertyToID("_KKSunDirection");
         private static readonly int originID = Shader.PropertyToID("_KKPlanetOrigin");
         private static readonly int radiusID = Shader.PropertyToID("_KKPlanetRadius");
+        private static readonly int zoomFactorID = Shader.PropertyToID("_KKZoomFactor");
+        private static readonly int zoomBlendWidthID = Shader.PropertyToID("_KKZoomBlendWidth");
+        private static readonly int zoomRotationID = Shader.PropertyToID("_KKZoomRotation");
+        private static readonly int albedoBrightnessID = Shader.PropertyToID("_KKAlbedoBrightness");
+        private static readonly int specularColorID = Shader.PropertyToID("_KKSpecularColor");
+        private static readonly int smoothnessScaleID = Shader.PropertyToID("_KKSmoothnessScale");
         private static readonly int aerialEnabledID = Shader.PropertyToID("_KKAerialEnabled");
         private static readonly int densityID = Shader.PropertyToID("_KKGlobalDensity");
         private static readonly int rampID = Shader.PropertyToID("_KKFogColorRamp");
+        private static readonly int rampVID = Shader.PropertyToID("_KKFogRampV");
         private static readonly int steepEnabledID = Shader.PropertyToID("_KKSteepEnabled");
         private static readonly int steepTexID = Shader.PropertyToID("_KKSteepTex");
         private static readonly int steepBumpID = Shader.PropertyToID("_KKSteepBumpMap");
         private static readonly int steepPowerID = Shader.PropertyToID("_KKSteepPower");
+        private static readonly int steepTilingID = Shader.PropertyToID("_KKSteepTiling");
+        private static readonly int steepBumpTilingID = Shader.PropertyToID("_KKSteepBumpTiling");
         private static readonly int steepStartID = Shader.PropertyToID("_KKSteepTexStart");
         private static readonly int steepEndID = Shader.PropertyToID("_KKSteepTexEnd");
-        private static readonly int groundStartID = Shader.PropertyToID("_KKGroundTexStart");
-        private static readonly int groundEndID = Shader.PropertyToID("_KKGroundTexEnd");
 
         // per renderer
         private static readonly int terrainModeID = Shader.PropertyToID("_KKTerrainMode");
         private static readonly int terrainColorID = Shader.PropertyToID("_KKTerrainColor");
         private static readonly int anchorUpID = Shader.PropertyToID("_KKAnchorUp");
-        private static readonly int triWeightsID = Shader.PropertyToID("_KKTriWeights");
-        private static readonly int powerNearID = Shader.PropertyToID("_KKPowerNear");
-        private static readonly int powerFarID = Shader.PropertyToID("_KKPowerFar");
-        private static readonly int steepNearOffsetID = Shader.PropertyToID("_KKSteepNearOffset");
-        private static readonly int steepFarOffsetID = Shader.PropertyToID("_KKSteepFarOffset");
-        private static readonly int steepNearTilingID = Shader.PropertyToID("_KKSteepNearTiling");
-        private static readonly int steepFarTilingID = Shader.PropertyToID("_KKSteepFarTiling");
+        private static readonly int textureStrengthID = Shader.PropertyToID("_KKTextureStrength");
         private static readonly int thirdOffsetID = Shader.PropertyToID("_KKThirdOffset");
         private static readonly int fourthOffsetID = Shader.PropertyToID("_KKFourthOffset");
 
@@ -103,7 +114,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         private class LayerSlot
         {
-            internal readonly int tex, bump, weight, tilings, nearOffset, farOffset, bumpNearOffset, bumpFarOffset;
+            internal readonly int tex, bump, weight, tilings;
 
             internal LayerSlot(string name)
             {
@@ -112,10 +123,6 @@ namespace KerbalKonstructs.Core
                 bump = Shader.PropertyToID(prefix + "Bump");
                 weight = Shader.PropertyToID(prefix + "Weight");
                 tilings = Shader.PropertyToID(prefix + "Tilings");
-                nearOffset = Shader.PropertyToID(prefix + "NearOffset");
-                farOffset = Shader.PropertyToID(prefix + "FarOffset");
-                bumpNearOffset = Shader.PropertyToID(prefix + "BumpNearOffset");
-                bumpFarOffset = Shader.PropertyToID(prefix + "BumpFarOffset");
             }
         }
         private static readonly LayerSlot[] layerSlots = new LayerSlot[] { new LayerSlot("A"), new LayerSlot("B") };
@@ -124,6 +131,14 @@ namespace KerbalKonstructs.Core
         private static readonly string[] layerNames = new string[] { "low", "mid", "high" };
 
         // properties of the stock PQS terrain materials
+        private static readonly int pqsFactorID = Shader.PropertyToID("_factor");
+        private static readonly int pqsFactorBlendWidthID = Shader.PropertyToID("_factorBlendWidth");
+        private static readonly int pqsFactorRotationID = Shader.PropertyToID("_factorRotation");
+        private static readonly int pqsAlbedoBrightnessID = Shader.PropertyToID("_albedoBrightness");
+        private static readonly int pqsSpecularColorID = Shader.PropertyToID("_specularColor");
+        private static readonly int pqsSaturationID = Shader.PropertyToID("_saturation");
+        private static readonly int pqsContrastID = Shader.PropertyToID("_contrast");
+        private static readonly int pqsTintColorID = Shader.PropertyToID("_tintColor");
         private static readonly int pqsDensityID = Shader.PropertyToID("_globalDensity");
         private static readonly int pqsRampID = Shader.PropertyToID("_fogColorRamp");
         private static readonly int pqsSteepTexID = Shader.PropertyToID("_steepTex");
@@ -133,10 +148,8 @@ namespace KerbalKonstructs.Core
         private static readonly int pqsSteepEndID = Shader.PropertyToID("_steepTexEnd");
         private static readonly int pqsSteepNearTilingID = Shader.PropertyToID("_steepNearTiling");
         private static readonly int pqsSteepTilingID = Shader.PropertyToID("_steepTiling");
-        private static readonly int pqsGroundStartID = Shader.PropertyToID("_groundTexStart");
-        private static readonly int pqsGroundEndID = Shader.PropertyToID("_groundTexEnd");
+        private static readonly int pqsSteepBumpTilingID = Shader.PropertyToID("_steepBumpTiling");
         private static readonly int pqsPowerNearID = Shader.PropertyToID("_powerNear");
-        private static readonly int pqsPowerFarID = Shader.PropertyToID("_powerFar");
         private static readonly int pqsLowStartID = Shader.PropertyToID("_lowStart");
         private static readonly int pqsLowEndID = Shader.PropertyToID("_lowEnd");
         private static readonly int pqsHighStartID = Shader.PropertyToID("_highStart");
@@ -165,6 +178,15 @@ namespace KerbalKonstructs.Core
 
         private static CelestialBody lastBody = null;
         private static Material lastMaterial = null;
+
+
+        /// <summary>
+        /// True for the zoom rotation terrain shaders (the higher terrain qualities): they have the _factor zoom
+        /// </summary>
+        private static bool IsZoomShader(Material surfaceMaterial)
+        {
+            return surfaceMaterial != null && surfaceMaterial.HasProperty(pqsFactorID);
+        }
 
 
         #region globals
@@ -204,8 +226,18 @@ namespace KerbalKonstructs.Core
             // a new body, or the terrain shader quality was changed
             lastBody = body;
             lastMaterial = surfaceMaterial;
+            bool zoom = IsZoomShader(surfaceMaterial);
 
-            // aerial perspective
+            // zoom levels and lighting
+            Shader.SetGlobalFloat(zoomFactorID, zoom ? GetFloat(surfaceMaterial, pqsFactorID, 0f) : 0f);
+            Shader.SetGlobalFloat(zoomBlendWidthID, GetFloat(surfaceMaterial, pqsFactorBlendWidthID, 0.1f));
+            Shader.SetGlobalFloat(zoomRotationID, GetFloat(surfaceMaterial, pqsFactorRotationID, 0f) * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat(albedoBrightnessID, zoom ? GetFloat(surfaceMaterial, pqsAlbedoBrightnessID, 1f) : 1f);
+            bool specular = zoom && surfaceMaterial.HasProperty(pqsSpecularColorID);
+            Shader.SetGlobalColor(specularColorID, specular ? surfaceMaterial.GetColor(pqsSpecularColorID) : Color.black);
+            Shader.SetGlobalFloat(smoothnessScaleID, specular ? 1f : 0f);
+
+            // aerial perspective (the zoom rotation shaders read the fog color ramp in the row 0.5, the others in 0.75)
             bool hasHaze = false;
             if (!ScattererLoaded && body.atmosphere && surfaceMaterial != null && surfaceMaterial.HasProperty(pqsRampID)
                 && AerialKeywordOn(surfaceMaterial))
@@ -221,30 +253,40 @@ namespace KerbalKonstructs.Core
                 }
             }
             Shader.SetGlobalFloat(aerialEnabledID, hasHaze ? 1f : 0f);
+            Shader.SetGlobalFloat(rampVID, zoom ? 0.5f : 0.75f);
 
-            // near / far distances of the terrain textures
-            Shader.SetGlobalFloat(groundStartID, GetFloat(surfaceMaterial, pqsGroundStartID, 2000f));
-            Shader.SetGlobalFloat(groundEndID, GetFloat(surfaceMaterial, pqsGroundEndID, 10000f));
-
-            // steep texture
+            // steep texture: the zoom rotation shaders map it by world position (like the layers) and don't fade it,
+            // the others by the direction from the planet's center times the tiling (per meter: tiling / radius)
             bool hasSteep = false;
             if (surfaceMaterial != null && surfaceMaterial.HasProperty(pqsSteepTexID) && surfaceMaterial.GetTexture(pqsSteepTexID) != null)
             {
                 Shader.SetGlobalTexture(steepTexID, surfaceMaterial.GetTexture(pqsSteepTexID));
                 Shader.SetGlobalTexture(steepBumpID, GetBumpMap(surfaceMaterial, pqsSteepBumpID));
                 Shader.SetGlobalFloat(steepPowerID, GetFloat(surfaceMaterial, pqsSteepPowerID, 1f));
-                Shader.SetGlobalFloat(steepStartID, GetFloat(surfaceMaterial, pqsSteepStartID, 20000f));
-                Shader.SetGlobalFloat(steepEndID, GetFloat(surfaceMaterial, pqsSteepEndID, 30000f));
+                if (zoom)
+                {
+                    float steepTiling = GetFloat(surfaceMaterial, pqsSteepTilingID, 100000f);
+                    Shader.SetGlobalFloat(steepTilingID, (float)(steepTiling * pqsCoordinateScale));
+                    Shader.SetGlobalFloat(steepBumpTilingID, (float)(GetFloat(surfaceMaterial, pqsSteepBumpTilingID, steepTiling) * pqsCoordinateScale));
+                    Shader.SetGlobalFloat(steepStartID, 1e9f);
+                    Shader.SetGlobalFloat(steepEndID, 2e9f);
+                }
+                else
+                {
+                    float steepTiling = GetFloat(surfaceMaterial, pqsSteepNearTilingID, GetFloat(surfaceMaterial, pqsSteepTilingID, 1f));
+                    Shader.SetGlobalFloat(steepTilingID, (float)(steepTiling / body.Radius));
+                    Shader.SetGlobalFloat(steepBumpTilingID, (float)(steepTiling / body.Radius));
+                    Shader.SetGlobalFloat(steepStartID, GetFloat(surfaceMaterial, pqsSteepStartID, 20000f));
+                    Shader.SetGlobalFloat(steepEndID, GetFloat(surfaceMaterial, pqsSteepEndID, 30000f));
+                }
                 hasSteep = true;
             }
             Shader.SetGlobalFloat(steepEnabledID, hasSteep ? 1f : 0f);
 
             Log.Normal("KK terrain shader on " + body.name + " (" + (surfaceMaterial != null ? surfaceMaterial.shader.name : "no PQS material") +
-                "): haze " + (hasHaze ? "on" : "off") + ", steep texture " + (hasSteep ? "on" : "off") +
+                "): " + (zoom ? "zoom rotation" : "near tiling") + ", haze " + (hasHaze ? "on" : "off") + ", steep texture " + (hasSteep ? "on" : "off") +
                 ", density material " + GetFloat(surfaceMaterial, pqsDensityID, float.NaN) + " global " + Shader.GetGlobalFloat(pqsDensityID) +
                 ", heightDensityAtViewer " + Shader.GetGlobalFloat("_heightDensityAtViewer") +
-                ", ground tex " + Shader.GetGlobalFloat(groundStartID) + ".." + Shader.GetGlobalFloat(groundEndID) +
-                ", steep power " + GetFloat(surfaceMaterial, pqsSteepPowerID, float.NaN) + " tiling " + GetFloat(surfaceMaterial, pqsSteepTilingID, float.NaN) +
                 ", material properties: " + DescribeTerrainMaterial(surfaceMaterial));
         }
 
@@ -254,10 +296,34 @@ namespace KerbalKonstructs.Core
         #region per renderer
 
         /// <summary>
+        /// The terrain color as the stock zoom rotation vertex shader adjusts the PQS vertex color:
+        /// contrast * (lerp(gray, color, saturation) - tint) + tint, with tint = _tintColor.rgb * _tintColor.a.
+        /// The other PQS shaders use the vertex color as it is.
+        /// </summary>
+        internal static Color AdjustTerrainColor(CelestialBody body, Color color)
+        {
+            Material surfaceMaterial = (body != null && body.pqsController != null) ? body.pqsController.surfaceMaterial : null;
+            if (!IsZoomShader(surfaceMaterial))
+            {
+                return new Color(color.r, color.g, color.b, 1f);
+            }
+            float saturation = GetFloat(surfaceMaterial, pqsSaturationID, 1f);
+            float contrast = GetFloat(surfaceMaterial, pqsContrastID, 1f);
+            Color tintColor = surfaceMaterial.HasProperty(pqsTintColorID) ? surfaceMaterial.GetColor(pqsTintColorID) : Color.clear;
+            Vector3 tint = new Vector3(tintColor.r, tintColor.g, tintColor.b) * tintColor.a;
+            float gray = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
+            Vector3 c = new Vector3(gray, gray, gray) + saturation * (new Vector3(color.r, color.g, color.b) - new Vector3(gray, gray, gray));
+            c = contrast * (c - tint) + tint;
+            return new Color(c.x, c.y, c.z, 1f);
+        }
+
+
+        /// <summary>
         /// Sets the KK/Terrain properties of one renderer's material.
         /// position: planet frame position of the renderer's origin (TryGetPlanetFramePosition);
         /// terrainSample: the PQS vertex color there (SampleTerrain), its alpha chooses the low/mid/high layers;
-        /// color: the color the terrain formula uses (the sample, or the color set in the grass editor)
+        /// color: the color the terrain formula uses (the sample, or the color set in the grass editor), before the
+        /// adjustment of the zoom rotation shader (AdjustTerrainColor)
         /// </summary>
         internal static void SetTerrainProperties(Material material, CelestialBody body, Vector3d position, Color terrainSample,
             Color color, float thirdTiling, float fourthTiling)
@@ -273,9 +339,7 @@ namespace KerbalKonstructs.Core
             }
             Vector3d up = position / distance;
             material.SetVector(anchorUpID, new Vector4((float)up.x, (float)up.y, (float)up.z, 0f));
-            // the stock triplanar weights: abs(direction from the planet's center), not normalized
-            material.SetVector(triWeightsID, new Vector4((float)Math.Abs(up.x), (float)Math.Abs(up.y), (float)Math.Abs(up.z), 0f));
-            material.SetColor(terrainColorID, new Color(color.r, color.g, color.b, 1f));
+            material.SetColor(terrainColorID, AdjustTerrainColor(body, color));
             material.SetVector(thirdOffsetID, Offset(position, thirdTiling));
             material.SetVector(fourthOffsetID, Offset(position, fourthTiling));
 
@@ -284,17 +348,9 @@ namespace KerbalKonstructs.Core
             {
                 return;
             }
-            material.SetFloat(powerNearID, GetFloat(surfaceMaterial, pqsPowerNearID, 0.5f));
-            material.SetFloat(powerFarID, GetFloat(surfaceMaterial, pqsPowerFarID, 0.5f));
-
-            // the PQS shaders map the steep texture by the direction from the planet's center times the tiling:
-            // per meter at the renderer that is tiling / distance from the center
-            double steepFarTiling = GetFloat(surfaceMaterial, pqsSteepTilingID, 1f);
-            double steepNearTiling = GetFloat(surfaceMaterial, pqsSteepNearTilingID, (float)steepFarTiling);
-            material.SetVector(steepNearOffsetID, Offset(up, steepNearTiling));
-            material.SetVector(steepFarOffsetID, Offset(up, steepFarTiling));
-            material.SetFloat(steepNearTilingID, (float)(steepNearTiling / distance));
-            material.SetFloat(steepFarTilingID, (float)(steepFarTiling / distance));
+            bool zoom = IsZoomShader(surfaceMaterial);
+            // the zoom rotation shaders multiply the color by the textures; the others blend by the near power
+            material.SetFloat(textureStrengthID, zoom ? 1f : GetFloat(surfaceMaterial, pqsPowerNearID, 0.5f));
 
             // low / mid / high weights by the altitude value of the vertex color, as in the PQS shaders
             float height = terrainSample.a;
@@ -307,13 +363,12 @@ namespace KerbalKonstructs.Core
             Array.Sort(order, (a, b) => Math.Abs(weights[b]).CompareTo(Math.Abs(weights[a])));
             for (int slot = 0; slot < 2; slot++)
             {
-                SetLayer(material, layerSlots[slot], surfaceMaterial, layerNames[order[slot]], weights[order[slot]], position, up, distance);
+                SetLayer(material, layerSlots[slot], surfaceMaterial, layerNames[order[slot]], weights[order[slot]], zoom);
             }
         }
 
 
-        private static void SetLayer(Material material, LayerSlot slot, Material surfaceMaterial, string layer, float weight,
-            Vector3d position, Vector3d up, double distance)
+        private static void SetLayer(Material material, LayerSlot slot, Material surfaceMaterial, string layer, float weight, bool zoom)
         {
             Texture texture = GetTexture(surfaceMaterial, "_" + layer + "Tex");
             if (texture == null || Math.Abs(weight) < 0.0001f)
@@ -321,21 +376,17 @@ namespace KerbalKonstructs.Core
                 material.SetFloat(slot.weight, 0f);
                 return;
             }
-            // near: the PQS shaders use (position * 0.00001 * tiling), far: (direction from the center * tiling)
-            double nearTiling = GetFloat(surfaceMaterial, "_" + layer + "NearTiling", GetFloat(surfaceMaterial, "_" + layer + "Tiling", 1000f)) * 0.00001;
-            double farTiling = GetFloat(surfaceMaterial, "_" + layer + "MultiFactor", 10f) / distance;
-            double bumpNearTiling = GetFloat(surfaceMaterial, "_" + layer + "BumpNearTiling", GetFloat(surfaceMaterial, "_" + layer + "BumpTiling", 1f)) * 0.00001;
-            double bumpFarTiling = GetFloat(surfaceMaterial, "_" + layer + "BumpFarTiling", 1f) / distance;
+            // the tilings per meter of the world position: zoom rotation shaders _lowTiling / _lowBumpTiling, the others
+            // their near tilings, each times the PQS coordinate scale
+            double tiling = zoom ? GetFloat(surfaceMaterial, "_" + layer + "Tiling", 100000f)
+                : GetFloat(surfaceMaterial, "_" + layer + "NearTiling", 1000f);
+            double bumpTiling = zoom ? GetFloat(surfaceMaterial, "_" + layer + "BumpTiling", (float)tiling)
+                : GetFloat(surfaceMaterial, "_" + layer + "BumpNearTiling", (float)tiling);
 
             material.SetTexture(slot.tex, texture);
             material.SetTexture(slot.bump, GetBumpMap(surfaceMaterial, Shader.PropertyToID("_" + layer + "BumpMap")));
             material.SetFloat(slot.weight, weight);
-            material.SetVector(slot.tilings, new Vector4((float)nearTiling, (float)farTiling, (float)bumpNearTiling, (float)bumpFarTiling));
-            material.SetVector(slot.nearOffset, Offset(position, nearTiling));
-            material.SetVector(slot.bumpNearOffset, Offset(position, bumpNearTiling));
-            // the far coordinates continue the terrain's own
-            material.SetVector(slot.farOffset, Offset(up, farTiling * distance));
-            material.SetVector(slot.bumpFarOffset, Offset(up, bumpFarTiling * distance));
+            material.SetVector(slot.tilings, new Vector4((float)(tiling * pqsCoordinateScale), (float)(bumpTiling * pqsCoordinateScale), 0f, 0f));
         }
 
         #endregion
@@ -481,8 +532,9 @@ namespace KerbalKonstructs.Core
                 return "not KK/Terrain";
             }
             string result = "color " + material.GetColor(terrainColorID) + " up " + V(material.GetVector(anchorUpID)) +
-                " weights " + V(material.GetVector(triWeightsID)) + " power " + material.GetFloat(powerNearID) + "/" + material.GetFloat(powerFarID) +
-                " steep tiling " + material.GetFloat(steepNearTilingID) + "/" + material.GetFloat(steepFarTilingID);
+                " texture strength " + material.GetFloat(textureStrengthID) +
+                " | globals zoom " + Shader.GetGlobalFloat(zoomFactorID) + " brightness " + Shader.GetGlobalFloat(albedoBrightnessID) +
+                " specular " + Shader.GetGlobalColor(specularColorID) + " steep tiling " + Shader.GetGlobalFloat(steepTilingID);
             foreach (LayerSlot slot in layerSlots)
             {
                 Texture t = material.GetTexture(slot.tex);

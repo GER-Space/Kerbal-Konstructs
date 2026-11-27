@@ -1,18 +1,21 @@
-// KK/Terrain: the shader of the KKTerrain module. It draws KK ground meshes with the stock PQS terrain formula, so they
-// look like the terrain underneath (reconstructed from the GLSL of "Terrain/PQS/PQS Main - Extras", KSP 1.12):
-//  - albedo = C + P * (C * T - C): C the terrain color at the renderer (PQS vertex color, from KKTerrainShader.cs, or the
-//    color set in the grass editor), T the planet's low/mid/high textures, near and far tiling, weighted by altitude,
-//    distance and the near/far power P of the planet's terrain material
-//  - textures triplanar in the planet frame, with the stock projections and (unnormalized) weights from the direction
-//    to the planet's center. The coordinates are anchored per renderer: offsets computed in double precision in C#,
-//    plus the small distance of the pixel to the renderer's origin.
-//  - the planet's steep texture on slopes, the planet's bump maps
-//  - lighting: Lambert, like the stock terrain
-//  - atmospheric haze: the stock PQS aerial perspective, blended into the albedo before the lighting
-//  - tarmac (red), third (green) and fourth (blue) texture over it by the blend mask
-// Samplers: DX11 style textures with shared samplers (a pass may use at most 16).
-// Cost: KKTerrainShader passes at most two of low/mid/high per renderer, and projections, near or far tiling, steep
-// texture and mask layers with no weight are skipped (dynamic branches with explicit texture gradients).
+// KK/Terrain: the shader of the KKTerrain module. It draws KK ground meshes like the stock PQS terrain underneath.
+// It follows "Terrain/PQS/PQS Main Shader - Triplanar Zoom Rotation" (KSP 1.12, read from its GLSL), the terrain
+// shader of the higher terrain qualities; planets with the other PQS shaders get matching parameters from
+// KKTerrainShader.cs (no zoom, no specular, brightness 1, their near tiling and texture strength).
+//  - color: C' * T. C' is the terrain color at the renderer (the PQS vertex color, from KKTerrainShader.cs, with the
+//    material's saturation / contrast / tint applied there, or the color set in the grass editor), T the planet's
+//    low/mid/high textures (the two that matter at the renderer's altitude, chosen in C#)
+//  - texture coordinates: (world position + KSP's _floatingOriginOffset) * 0.00001 * tiling, like the terrain, so the
+//    textures continue the terrain's. Two zoom levels by view depth (scale _factor^n), each turned by n * _factorRotation
+//  - triplanar weights from the world normal: |n|^10, normalized; normal maps blended per projection (reoriented normal
+//    mapping) like the stock shader
+//  - steep texture: lerp(color, steep, saturate((1 - up.n) * _steepPower))
+//  - haze: the stock aerial perspective, blended into the color before the brightness
+//  - lighting: Unity's Standard Specular with the terrain's _specularColor, smoothness from the textures' alpha and the
+//    color times _albedoBrightness, like the stock shader
+//  - tarmac (red), third (green) and fourth (blue) texture over it by the blend mask (without the terrain's specular)
+// Cost: projections, the second zoom level, the second layer, the steep texture and the mask textures are only sampled
+// where they have weight (dynamic branches with explicit texture gradients).
 Shader "KK/Terrain"
 {
 	Properties
@@ -37,39 +40,25 @@ Shader "KK/Terrain"
 		[NoScaleOffset] _FourthNormalTexture("_FourthNormalTexture", 2D) = "bump" {}
 
 		// marks the terrain shader for the C# code
-		[HideInInspector] _KKTerrainMode("_KKTerrainMode", Float) = 1
+		[HideInInspector] _KKTerrainMode("_KKTerrainMode", Float) = 2
 
 		// --- per renderer, set by KKTerrainShader.SetTerrainProperties ---
-		_KKTerrainColor("Terrain color (PQS vertex color or the grass editor's)", Color) = (0.5,0.5,0.5,1)
+		_KKTerrainColor("Terrain color (adjusted PQS vertex color or the grass editor's)", Color) = (0.5,0.5,0.5,1)
+		// the planet's up direction at the renderer (planet frame)
 		[HideInInspector] _KKAnchorUp("_KKAnchorUp", Vector) = (0,1,0,0)
-		// stock triplanar weights: abs(direction from the planet's center), not normalized
-		[HideInInspector] _KKTriWeights("_KKTriWeights", Vector) = (0,1,0,0)
-		[HideInInspector] _KKPowerNear("_KKPowerNear", Float) = 0.5
-		[HideInInspector] _KKPowerFar("_KKPowerFar", Float) = 0.5
-		// two of the planet's low / mid / high layers, with their altitude weights
+		// how much the textures change the color: 1 = C * T (zoom rotation shader), else C + P * (C * T - C)
+		[HideInInspector] _KKTextureStrength("_KKTextureStrength", Float) = 1
+		// two of the planet's low / mid / high layers, with their altitude weights and tilings (per meter: x texture,
+		// y bump map)
 		[NoScaleOffset] _KKLayerATex("_KKLayerATex", 2D) = "white" {}
 		[NoScaleOffset] _KKLayerABump("_KKLayerABump", 2D) = "bump" {}
 		[HideInInspector] _KKLayerAWeight("_KKLayerAWeight", Float) = 1
-		// tilings per meter: x near texture, y far texture, z near bump, w far bump
-		[HideInInspector] _KKLayerATilings("_KKLayerATilings", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerANearOffset("_KKLayerANearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerAFarOffset("_KKLayerAFarOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerABumpNearOffset("_KKLayerABumpNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerABumpFarOffset("_KKLayerABumpFarOffset", Vector) = (0,0,0,0)
+		[HideInInspector] _KKLayerATilings("_KKLayerATilings", Vector) = (1,1,0,0)
 		[NoScaleOffset] _KKLayerBTex("_KKLayerBTex", 2D) = "white" {}
 		[NoScaleOffset] _KKLayerBBump("_KKLayerBBump", 2D) = "bump" {}
 		[HideInInspector] _KKLayerBWeight("_KKLayerBWeight", Float) = 0
-		[HideInInspector] _KKLayerBTilings("_KKLayerBTilings", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerBNearOffset("_KKLayerBNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerBFarOffset("_KKLayerBFarOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerBBumpNearOffset("_KKLayerBBumpNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKLayerBBumpFarOffset("_KKLayerBBumpFarOffset", Vector) = (0,0,0,0)
-		// the planet's steep texture: offsets and tilings per meter
-		[HideInInspector] _KKSteepNearOffset("_KKSteepNearOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKSteepFarOffset("_KKSteepFarOffset", Vector) = (0,0,0,0)
-		[HideInInspector] _KKSteepNearTiling("_KKSteepNearTiling", Float) = 0
-		[HideInInspector] _KKSteepFarTiling("_KKSteepFarTiling", Float) = 0
-		// KK's third and fourth texture
+		[HideInInspector] _KKLayerBTilings("_KKLayerBTilings", Vector) = (1,1,0,0)
+		// KK's third and fourth texture: frac(planet frame position of the renderer * tiling)
 		[HideInInspector] _KKThirdOffset("_KKThirdOffset", Vector) = (0,0,0,0)
 		[HideInInspector] _KKFourthOffset("_KKFourthOffset", Vector) = (0,0,0,0)
 
@@ -100,8 +89,8 @@ Shader "KK/Terrain"
 		CGPROGRAM
 		#pragma exclude_renderers gles
 
-		// Lambert like the stock terrain; no Unity fog (KSP doesn't use it), the stock aerial perspective instead
-		#pragma surface surf LambertKSP vertex:vert fullforwardshadows nofog exclude_path:prepass
+		// Standard Specular like the stock terrain; no Unity fog (KSP doesn't use it), the stock aerial perspective instead
+		#pragma surface surf StandardSpecularKSP vertex:vert fullforwardshadows nofog exclude_path:prepass
 
 		#pragma target 3.0
 
@@ -156,56 +145,51 @@ Shader "KK/Terrain"
 		// per renderer
 		float4 _KKTerrainColor;
 		float4 _KKAnchorUp;
-		float4 _KKTriWeights;
-		float _KKPowerNear;
-		float _KKPowerFar;
+		float _KKTextureStrength;
 
 		KK_TEXTURE(_KKLayerATex);
 		KK_SAMPLER(_KKLayerATex)
 		KK_TEXTURE(_KKLayerABump);
 		float _KKLayerAWeight;
 		float4 _KKLayerATilings;
-		float4 _KKLayerANearOffset;
-		float4 _KKLayerAFarOffset;
-		float4 _KKLayerABumpNearOffset;
-		float4 _KKLayerABumpFarOffset;
 
 		KK_TEXTURE(_KKLayerBTex);
 		KK_TEXTURE(_KKLayerBBump);
 		float _KKLayerBWeight;
 		float4 _KKLayerBTilings;
-		float4 _KKLayerBNearOffset;
-		float4 _KKLayerBFarOffset;
-		float4 _KKLayerBBumpNearOffset;
-		float4 _KKLayerBBumpFarOffset;
-
-		float4 _KKSteepNearOffset;
-		float4 _KKSteepFarOffset;
-		float _KKSteepNearTiling;
-		float _KKSteepFarTiling;
 
 		float4 _KKThirdOffset;
 		float4 _KKFourthOffset;
 
-		// --- globals of the current planet, set every frame by KK (KKTerrainShader.UpdateGlobals) ---
+		// --- globals of the current planet, set by KK (KKTerrainShader.UpdateGlobals) ---
 		float4x4 _KKWorldToPlanet;      // rotation world -> planet frame (the PQS transform)
 		float4x4 _KKPlanetToWorld;      // rotation planet frame -> world
 		float3 _KKSunDirection;         // world space, from the planet to the sun
+		// zoom levels of the zoom rotation shader (_KKZoomFactor 0: one level, scale 1)
+		float _KKZoomFactor;
+		float _KKZoomBlendWidth;
+		float _KKZoomRotation;          // radians
+		// lighting
+		float _KKAlbedoBrightness;
+		float4 _KKSpecularColor;
+		float _KKSmoothnessScale;
 		// aerial perspective, from the planet's terrain material
 		float _KKAerialEnabled;
 		float _KKGlobalDensity;
+		float _KKFogRampV;
 		sampler2D _KKFogColorRamp;
-		// steep texture and distance blends, from the planet's terrain material
+		// steep texture, from the planet's terrain material (tilings per meter)
 		float _KKSteepEnabled;
 		KK_TEXTURE(_KKSteepTex);
 		KK_TEXTURE(_KKSteepBumpMap);
 		float _KKSteepPower;
+		float _KKSteepTiling;
+		float _KKSteepBumpTiling;
 		float _KKSteepTexStart;
 		float _KKSteepTexEnd;
-		float _KKGroundTexStart;
-		float _KKGroundTexEnd;
-		// set by KSP (PQSMod_AerialPerspectiveMaterial)
+		// set by KSP
 		float _heightDensityAtViewer;
+		float4 _floatingOriginOffset;
 
 
 		struct Input
@@ -217,7 +201,7 @@ Shader "KK/Terrain"
 			float3 worldNormal;
 			// pixel position relative to the renderer's origin, in the planet frame (meters)
 			float3 planetDelta;
-			// view space depth, like the PQS shaders use it for their distance blends and the haze
+			// view space depth, like the PQS shaders use it for their zoom levels and the haze
 			float viewDepth;
 			INTERNAL_DATA
 		};
@@ -233,6 +217,16 @@ Shader "KK/Terrain"
 		}
 
 
+		float3 WorldToTangentNormalVector(Input IN, float3 normal)
+		{
+			float3 t2w0 = WorldNormalVector(IN, float3(1,0,0));
+			float3 t2w1 = WorldNormalVector(IN, float3(0,1,0));
+			float3 t2w2 = WorldNormalVector(IN, float3(0,0,1));
+			float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
+			return normalize(mul(t2w, normal));
+		}
+
+
 		float3 GrayScale(float3 color)
 		{
 			float a =(0.3*color.r+0.59*color.g+0.11*color.b);
@@ -242,109 +236,205 @@ Shader "KK/Terrain"
 		}
 
 
-		// --- triplanar sampling with the projections of the PQS shaders: xy by w.z, zy by w.x, zx by w.y ---
-		// The weights are per renderer: a projection without weight is skipped. The gradients come from the caller
-		// (derivatives of the coordinates), so these may be used inside branches.
+		// texture coordinates turned by the zoom level's angle (cs = cos, sn = sin), as the stock shader does it
+		float2 Turn(float2 ab, float cs, float sn)
+		{
+			return float2(cs * ab.x + sn * ab.y, cs * ab.y - sn * ab.x);
+		}
 
-		float4 TriSample(KK_TEXTURE_PARAMS(tex, s), float3 coord, float3 dx, float3 dy, float3 w)
+
+		// one zoom level of a triplanar color texture: projections xy (weight w.z), zy (w.x), zx (w.y)
+		float4 TriColor(KK_TEXTURE_PARAMS(tex, s), float3 c, float3 dx, float3 dy, float cs, float sn, float3 w)
 		{
 			float4 result = 0;
 			UNITY_BRANCH
 			if (w.z > 0.001)
 			{
-				result += KK_SAMPLE_GRAD(tex, s, coord.xy, dx.xy, dy.xy) * w.z;
+				result += KK_SAMPLE_GRAD(tex, s, Turn(c.xy, cs, sn), Turn(dx.xy, cs, sn), Turn(dy.xy, cs, sn)) * w.z;
 			}
 			UNITY_BRANCH
 			if (w.x > 0.001)
 			{
-				result += KK_SAMPLE_GRAD(tex, s, coord.zy, dx.zy, dy.zy) * w.x;
+				result += KK_SAMPLE_GRAD(tex, s, Turn(c.zy, cs, sn), Turn(dx.zy, cs, sn), Turn(dy.zy, cs, sn)) * w.x;
 			}
 			UNITY_BRANCH
 			if (w.y > 0.001)
 			{
-				result += KK_SAMPLE_GRAD(tex, s, coord.zx, dx.zx, dy.zx) * w.y;
+				result += KK_SAMPLE_GRAD(tex, s, Turn(c.zx, cs, sn), Turn(dx.zx, cs, sn), Turn(dy.zx, cs, sn)) * w.y;
 			}
 			return result;
 		}
 
-		// the PQS shaders add their unpacked triplanar normals with the same weights and use the sum as tangent normal
-		float3 TriNormal(KK_TEXTURE_PARAMS(normalMap, s), float3 coord, float3 dx, float3 dy, float3 w)
+		// tangent normal of one projection, turned back by the zoom level's angle
+		float3 TurnedNormal(float4 packed, float cs, float sn)
 		{
-			float3 result = 0;
+			float3 n = UnpackNormal(packed);
+			n.xy = Turn(n.xy, cs, -sn);
+			return n;
+		}
+
+		// one zoom level of a triplanar normal map: the tangent normals of the projections zy (x), xz (y) and xy (z)
+		// are added to nX, nY, nZ with the amount; the projections are blended with the surface normal at the end
+		void TriBump(KK_TEXTURE_PARAMS(tex, s), float3 c, float3 dx, float3 dy, float cs, float sn, float3 w, float amount,
+			inout float3 nX, inout float3 nY, inout float3 nZ)
+		{
+			UNITY_BRANCH
+			if (w.x > 0.001)
+			{
+				nX += TurnedNormal(KK_SAMPLE_GRAD(tex, s, Turn(c.zy, cs, sn), Turn(dx.zy, cs, sn), Turn(dy.zy, cs, sn)), cs, sn) * amount;
+			}
+			UNITY_BRANCH
+			if (w.y > 0.001)
+			{
+				nY += TurnedNormal(KK_SAMPLE_GRAD(tex, s, Turn(c.xz, cs, sn), Turn(dx.xz, cs, sn), Turn(dy.xz, cs, sn)), cs, sn) * amount;
+			}
 			UNITY_BRANCH
 			if (w.z > 0.001)
 			{
-				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.xy, dx.xy, dy.xy)) * w.z;
-			}
-			UNITY_BRANCH
-			if (w.x > 0.001)
-			{
-				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.zy, dx.zy, dy.zy)) * w.x;
-			}
-			UNITY_BRANCH
-			if (w.y > 0.001)
-			{
-				result += UnpackNormal(KK_SAMPLE_GRAD(normalMap, s, coord.zx, dx.zx, dy.zx)) * w.y;
-			}
-			return result;
-		}
-
-
-		// one of the planet's low / mid / high layers, added with the stock weights
-		void AddLayer(KK_TEXTURE_PARAMS(tex, texSampler), KK_TEXTURE_PARAMS(bump, bumpSampler), float layerWeight, float4 tilings, float4 nearOffset, float4 farOffset,
-			float4 bumpNearOffset, float4 bumpFarOffset, float nearWeight, float farWeight,
-			float3 delta, float3 ddxDelta, float3 ddyDelta, float3 w, inout float3 color, inout float3 normal)
-		{
-			float nearAmount = layerWeight * nearWeight;
-			float farAmount = layerWeight * farWeight;
-			UNITY_BRANCH
-			if (nearAmount > 0.0001)
-			{
-				color += TriSample(KK_PASS_TEXTURE(tex, texSampler), nearOffset.xyz + delta * tilings.x, ddxDelta * tilings.x, ddyDelta * tilings.x, w).rgb * nearAmount;
-				normal += TriNormal(KK_PASS_TEXTURE(bump, bumpSampler), bumpNearOffset.xyz + delta * tilings.z, ddxDelta * tilings.z, ddyDelta * tilings.z, w) * nearAmount;
-			}
-			UNITY_BRANCH
-			if (farAmount > 0.0001)
-			{
-				color += TriSample(KK_PASS_TEXTURE(tex, texSampler), farOffset.xyz + delta * tilings.y, ddxDelta * tilings.y, ddyDelta * tilings.y, w).rgb * farAmount;
-				normal += TriNormal(KK_PASS_TEXTURE(bump, bumpSampler), bumpFarOffset.xyz + delta * tilings.w, ddxDelta * tilings.w, ddyDelta * tilings.w, w) * farAmount;
+				nZ += TurnedNormal(KK_SAMPLE_GRAD(tex, s, Turn(c.xy, cs, sn), Turn(dx.xy, cs, sn), Turn(dy.xy, cs, sn)), cs, sn) * amount;
 			}
 		}
 
-
-		void surf(Input IN, inout SurfaceOutput o)
+		// reoriented normal mapping of one projection
+		float3 RNM(float3 n1, float3 n2)
 		{
-			float3 delta = IN.planetDelta;
-			float3 ddxDelta = ddx(delta);
-			float3 ddyDelta = ddy(delta);
-			float3 w = _KKTriWeights.xyz;
-			float3 wNormalized = w / max(dot(w, float3(1, 1, 1)), 0.0001);
+			n1 += float3(0, 0, 1);
+			n2 *= float3(-1, -1, 1);
+			return n1 * dot(n1, n2) / n1.z - n2;
+		}
 
+
+		// the zoom levels of one pixel
+		struct Zoom
+		{
+			float scale1;
+			float scale2;
+			float blend;        // weight of level 2
+			float cos1;
+			float sin1;
+			float cos2;
+			float sin2;
+		};
+
+		Zoom GetZoom(float depth)
+		{
+			Zoom z;
+			z.scale1 = 1;
+			z.scale2 = 1;
+			z.blend = 0;
+			float angle1 = 0;
+			float angle2 = 0;
+			UNITY_BRANCH
+			if (_KKZoomFactor > 1)
+			{
+				// the largest _factor^n (n <= 15) below the depth
+				float scale = 1;
+				float next = 1;
+				float n = 0;
+				UNITY_LOOP
+				for (int i = 0; i < 15; i++)
+				{
+					if (next >= depth)
+					{
+						break;
+					}
+					scale = next;
+					next *= _KKZoomFactor;
+					n += 1;
+				}
+				angle1 = (n - 1) * _KKZoomRotation;
+				angle2 = n * _KKZoomRotation;
+				z.scale1 = scale;
+				if (depth < 1)
+				{
+					z.scale2 = scale;
+					z.blend = depth;
+				}
+				else
+				{
+					float start = _KKZoomFactor * _KKZoomBlendWidth;
+					float t = saturate((depth / scale - start) / ((1 - _KKZoomBlendWidth) * _KKZoomFactor - start));
+					z.blend = t * t * (3 - 2 * t);
+					z.scale2 = scale * _KKZoomFactor;
+				}
+			}
+			z.cos1 = cos(angle1);
+			z.sin1 = sin(angle1);
+			z.cos2 = cos(angle2);
+			z.sin2 = sin(angle2);
+			return z;
+		}
+
+
+		// one of the planet's low / mid / high layers, both zoom levels
+		void AddLayer(KK_TEXTURE_PARAMS(tex, texSampler), KK_TEXTURE_PARAMS(bump, bumpSampler), float layerWeight, float4 tilings,
+			float3 basePos, float3 ddxPos, float3 ddyPos, Zoom z, float3 w,
+			inout float4 color, inout float3 nX, inout float3 nY, inout float3 nZ)
+		{
+			float amount1 = layerWeight * (1 - z.blend);
+			float amount2 = layerWeight * z.blend;
+			UNITY_BRANCH
+			if (amount1 > 0.0001)
+			{
+				float k = tilings.x / z.scale1;
+				color += TriColor(KK_PASS_TEXTURE(tex, texSampler), basePos * k, ddxPos * k, ddyPos * k, z.cos1, z.sin1, w) * amount1;
+				float kb = tilings.y / z.scale1;
+				TriBump(KK_PASS_TEXTURE(bump, bumpSampler), basePos * kb, ddxPos * kb, ddyPos * kb, z.cos1, z.sin1, w, amount1, nX, nY, nZ);
+			}
+			UNITY_BRANCH
+			if (amount2 > 0.0001)
+			{
+				float k = tilings.x / z.scale2;
+				color += TriColor(KK_PASS_TEXTURE(tex, texSampler), basePos * k, ddxPos * k, ddyPos * k, z.cos2, z.sin2, w) * amount2;
+				float kb = tilings.y / z.scale2;
+				TriBump(KK_PASS_TEXTURE(bump, bumpSampler), basePos * kb, ddxPos * kb, ddyPos * kb, z.cos2, z.sin2, w, amount2, nX, nY, nZ);
+			}
+		}
+
+
+		// planar triplanar sampling for KK's third and fourth texture (planet frame coordinates, no zoom)
+		float4 TriPlanet(KK_TEXTURE_PARAMS(tex, s), float3 c, float3 dx, float3 dy, float3 w)
+		{
+			return TriColor(KK_PASS_TEXTURE(tex, s), c, dx, dy, 1, 0, w);
+		}
+
+
+		void surf(Input IN, inout SurfaceOutputStandardSpecular o)
+		{
 			float3 worldNormal = WorldNormalVector(IN, float3(0,0,1));
 			float3 planetNormal = normalize(mul((float3x3)_KKWorldToPlanet, worldNormal));
 			float3 planetUp = normalize(_KKAnchorUp.xyz);
 			float3 worldUp = normalize(mul((float3x3)_KKPlanetToWorld, planetUp));
 
-			// --- the stock terrain: C + P * (C * T - C) ---
-			float nearFar = smoothstep(_KKGroundTexStart, _KKGroundTexEnd, IN.viewDepth);
-			float nearWeight = (1.0 - nearFar) * _KKPowerNear;
-			float farWeight = nearFar * _KKPowerFar;
-			float power = nearWeight + farWeight;
+			// the stock triplanar weights: |n|^10 of the world normal, normalized
+			float3 w = abs(worldNormal);
+			w = w * w;
+			float3 w4 = w * w;
+			w = max(w * w4 * w4, 0.00001);
+			w /= dot(w, float3(1, 1, 1));
 
-			float3 terrainTexture = 0;
-			float3 terrainNormal = 0;
-			AddLayer(KK_TEXTURE_ARGS(_KKLayerATex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerABump, _KKLayerATex), _KKLayerAWeight, _KKLayerATilings, _KKLayerANearOffset, _KKLayerAFarOffset,
-				_KKLayerABumpNearOffset, _KKLayerABumpFarOffset, nearWeight, farWeight, delta, ddxDelta, ddyDelta, w,
-				terrainTexture, terrainNormal);
+			// the terrain's texture coordinates (meters); KSP's floating origin offset makes them absolute
+			float3 basePos = IN.worldPos + _floatingOriginOffset.xyz;
+			float3 ddxPos = ddx(IN.worldPos);
+			float3 ddyPos = ddy(IN.worldPos);
+			Zoom z = GetZoom(IN.viewDepth);
+
+			// --- the planet's layers ---
+			float4 terrainTexture = 0;
+			float3 nX = 0;
+			float3 nY = 0;
+			float3 nZ = 0;
+			AddLayer(KK_TEXTURE_ARGS(_KKLayerATex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerABump, _KKLayerATex), _KKLayerAWeight, _KKLayerATilings,
+				basePos, ddxPos, ddyPos, z, w, terrainTexture, nX, nY, nZ);
 			UNITY_BRANCH
 			if (_KKLayerBWeight > 0.0001)
 			{
-				AddLayer(KK_TEXTURE_ARGS(_KKLayerBTex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerBBump, _KKLayerATex), _KKLayerBWeight, _KKLayerBTilings, _KKLayerBNearOffset, _KKLayerBFarOffset,
-					_KKLayerBBumpNearOffset, _KKLayerBBumpFarOffset, nearWeight, farWeight, delta, ddxDelta, ddyDelta, w,
-					terrainTexture, terrainNormal);
+				AddLayer(KK_TEXTURE_ARGS(_KKLayerBTex, _KKLayerATex), KK_TEXTURE_ARGS(_KKLayerBBump, _KKLayerATex), _KKLayerBWeight, _KKLayerBTilings,
+					basePos, ddxPos, ddyPos, z, w, terrainTexture, nX, nY, nZ);
 			}
 			float3 terrainColor = _KKTerrainColor.rgb;
-			float3 groundColor = terrainColor + power * (terrainColor * terrainTexture - terrainColor);
+			float3 groundColor = terrainColor + _KKTextureStrength * (terrainColor * terrainTexture.rgb - terrainColor);
+			float smoothness = terrainTexture.a * _KKSmoothnessScale;
 
 			// --- the planet's steep texture: it replaces the color on slopes ---
 			UNITY_BRANCH
@@ -352,32 +442,40 @@ Shader "KK/Terrain"
 			{
 				float slope = 1.0 - dot(planetUp, planetNormal);
 				float steep = saturate(slope * _KKSteepPower) * (1.0 - smoothstep(_KKSteepTexStart, _KKSteepTexEnd, IN.viewDepth));
-				float steepNear = steep * (1.0 - nearFar);
-				float steepFar = steep * nearFar;
 				UNITY_BRANCH
-				if (steepNear > 0.0001)
+				if (steep > 0.0001)
 				{
-					float3 coord = _KKSteepNearOffset.xyz + delta * _KKSteepNearTiling;
-					float3 dx = ddxDelta * _KKSteepNearTiling;
-					float3 dy = ddyDelta * _KKSteepNearTiling;
-					groundColor = lerp(groundColor, TriSample(KK_TEXTURE_ARGS(_KKSteepTex, _KKLayerATex), coord, dx, dy, w).rgb, steepNear);
-					terrainNormal = lerp(terrainNormal, TriNormal(KK_TEXTURE_ARGS(_KKSteepBumpMap, _KKLayerATex), coord, dx, dy, w), steepNear);
-				}
-				UNITY_BRANCH
-				if (steepFar > 0.0001)
-				{
-					float3 coord = _KKSteepFarOffset.xyz + delta * _KKSteepFarTiling;
-					float3 dx = ddxDelta * _KKSteepFarTiling;
-					float3 dy = ddyDelta * _KKSteepFarTiling;
-					groundColor = lerp(groundColor, TriSample(KK_TEXTURE_ARGS(_KKSteepTex, _KKLayerATex), coord, dx, dy, w).rgb, steepFar);
-					terrainNormal = lerp(terrainNormal, TriNormal(KK_TEXTURE_ARGS(_KKSteepBumpMap, _KKLayerATex), coord, dx, dy, w), steepFar);
+					float4 steepTexture = 0;
+					float3 sX = 0;
+					float3 sY = 0;
+					float3 sZ = 0;
+					AddLayer(KK_TEXTURE_ARGS(_KKSteepTex, _KKLayerATex), KK_TEXTURE_ARGS(_KKSteepBumpMap, _KKLayerATex), 1,
+						float4(_KKSteepTiling, _KKSteepBumpTiling, 0, 0), basePos, ddxPos, ddyPos, z, w, steepTexture, sX, sY, sZ);
+					groundColor = lerp(groundColor, steepTexture.rgb, steep);
+					nX = lerp(nX, sX, steep);
+					nY = lerp(nY, sY, steep);
+					nZ = lerp(nZ, sZ, steep);
 				}
 			}
-			float3 normal = normalize(terrainNormal + float3(0, 0, 0.0001));
+
+			// --- the normal maps' projections blended with the surface normal (reoriented normal mapping) ---
+			float3 tX = RNM(float3(worldNormal.zy, abs(worldNormal.x)), nX + float3(0, 0, 0.0001));
+			float3 tY = RNM(float3(worldNormal.xz, abs(worldNormal.y)), nY + float3(0, 0, 0.0001));
+			float3 tZ = RNM(float3(worldNormal.xy, abs(worldNormal.z)), nZ + float3(0, 0, 0.0001));
+			float3 axisSign = float3(worldNormal.x < 0 ? -1 : 1, worldNormal.y < 0 ? -1 : 1, worldNormal.z < 0 ? -1 : 1);
+			tX.z *= axisSign.x;
+			tY.z *= axisSign.y;
+			tZ.z *= axisSign.z;
+			float3 bumpedWorldNormal = normalize(tX.zyx * w.x + tY.xzy * w.y + tZ.xyz * w.z);
+			float3 normal = WorldToTangentNormalVector(IN, bumpedWorldNormal);
+
+			// the stock shader brightens the (hazy) terrain color by _albedoBrightness
+			float3 outputColor = groundColor * _KKAlbedoBrightness;
 
 			// --- the blend mask: tarmac (red, mesh uv), third (green) and fourth (blue, planet frame) ---
+			// kkAmount: how much of the pixel is KK's own textures (they get no terrain specular)
+			float kkAmount = 0;
 			float3 blendmask = tex2D(_BlendMaskTexture, IN.uv2_BlendMaskTexture).rgb;
-			float3 outputColor = groundColor;
 
 			fixed4 tarmacPixel;
 			float3 tarmacNormal;
@@ -399,53 +497,64 @@ Shader "KK/Terrain"
 			float tarmacBlend = blendmask.r * tarmacColor.a;
 			outputColor = lerp(outputColor, tarmacColor.rgb, tarmacBlend);
 			normal = lerp(normal, tarmacNormal, tarmacBlend);
+			kkAmount = lerp(kkAmount, 1, tarmacBlend);
+
+			// KK's third and fourth texture: planet frame coordinates and normalized weights from the planet normal
+			float3 wPlanet = abs(planetNormal);
+			wPlanet /= max(dot(wPlanet, float3(1, 1, 1)), 0.0001);
+			float3 ddxDelta = ddx(IN.planetDelta);
+			float3 ddyDelta = ddy(IN.planetDelta);
 
 			float thirdMask = blendmask.g * _ThirdTextureColor.a;
 			UNITY_BRANCH
 			if (thirdMask > 0.0001)
 			{
-				float3 coord = _KKThirdOffset.xyz + delta * _ThirdTextureTiling;
+				float3 coord = _KKThirdOffset.xyz + IN.planetDelta * _ThirdTextureTiling;
 				float3 dx = ddxDelta * _ThirdTextureTiling;
 				float3 dy = ddyDelta * _ThirdTextureTiling;
-				float4 thirdPixel = TriSample(KK_TEXTURE_ARGS(_ThirdTexture, _ThirdTexture), coord, dx, dy, wNormalized);
+				float4 thirdPixel = TriPlanet(KK_TEXTURE_ARGS(_ThirdTexture, _ThirdTexture), coord, dx, dy, wPlanet);
 				if (_ThirdTextureGrayScale)
 				{
 					thirdPixel.rgb = GrayScale(thirdPixel.rgb);
 				}
 				float4 thirdColor = thirdPixel * _ThirdTextureColor;
 				float thirdBlend = blendmask.g * thirdColor.a;
+				float4 thirdNormalPixel = TriPlanet(KK_TEXTURE_ARGS(_ThirdNormalTexture, _ThirdTexture), coord, dx, dy, wPlanet);
 				outputColor = lerp(outputColor, thirdColor.rgb, thirdBlend);
-				normal = lerp(normal, normalize(TriNormal(KK_TEXTURE_ARGS(_ThirdNormalTexture, _ThirdTexture), coord, dx, dy, wNormalized)), thirdBlend);
+				normal = lerp(normal, UnpackNormal(thirdNormalPixel), thirdBlend);
+				kkAmount = lerp(kkAmount, 1, thirdBlend);
 			}
 
 			float fourthMask = blendmask.b * _FourthTextureColor.a;
 			UNITY_BRANCH
 			if (fourthMask > 0.0001)
 			{
-				float3 coord = _KKFourthOffset.xyz + delta * _FourthTextureTiling;
+				float3 coord = _KKFourthOffset.xyz + IN.planetDelta * _FourthTextureTiling;
 				float3 dx = ddxDelta * _FourthTextureTiling;
 				float3 dy = ddyDelta * _FourthTextureTiling;
-				float4 fourthPixel = TriSample(KK_TEXTURE_ARGS(_FourthTexture, _ThirdTexture), coord, dx, dy, wNormalized);
+				float4 fourthPixel = TriPlanet(KK_TEXTURE_ARGS(_FourthTexture, _ThirdTexture), coord, dx, dy, wPlanet);
 				if (_FourthTextureGrayScale)
 				{
 					fourthPixel.rgb = GrayScale(fourthPixel.rgb);
 				}
 				float4 fourthColor = fourthPixel * _FourthTextureColor;
 				float fourthBlend = blendmask.b * fourthColor.a;
+				float4 fourthNormalPixel = TriPlanet(KK_TEXTURE_ARGS(_FourthNormalTexture, _ThirdTexture), coord, dx, dy, wPlanet);
 				outputColor = lerp(outputColor, fourthColor.rgb, fourthBlend);
-				normal = lerp(normal, normalize(TriNormal(KK_TEXTURE_ARGS(_FourthNormalTexture, _ThirdTexture), coord, dx, dy, wNormalized)), fourthBlend);
+				normal = lerp(normal, UnpackNormal(fourthNormalPixel), fourthBlend);
+				kkAmount = lerp(kkAmount, 1, fourthBlend);
 			}
 			normal = normalize(normal);
 
-			// --- aerial perspective of the PQS shaders: the albedo is blended to the fog color before the lighting ---
+			// --- aerial perspective of the PQS shaders: blended into the color before the brightness ---
 			// fog = 1 - exp(depth * _globalDensity * _heightDensityAtViewer) (the material's density is negative),
-			// fog color from the ramp by the sun's height over the horizon at the pixel, row 0.75
+			// fog color from the ramp by the sun's height over the horizon at the pixel
 			UNITY_BRANCH
 			if (_KKAerialEnabled > 0.5)
 			{
 				float aerialFog = max(0.0, 1.0 - exp(IN.viewDepth * _KKGlobalDensity * _heightDensityAtViewer));
-				float3 fogColor = tex2Dlod(_KKFogColorRamp, float4(dot(_KKSunDirection, worldUp), 0.75, 0, 0)).rgb;
-				outputColor = lerp(outputColor, fogColor, aerialFog);
+				float3 fogColor = tex2Dlod(_KKFogColorRamp, float4(dot(_KKSunDirection, worldUp), _KKFogRampV, 0, 0)).rgb;
+				outputColor = lerp(outputColor, fogColor * _KKAlbedoBrightness, aerialFog);
 			}
 
 			o.Emission = stockEmit(IN.viewDir, normal, _RimColor, _RimFalloff, _TemperatureColor) * _Opacity;
@@ -454,8 +563,10 @@ Shader "KK/Terrain"
 			o.Normal = normal;
 			o.Albedo = fog.rgb;
 			o.Emission *= fog.a;
-			o.Specular = 0;
-			o.Gloss = 0;
+			o.Specular = _KKSpecularColor.rgb * (1 - kkAmount);
+			o.Smoothness = smoothness * (1 - kkAmount);
+			o.Occlusion = 1;
+			o.Alpha = 1;
 
 #if UNITY_PASS_DEFERRED
 			// In deferred rendering do not use the flat ambient because Deferred adds its own ambient as a composite of flat ambient and probe
