@@ -118,7 +118,7 @@ namespace KerbalKonstructs
         /// <summary>
         /// Sets the texture in all transforms of the right name
         /// </summary>
-        internal void ApplySettings()
+        internal virtual void ApplySettings()
         {
 
             if (!isInitialized)
@@ -267,6 +267,37 @@ namespace KerbalKonstructs
 
 
 
+        /// <summary>
+        /// The shader of the grass meshes
+        /// </summary>
+        protected virtual Shader GroundShader => KKTerrainShader.OldGroundShader;
+
+        /// <summary>
+        /// The renderers of the grass meshes, grassRenderers[i] holds grassMaterials[i]
+        /// </summary>
+        internal List<Renderer> GrassRenderers => grassRenderers;
+
+        /// <summary>
+        /// The instance's GrassColor2 config node that ReadConfig() used (null when there was none)
+        /// </summary>
+        protected ConfigNode instanceConfig = null;
+
+        /// <summary>
+        /// Called when the user sets the grass color in the editor or by a preset
+        /// </summary>
+        internal virtual void OnUserColorChange()
+        {
+        }
+
+        /// <summary>
+        /// Like the PQS terrain quads, the grass uses no reflection probes: both ground shaders have the terrain's
+        /// specular lighting, and in flight KSP's reflection probe of the sky around the vessel turned the grass bluish.
+        /// </summary>
+        private static void DisableReflectionProbes(Renderer renderer)
+        {
+            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        }
+
         public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
@@ -276,7 +307,8 @@ namespace KerbalKonstructs
 
                 grassRenderers.Add(grassRenderer);
                 grassMaterials.Add(grassRenderer.material);
-                grassRenderer.material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+                grassRenderer.material.shader = GroundShader;
+                DisableReflectionProbes(grassRenderer);
                 
 
             }
@@ -293,7 +325,8 @@ namespace KerbalKonstructs
                 {
                     foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
                     {
-                        material.shader = KKGraphics.GetShader("KK/Ground_Multi_NoUV");
+                        material.shader = GroundShader;
+                        DisableReflectionProbes(renderer);
 
                         grassRenderers.Add(renderer);
                         grassMaterials.Add(material);
@@ -310,6 +343,7 @@ namespace KerbalKonstructs
 
         public void ReadConfig()
         {
+            instanceConfig = null;
 
             if (staticInstance.grassColor2Configs.Count == 0)
             {
@@ -346,35 +380,6 @@ namespace KerbalKonstructs
                 fourthTextureTileRandom = bool.Parse(DefaultFourthTextureTileRandom);
 
 
-                // try to import legacy values
-                if (staticInstance.GrasColor != Color.clear)
-                {
-
-                    Log.Normal("Loading Legacy Grass Config" + staticInstance.gameObject.name);
-                    //useLegacy = true;
-                    grassColor = staticInstance.GrasColor;
-                    string oldGrassTexture = staticInstance.GrasTexture;
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture) ||staticInstance.GrasTexture == "BUILTIN:/terrain_grass00_new")
-                    {
-                        oldGrassTexture = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
-                    }
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture))
-                    {
-                        staticInstance.GrasTexture = "BUILTIN:/terrain_grass00_new_detail";
-                    }
-
-                    //farGrassTiling = 10;
-                    //nearGrassTiling = 1;
-                    nearGrassTextureName = staticInstance.GrasTexture;
-                    farGrassTextureName = staticInstance.GrasTexture;
-
-                    
-                    grassColor = GrassColorUtils.ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
-
-                    staticInstance.grassColor2Configs.Add(GiveConfig());
-
-                }
-
                 return;
             }
 
@@ -389,6 +394,7 @@ namespace KerbalKonstructs
                     }
 
                     //Log.Normal("found instance grassnode");
+                    instanceConfig = grassConfig;
                         grassColor = (grassConfig.HasValue("GrassColor")) ? ConfigNode.ParseColor(grassConfig.GetValue("GrassColor")) : defaultColor;
 
                     nearGrassTextureName = (grassConfig.HasValue("NearGrassTexture")) ? grassConfig.GetValue("NearGrassTexture") : DefaultNearGrassTexture;
@@ -432,12 +438,24 @@ namespace KerbalKonstructs
 
           
 
-        public ConfigNode GiveConfig()
+        public virtual ConfigNode GiveConfig()
         {
             ConfigNode grassNode = new ConfigNode("GrassColor2");
 
             grassNode.AddValue("GrassMeshName", GrassMeshName);
             grassNode.AddValue("MaterialOffset", MaterialOffset);
+            // which module draws this mesh (StaticInstance.Spawn), see KKTerrain.terrainShaderKey
+            grassNode.AddValue(KKTerrain.terrainShaderKey, this is KKTerrain);
+            if (!(this is KKTerrain) && instanceConfig != null)
+            {
+                foreach (string key in KKTerrain.terrainKeys)
+                {
+                    if (instanceConfig.HasValue(key))
+                    {
+                        grassNode.AddValue(key, instanceConfig.GetValue(key));
+                    }
+                }
+            }
 
             grassNode.AddValue("GrassColor", grassColor);
 

@@ -6,10 +6,12 @@ Shader "KK/Ground_Multi_NoUV"
         [NoScaleOffset] _NearGrassTexture("_NearGrassTexture", 2D) = "grey" {}
 		_NearGrassTiling("_NearGrassTiling ", Float) = 1
 		[ToggleUI] _NearGrassGrayScale("_NearGrassGrayScale ", Float) = 0
+		[NoScaleOffset] _NearGrassNormalTexture("_NearGrassNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _FarGrassTexture("_FarGrassTexture", 2D) = "grey" {}
 		_FarGrassTiling("_FarGrassTiling ", Float) = 1
 		[ToggleUI] _FarGrassGrayScale("_FarGrassGrayScale ", Float) = 0
+		[NoScaleOffset] _FarGrassNormalTexture("_FarGrassNormalTexture", 2D) = "bump" {}
 
 		_GrassColor("_GrassColor", Color) = (0.2115077,0.9150943,0.2115077,0)
 		_FarGrassBlendDistance("_FarGrassBlendDistance ", Range(0, 1000)) = 100
@@ -19,18 +21,21 @@ Shader "KK/Ground_Multi_NoUV"
 		_TarmacColor("_TarmacColor", Color) = (1,1,1,1)
 		[ToggleUI] _TarmacTileRandom("Radom tiling for Tarmac Teture", Float) = 0
 		[ToggleUI] _TarmacGrayScale("_TarmacGrayScale ", Float) = 0
+		[NoScaleOffset] _TarmacNormalTexture("_TarmacNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _ThirdTexture("Optional Green areas on the mask", 2D)  = "black" {}
 		_ThirdTextureTiling("_ThirdTextureTiling", Float) = 1
 		_ThirdTextureColor("_ThirdTextureColor", Color) = (0,0,0,0)
 		[ToggleUI]_ThirdTextureTileRandom("Radom tiling for third Teture", Float) = 0
 		[ToggleUI] _ThirdTextureGrayScale("_ThirdTextureGrayScale ", Float) = 0
+		[NoScaleOffset] _ThirdNormalTexture("_ThirdNormalTexture", 2D) = "bump" {}
 
 		[NoScaleOffset] _FourthTexture("Optional Blue areas on the mask", 2D) = "black" {}
 		_FourthTextureTiling("_FourthTextureTiling", Float) = 1
 		_FourthTextureColor("_FourthTextureColor", Color) = (0,0,0,0)
 		[ToggleUI]_FourthTextureTileRandom("Radom tiling for fourth Teture", Float) = 0
 		[ToggleUI] _FourthTextureGrayScale("_FourthTextureGrayScale ", Float) = 0
+		[NoScaleOffset] _FourthNormalTexture("_FourthNormalTexture", 2D) = "bump" {}
 
 
         _Opacity("_Opacity ", Range(0, 1)) = 1
@@ -59,7 +64,8 @@ Shader "KK/Ground_Multi_NoUV"
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
         #pragma exclude_renderers gles
         
-        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog
+        // lit like the stock terrain (zoom rotation PQS shader): Standard Specular, with the planet's values
+        #pragma surface surf StandardSpecularKSP fullforwardshadows nofog
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -78,7 +84,14 @@ Shader "KK/Ground_Multi_NoUV"
 
 		float4 _GrassColor;
 
+		// the lighting values of the current planet's terrain material, set by KK (KKTerrainShader.UpdateGlobals):
+		// the color brightness (_albedoBrightness), the specular color and whether the textures' alpha is the smoothness
+		float _KKAlbedoBrightness;
+		float4 _KKSpecularColor;
+		float _KKSmoothnessScale;
+
     	sampler2D _NearGrassTexture;
+		sampler2D _NearGrassNormalTexture;
 		float _NearGrassTiling;	
 
 		sampler2D _TarmacTexture;
@@ -145,7 +158,7 @@ Shader "KK/Ground_Multi_NoUV"
         	return float3(g,g,g);
     	}
 
-		void surf(Input IN, inout SurfaceOutput o)
+		void surf(Input IN, inout SurfaceOutputStandardSpecular o)
 		{
 
 			IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
@@ -205,24 +218,26 @@ Shader "KK/Ground_Multi_NoUV"
 
 			grassTextureBlended *= _GrassColor;
 
-			float3 farNormal =  (tex2DStochastic(_FarGrassNormalTexture, (planarUV * _FarGrassTiling)));
-			// farNormal =  lerp(nearNormal, farNormal, distanceBlendFactor);
+			// grass normal map: tangent space of the projected plane (planarUV), blended near / far like the color
+			float3 nearNormal = UnpackNormal(tex2DStochastic(_NearGrassNormalTexture, (planarUV * _NearGrassTiling)));
+			float3 farNormal = UnpackNormal(tex2DStochastic(_FarGrassNormalTexture, (planarUV * _FarGrassTiling)));
+			float3 grassTangentNormal = normalize(lerp(nearNormal, farNormal, distanceBlendFactor));
 
 
 			// float3 blendmask =  tex2D(_BlendMaskTexture, uv+(0.5,0.5));
 
 			// first map
 			fixed4 tarmacPixel;
-			float3 tarmacNormal = 0.5; 
+			float3 tarmacNormal = float3(0, 0, 1);
 			if (_TarmacTileRandom) 
 			{
 				tarmacPixel = tex2DStochastic(_TarmacTexture, IN.uv_TarmacTexture);
-				tarmacNormal = (tex2DStochastic(_TarmacNormalTexture, IN.uv_TarmacTexture));
+				tarmacNormal = UnpackNormal(tex2DStochastic(_TarmacNormalTexture, IN.uv_TarmacTexture));
 			} 
 			else 
 			{
 				tarmacPixel = tex2D(_TarmacTexture, IN.uv_TarmacTexture);
-				tarmacNormal = (tex2D(_TarmacNormalTexture, IN.uv_TarmacTexture));
+				tarmacNormal = UnpackNormal(tex2D(_TarmacNormalTexture, IN.uv_TarmacTexture));
 			}
 			if (_TarmacGrayScale)
 			{
@@ -234,16 +249,16 @@ Shader "KK/Ground_Multi_NoUV"
 		
 			// second texture
 			fixed4 thirdMapPixel;
-			float3 thirdNormal = 0.5;
+			float3 thirdNormal = float3(0, 0, 1);
 			if (_ThirdTextureTileRandom) 
 			{
 				thirdMapPixel = tex2DStochastic(_ThirdTexture, planarUV * _ThirdTextureTiling);
-				thirdNormal = (tex2DStochastic(_ThirdNormalTexture, IN.uv_TarmacTexture));
+				thirdNormal = UnpackNormal(tex2DStochastic(_ThirdNormalTexture, IN.uv_TarmacTexture));
 			} 
 			else 
 			{
 				thirdMapPixel = tex2D(_ThirdTexture, planarUV * _ThirdTextureTiling);
-				thirdNormal = (tex2D(_ThirdNormalTexture, IN.uv_TarmacTexture));
+				thirdNormal = UnpackNormal(tex2D(_ThirdNormalTexture, IN.uv_TarmacTexture));
 			}
 			if (_ThirdTextureGrayScale)
 			{
@@ -256,16 +271,16 @@ Shader "KK/Ground_Multi_NoUV"
 
 			// third texture
 			fixed4 fourthMapPixel;
-			float3 fourthNormal = 0.5;
+			float3 fourthNormal = float3(0, 0, 1);
 			if (_FourthTextureTileRandom) 
 			{
 				fourthMapPixel = tex2DStochastic(_FourthTexture, planarUV * _FourthTextureTiling);
-				fourthNormal = (tex2DStochastic(_FourthNormalTexture, IN.uv_TarmacTexture));
+				fourthNormal = UnpackNormal(tex2DStochastic(_FourthNormalTexture, IN.uv_TarmacTexture));
 			} 
 			else 
 			{
 				fourthMapPixel = tex2D(_FourthTexture, planarUV * _FourthTextureTiling);
-				fourthNormal = (tex2D(_FourthNormalTexture, IN.uv_TarmacTexture));
+				fourthNormal = UnpackNormal(tex2D(_FourthNormalTexture, IN.uv_TarmacTexture));
 			}
 
 			if (_FourthTextureGrayScale)
@@ -275,24 +290,45 @@ Shader "KK/Ground_Multi_NoUV"
 
 			float4 fourthColor = fourthMapPixel * _FourthTextureColor;
 
-			// Blend everything over
-			float3 outputColor = 0;
-			outputColor = lerp (grassTextureBlended.rgb, tarmacColor, blendmask.r * tarmacColor.a);
-			outputColor = lerp (outputColor, thirtColor.rgb, blendmask.g * thirtColor.a);
-			outputColor = lerp (outputColor, fourthColor.rgb, blendmask.b * fourthColor.a );
+			// Blend everything over. The grass gets the terrain's brightness and specular, the tarmac, third and fourth
+			// texture don't (kkAmount: how much of the pixel they cover). Without KK's planet values (0) brightness 1.
+			float brightness = _KKAlbedoBrightness > 0 ? _KKAlbedoBrightness : 1;
+			float3 outputColor = grassTextureBlended.rgb * brightness;
+			float tarmacBlend = blendmask.r * tarmacColor.a;
+			float thirdBlend = blendmask.g * thirtColor.a;
+			float fourthBlend = blendmask.b * fourthColor.a;
+			outputColor = lerp (outputColor, tarmacColor.rgb, tarmacBlend);
+			outputColor = lerp (outputColor, thirtColor.rgb, thirdBlend);
+			outputColor = lerp (outputColor, fourthColor.rgb, fourthBlend);
+			float kkAmount = lerp(lerp(tarmacBlend, 1, thirdBlend), 1, fourthBlend);
 			
 
-			float3 normal = 0.5;
-			normal = lerp(farNormal.rgb, tarmacNormal.rgb, blendmask.r *  tarmacColor.a);
-			normal = lerp(normal.rgb, thirdNormal.rgb, blendmask.r *  thirtColor.a);
-			normal = lerp(normal.rgb, fourthNormal.rgb, blendmask.r *  fourthColor.a);
-			//normal map always sampled and assigned directly to surface
-			// fixed3 normal = UnpackNormal(tex2DStochastic(_BumpMap, IN.uv_MainTex));
-			// o.Normal = normal;
+			// grass normal: from the projected plane into the box space of the mapping (whiteout blend with the
+			// mesh normal), then into world space and the mesh's tangent space
+			float3 boxNormal;
+			if (blend.x > max(blend.y, blend.z)) {
+				// planarUV = map.yz
+				float2 nUV = grassTangentNormal.xy + norm.yz;
+				boxNormal = float3(abs(grassTangentNormal.z) * norm.x, nUV.x, nUV.y);
+			} else if (blend.z > blend.y) {
+				// planarUV = map.xy
+				float2 nUV = grassTangentNormal.xy + norm.xy;
+				boxNormal = float3(nUV.x, nUV.y, abs(grassTangentNormal.z) * norm.z);
+			} else {
+				// planarUV = map.xz
+				float2 nUV = grassTangentNormal.xy + norm.xz;
+				boxNormal = float3(nUV.x, abs(grassTangentNormal.z) * norm.y, nUV.y);
+			}
+			// rot is a pure rotation (world -> box), its transpose turns it back
+			float3 grassWorldNormal = normalize(mul(transpose(rot), boxNormal));
+			float3 normal = WorldToTangentNormalVector(IN, grassWorldNormal);
 
-			float3 n1 = worldNormal;
-			float3 n2 = normal*2-1 ;
-			worldNormal = normalize((n1+ n2));
+			// tarmac, third and fourth normal maps are in the mesh's tangent space (uv)
+			// (the third and fourth used the red mask channel before, now green and blue like their colors)
+			normal = lerp(normal, tarmacNormal, tarmacBlend);
+			normal = lerp(normal, thirdNormal, thirdBlend);
+			normal = lerp(normal, fourthNormal, fourthBlend);
+			normal = normalize(normal);
 
 			//emission always sampled and assigned to surface along with stock part-highlighting functionality
 			//fixed4 glow = tex2D(_Emissive, (IN.uv_MainTex));
@@ -302,10 +338,13 @@ Shader "KK/Ground_Multi_NoUV"
 
 			//apply the standard shader param multipliers to the sampled/computed values.
 			fixed4 fog = UnderwaterFog(IN.worldPos, outputColor);
-			o.Normal = WorldToTangentNormalVector(IN, worldNormal);
+			o.Normal = normal;
 			o.Albedo = fog.rgb;
 			o.Emission *= fog.a;
-        	o.Specular = (0);
+			o.Specular = _KKSpecularColor.rgb * (1 - kkAmount);
+			o.Smoothness = saturate(grassTextureBlended.a) * _KKSmoothnessScale * (1 - kkAmount);
+			o.Occlusion = 1;
+			o.Alpha = 1;
 			
 
 #if UNITY_PASS_DEFERRED

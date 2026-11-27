@@ -790,6 +790,12 @@ namespace KerbalKonstructs
                 CareerState.FixKSCFacilities();
             }
 
+            // planet inputs of the KK ground shader (planet frame, haze, steep texture)
+            if (HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.SPACECENTER)
+            {
+                KKTerrainShader.UpdateGlobals(GetCurrentBody());
+            }
+
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
@@ -1086,6 +1092,9 @@ namespace KerbalKonstructs
                                 break;
                         }
                     }
+
+                    // grass: a KKTerrain module (drawn like the terrain underneath) instead of a GrasColor or GrassColor2 module
+                    KKTerrain.ReplaceGrassModule(module, model.name);
 
                     // check for unused AdvTexture Modules
                     if (module.moduleClassname == "AdvancedTextures")

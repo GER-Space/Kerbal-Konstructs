@@ -484,7 +484,7 @@ namespace KerbalKonstructs.UI2
             if (grassColor2Enabled)
             {
                 GrassColor2 grassMod2 = selectedInstance.mesh.GetComponent<GrassColor2>();
-                GrassColorPresetUI2.callBack = delegate (GrassColorPresetUI2.ColorPreset2 preset) { if (grassMod2 != null) { grassMod2.UpdateCallBack(preset); } };
+                GrassColorPresetUI2.callBack = delegate (GrassColorPresetUI2.ColorPreset2 preset) { if (grassMod2 != null) { grassMod2.OnUserColorChange(); grassMod2.UpdateCallBack(preset); } };
                 GrassColorPresetUI2.instance.Open();
             }
         }
