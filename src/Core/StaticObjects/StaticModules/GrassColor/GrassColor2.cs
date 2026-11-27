@@ -289,6 +289,15 @@ namespace KerbalKonstructs
         {
         }
 
+        /// <summary>
+        /// Like the PQS terrain quads, the grass uses no reflection probes: both ground shaders have the terrain's
+        /// specular lighting, and in flight KSP's reflection probe of the sky around the vessel turned the grass bluish.
+        /// </summary>
+        private static void DisableReflectionProbes(Renderer renderer)
+        {
+            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        }
+
         public void FindModelGrasMaterials()
         {
             Transform[] allTransforms = gameObject.transform.GetComponentsInChildren<Transform>(true).Where(x => x.name == GrassMeshName).ToArray();
@@ -299,6 +308,7 @@ namespace KerbalKonstructs
                 grassRenderers.Add(grassRenderer);
                 grassMaterials.Add(grassRenderer.material);
                 grassRenderer.material.shader = GroundShader;
+                DisableReflectionProbes(grassRenderer);
                 
 
             }
@@ -316,6 +326,7 @@ namespace KerbalKonstructs
                     foreach (Material material in renderer.materials.Where(mat => mat.shader.name.StartsWith("KSP/Scenery/Diffuse Ground KSC")))
                     {
                         material.shader = GroundShader;
+                        DisableReflectionProbes(renderer);
 
                         grassRenderers.Add(renderer);
                         grassMaterials.Add(material);

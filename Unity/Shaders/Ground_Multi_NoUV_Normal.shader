@@ -64,7 +64,8 @@ Shader "KK/Ground_Multi_NoUV"
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
         #pragma exclude_renderers gles
         
-        #pragma surface surf BlinnPhongKSP fullforwardshadows nofog
+        // lit like the stock terrain (zoom rotation PQS shader): Standard Specular, with the planet's values
+        #pragma surface surf StandardSpecularKSP fullforwardshadows nofog
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -82,6 +83,12 @@ Shader "KK/Ground_Multi_NoUV"
 		float _FarGrassTiling;
 
 		float4 _GrassColor;
+
+		// the lighting values of the current planet's terrain material, set by KK (KKTerrainShader.UpdateGlobals):
+		// the color brightness (_albedoBrightness), the specular color and whether the textures' alpha is the smoothness
+		float _KKAlbedoBrightness;
+		float4 _KKSpecularColor;
+		float _KKSmoothnessScale;
 
     	sampler2D _NearGrassTexture;
 		sampler2D _NearGrassNormalTexture;
@@ -151,7 +158,7 @@ Shader "KK/Ground_Multi_NoUV"
         	return float3(g,g,g);
     	}
 
-		void surf(Input IN, inout SurfaceOutput o)
+		void surf(Input IN, inout SurfaceOutputStandardSpecular o)
 		{
 
 			IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
@@ -283,11 +290,17 @@ Shader "KK/Ground_Multi_NoUV"
 
 			float4 fourthColor = fourthMapPixel * _FourthTextureColor;
 
-			// Blend everything over
-			float3 outputColor = 0;
-			outputColor = lerp (grassTextureBlended.rgb, tarmacColor, blendmask.r * tarmacColor.a);
-			outputColor = lerp (outputColor, thirtColor.rgb, blendmask.g * thirtColor.a);
-			outputColor = lerp (outputColor, fourthColor.rgb, blendmask.b * fourthColor.a );
+			// Blend everything over. The grass gets the terrain's brightness and specular, the tarmac, third and fourth
+			// texture don't (kkAmount: how much of the pixel they cover). Without KK's planet values (0) brightness 1.
+			float brightness = _KKAlbedoBrightness > 0 ? _KKAlbedoBrightness : 1;
+			float3 outputColor = grassTextureBlended.rgb * brightness;
+			float tarmacBlend = blendmask.r * tarmacColor.a;
+			float thirdBlend = blendmask.g * thirtColor.a;
+			float fourthBlend = blendmask.b * fourthColor.a;
+			outputColor = lerp (outputColor, tarmacColor.rgb, tarmacBlend);
+			outputColor = lerp (outputColor, thirtColor.rgb, thirdBlend);
+			outputColor = lerp (outputColor, fourthColor.rgb, fourthBlend);
+			float kkAmount = lerp(lerp(tarmacBlend, 1, thirdBlend), 1, fourthBlend);
 			
 
 			// grass normal: from the projected plane into the box space of the mapping (whiteout blend with the
@@ -312,9 +325,9 @@ Shader "KK/Ground_Multi_NoUV"
 
 			// tarmac, third and fourth normal maps are in the mesh's tangent space (uv)
 			// (the third and fourth used the red mask channel before, now green and blue like their colors)
-			normal = lerp(normal, tarmacNormal, blendmask.r * tarmacColor.a);
-			normal = lerp(normal, thirdNormal, blendmask.g * thirtColor.a);
-			normal = lerp(normal, fourthNormal, blendmask.b * fourthColor.a);
+			normal = lerp(normal, tarmacNormal, tarmacBlend);
+			normal = lerp(normal, thirdNormal, thirdBlend);
+			normal = lerp(normal, fourthNormal, fourthBlend);
 			normal = normalize(normal);
 
 			//emission always sampled and assigned to surface along with stock part-highlighting functionality
@@ -328,7 +341,10 @@ Shader "KK/Ground_Multi_NoUV"
 			o.Normal = normal;
 			o.Albedo = fog.rgb;
 			o.Emission *= fog.a;
-        	o.Specular = (0);
+			o.Specular = _KKSpecularColor.rgb * (1 - kkAmount);
+			o.Smoothness = saturate(grassTextureBlended.a) * _KKSmoothnessScale * (1 - kkAmount);
+			o.Occlusion = 1;
+			o.Alpha = 1;
 			
 
 #if UNITY_PASS_DEFERRED
