@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace KerbalKonstructs.Core
@@ -15,6 +16,8 @@ namespace KerbalKonstructs.Core
     ///  _KKGlobalDensity  haze density of the body's PQS material
     ///  _KKFogColorRamp   haze color ramp of the body's PQS material
     /// The shader ignores all of it when it is an older version without the haze.
+    /// With Scatterer installed the haze stays off: Scatterer replaces the stock terrain haze with its own atmosphere,
+    /// which it also applies to the statics, so a stock-like haze on top of it would be doubled.
     /// </summary>
     internal static class KKAerialPerspective
     {
@@ -28,6 +31,27 @@ namespace KerbalKonstructs.Core
         private static readonly int pqsDensityID = Shader.PropertyToID("_globalDensity");
         private static readonly int pqsRampID = Shader.PropertyToID("_fogColorRamp");
 
+        private static bool? scattererLoaded = null;
+
+        /// <summary>
+        /// True when Scatterer is installed (its assembly is named "scatterer")
+        /// </summary>
+        internal static bool ScattererLoaded
+        {
+            get
+            {
+                if (!scattererLoaded.HasValue)
+                {
+                    scattererLoaded = AssemblyLoader.loadedAssemblies.Any(a => string.Equals(a.name, "scatterer", System.StringComparison.OrdinalIgnoreCase));
+                    if (scattererLoaded.Value)
+                    {
+                        Log.Normal("Scatterer found: no stock-like haze on KK grass (Scatterer applies its own)");
+                    }
+                }
+                return scattererLoaded.Value;
+            }
+        }
+
         private static CelestialBody lastBody = null;
         private static Material lastMaterial = null;
         private static bool hasHaze = false;
@@ -38,7 +62,7 @@ namespace KerbalKonstructs.Core
         /// </summary>
         internal static void UpdateGlobals(CelestialBody body)
         {
-            if (body == null || body.pqsController == null)
+            if (body == null || body.pqsController == null || ScattererLoaded)
             {
                 Shader.SetGlobalFloat(enabledID, 0f);
                 return;

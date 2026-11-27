@@ -60,12 +60,14 @@ Shader "KK/Ground_Multi_NoUV"
 		ZWrite On
 		ZTest LEqual
 
+		// Deferred mod stencil values: 1 parts, 2 terrain, 3 local scenery. The KK ground continues the terrain
+		// underneath, so it is marked as terrain (like Parallax's replacement shader for it).
 		Stencil
 		{
-			Ref 3
+			Ref 2
 			Comp Always
 			Pass Replace
-		}  
+		}
 
         CGPROGRAM
         // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
