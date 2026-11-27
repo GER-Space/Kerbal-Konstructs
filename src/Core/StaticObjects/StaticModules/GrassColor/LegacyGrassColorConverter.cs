@@ -58,20 +58,12 @@ namespace KerbalKonstructs.Core
 
 
         /// <summary>
-        /// The texture a GrassColor2 module gets when it imports a legacy config: the instance's own texture,
-        /// else the legacy module's own default texture, else (stock grass) the stock detail texture
+        /// The texture a GrassColor2 module (that was not converted from GrasColor) gets when it imports a legacy config:
+        /// the instance's own texture, else the stock detail texture
         /// </summary>
-        internal static string GrassColor2Texture(string legacyTexture, string moduleDefaultTexture = null)
+        internal static string GrassColor2Texture(string legacyTexture)
         {
-            if (!string.IsNullOrEmpty(legacyTexture))
-            {
-                return legacyTexture;
-            }
-            if (!string.IsNullOrEmpty(moduleDefaultTexture) && moduleDefaultTexture != legacyDefaultTexture)
-            {
-                return moduleDefaultTexture;
-            }
-            return newDefaultTexture;
+            return string.IsNullOrEmpty(legacyTexture) ? newDefaultTexture : legacyTexture;
         }
 
 
@@ -113,21 +105,6 @@ namespace KerbalKonstructs.Core
             Color ground = new Color(groundColor.r, groundColor.g, groundColor.b, 1f);
             Color newAverage = (Average(nearTexture, nearGray) + Average(farTexture, farGray)) * 0.5f;
             return Divide(ground, newAverage);
-        }
-
-
-        /// <summary>
-        /// The multiplier color for the legacy GrasColor module itself (same texture, KK/Diffuse_Multiply_Random).
-        /// A multiplier color comes back unchanged (alpha set to 1).
-        /// </summary>
-        internal static Color ToLegacyMultiplier(Color legacyColor, string legacyTexture, string moduleDefaultTexture)
-        {
-            if (!IsBlendColor(legacyColor))
-            {
-                return Opaque(legacyColor);
-            }
-            string shownTexture = ShownLegacyTexture(legacyTexture, moduleDefaultTexture);
-            return Divide(DisplayedColor(legacyColor, legacyTexture, moduleDefaultTexture), Average(shownTexture, false));
         }
 
 
