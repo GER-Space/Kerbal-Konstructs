@@ -1,5 +1,6 @@
 using KerbalKonstructs.Core;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -9,32 +10,46 @@ namespace KerbalKonstructs
     /// Ground meshes drawn like the terrain underneath (shader KK/Terrain). It replaces the GrasColor and GrassColor2
     /// modules (KerbalKonstructs.LoadModels, SquadStatics) and keeps GrassColor2's settings and config: tarmac, blend mask,
     /// third and fourth texture.
-    /// The grass is the planet's own low/mid/high, steep and bump textures, with the terrain color at the renderer's
-    /// position (the PQS vertex color, sampled once per renderer and again only when it moved). With overwrite_color the
-    /// color set in the grass editor (GrassColor of the instance config) is used instead of the terrain color.
+    /// The grass is the planet's own low/mid/high, steep and bump textures with a terrain color:
+    ///  - models converted from GrasColor: the terrain color at the static's position (the PQS vertex color)
+    ///  - the other models: their grass color setting (GrassColor of the instance config)
+    /// overwrite_color decides it: empty (default) chooses as above, true uses the grass color, false the terrain color.
+    /// The grass editor sets it per instance.
+    /// The PQS is sampled once per instance at the static's position (its alpha also chooses the low/mid/high textures):
+    /// the sample is kept in the instance's GrassColor2 config node (TerrainSample, TerrainSamplePosition), saved with
+    /// the instance, and only taken again when the static was moved. A scene switch (Activate) doesn't apply the settings
+    /// again unless the static moved.
     /// The grass texture settings of GrassColor2 are not used by KK/Terrain. With an older shader bundle without
     /// KK/Terrain, it works like GrassColor2.
     /// </summary>
     public class KKTerrain : GrassColor2
     {
         /// <summary>
-        /// Model setting (and saved per instance): true uses the given grass color instead of the terrain color
+        /// Model setting (and saved per instance): "true" uses the grass color, "false" the terrain color, empty chooses
+        /// by the model (converted from GrasColor: terrain color, else the grass color)
         /// </summary>
-        public bool overwrite_color = false;
+        public string overwrite_color = "";
 
         /// <summary>
-        /// The terrain color at the first grass mesh (shown in the grass editor while overwrite_color is off)
+        /// The terrain color at the static (shown in the grass editor while the terrain color is used)
         /// </summary>
         internal Color terrainColor = defaultColor;
 
-        private bool overwriteRead = false;
+        /// <summary>
+        /// The static moves less than this (meters) between two samples
+        /// </summary>
+        private const double resampleDistance = 1d;
 
-        private class TerrainSample
-        {
-            internal Vector3d position;
-            internal Color color;
-        }
-        private readonly Dictionary<Renderer, TerrainSample> samples = new Dictionary<Renderer, TerrainSample>();
+        private bool instanceConfigRead = false;
+        private bool hasTerrainSample = false;
+        private Color terrainSample = Color.clear;
+        private Vector3d terrainSamplePosition = Vector3d.zero;
+
+        // the planet frame position of the static when the settings were applied last
+        private bool applied = false;
+        private Vector3d appliedPosition = Vector3d.zero;
+        private Quaternion appliedRotation = Quaternion.identity;
+        private Vector3 appliedScale = Vector3.one;
 
         protected override Shader GroundShader
         {
@@ -45,7 +60,7 @@ namespace KerbalKonstructs
             }
         }
 
-        // the color is the terrain's, unless the instance overwrites it
+        // the terrain color is sampled once and saved; the legacy import doesn't need it
         protected override bool ImportsGroundColor => false;
 
         /// <summary>
@@ -53,18 +68,63 @@ namespace KerbalKonstructs
         /// </summary>
         internal bool UsesTerrainShader => grassMaterials.Count > 0 && grassMaterials[0] != null && grassMaterials[0].HasProperty("_KKTerrainMode");
 
+        /// <summary>
+        /// True for models converted from a GrasColor module (KerbalKonstructs.LoadModels)
+        /// </summary>
+        internal bool IsConverted => !string.IsNullOrEmpty(LegacyGrasTextureImage);
+
+        /// <summary>
+        /// True: the grass color is used, false: the terrain color at the static
+        /// </summary>
+        internal bool OverwriteColor
+        {
+            get
+            {
+                bool value;
+                if (bool.TryParse(overwrite_color, out value))
+                {
+                    return value;
+                }
+                return !IsConverted;
+            }
+        }
+
+
+        /// <summary>
+        /// Scene switches activate the statics again: nothing to do unless the static was moved, turned or scaled
+        /// </summary>
+        public override void StaticObjectUpdate()
+        {
+            Vector3d position;
+            if (applied && GetStaticPosition(out position) && (position - appliedPosition).magnitude < resampleDistance
+                && Quaternion.Angle(PlanetRotation(), appliedRotation) < 0.01f && staticInstance.gameObject.transform.lossyScale == appliedScale)
+            {
+                return;
+            }
+            ApplySettings();
+        }
+
+
+        /// <summary>
+        /// The rotation of the static in the planet frame
+        /// </summary>
+        private Quaternion PlanetRotation()
+        {
+            return Quaternion.Inverse(staticInstance.CelestialBody.pqsController.transform.rotation) * staticInstance.gameObject.transform.rotation;
+        }
+
 
         internal override void ApplySettings()
         {
             base.ApplySettings();
-            ReadOverwrite();
+            ReadInstanceConfig();
             ApplyTerrain();
         }
 
 
         internal override void OnUserColorChange()
         {
-            overwrite_color = true;
+            overwrite_color = "true";
         }
 
 
@@ -74,11 +134,11 @@ namespace KerbalKonstructs
         /// </summary>
         internal void SetOverwriteColor(bool overwrite)
         {
-            if (overwrite && !overwrite_color)
+            if (overwrite && !OverwriteColor)
             {
                 grassColor = new Color(terrainColor.r, terrainColor.g, terrainColor.b, 1f);
             }
-            overwrite_color = overwrite;
+            overwrite_color = overwrite ? "true" : "false";
             ApplySettings();
         }
 
@@ -86,25 +146,46 @@ namespace KerbalKonstructs
         public override ConfigNode GiveConfig()
         {
             ConfigNode node = base.GiveConfig();
-            node.AddValue("overwrite_color", overwrite_color);
+            if (!string.IsNullOrEmpty(overwrite_color))
+            {
+                node.AddValue("overwrite_color", overwrite_color);
+            }
+            if (hasTerrainSample)
+            {
+                node.AddValue("TerrainSample", ConfigNode.WriteColor(terrainSample));
+                node.AddValue("TerrainSamplePosition", WritePosition(terrainSamplePosition));
+            }
             return node;
         }
 
 
         /// <summary>
-        /// The instance's saved overwrite_color, once after ReadConfig() (the model setting stays without one)
+        /// The instance's saved overwrite_color and terrain sample, once after ReadConfig() (the model setting stays
+        /// without one)
         /// </summary>
-        private void ReadOverwrite()
+        private void ReadInstanceConfig()
         {
-            if (overwriteRead)
+            if (instanceConfigRead)
             {
                 return;
             }
-            overwriteRead = true;
-            bool overwrite;
-            if (instanceConfig != null && instanceConfig.HasValue("overwrite_color") && bool.TryParse(instanceConfig.GetValue("overwrite_color"), out overwrite))
+            instanceConfigRead = true;
+            if (instanceConfig == null)
             {
-                overwrite_color = overwrite;
+                return;
+            }
+            bool overwrite;
+            if (instanceConfig.HasValue("overwrite_color") && bool.TryParse(instanceConfig.GetValue("overwrite_color"), out overwrite))
+            {
+                overwrite_color = overwrite ? "true" : "false";
+            }
+            Vector3d position;
+            if (instanceConfig.HasValue("TerrainSample") && instanceConfig.HasValue("TerrainSamplePosition")
+                && TryParsePosition(instanceConfig.GetValue("TerrainSamplePosition"), out position))
+            {
+                terrainSample = ConfigNode.ParseColor(instanceConfig.GetValue("TerrainSample"));
+                terrainSamplePosition = position;
+                hasTerrainSample = true;
             }
         }
 
@@ -130,10 +211,23 @@ namespace KerbalKonstructs
                 return;
             }
             CelestialBody body = staticInstance.CelestialBody;
-            if (body == null || body.pqsController == null)
+            Vector3d staticPosition;
+            if (body == null || body.pqsController == null || !GetStaticPosition(out staticPosition))
             {
+                if (!loggedNoPosition)
+                {
+                    loggedNoPosition = true;
+                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": not under the planet's PQS transform (yet)");
+                }
                 return;
             }
+
+            // once per instance (and again after a move): the terrain color and altitude value at the static
+            Color sample = GetTerrainSample(body, staticPosition);
+            terrainColor = sample;
+            bool overwrite = OverwriteColor;
+            Color color = overwrite ? grassColor : sample;
+
             Transform planet = body.pqsController.transform;
             List<Renderer> renderers = GrassRenderers;
             for (int i = 0; i < grassMaterials.Count && i < renderers.Count; i++)
@@ -142,62 +236,101 @@ namespace KerbalKonstructs
                 Vector3d position;
                 if (renderer == null || !KKTerrainShader.TryGetPlanetFramePosition(renderer.transform, planet, out position))
                 {
-                    if (!loggedNoPosition)
-                    {
-                        loggedNoPosition = true;
-                        Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": grass mesh not under the planet's PQS transform (yet): " +
-                            (renderer != null ? Path(renderer.transform) : "no renderer"));
-                    }
                     continue;
                 }
                 // like the PQS terrain quads: no reflection probes. In flight KSP has a reflection probe of the sky around
                 // the vessel; with it the specular terrain lighting turned the grass bluish.
                 renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
-                Color sample = GetTerrainSample(body, renderer, position);
-                if (i == 0)
-                {
-                    terrainColor = sample;
-                }
-                Color color = overwrite_color ? grassColor : sample;
                 KKTerrainShader.SetTerrainProperties(grassMaterials[i], body, position, sample, color, thirdTextureTiling, fourthTextureTiling);
                 if (loggedRenderers < maxLoggedRenderers)
                 {
                     loggedRenderers++;
-                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + " mesh " + renderer.name + ": distance " + position.magnitude.ToString("F1") +
-                        " sample " + sample + (overwrite_color ? " overwritten by " + grassColor : "") + " -> " + KKTerrainShader.DescribeRendererMaterial(grassMaterials[i]));
+                    Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + " mesh " + renderer.name +
+                        (IsConverted ? " (converted)" : "") + ": sample " + sample + (overwrite ? " overwritten by " + grassColor : "") +
+                        " -> " + KKTerrainShader.DescribeRendererMaterial(grassMaterials[i]));
                 }
             }
-        }
-
-
-        private static string Path(Transform transform)
-        {
-            string path = transform.name;
-            for (Transform t = transform.parent; t != null; t = t.parent)
-            {
-                path = t.name + "/" + path;
-            }
-            return path;
+            applied = true;
+            appliedPosition = staticPosition;
+            appliedRotation = PlanetRotation();
+            appliedScale = staticInstance.gameObject.transform.lossyScale;
         }
 
 
         /// <summary>
-        /// The terrain color at the renderer: sampled once, and again when the renderer moved (in the editor)
+        /// The planet frame position of the static
         /// </summary>
-        private Color GetTerrainSample(CelestialBody body, Renderer renderer, Vector3d position)
+        private bool GetStaticPosition(out Vector3d position)
         {
-            TerrainSample sample;
-            if (samples.TryGetValue(renderer, out sample) && (sample.position - position).magnitude < 1d)
+            position = Vector3d.zero;
+            if (staticInstance == null || staticInstance.CelestialBody == null || staticInstance.CelestialBody.pqsController == null)
             {
-                return sample.color;
+                return false;
+            }
+            return KKTerrainShader.TryGetPlanetFramePosition(staticInstance.gameObject.transform, staticInstance.CelestialBody.pqsController.transform, out position);
+        }
+
+
+        /// <summary>
+        /// The terrain color at the static: the saved sample, or a new one when there is none or the static moved
+        /// </summary>
+        private Color GetTerrainSample(CelestialBody body, Vector3d position)
+        {
+            if (hasTerrainSample && (terrainSamplePosition - position).magnitude < resampleDistance)
+            {
+                return terrainSample;
             }
             Color color;
             if (!KKTerrainShader.TrySampleTerrain(body, position, out color))
             {
-                color = new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0f);
+                // not kept: tried again next time
+                return new Color(defaultColor.r, defaultColor.g, defaultColor.b, 0f);
             }
-            samples[renderer] = new TerrainSample { position = position, color = color };
+            terrainSample = color;
+            terrainSamplePosition = position;
+            hasTerrainSample = true;
+            UpdateInstanceConfig();
+            Log.Normal("KKTerrain " + staticInstance.model.name + " " + staticInstance.UUID + ": terrain sampled " + color);
             return color;
+        }
+
+
+        /// <summary>
+        /// Keeps the sample in the instance's GrassColor2 config node too. KK writes the instance files from GiveConfig()
+        /// when it saves the instances.
+        /// </summary>
+        private void UpdateInstanceConfig()
+        {
+            if (instanceConfig == null)
+            {
+                return;
+            }
+            instanceConfig.RemoveValue("TerrainSample");
+            instanceConfig.RemoveValue("TerrainSamplePosition");
+            instanceConfig.AddValue("TerrainSample", ConfigNode.WriteColor(terrainSample));
+            instanceConfig.AddValue("TerrainSamplePosition", WritePosition(terrainSamplePosition));
+        }
+
+
+        private static string WritePosition(Vector3d position)
+        {
+            return position.x.ToString("R", CultureInfo.InvariantCulture) + "," + position.y.ToString("R", CultureInfo.InvariantCulture) + "," +
+                position.z.ToString("R", CultureInfo.InvariantCulture);
+        }
+
+        private static bool TryParsePosition(string text, out Vector3d position)
+        {
+            position = Vector3d.zero;
+            string[] parts = text.Split(',');
+            double x, y, z;
+            if (parts.Length == 3 && double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out x)
+                && double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out y)
+                && double.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out z))
+            {
+                position = new Vector3d(x, y, z);
+                return true;
+            }
+            return false;
         }
     }
 }

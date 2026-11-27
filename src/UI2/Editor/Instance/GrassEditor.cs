@@ -137,7 +137,7 @@ namespace KerbalKonstructs.UI2
             bool terrain = IsTerrain(selectedMod);
             if (terrain)
             {
-                content.Add(SwitchRow("Terrain color:", delegate { KKTerrain t = selectedMod as KKTerrain; return t != null && !t.overwrite_color; },
+                content.Add(SwitchRow("Terrain color:", delegate { KKTerrain t = selectedMod as KKTerrain; return t != null && !t.OverwriteColor; },
                     delegate (bool v) { KKTerrain t = selectedMod as KKTerrain; if (t != null) { t.SetOverwriteColor(!v); } }));
             }
             content.Add(ColorRow("Grass color:", delegate { return ShownGrassColor(selectedMod); }, delegate (Color c) { if (!SameColor(c, ShownGrassColor(selectedMod))) { selectedMod.grassColor = c; selectedMod.OnUserColorChange(); } }));
@@ -368,7 +368,7 @@ namespace KerbalKonstructs.UI2
         private static Color ShownGrassColor(GrassColor2 mod)
         {
             KKTerrain terrain = mod as KKTerrain;
-            if (terrain != null && IsTerrain(terrain) && !terrain.overwrite_color)
+            if (terrain != null && IsTerrain(terrain) && !terrain.OverwriteColor)
             {
                 Color c = terrain.terrainColor;
                 return new Color(c.r, c.g, c.b, 1f);
