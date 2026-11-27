@@ -46,6 +46,9 @@ namespace KerbalKonstructs
 
         public string MaterialOffset = "0";
 
+        // set by LoadModels() when this module replaces a legacy GrasColor module: that module's GrasTextureImage
+        public string LegacyGrasTextureImage = "";
+
         // internal variables below
 
 
@@ -308,6 +311,68 @@ namespace KerbalKonstructs
         }
 
 
+        /// <summary>
+        /// Converts the instance's legacy GrasColor / GrasTexture values with LegacyGrassColorConverter, and stores the
+        /// result as this instance's GrassColor2 config (so it is converted only once and saved with the instance).
+        /// Converted legacy modules (LegacyGrasTextureImage set): the legacy texture is the near and far grass texture,
+        /// tiling 1, blend distance 200; an instance without a legacy color gets the color of the ground underneath.
+        /// </summary>
+        private void ImportLegacyValues()
+        {
+            bool isConvertedModule = !string.IsNullOrEmpty(LegacyGrasTextureImage);
+
+            if (staticInstance.GrasColor == Color.clear && !isConvertedModule)
+            {
+                // nothing to import: model defaults
+                return;
+            }
+
+            string legacyTexture = staticInstance.GrasTexture;
+            string grasTextureName;
+            if (isConvertedModule)
+            {
+                grasTextureName = LegacyGrassColorConverter.ShownLegacyTexture(legacyTexture, LegacyGrasTextureImage);
+                nearGrassTiling = LegacyGrassColorConverter.convertedTiling;
+                farGrassTiling = LegacyGrassColorConverter.convertedTiling;
+                farGrassBlendDistance = LegacyGrassColorConverter.convertedBlendDistance;
+            }
+            else
+            {
+                grasTextureName = LegacyGrassColorConverter.GrassColor2Texture(legacyTexture);
+            }
+            nearGrassTextureName = grasTextureName;
+            farGrassTextureName = grasTextureName;
+
+            if (staticInstance.GrasColor == Color.clear)
+            {
+                Color ground;
+                try
+                {
+                    ground = KerbalKonstructs.useCam ? GrasColorCam.instance.GetCameraColor(staticInstance)
+                        : GrassColorUtils.GetSurfaceColorPQS(staticInstance.CelestialBody, staticInstance.RefLatitude, staticInstance.RefLongitude);
+                }
+                catch (Exception e)
+                {
+                    Log.UserWarning("GrassColor2: could not get the ground color for " + staticInstance.gameObject.name + ": " + e.Message);
+                    ground = Color.clear;
+                }
+                grassColor = (ground == Color.clear) ? defaultColor
+                    : LegacyGrassColorConverter.FromGroundColor(ground, nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray);
+                Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": no legacy color, ground color " +
+                    ConfigNode.WriteColor(grassColor) + " on " + grasTextureName);
+            }
+            else
+            {
+                grassColor = LegacyGrassColorConverter.ToGrassColor2(staticInstance.GrasColor, legacyTexture,
+                    nearGrassTextureName, nearGrassTextureGray, farGrassTextureName, farGrassTextureGray, LegacyGrasTextureImage);
+                Log.Normal("Loading Legacy Grass Config " + staticInstance.gameObject.name + ": " +
+                    LegacyGrassColorConverter.Describe(staticInstance.GrasColor, legacyTexture, grassColor, grasTextureName));
+            }
+
+            staticInstance.grassColor2Configs.Add(GiveConfig());
+        }
+
+
         public void ReadConfig()
         {
 
@@ -347,33 +412,7 @@ namespace KerbalKonstructs
 
 
                 // try to import legacy values
-                if (staticInstance.GrasColor != Color.clear)
-                {
-
-                    Log.Normal("Loading Legacy Grass Config" + staticInstance.gameObject.name);
-                    //useLegacy = true;
-                    grassColor = staticInstance.GrasColor;
-                    string oldGrassTexture = staticInstance.GrasTexture;
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture) ||staticInstance.GrasTexture == "BUILTIN:/terrain_grass00_new")
-                    {
-                        oldGrassTexture = "KerbalKonstructs/Assets/Colors/legacyGrassColors";
-                    }
-                    if (String.IsNullOrEmpty(staticInstance.GrasTexture))
-                    {
-                        staticInstance.GrasTexture = "BUILTIN:/terrain_grass00_new_detail";
-                    }
-
-                    //farGrassTiling = 10;
-                    //nearGrassTiling = 1;
-                    nearGrassTextureName = staticInstance.GrasTexture;
-                    farGrassTextureName = staticInstance.GrasTexture;
-
-                    
-                    grassColor = GrassColorUtils.ManualCalcNewColor(staticInstance.GrasColor, oldGrassTexture, staticInstance.GrasTexture);
-
-                    staticInstance.grassColor2Configs.Add(GiveConfig());
-
-                }
+                ImportLegacyValues();
 
                 return;
             }

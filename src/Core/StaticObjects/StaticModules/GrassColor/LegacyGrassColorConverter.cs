@@ -154,11 +154,16 @@ namespace KerbalKonstructs.Core
         }
 
 
+        // the GrassColor2 settings of a converted legacy module
+        internal const float convertedTiling = 1f;
+        internal const float convertedBlendDistance = 200f;
+
+
         /// <summary>
-        /// For a legacy GrasColor module of a model: the fields of the GrassColor2 module an instance gets instead
-        /// (used by StaticInstance when it attaches the modules). False (keep GrasColor) for other modules, for a
-        /// GrasColor module with "KeepLegacyShader = True", or without GrasMeshName.
-        /// The instance's legacy GrasColor / GrasTexture values are converted when that GrassColor2 module reads its config.
+        /// For a legacy GrasColor MODULE of a model config: the fields of the GrassColor2 MODULE that LoadModels()
+        /// adds instead. The legacy texture (GrasTextureImage) becomes the near and far grass texture, with tiling 1
+        /// and blend distance 200. False for any other module, or a GrasColor module without GrasMeshName.
+        /// The instance's legacy GrasColor / GrasTexture values are converted when GrassColor2 reads its config.
         /// </summary>
         internal static bool TryGetGrassColor2Fields(StaticModule module, string modelName, out Dictionary<string, string> grassColor2Fields)
         {
@@ -169,12 +174,6 @@ namespace KerbalKonstructs.Core
             }
 
             Dictionary<string, string> fields = module.moduleFields;
-            string keepLegacy;
-            bool keep;
-            if (fields.TryGetValue("KeepLegacyShader", out keepLegacy) && bool.TryParse(keepLegacy, out keep) && keep)
-            {
-                return false;
-            }
             string meshName;
             if (!fields.TryGetValue("GrasMeshName", out meshName) || string.IsNullOrEmpty(meshName))
             {
@@ -182,20 +181,23 @@ namespace KerbalKonstructs.Core
                 return false;
             }
 
-            grassColor2Fields = new Dictionary<string, string>();
-            grassColor2Fields.Add("GrassMeshName", meshName);
-
             string textureImage;
-            if (fields.TryGetValue("GrasTextureImage", out textureImage) && !string.IsNullOrEmpty(textureImage))
+            if (!fields.TryGetValue("GrasTextureImage", out textureImage) || string.IsNullOrEmpty(textureImage))
             {
-                grassColor2Fields.Add("LegacyGrasTextureImage", textureImage);
-                if (textureImage != legacyDefaultTexture)
-                {
-                    // a model with its own grass texture keeps it
-                    grassColor2Fields.Add("DefaultNearGrassTexture", textureImage);
-                    grassColor2Fields.Add("DefaultFarGrassTexture", textureImage);
-                }
+                textureImage = legacyDefaultTexture;
             }
+
+            string tiling = convertedTiling.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            grassColor2Fields = new Dictionary<string, string>
+            {
+                { "GrassMeshName", meshName },
+                { "LegacyGrasTextureImage", textureImage },
+                { "DefaultNearGrassTexture", textureImage },
+                { "DefaultFarGrassTexture", textureImage },
+                { "DefaultNearGrassTiling", tiling },
+                { "DefaultFarGrassTiling", tiling },
+                { "DefaultFarGrassBlendDistance", convertedBlendDistance.ToString(System.Globalization.CultureInfo.InvariantCulture) }
+            };
             return true;
         }
 
