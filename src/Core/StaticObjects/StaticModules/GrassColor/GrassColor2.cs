@@ -99,6 +99,44 @@ namespace KerbalKonstructs
         internal List<Material> grassMaterials = new List<Material>();
 
 
+        private static Texture2D _flatNormalTexture = null;
+
+        /// <summary>
+        /// Workaround for KK/Ground_Multi_NoUV until the shader is fixed: it samples its normal textures as raw colors
+        /// and adds (color * 2 - 1) to the world space normal. The normal textures are never set (and have no "bump"
+        /// default), so the lighting normal was bent away from the surface and the grass was too dark in sunlight.
+        /// A texture of exactly 0.5 gray gives (0, 0, 0): the shader then uses the mesh normal.
+        /// </summary>
+        internal static Texture2D flatNormalTexture
+        {
+            get
+            {
+                if (_flatNormalTexture == null)
+                {
+                    // linear: the 0.5 must not be changed by a color space conversion
+                    _flatNormalTexture = new Texture2D(1, 1, TextureFormat.RGBA32, false, true);
+                    _flatNormalTexture.name = "KKFlatNormalWorkaround";
+                    _flatNormalTexture.SetPixels32(new Color32[] { new Color32(128, 128, 128, 128) });
+                    _flatNormalTexture.Apply(false, true);
+                }
+                return _flatNormalTexture;
+            }
+        }
+
+
+        /// <summary>
+        /// Sets all normal textures of the ground shader to the flat workaround texture (see flatNormalTexture)
+        /// </summary>
+        internal static void SetFlatNormals(Material material)
+        {
+            Texture2D flat = flatNormalTexture;
+            material.SetTexture("_FarGrassNormalTexture", flat);
+            material.SetTexture("_TarmacNormalTexture", flat);
+            material.SetTexture("_ThirdNormalTexture", flat);
+            material.SetTexture("_FourthNormalTexture", flat);
+        }
+
+
         public void Awake()
         {
             if (staticInstance != null)
@@ -150,6 +188,7 @@ namespace KerbalKonstructs
 
             foreach (Material material in grassMaterials)
             {
+                SetFlatNormals(material);
 
                 //if (useLegacy)
                 //{
