@@ -161,7 +161,7 @@ Shader "KK/Terrain"
 		// --- globals of the current planet, set by KK (KKTerrainShader.UpdateGlobals) ---
 		float4x4 _KKWorldToPlanet;      // rotation world -> planet frame (the PQS transform)
 		float4x4 _KKPlanetToWorld;      // rotation planet frame -> world
-		float3 _KKSunDirection;         // world space, from the planet to the sun
+		float3 _KKSunDirection;         // world space, from the sun to the planet (like KSP's _sunLightDirection)
 		// zoom levels of the zoom rotation shader (_KKZoomFactor 0: one level, scale 1)
 		float _KKZoomFactor;
 		float _KKZoomBlendWidth;

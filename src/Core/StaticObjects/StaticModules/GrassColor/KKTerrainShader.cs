@@ -15,7 +15,7 @@ namespace KerbalKonstructs.Core
     /// Globals of the current planet (UpdateGlobals; the rotation and sun every frame, the rest when the planet or its
     /// terrain material changes):
     ///  _KKWorldToPlanet / _KKPlanetToWorld  rotation between world space and the planet frame (the PQS transform)
-    ///  _KKSunDirection   world direction from the planet to the sun
+    ///  _KKSunDirection   world direction from the sun to the planet (the direction the light travels)
     ///  _KKZoomFactor, _KKZoomBlendWidth, _KKZoomRotation   the zoom levels (_factor, _factorBlendWidth, _factorRotation)
     ///  _KKAlbedoBrightness, _KKSpecularColor, _KKSmoothnessScale   the lighting
     ///  _KKAerialEnabled, _KKGlobalDensity, _KKFogColorRamp, _KKFogRampV   the haze. KSP itself sets
@@ -186,7 +186,9 @@ namespace KerbalKonstructs.Core
             CelestialBody sun = Planetarium.fetch != null ? Planetarium.fetch.Sun : null;
             if (sun != null)
             {
-                Shader.SetGlobalVector(sunID, ((Vector3)(sun.position - body.position)).normalized);
+                // like KSP's _sunLightDirection (Sun.transform.forward), which the PQS shaders use to read the fog
+                // color ramp: the direction the light travels, from the sun to the planet
+                Shader.SetGlobalVector(sunID, ((Vector3)(body.position - sun.position)).normalized);
             }
 
             Material surfaceMaterial = body.pqsController.surfaceMaterial;
