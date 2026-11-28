@@ -42,9 +42,11 @@ namespace KerbalKonstructs.UI2
 
         private CelestialBody body;
 
-        private Texture2D tCopyPos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/copypos", false);
-        private Texture2D tPastePos = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/pastepos", false);
-        private Texture2D tSnap = GameDatabase.Instance.GetTexture("KerbalKonstructs/Assets/snapto", false);
+        // square icon buttons in the style of the Editor Mode buttons (made by Docs/Icons/InstanceEditor/make_icons.py)
+        private static UIStyle copyPositionStyle = null;
+        private static UIStyle pastePositionStyle = null;
+        private static UIStyle snapStyle = null;
+        private const float toolButtonSize = 32f;
 
         // Switches
         public bool enableColliders = false;
@@ -210,11 +212,17 @@ namespace KerbalKonstructs.UI2
                 ));
 
             // position tools and increment
-            content.Add(new DialogGUIHorizontalLayout(
+            if (copyPositionStyle == null)
+            {
+                copyPositionStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/instanceCopyPos");
+                pastePositionStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/instancePastePos");
+                snapStyle = KKStyle.CreateIconButtonStyle("KerbalKonstructs/Assets/instanceSnap");
+            }
+            content.Add(new DialogGUIHorizontalLayout(false, false, 4f, new RectOffset(), TextAnchor.MiddleLeft,
                 Label("Position:"),
-                ToolButton(tCopyPos, "Copy", "Copy position and rotation", CopyPosition),
-                ToolButton(tPastePos, "Paste", "Paste position and rotation", PastePosition),
-                ToolButton(tSnap, "Snap", "Snap to the snap target", SnapToTarget),
+                ToolButton(copyPositionStyle, "Copy", "Copy position and rotation", CopyPosition),
+                ToolButton(pastePositionStyle, "Paste", "Paste position and rotation", PastePosition),
+                ToolButton(snapStyle, "Snap", "Snap to the snap target", SnapToTarget),
                 new DialogGUIFlexibleSpace()
                 ));
             IncrementRows(delegate { return increment; }, delegate (float value) { increment = value; }, 0.001f, 0.01f, 0.1f, 1f, 10f, 25f);
@@ -319,9 +327,9 @@ namespace KerbalKonstructs.UI2
         }
 
 
-        private static DialogGUIButton ToolButton(Texture2D icon, string text, string tooltip, Callback action)
+        private static DialogGUIButton ToolButton(UIStyle iconStyle, string text, string tooltip, Callback action)
         {
-            DialogGUIButton button = (icon != null) ? KKStyle.ImageButton(icon, action, 23f, 23f) : new DialogGUIButton(text, action, 50f, itemHeight, false);
+            DialogGUIButton button = (iconStyle != null) ? KKStyle.IconButton(iconStyle, action, toolButtonSize, toolButtonSize) : new DialogGUIButton(text, action, 50f, itemHeight, false);
             button.tooltipText = tooltip;
             return button;
         }
